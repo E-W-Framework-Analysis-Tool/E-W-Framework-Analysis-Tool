@@ -10,7 +10,8 @@
   "scripts": {
     "format": "prettier --write \"**/*.md\" \"!node_modules/**\"",
     "lint": "markdownlint-cli2 --fix",
-    "check": "prettier --check \"**/*.md\" \"!node_modules/**\" && markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" --config .markdownlint.yaml"
+    "check": "prettier --check --loglevel info \"**/*.md\" \"!node_modules/**\" && markdownlint-cli2",
+    "check:debug": "prettier --check --log-level=debug \"**/*.md\" \"!node_modules/**\" && markdownlint-cli2"
   },
   "keywords": [],
   "author": "",

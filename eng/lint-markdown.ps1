@@ -1,5 +1,6 @@
 param(
-    [switch]$Check
+    [switch]$Check,
+    [switch]$CheckDebug
 )
 
 $repoRoot = Resolve-Path "$PSScriptRoot/.."
@@ -22,7 +23,10 @@ if (-not (Test-Path "node_modules")) {
     npm ci || Fail "Failed to restore npm dependencies."
 }
 
-if ($Check) {
+if ($CheckDebug) {
+    Write-Host "`nRunning: npm run check with debugging"
+    npm run check:debug || Fail "Markdown formatting or linting failed (check mode)."
+} elseif ($Check) {
     Write-Host "`nRunning: npm run check"
     npm run check || Fail "Markdown formatting or linting failed (check mode)."
 } else {
