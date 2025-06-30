@@ -20,7 +20,7 @@ in identifying priority indicators, assessing gaps, and planning improvements in
 
 ## Who Is This For?
 
- - State education agencies (SEAs) building or expanding their P20W+ systems
+- State education agencies (SEAs) building or expanding their P20W+ systems
 - Local education agencies (LEAs) evaluating their P12+ infrastructure
 - Education-focused vendors and researchers working with public education data systems
 
