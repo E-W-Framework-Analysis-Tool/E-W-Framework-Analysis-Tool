@@ -1,4 +1,4 @@
-# E-W Framework Analysis Tool
+## E-W Framework Analysis Tool
 
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
