@@ -1,0 +1,22 @@
+{
+  "name": "e-w-framework-analysis-tool",
+  "version": "1.0.0",
+  "description": "The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and their partners evaluate their data readiness to answer key questions from the [Education-to-Workforce Indicator Framework (E-W Framework)](https://www.e-wframework.org/). It supports states and LEAs in identifying priority indicators, assessing gaps, and planning improvements in data infrastructure.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.md\" \"!node_modules/**\"",
+    "lint": "markdownlint-cli2",
+    "check": "prettier --check \"**/*.md\" \"!node_modules/**\" && markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" --config .markdownlint.yaml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "markdownlint-cli2": "^0.18.1",
+    "prettier": "^3.6.2"
+  }
+}
