@@ -9,7 +9,7 @@
   },
   "scripts": {
     "format": "prettier --write \"**/*.md\" \"!node_modules/**\"",
-    "lint": "markdownlint-cli2",
+    "lint": "markdownlint-cli2 --fix",
     "check": "prettier --check \"**/*.md\" \"!node_modules/**\" && markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" --config .markdownlint.yaml"
   },
   "keywords": [],

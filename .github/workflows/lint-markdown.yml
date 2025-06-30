@@ -26,4 +26,4 @@ jobs:
       - name: Run lint-markdown.ps1
         shell: pwsh
         run: |
-          ./eng/lint-markdown.ps1
+          ./eng/lint-markdown.ps1 -Check

@@ -1,4 +1,4 @@
-## E-W Framework Analysis Tool
+# E-W Framework Analysis Tool
 
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
@@ -20,7 +20,7 @@ in identifying priority indicators, assessing gaps, and planning improvements in
 
 ## Who Is This For?
 
-- State education agencies (SEAs) building or expanding their P20W+ systems
+ - State education agencies (SEAs) building or expanding their P20W+ systems
 - Local education agencies (LEAs) evaluating their P12+ infrastructure
 - Education-focused vendors and researchers working with public education data systems
 
