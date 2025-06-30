@@ -1,0 +1,35 @@
+default: true
+
+line-length:
+  line_length: 120
+
+# Allow punctuation at the end of headings (.,;:!)
+heading-punctuation:
+  punctuation: ".,;:!"
+
+# Allow inline HTML (used in some GitHub READMEs)
+no-inline-html: true
+
+# Allow duplicate heading text if nesting is different (e.g., FAQ sections)
+no-duplicate-heading: 
+  allow_different_nesting: true
+
+# Use `-` for unordered list bullets
+ul-style:
+  style: dash
+
+no-emphasis-inside-link: false
+
+# Disallow spaces inside emphasis markers (`* bold *`)
+no-space-in-emphasis: true
+
+# Enforce 2-space indentation for list items
+ul-indent:
+  indent: 2
+
+# Require ordered lists to increment by 1
+ol-prefix:
+  style: ordered
+
+# Require H1 heading as the first element
+first-line-heading: true
