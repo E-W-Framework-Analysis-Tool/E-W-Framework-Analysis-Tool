@@ -1,13 +1,6 @@
 name: Markdown Lint
 
 on:
-  push:
-    paths:
-      - '**/*.md'
-      - 'eng/lint-markdown.ps1'
-      - 'package.json'
-      - '.markdownlint*'
-      - '.prettier*'
   pull_request:
     paths:
       - '**/*.md'
