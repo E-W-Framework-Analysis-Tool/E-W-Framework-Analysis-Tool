@@ -1,0 +1,36 @@
+name: Markdown Lint
+
+on:
+  push:
+    paths:
+      - '**/*.md'
+      - 'eng/lint-markdown.ps1'
+      - 'package.json'
+      - '.markdownlint*'
+      - '.prettier*'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'eng/lint-markdown.ps1'
+      - 'package.json'
+      - '.markdownlint*'
+      - '.prettier*'
+
+jobs:
+  markdown-lint:
+    name: Run Markdown Lint
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run lint-markdown.ps1
+        shell: pwsh
+        run: |
+          ./eng/lint-markdown.ps1
