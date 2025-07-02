@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6.5684 7.3335 148.586 107.7354" width="148.586px" height="107.735px" xmlns:bx="https://boxy-svg.com" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="color-0" bx:pinned="true" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, -730.759842, 1663.37)">
+      <title>People</title>
+      <stop style="stop-color: rgb(226, 226, 226);"/>
+    </linearGradient>
+    <linearGradient id="color-1" bx:pinned="true" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, 93.45574, -244.822631)">
+      <title>Dial</title>
+      <stop style="stop-color: rgb(255, 182, 193);"/>
+    </linearGradient>
+  </defs>
+  <g transform="matrix(0.9999999999999999, 0, 0, 0.9999999999999999, -28.75560439969388, -248.41708900487836)" style="" id="object-8">
+    <title>Low</title>
+    <g transform="matrix(1, 0, 0, 1, -197.694767, 9.984605)">
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="281.907" cy="262.215" rx="9.622" ry="9.622" id="object-0"/>
+      <path d="M 282.065 274.36 C 289.694 274.36 295.917 280.378 296.247 287.925 L 296.576 306.318 L 267.553 305.52 L 267.883 287.925 C 268.213 280.378 274.436 274.36 282.065 274.36 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" id="object-1"/>
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="333.224" cy="263.776" rx="9.622" ry="9.622" id="object-2"/>
+      <path d="M 333.382 275.921 C 341.011 275.921 347.234 281.939 347.564 289.486 L 347.893 331.443 L 318.87 331.443 L 319.2 289.486 C 319.53 281.939 325.753 275.921 333.382 275.921 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" id="object-3"/>
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="307.664" cy="255.388" rx="9.622" ry="9.622" id="object-4"/>
+      <path d="M 307.822 267.533 C 315.451 267.533 321.674 273.551 322.004 281.098 L 322.333 323.055 L 293.31 311.872 L 293.64 281.098 C 293.97 273.551 300.193 267.533 307.822 267.533 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" id="object-5"/>
+    </g>
+    <path d="M 109.617 295.883 C 148.462 295.883 180.374 325.565 183.91 363.486 L 35.324 363.486 C 38.86 325.565 70.772 295.883 109.617 295.883 Z M 103.747 357.706 C 108.508 360.567 114.978 358.542 118.198 353.183 C 121.417 347.825 120.168 341.162 115.407 338.301 C 114.238 337.599 67.782 322.951 67.782 322.951 C 67.782 322.951 102.753 357.109 103.747 357.706 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-1&quot;);" id="object-6"/>
+  </g>
+</svg>

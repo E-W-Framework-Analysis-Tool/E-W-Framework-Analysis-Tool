@@ -1,0 +1,52 @@
+@using MudBlazor
+@inherits LayoutComponentBase
+
+@* Required *@
+<MudThemeProvider Theme="CustomTheme" IsDarkMode />
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="4" Gutters="false">
+        <a href="/">
+            <MudText Typo="Typo.h4" Style="white-space: nowrap;">E-W Framework Analysis Tool</MudText>
+        </a>
+        <MudSpacer /> @* Adds space between the title and the links *@
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center">
+            <MudNavLink Class="text-nowrap" Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Class="text-nowrap" Href="/by-data-source" Match="NavLinkMatch.All">By Data Source and Sector</MudNavLink>
+            <MudNavLink Class="text-nowrap" Href="/by-element" Match="NavLinkMatch.All">By Data Element</MudNavLink>
+            <MudNavLink Class="text-nowrap" Href="/about" Match="NavLinkMatch.All">About</MudNavLink>
+        </MudStack>
+    </MudAppBar>
+
+    <MudMainContent Class="mb-10">
+        <MudContainer Gutters Class="mt-10">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme CustomTheme = new MudTheme()
+        {
+            PaletteDark = new PaletteDark()
+            {
+                Primary = "#1B75BB",
+                Secondary = "#8BC53F",
+                Tertiary = "#FFD300"
+            }
+        };
+}
