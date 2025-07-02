@@ -131,7 +131,7 @@
         var selectedDataItems = selectedData.SelectMany(kv => kv.Value.Select(sector => new DataSourceSectorDataItem { DataSource = kv.Key, Sector = sector })).ToList();
         var dataAvailability = new UserInputDataItemProvider<DataSourceSectorDataItem>(selectedDataItems);
         var dataRequirementProvider = new DataSourceSectorIndicatorDataRequirementsProvider();
-        scoredQuestions = (await QuestionScoringService.CalculateScoresForAvailableData(dataRequirementProvider, new List<IDataAvailabilityProvider<DataSourceSectorDataItem>> { dataAvailability }));
+        scoredQuestions = (await QuestionScoringService.CalculateScoresForAvailableDataAsync(dataRequirementProvider, new List<IDataAvailabilityProvider<DataSourceSectorDataItem>> { dataAvailability }));
         StateHasChanged();
     }
 }

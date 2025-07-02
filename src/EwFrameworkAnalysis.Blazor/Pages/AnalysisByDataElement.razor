@@ -339,7 +339,7 @@
             }
 
             var dataRequirementsProvider = new DataElementIndicatorDataRequirementsProvider(dataElements.Select(x => x.DataElement).ToList());
-            scoredQuestions = await QuestionScoringService.CalculateScoresForAvailableData(dataRequirementsProvider, dataAvailabilityProviders, progress);
+            scoredQuestions = await QuestionScoringService.CalculateScoresForAvailableDataAsync(dataRequirementsProvider, dataAvailabilityProviders, progress);
             StateHasChanged();
             await LocalStorage.SetItemAsync(PREVIOUS_STATE_LOCAL_STORAGE_KEY, selectedData);
         }

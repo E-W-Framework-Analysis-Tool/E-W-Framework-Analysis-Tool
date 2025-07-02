@@ -12,7 +12,7 @@ public class QuestionScoringService
     private readonly EwFrameworkService _ewFrameworkService;
     private const decimal MISSING_REQUIREMENT_DEFAULT_SCORE = 0;
 
-    public async Task<List<QuestionWithScore<T>>> CalculateScoresForAvailableData<T>(
+    public async Task<List<QuestionWithScore<T>>> CalculateScoresForAvailableDataAsync<T>(
         IIndicatorDataRequirementsProvider<T> dataRequirementProvider,
         List<IDataAvailabilityProvider<T>> dataAvailabilityProviders,
         IProgress<MultiStageProgressReport>? progress = null) where T : IScorableDataItem
@@ -27,7 +27,7 @@ public class QuestionScoringService
         progress?.Report(progressReport);
 
         // Issue availability checks for each provider and update the questionScores
-        await PerformDataAvailabilityChecks(dataAvailabilityProviders, questionScores, progressReport, progress);
+        await PerformDataAvailabilityChecksAsync(dataAvailabilityProviders, questionScores, progressReport, progress);
 
         return [.. questionScores.OrderByDescending(x => x.Score)];
     }
@@ -112,20 +112,20 @@ public class QuestionScoringService
         }
     }
 
-    private static async Task PerformDataAvailabilityChecks<T>(
+    private static async Task PerformDataAvailabilityChecksAsync<T>(
         List<IDataAvailabilityProvider<T>> dataAvailabilityProviders,
         List<QuestionWithScore<T>> questionScores,
         MultiStageProgressReport progressReport,
         IProgress<MultiStageProgressReport>? progress) where T : IScorableDataItem
     {
         var tasks = dataAvailabilityProviders.Select(provider =>
-            ProcessProviderDataChecks(provider, questionScores, progressReport, progress)
+            ProcessProviderDataChecksAsync(provider, questionScores, progressReport, progress)
         );
 
         await Task.WhenAll(tasks);
     }
 
-    private static async Task ProcessProviderDataChecks<T>(
+    private static async Task ProcessProviderDataChecksAsync<T>(
     IDataAvailabilityProvider<T> provider,
     List<QuestionWithScore<T>> questionScores,
     MultiStageProgressReport progressReport,

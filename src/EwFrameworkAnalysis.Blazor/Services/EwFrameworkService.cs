@@ -12,8 +12,6 @@ public class EwFrameworkService
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    private int unused_bad_name_field;
-
     public EwFrameworkService(HttpClient httpClient, IMemoryCache cache)
     {
         _httpClient = httpClient;

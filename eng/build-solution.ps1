@@ -34,7 +34,17 @@ if ($Check) {
     dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code formatting check failed. Run 'dotnet format' to fix formatting issues."
 } else {
     Write-Host "`nRunning: dotnet format"
-    dotnet format || Fail ".NET code formatting failed."
+    $formatOutput = dotnet format 2>&1
+    
+    # Show the output to console
+    Write-Host $formatOutput
+    
+    # Check if there were unfixable issues
+    if ($formatOutput -match "Unable to fix|IDE1006") {
+        Write-Host "`nDetected unfixable formatting issues. Running verification to get details..." -ForegroundColor Yellow
+        Write-Host "`nRunning: dotnet format --verify-no-changes --verbosity diagnostic"
+        dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code has unfixable formatting issues that must be manually resolved."
+    }
 }
 
 # Step 2: Restore dependencies
