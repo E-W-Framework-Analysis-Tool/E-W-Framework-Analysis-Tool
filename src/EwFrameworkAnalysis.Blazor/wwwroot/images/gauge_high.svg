@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="11.3898 252.5562 148.586 107.7357" width="148.586px" height="107.736px" xmlns:bx="https://boxy-svg.com" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="color-0" bx:pinned="true" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, -730.759842, 1663.37)">
+      <title>People</title>
+      <stop style="stop-color: rgb(226, 226, 226);"/>
+    </linearGradient>
+    <linearGradient id="color-1" bx:pinned="true" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, 93.45574, -244.822631)">
+      <title>Dial</title>
+      <stop style="stop-color: rgb(144, 238, 144);"/>
+    </linearGradient>
+  </defs>
+  <g style="" transform="matrix(0.9999999999999999, 0, 0, 0.9999999999999999, -303.1032473903916, -5.684341886080802e-14)" id="object-9">
+    <title>High</title>
+    <g transform="matrix(1, 0, 0, 1, 175.329334, -123.409755)">
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="188.052" cy="392.415" rx="9.622" ry="9.622"/>
+      <path d="M 188.21 404.56 C 195.839 404.56 202.062 410.578 202.392 418.125 L 202.721 460.082 L 173.698 460.082 L 174.028 418.125 C 174.358 410.578 180.581 404.56 188.21 404.56 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);"/>
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="239.37" cy="393.975" rx="9.622" ry="9.622"/>
+      <path d="M 239.528 406.12 C 247.157 406.12 253.38 412.138 253.71 419.685 L 254.039 438.877 L 225.016 436.081 L 225.346 419.685 C 225.676 412.138 231.899 406.12 239.528 406.12 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);"/>
+      <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);" cx="213.809" cy="385.588" rx="9.622" ry="9.622"/>
+      <path d="M 213.967 397.733 C 221.596 397.733 227.819 403.751 228.149 411.298 L 228.478 438.478 L 199.455 453.255 L 199.785 411.298 C 200.115 403.751 206.338 397.733 213.967 397.733 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-0&quot;);"/>
+    </g>
+    <path d="M 388.786 292.689 C 427.631 292.689 459.543 322.371 463.079 360.292 L 314.493 360.292 C 318.029 322.371 349.941 292.689 388.786 292.689 Z M 381.718 335.906 C 376.957 338.767 375.708 345.43 378.927 350.788 C 382.147 356.147 388.617 358.172 393.378 355.311 C 394.547 354.609 429.29 320.467 429.29 320.467 C 429.29 320.467 382.712 335.309 381.718 335.906 Z" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: url(&quot;#color-1&quot;);"/>
+  </g>
+</svg>

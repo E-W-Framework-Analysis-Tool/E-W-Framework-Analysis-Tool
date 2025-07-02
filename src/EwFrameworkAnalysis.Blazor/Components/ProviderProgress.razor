@@ -1,0 +1,33 @@
+﻿@using EwFrameworkAnalysis.Blazor.Services.DataAvailability
+@using MudBlazor
+
+@if (Report != null)
+{
+    @if (AvailabilityScoreOnly)
+    {
+        <MudSpacer></MudSpacer>
+
+        @($"Availability Score: {Report.Availability:P2}")
+    }
+    else
+    {
+        <MudSpacer></MudSpacer>
+        @if (Report.TotalAvailabilityChecks > Report.CompletedAvailabilityChecks)
+        {
+            <MudText Typo="Typo.body2">@Report.LatestStatus</MudText>
+        }
+        <MudProgressLinear Rounded Color="Color.Secondary" Value="@((double)Report.Progress * 100)" />
+        <MudText Typo="Typo.body2">@($"Progress: {Report.CompletedAvailabilityChecks}/{Report.TotalAvailabilityChecks} checks completed")</MudText>
+        <MudText Typo="Typo.body2">
+            Errors: @Report.Errors | Cached Responses: @Report.CacheHits | @($"Availability Score: {Report.Availability:P2}")
+        </MudText>
+    }
+}
+
+@code {
+    [Parameter]
+    public ProviderProgressReport? Report { get; set; }
+
+    [Parameter]
+    public bool AvailabilityScoreOnly { get; set; }
+}
