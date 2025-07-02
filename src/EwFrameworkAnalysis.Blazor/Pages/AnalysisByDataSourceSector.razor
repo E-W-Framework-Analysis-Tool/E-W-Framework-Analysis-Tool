@@ -96,7 +96,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        essentialQuestions = await EwFrameworkService.GetEssentialQuestionWithIndicators();
+        essentialQuestions = await EwFrameworkService.GetEssentialQuestionWithIndicatorsAsync();
         try
         {
             selectedData = await LocalStorage.GetItemAsync<Dictionary<DataSource, List<Sector>>>(PREVIOUS_STATE_LOCAL_STORAGE_KEY) ?? DataSelectionDictionaryDefault;

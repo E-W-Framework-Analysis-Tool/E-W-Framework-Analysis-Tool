@@ -12,6 +12,8 @@ public class EwFrameworkService
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
+    private int unused_bad_name_field;
+
     public EwFrameworkService(HttpClient httpClient, IMemoryCache cache)
     {
         _httpClient = httpClient;
@@ -21,38 +23,30 @@ public class EwFrameworkService
         _jsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
     }
 
-    public async Task<List<Indicator>> GetIndicators()
+    public async Task<List<Indicator>> GetIndicatorsAsync()
     {
         return await _cache.GetOrCreateAsync("indicators", async entry =>
         {
             entry.SlidingExpiration = TimeSpan.FromHours(1);
-            var response = await _httpClient.GetFromJsonAsync<List<Indicator>>("data/indicators.jsonc?v=1", _jsonSerializerOptions);
-            if (response == null)
-            {
-                throw new ApplicationException("Unable to load indicators");
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<Indicator>>("data/indicators.jsonc?v=1", _jsonSerializerOptions) ?? throw new ApplicationException("Unable to load indicators");
             return response;
         }) ?? throw new ApplicationException("Unable to load indicators");
     }
 
-    public async Task<List<EssentialQuestion>> GetEssentialQuestions()
+    public async Task<List<EssentialQuestion>> GetEssentialQuestionsAsync()
     {
         return await _cache.GetOrCreateAsync("essential_questions", async entry =>
         {
             entry.SlidingExpiration = TimeSpan.FromHours(1);
-            var response = await _httpClient.GetFromJsonAsync<List<EssentialQuestion>>("data/essential_questions.jsonc?v=1", _jsonSerializerOptions);
-            if (response == null)
-            {
-                throw new ApplicationException("Unable to load essential questions");
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<EssentialQuestion>>("data/essential_questions.jsonc?v=1", _jsonSerializerOptions) ?? throw new ApplicationException("Unable to load essential questions");
             return response;
         }) ?? throw new ApplicationException("Unable to load essential questions");
     }
 
-    public async Task<List<EssentialQuestionWithIndicators>> GetEssentialQuestionWithIndicators()
+    public async Task<List<EssentialQuestionWithIndicators>> GetEssentialQuestionWithIndicatorsAsync()
     {
-        var questions = await GetEssentialQuestions();
-        var indicators = await GetIndicators();
+        var questions = await GetEssentialQuestionsAsync();
+        var indicators = await GetIndicatorsAsync();
         var joinedQuestions = questions.Select(q => new EssentialQuestionWithIndicators
         {
             Question = q.Question,
@@ -63,16 +57,12 @@ public class EwFrameworkService
         return joinedQuestions;
     }
 
-    public async Task<List<DataElement>> GetDataElements()
+    public async Task<List<DataElement>> GetDataElementsAsync()
     {
         return await _cache.GetOrCreateAsync("data_elements", async entry =>
         {
             entry.SlidingExpiration = TimeSpan.FromHours(1);
-            var response = await _httpClient.GetFromJsonAsync<List<DataElement>>("data/data_elements.jsonc?v=1", _jsonSerializerOptions);
-            if (response == null)
-            {
-                throw new ApplicationException("Unable to load data elements");
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<DataElement>>("data/data_elements.jsonc?v=1", _jsonSerializerOptions) ?? throw new ApplicationException("Unable to load data elements");
             return response;
         }) ?? throw new ApplicationException("Unable to load data elements");
     }

@@ -18,7 +18,7 @@ public class QuestionScoringService
         IProgress<MultiStageProgressReport>? progress = null) where T : IScorableDataItem
     {
         // Prepare data structures
-        var questions = await _ewFrameworkService.GetEssentialQuestionWithIndicators();
+        var questions = await _ewFrameworkService.GetEssentialQuestionWithIndicatorsAsync();
         var questionScores = InitializeQuestionScores(questions, dataRequirementProvider);
         var progressReport = InitializeProgressReport(dataAvailabilityProviders, progress);
         SetTotalChecksPerProvider(dataAvailabilityProviders, questionScores, progressReport);

@@ -261,8 +261,8 @@
     protected override async Task OnInitializedAsync()
     {
         databaseOptionsDisabled = !Configuration.GetValue<bool>("EnableDatabaseAvailabilityProvider");
-        essentialQuestions = await EwFrameworkService.GetEssentialQuestionWithIndicators();
-        dataElements = (await EwFrameworkService.GetDataElements()).Select(x => new DataElementDataItem { DataElement = x }).ToList();
+        essentialQuestions = await EwFrameworkService.GetEssentialQuestionWithIndicatorsAsync();
+        dataElements = (await EwFrameworkService.GetDataElementsAsync()).Select(x => new DataElementDataItem { DataElement = x }).ToList();
         dataElementsGrouped = dataElements.GroupBy(de => de.DataElement.Category)
             .ToDictionary(g => g.Key, g => g.ToList())
             .OrderBy(x => x.Key).ToDictionary();
