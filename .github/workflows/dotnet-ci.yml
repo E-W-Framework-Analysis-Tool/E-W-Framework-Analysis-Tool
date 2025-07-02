@@ -1,0 +1,59 @@
+name: .NET CI
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'eng/build-solution.ps1'
+      - '**/*.sln'
+      - '**/*.csproj'
+      - '**/*.props'
+      - '**/*.targets'
+      - '.editorconfig'
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Run build and test
+        shell: pwsh
+        run: |
+          ./eng/build-solution.ps1 -Check -Configuration Release
+
+  publish:
+    name: Publish Blazor App
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build and publish Blazor app
+        shell: pwsh
+        run: |
+          ./eng/build-solution.ps1 -Publish -Configuration Release
+
+      - name: Upload Blazor artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: blazor-app
+          path: publish/
