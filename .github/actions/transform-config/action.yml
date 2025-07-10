@@ -38,7 +38,7 @@ runs:
                 
                 foreach ($envVar in $envVars) {
                     # Remove prefix and convert double underscores to dots for JSON path
-                    $jsonPath = $envVar.Name.Substring(15) -replace '__', '.'
+                    $jsonPath = $envVar.Name -replace '^EWFTOOLSETTING__', '' -replace '__', '.'
                     $value = $envVar.Value
                     
                     Write-Host "  Processing: $($envVar.Name) -> $jsonPath = $value"
