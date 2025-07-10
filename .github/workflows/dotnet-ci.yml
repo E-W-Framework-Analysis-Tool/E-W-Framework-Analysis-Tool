@@ -1,4 +1,4 @@
-name: .NET CI
+name: .NET CI/CD
 
 on:
   pull_request:
@@ -12,6 +12,8 @@ on:
       - '.editorconfig'
   push:
     branches: [ main ]
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -36,7 +38,7 @@ jobs:
     name: Publish Blazor App
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
       - name: Checkout repository
@@ -52,8 +54,157 @@ jobs:
         run: |
           ./eng/build-solution.ps1 -Publish -Configuration Release
 
-      - name: Upload Blazor artifacts
+      - name: Determine version
+        shell: pwsh
+        run: |
+          if ("${{ github.ref }}" -match "^refs/tags/v(.+)$") {
+            $version = $matches[1]
+          } else {
+            $shortSha = "${{ github.sha }}".Substring(0, 7)
+            $version = "main-$shortSha"
+          }
+          
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Upload Blazor artifacts (untransformed)
         uses: actions/upload-artifact@v4
         with:
-          name: blazor-app
+          name: blazor-app-${{ env.VERSION }}
           path: publish/
+          retention-days: 30
+
+  deploy-dev:
+    name: Deploy to Dev Environment
+    runs-on: ubuntu-latest
+    needs: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Determine version
+        shell: pwsh
+        run: |
+          $shortSha = "${{ github.sha }}".Substring(0, 7)
+          $version = "main-$shortSha"
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: blazor-app-${{ env.VERSION }}
+          path: publish/
+
+      - name: Transform appsettings.json for Dev
+        uses: ./.github/actions/transform-config
+        env:
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
+          EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "DEV"
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "true"
+
+      - name: Deploy to Azure Static Web Apps (Dev)
+        shell: pwsh
+        run: |
+          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
+
+  deploy-test:
+    name: Deploy to Test Environment
+    runs-on: ubuntu-latest
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Extract version from tag
+        shell: pwsh
+        run: |
+          $tagRef = "${{ github.ref }}"
+          if ($tagRef -match "^refs/tags/v(.+)$") {
+            $version = $matches[1]
+          } else {
+            Write-Error "Invalid tag format: $tagRef"
+            exit 1
+          }
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: blazor-app-${{ env.VERSION }}
+          path: publish/
+
+      - name: Transform appsettings.json for Test
+        uses: ./.github/actions/transform-config
+        env:
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
+          EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "TEST"
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "true"
+
+      - name: Deploy to Azure Static Web Apps (Test)
+        shell: pwsh
+        run: |
+          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
+
+  deploy-prod:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    needs: deploy-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Extract version from tag
+        shell: pwsh
+        run: |
+          $tagRef = "${{ github.ref }}"
+          if ($tagRef -match "^refs/tags/v(.+)$") {
+            $version = $matches[1]
+          } else {
+            Write-Error "Invalid tag format: $tagRef"
+            exit 1
+          }
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: blazor-app-${{ env.VERSION }}
+          path: publish/
+
+      - name: Transform appsettings.json for Production
+        uses: ./.github/actions/transform-config
+        env:
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
+          EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "PROD"
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "false"
+
+      - name: Deploy to Azure Static Web Apps (Production)
+        shell: pwsh
+        run: |
+          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
