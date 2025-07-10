@@ -1,4 +1,3 @@
-# .github/actions/transform-config/action.yml
 name: 'Transform Config'
 description: 'Transform appsettings.json with environment variables'
 inputs:
@@ -15,6 +14,10 @@ runs:
         $appsettingsPath = "${{ inputs.appsettings-path }}"
         
         if (-not (Test-Path $appsettingsPath)) {
+            Write-Host "Checking if path exists: $appsettingsPath"
+            Write-Host "Current directory: $(Get-Location)"
+            Write-Host "Files in current directory:"
+            Get-ChildItem -Recurse -Name "appsettings.json" | ForEach-Object { Write-Host "  Found: $_" }
             Write-Error "appsettings.json not found at: $appsettingsPath"
             exit 1
         }
@@ -38,6 +41,8 @@ runs:
                     $jsonPath = $envVar.Name.Substring(15) -replace '__', '.'
                     $value = $envVar.Value
                     
+                    Write-Host "  Processing: $($envVar.Name) -> $jsonPath = $value"
+                    
                     # Convert string values to appropriate types
                     if ($value -eq "true") { $value = $true }
                     elseif ($value -eq "false") { $value = $false }
@@ -51,30 +56,53 @@ runs:
                     # Navigate to the parent object, creating nested objects as needed
                     for ($i = 0; $i -lt ($parts.Length - 1); $i++) {
                         $part = $parts[$i]
-                        if (-not $current.$part) {
-                            $current | Add-Member -MemberType NoteProperty -Name $part -Value @{}
+                        Write-Host "    Navigating to: $part"
+                        
+                        # Check if property exists
+                        $propertyExists = $false
+                        if ($current.PSObject.Properties.Name -contains $part) {
+                            $propertyExists = $true
+                            Write-Host "    Property '$part' exists"
+                        }
+                        
+                        if (-not $propertyExists) {
+                            Write-Host "    Creating new property: $part"
+                            # Create a new PSCustomObject instead of hashtable
+                            $newObj = New-Object PSObject
+                            $current | Add-Member -MemberType NoteProperty -Name $part -Value $newObj
                         }
                         $current = $current.$part
                     }
                     
                     # Set the final property
                     $finalProp = $parts[-1]
-                    if ($current.$finalProp) {
+                    Write-Host "    Setting final property: $finalProp"
+                    
+                    # Check if the final property exists
+                    if ($current.PSObject.Properties.Name -contains $finalProp) {
+                        Write-Host "    Updating existing property: $finalProp"
                         $current.$finalProp = $value
                     } else {
+                        Write-Host "    Adding new property: $finalProp"
                         $current | Add-Member -MemberType NoteProperty -Name $finalProp -Value $value
                     }
                     
-                    Write-Host "  Set $jsonPath = $($envVar.Value)"
+                    Write-Host "  ✓ Set $jsonPath = $value"
                 }
             }
             
             # Write back to file with proper formatting
-            $content | ConvertTo-Json -Depth 10 | Set-Content $appsettingsPath -Encoding UTF8
+            $jsonOutput = $content | ConvertTo-Json -Depth 10
+            Set-Content $appsettingsPath -Value $jsonOutput -Encoding UTF8
             
             Write-Host "Successfully updated appsettings.json" -ForegroundColor Green
             
+            # Show the updated content for debugging
+            Write-Host "Updated appsettings.json content:"
+            Get-Content $appsettingsPath | Write-Host
+            
         } catch {
             Write-Error "Failed to transform appsettings.json: $($_.Exception.Message)"
+            Write-Host "Stack trace: $($_.Exception.StackTrace)"
             exit 1
         }
