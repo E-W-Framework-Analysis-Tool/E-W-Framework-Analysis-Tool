@@ -56,8 +56,8 @@ Write-Host "`nRunning: dotnet build --no-restore --configuration $Configuration"
 dotnet build --no-restore --configuration $Configuration || Fail ".NET build failed."
 
 # Step 4: Run tests
-Write-Host "`nRunning: dotnet test --no-build --configuration $Configuration"
-dotnet test --no-build --configuration $Configuration || Fail ".NET tests failed."
+Write-Host "`nRunning: dotnet test --no-build --filter 'TestPhase=OnBuild' --configuration $Configuration"
+dotnet test --no-build --filter "TestPhase=OnBuild" --configuration $Configuration || Fail ".NET tests failed."
 
 # Step 5: Publish (if requested)
 if ($Publish) {
@@ -81,6 +81,13 @@ if ($Publish) {
     dotnet publish $webProjectPath --no-build --configuration $Configuration --output $PublishPath || Fail ".NET publish failed."
     
     Write-Host "Published successfully to: $PublishPath"
+}
+
+# Step 6: Run Playwright tests 
+if ($Publish) {
+    Write-Host "`nRunning: `nPUBLISH_PATH = $PublishPath `ndotnet test --no-build --filter 'TestPhase=PostPublish' --configuration $Configuration"
+    $env:PUBLISH_PATH = $PublishPath
+    dotnet test --no-build --filter "TestPhase=PostPublish" --configuration $Configuration || Fail ".NET Playwright tests failed."
 }
 
 Pop-Location
