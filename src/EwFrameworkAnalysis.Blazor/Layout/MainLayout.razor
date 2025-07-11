@@ -1,5 +1,7 @@
 @using MudBlazor
+@using Microsoft.Extensions.Configuration
 @inherits LayoutComponentBase
+@inject IConfiguration Configuration
 
 @* Required *@
 <MudThemeProvider Theme="CustomTheme" IsDarkMode />
@@ -12,9 +14,17 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="4" Gutters="false">
+    <MudAppBar Elevation="4">
         <a href="/">
-            <MudText Typo="Typo.h4" Style="white-space: nowrap;">E-W Framework Analysis Tool</MudText>
+            <MudText Typo="Typo.h4" Style="white-space: nowrap;">
+                E-W Framework Analysis Tool
+                @if (DeploymentInfo.ShowDetails && !string.IsNullOrEmpty(DeploymentInfo.EnvironmentLabel) && DeploymentInfo.EnvironmentLabel != "PRODUCTION")
+                {
+                    <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Class="ml-2">
+                        @DeploymentInfo.EnvironmentLabel
+                    </MudChip>
+                }
+            </MudText>
         </a>
         <MudSpacer /> @* Adds space between the title and the links *@
         <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center">
@@ -30,10 +40,46 @@
             @Body
         </MudContainer>
     </MudMainContent>
+
+    @* Footer with deployment information *@
+    <MudAppBar Bottom="true" Fixed="false" Elevation="1" Style="height: auto; padding: 8px 16px;">
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width: 100%;">
+            <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">
+                Version: @DeploymentInfo.Version
+            </MudText>
+            @if (DeploymentInfo.ShowDetails)
+            {
+                <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">
+                    @if (!string.IsNullOrEmpty(DeploymentInfo.DeployDateTime) && DeploymentInfo.DeployDateTime != "NEVER")
+                    {
+                        <span>Deployed: @DeploymentInfo.DeployDateTime</span>
+                    }
+                    @if (!string.IsNullOrEmpty(DeploymentInfo.EnvironmentLabel))
+                    {
+                        <span class="ml-4">Environment: @DeploymentInfo.EnvironmentLabel</span>
+                    }
+                </MudText>
+            }
+        </MudStack>
+    </MudAppBar>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = true;
+    private DeploymentInfoModel DeploymentInfo = new();
+
+    protected override void OnInitialized()
+    {
+        // Load deployment info from configuration
+        var deploymentSection = Configuration.GetSection("DeploymentInfo");
+        DeploymentInfo = new DeploymentInfoModel
+        {
+            Version = deploymentSection["Version"] ?? "Unknown",
+            DeployDateTime = deploymentSection["DeployDateTime"] ?? "Unknown",
+            EnvironmentLabel = deploymentSection["EnvironmentLabel"] ?? "Unknown",
+            ShowDetails = deploymentSection.GetValue<bool>("ShowDetails")
+        };
+    }
 
     private void DrawerToggle()
     {
@@ -49,4 +95,12 @@
                 Tertiary = "#FFD300"
             }
         };
+
+    public class DeploymentInfoModel
+    {
+        public string Version { get; set; } = string.Empty;
+        public string DeployDateTime { get; set; } = string.Empty;
+        public string EnvironmentLabel { get; set; } = string.Empty;
+        public bool ShowDetails { get; set; }
+    }
 }
