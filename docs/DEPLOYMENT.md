@@ -4,19 +4,21 @@ This document outlines the continuous integration and deployment pipeline for th
 
 ## Pipeline Overview
 
-The CI/CD pipeline uses GitHub Actions to automatically build, test, and deploy the application across multiple environments. The pipeline is triggered on pull requests and pushes to main, as well as version tags.
+The CI/CD pipeline uses GitHub Actions to automatically build, test, and deploy the application across multiple
+environments. The pipeline is triggered on pull requests and pushes to main, as well as version tags.
 
 ## Deployment Strategy
 
 ### Environment Promotion
 
 - **Development**: Automatically deploys from `main` branch pushes or from version tags
-- **Test**: Deploys only from version tags (format: `vX.X.X`) - *Currently disabled*
-- **Production**: Deploys only from version tags after successful test deployment - *Currently disabled*
+- **Test**: Deploys only from version tags (format: `vX.X.X`) - _Currently disabled_
+- **Production**: Deploys only from version tags after successful test deployment - _Currently disabled_
 
 ### Version Management
 
 The pipeline automatically determines the deployment version:
+
 - **Tagged releases**: Uses the tag version (e.g., `v1.2.3` → `1.2.3`)
 - **Main branch**: Uses commit SHA (e.g., `main-abc1234`)
 
@@ -53,6 +55,7 @@ EWFTOOLSETTING__DeploymentInfo__BuildNumber: # GitHub run number
 ### Azure Static Web Apps
 
 The application deploys to Azure Static Web Apps using:
+
 - **Deploy Token**: Stored as `AZURE_SWA_DEPLOY_TOKEN` in GitHub Secrets
 - **App Location**: `publish/wwwroot` (the built Blazor output)
 - **Deployment Script**: `./eng/deploy-to-azure-swa.ps1`
@@ -62,6 +65,7 @@ The application deploys to Azure Static Web Apps using:
 ### Creating a Release
 
 1. **Tag the release**: Create a tag following semantic versioning (`vX.X.X`)
+
    ```bash
    git tag v1.2.3
    git push origin v1.2.3
