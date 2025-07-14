@@ -4,7 +4,7 @@ This directory contains analysis files for mapping CEDS Connections to CEDS Data
 
 ## Primary Outputs
 
-- **[`ew-connection-to-ceds-dw-mapping.csv`](ew-connection-to-ceds-dw-mapping.csv)** - Maps indicator elements to Global IDs to Data Warehouse column paths. Shows which CEDS Connection elements have corresponding columns in the DW.
+- **[`ew-connection-to-ceds-dw-mapping.csv`](ew-connection-to-ceds-dw-mapping.csv)** - Maps CEDS Connection indicator elements to Global IDs to Data Warehouse column paths. Shows which CEDS Connection elements have corresponding columns in the DW.
 
 - **[`ew-connection-elements-unique-by-path.csv`](ew-connection-elements-unique-by-path.csv)** - Unique CEDS paths compiled across all CEDS Connections for E-W indicators. Elements are unique by CEDS Data Model ID (not Global ID), so the same concept may appear multiple times for different domains (e.g., Birthdate for EL Child, K12 Student, PS Student).
 
