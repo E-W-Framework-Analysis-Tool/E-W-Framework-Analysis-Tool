@@ -1,0 +1,675 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp"},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!markdown
+
+# Connection Parsing Structures and Logic
+
+#!csharp
+
+public class CedsConnection
+{
+    public string Title { get; set; } = string.Empty;
+    public List<string> SelectedDescriptors { get; set; } = new();
+    public string Author { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DataElements DataElements { get; set; } = new();
+    public List<AnalysisSection> AnalysisRecommendations { get; set; } = new();
+    public DateTime LastModified { get; set; }
+    public string Status { get; set; } = string.Empty;
+}
+
+public class DataElements
+{
+    public ElementSection Metric { get; set; } = new();
+    public ElementSection Disaggregates { get; set; } = new();
+}
+
+public class ElementSection
+{
+    public List<CedsElement> CedsElements { get; set; } = new();
+    public List<NonCedsElement> NonCedsElements { get; set; } = new();
+}
+
+public class CedsElement
+{
+    public string Path { get; set; } = string.Empty;
+    public int TermId { get; set; }
+    public int DataModelId { get; set; }
+}
+
+public class NonCedsElement
+{
+    public string Name { get; set; } = string.Empty;
+    public int ElementId { get; set; }
+}
+
+public class AnalysisSection
+{
+    public string Title { get; set; } = string.Empty;
+    public string RawHtml { get; set; } = string.Empty;
+    public string MarkdownContent { get; set; } = string.Empty;
+}
+
+#!csharp
+
+#r "nuget:HtmlAgilityPack"
+#r "nuget:ReverseMarkdown"
+
+#!csharp
+
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using HtmlAgilityPack;
+using ReverseMarkdown;
+
+public static class CedsConnectionParser
+{
+    private static readonly HttpClient httpClient = new HttpClient();
+    private static readonly Converter markdownConverter = new Converter();
+    
+    public static async Task<CedsConnection> ParseConnectionAsync(string url)
+    {
+        try
+        {
+            var html = await httpClient.GetStringAsync(url);
+            return ParseConnectionHtml(html);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to parse connection from URL {url}: {ex.Message}", ex);
+        }
+    }
+    
+    public static CedsConnection ParseConnectionHtml(string html)
+    {
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+        
+        var connection = new CedsConnection();
+        
+        // Parse basic information
+        ParseBasicInfo(doc, connection);
+        
+        // Parse data elements
+        ParseDataElements(doc, connection);
+        
+        // Parse analysis recommendations
+        ParseAnalysisRecommendations(doc, connection);
+        
+        // Parse metadata
+        ParseMetadata(doc, connection);
+        
+        return connection;
+    }
+    
+    private static void ParseBasicInfo(HtmlDocument doc, CedsConnection connection)
+    {
+        // Title
+        var titleElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_Title']//span[@style]");
+        if (titleElement != null)
+        {
+            connection.Title = titleElement.InnerText?.Trim() ?? string.Empty;
+        }
+        
+        // Selected Descriptors
+        var descriptorsElement = doc.DocumentNode.SelectSingleNode("//td[@id='ContentPlaceHolder1_ucUseCaseReport_Categories']");
+        if (descriptorsElement != null)
+        {
+            // Get the inner HTML and decode entities, then split by <br> tags
+            var descriptorHtml = descriptorsElement.InnerHtml;
+            
+            // Split by <br> tags and process each line
+            var lines = descriptorHtml.Split(new string[] { "<br>", "<br/>", "<br />", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            
+            var descriptors = new List<string>();
+            foreach (var line in lines)
+            {
+                // Decode HTML and clean up the text
+                var cleanLine = System.Net.WebUtility.HtmlDecode(line)
+                    .Replace("&nbsp;", " ")
+                    .Trim();
+                
+                // Skip the header line and empty lines
+                if (!string.IsNullOrWhiteSpace(cleanLine) && 
+                    !cleanLine.Contains("Selected Descriptors:") &&
+                    !cleanLine.StartsWith("<b>"))
+                {
+                    // Remove leading whitespace and arrows
+                    cleanLine = cleanLine.TrimStart(' ', '\t', '→', '-');
+                    if (!string.IsNullOrWhiteSpace(cleanLine))
+                    {
+                        descriptors.Add(cleanLine);
+                    }
+                }
+            }
+            
+            connection.SelectedDescriptors = descriptors;
+        }
+        
+        // Author
+        var authorElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_Author']");
+        if (authorElement != null)
+        {
+            connection.Author = authorElement.InnerText?.Trim() ?? string.Empty;
+        }
+        
+        // Location
+        var locationElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_Location']");
+        if (locationElement != null)
+        {
+            connection.Location = locationElement.InnerText?.Trim() ?? string.Empty;
+        }
+        
+        // Source
+        var sourceElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_Source']");
+        if (sourceElement != null)
+        {
+            connection.Source = sourceElement.InnerText?.Trim() ?? string.Empty;
+        }
+        
+        // Description
+        var descriptionElement = doc.DocumentNode.SelectSingleNode("//div[@id='ContentPlaceHolder1_ucUseCaseReport_Description']");
+        if (descriptionElement != null)
+        {
+            connection.Description = descriptionElement.InnerText?.Trim() ?? string.Empty;
+        }
+    }
+    
+    private static void ParseDataElements(HtmlDocument doc, CedsConnection connection)
+    {
+        // Find all tables with data elements
+        var dataElementTables = doc.DocumentNode.SelectNodes("//table[.//h2[contains(text(), 'Metric') or contains(text(), 'Disaggregate')]]");
+        
+        if (dataElementTables != null)
+        {
+            foreach (var table in dataElementTables)
+            {
+                var sectionHeader = table.SelectSingleNode(".//h2")?.InnerText?.Trim();
+                var isMetric = sectionHeader?.Contains("Metric") == true;
+                var isDisaggregate = sectionHeader?.Contains("Disaggregate") == true;
+                
+                if (isMetric || isDisaggregate)
+                {
+                    var section = isMetric ? connection.DataElements.Metric : connection.DataElements.Disaggregates;
+                    ParseElementSection(table, section);
+                }
+            }
+        }
+    }
+    
+    private static void ParseElementSection(HtmlNode table, ElementSection section)
+    {
+        // Parse CEDS Elements
+        var cedsElementsList = table.SelectNodes(".//td[@class='tdCedsElements'][1]//ol//li");
+        if (cedsElementsList != null)
+        {
+            foreach (var li in cedsElementsList)
+            {
+                var link = li.SelectSingleNode(".//a");
+                if (link != null)
+                {
+                    var onclick = link.GetAttributeValue("onclick", "");
+                    var match = Regex.Match(onclick, @"openCEDSElementDetails\((\d+),(\d+)\)");
+                    
+                    if (match.Success)
+                    {
+                        var element = new CedsElement
+                        {
+                            Path = link.InnerText?.Trim() ?? string.Empty,
+                            TermId = int.Parse(match.Groups[1].Value),
+                            DataModelId = int.Parse(match.Groups[2].Value)
+                        };
+                        section.CedsElements.Add(element);
+                    }
+                }
+            }
+        }
+        
+        // Parse Non-CEDS Elements
+        var nonCedsElementsList = table.SelectNodes(".//td[@class='tdCedsElements'][2]//ol//li");
+        if (nonCedsElementsList != null)
+        {
+            foreach (var li in nonCedsElementsList)
+            {
+                var link = li.SelectSingleNode(".//a");
+                if (link != null)
+                {
+                    var onclick = link.GetAttributeValue("onclick", "");
+                    var match = Regex.Match(onclick, @"openNonCEDSElementDetails\((\d+)\)");
+                    
+                    if (match.Success)
+                    {
+                        var element = new NonCedsElement
+                        {
+                            Name = link.InnerText?.Trim() ?? string.Empty,
+                            ElementId = int.Parse(match.Groups[1].Value)
+                        };
+                        section.NonCedsElements.Add(element);
+                    }
+                }
+            }
+        }
+    }
+    
+    private static void ParseAnalysisRecommendations(HtmlDocument doc, CedsConnection connection)
+    {
+        var recommendationsSection = doc.DocumentNode.SelectSingleNode("//tbody[@id='ContentPlaceHolder1_ucUseCaseReport_tbodyRecommendations']");
+        
+        if (recommendationsSection != null)
+        {
+            // Find the main ul element
+            var mainUl = recommendationsSection.SelectSingleNode(".//ul[@style='list-style-type: none;margin-bottom:10px;']");
+            
+            if (mainUl != null)
+            {
+                var listItems = mainUl.SelectNodes("./li");
+                
+                if (listItems != null)
+                {
+                    for (int i = 0; i < listItems.Count; i += 2) // Process pairs: h2 li + content li
+                    {
+                        var headerLi = listItems[i];
+                        var contentLi = i + 1 < listItems.Count ? listItems[i + 1] : null;
+                        
+                        var h2Element = headerLi.SelectSingleNode(".//h2");
+                        if (h2Element != null)
+                        {
+                            var section = new AnalysisSection();
+                            section.Title = h2Element.InnerText?.Trim() ?? string.Empty;
+                            
+                            if (contentLi != null)
+                            {
+                                // Get raw HTML of the content li
+                                section.RawHtml = contentLi.InnerHtml?.Trim() ?? string.Empty;
+                                
+                                // Convert to markdown using ReverseMarkdown
+                                if (!string.IsNullOrWhiteSpace(section.RawHtml))
+                                {
+                                    section.MarkdownContent = markdownConverter.Convert(section.RawHtml);
+                                }
+                            }
+                            
+                            connection.AnalysisRecommendations.Add(section);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private static void ParseMetadata(HtmlDocument doc, CedsConnection connection)
+    {
+        // Last Modified Date
+        var lastModifiedElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_LastModifiedDate']");
+        if (lastModifiedElement != null && DateTime.TryParse(lastModifiedElement.InnerText?.Trim(), out var lastModified))
+        {
+            connection.LastModified = lastModified;
+        }
+        
+        // Status
+        var statusElement = doc.DocumentNode.SelectSingleNode("//span[@id='ContentPlaceHolder1_ucUseCaseReport_ReleaseStatus']");
+        if (statusElement != null)
+        {
+            connection.Status = statusElement.InnerText?.Trim() ?? string.Empty;
+        }
+    }
+}
+
+#!markdown
+
+# Individual Connection Test
+
+#!csharp
+
+var connectionDetails = await CedsConnectionParser.ParseConnectionAsync("https://ceds.ed.gov/connectReport.aspx?uid=30938");
+
+#!csharp
+
+connectionDetails //.DataElements.Metric.CedsElements.Count
+
+#!markdown
+
+# All Identified Connections
+
+#!csharp
+
+var cedsConnectionUrls = new List<string>
+{
+    "https://ceds.ed.gov/connectReport.aspx?uid=30938",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30942",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30937",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30908",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30948",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30953",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30919",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30920",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30904",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30921",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30902",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30905",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30917",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30910",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30950",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30911",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30912",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30952",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30913",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30906",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30954",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30903",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30925",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30926",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30927",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30932",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30933",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30930",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30929",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30928",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30935",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30934",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30962",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30951",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30916",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30909",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30959",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30956",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30965",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30964",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30967",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30960",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30961",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30915",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30947",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30946",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30907",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30969",
+    "https://ceds.ed.gov/connectReport.aspx?uid=30968"
+};
+
+var connections = new List<CedsConnection>();
+
+foreach (var connectionUrl in cedsConnectionUrls.Distinct())
+{
+    try
+    {
+        var connection = await CedsConnectionParser.ParseConnectionAsync(connectionUrl);
+        connections.Add(connection);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine($"Error processing {connectionUrl}: {e.Message}");
+    }
+}
+
+#!csharp
+
+connections
+
+#!csharp
+
+var uniqueDataElements = connections.SelectMany(x => x.DataElements.Metric.CedsElements).DistinctBy(x => x.DataModelId);
+uniqueDataElements.Count().Display();
+
+uniqueDataElements
+
+#!csharp
+
+var termInMultiplePaths = connections.SelectMany(x => x.DataElements.Metric.CedsElements).DistinctBy(x => x.DataModelId).GroupBy(x => x.TermId);
+
+termInMultiplePaths.Where(x => x.Count() > 1)
+
+#!markdown
+
+# Mapping to CEDS DW
+
+This uses the CEDS Elements v13 crosswalk from DataModelID to GlobalID (from `ceds-elements-v13-globalcrosswalk.csv`) to map from Connection to Global ID.
+
+It also uses the results of the `ceds-dw-metadata-query.sql` to further map from Global ID to CEDS DW column metadata.
+
+The result should give a rough estimate of what mapped elements exist in the DW and where.
+
+#!csharp
+
+#r "nuget: CsvHelper"
+
+#!csharp
+
+using CsvHelper.Configuration.Attributes;
+
+public class CedsGlobalElement
+{
+    [Name("Global ID")]
+    public string GlobalId { get; set; } = string.Empty;
+    
+    [Name("Data Model ID")]
+    public string DataModelId { get; set; } = string.Empty;
+    
+    [Name("Element Name")]
+    public string ElementName { get; set; } = string.Empty;
+}
+
+public class CedsDwMetadata
+{
+    [Name("schema_name")]
+    public string SchemaName { get; set; } = string.Empty;
+    
+    [Name("table_name")]
+    public string TableName { get; set; } = string.Empty;
+    
+    [Name("column_name")]
+    public string ColumnName { get; set; } = string.Empty;
+    
+    [Name("column_data_type")]
+    public string ColumnDataType { get; set; } = string.Empty;
+    
+    [Name("full_data_type")]
+    public string FullDataType { get; set; } = string.Empty;
+    
+    [Name("CEDS_GlobalId")]
+    public string? CedsGlobalId { get; set; }
+    
+    [Name("CEDS_Element")]
+    public string? CedsElement { get; set; }
+}
+
+#!csharp
+
+using System.IO;
+using System.Globalization;
+using CsvHelper;
+
+public static List<CedsGlobalElement> LoadCedsElements(string csvPath)
+{
+    using var reader = new StringReader(File.ReadAllText(csvPath));
+    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+    
+    var records = csv.GetRecords<CedsGlobalElement>().ToList();
+    Console.WriteLine($"Loaded {records.Count} CEDS global elements");
+    return records;
+}
+
+public static List<CedsDwMetadata> LoadDwMetadata(string csvPath)
+{
+    using var reader = new StringReader(File.ReadAllText(csvPath));
+    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+    
+    // Configure to handle NULL values
+    csv.Context.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add("NULL");
+    
+    var records = csv.GetRecords<CedsDwMetadata>().ToList();
+    Console.WriteLine($"Loaded {records.Count} DW metadata records");
+    return records;
+}
+
+public static string? GetGlobalIdFromDataModelId(List<CedsGlobalElement> cedsElements, string dataModelId)
+{
+    return cedsElements
+        .FirstOrDefault(e => string.Equals(e.DataModelId, dataModelId, StringComparison.OrdinalIgnoreCase))
+        ?.GlobalId;
+}
+
+public static List<CedsDwMetadata> GetDwColumnsFromGlobalId(List<CedsDwMetadata> dwMetadata, string globalId)
+{
+    return dwMetadata
+        .Where(d => string.Equals(d.CedsGlobalId, globalId, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+}
+
+public static void PrintDataStats(List<CedsGlobalElement> cedsElements, List<CedsDwMetadata> dwMetadata)
+{
+    var dwWithCeds = dwMetadata.Count(d => !string.IsNullOrWhiteSpace(d.CedsGlobalId));
+    var uniqueGlobalInDw = dwMetadata
+        .Where(d => !string.IsNullOrWhiteSpace(d.CedsGlobalId))
+        .Select(d => d.CedsGlobalId)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .Count();
+    
+    Console.WriteLine($"=== Data Statistics ===");
+    Console.WriteLine($"CEDS Elements: {cedsElements.Count}");
+    Console.WriteLine($"DW Metadata Records: {dwMetadata.Count}");
+    Console.WriteLine($"DW Records with CEDS GlobalId: {dwWithCeds}");
+    Console.WriteLine($"Unique Global IDs in DW: {uniqueGlobalInDw}");
+}
+
+#!csharp
+
+var cedsElements = LoadCedsElements("ceds-elements-v13-globalcrosswalk.csv");
+var dwMetadata = LoadDwMetadata("ceds-dw-metadata-v11-results.csv");
+PrintDataStats(cedsElements, dwMetadata);
+
+#!csharp
+
+var connectionAnalysis = connections.SelectMany(conn => 
+    conn.DataElements.Metric.CedsElements
+        .Concat(conn.DataElements.Disaggregates.CedsElements)
+        .Select(element => new
+        {
+            Connection = conn.Title,
+            ElementPath = element.Path,
+            DataModelId = element.DataModelId,
+            TermId = element.TermId,
+            GlobalId = GetGlobalIdFromDataModelId(cedsElements, element.DataModelId.ToString()),
+            ElementName = cedsElements.FirstOrDefault(e => e.DataModelId == element.DataModelId.ToString())?.ElementName
+        })
+        .Where(x => x.GlobalId != null)
+        .Select(x => new
+        {
+            x.Connection,
+            x.ElementPath,
+            x.DataModelId,
+            x.TermId,
+            x.GlobalId,
+            x.ElementName,
+            DwColumns = GetDwColumnsFromGlobalId(dwMetadata, x.GlobalId!)
+        })
+).ToList();
+
+var connectionCoverage = connectionAnalysis
+    .GroupBy(x => x.Connection)
+    .Select(g => new
+    {
+        Connection = g.Key,
+        TotalElements = g.Count(),
+        ElementsWithDwMapping = g.Count(x => x.DwColumns.Any()),
+        UniqueTables = g.SelectMany(x => x.DwColumns)
+                       .Select(c => $"{c.SchemaName}.{c.TableName}")
+                       .Distinct()
+                       .Count()
+    })
+    .OrderByDescending(x => x.ElementsWithDwMapping)
+    .ToList();
+
+#!csharp
+
+connectionAnalysis
+
+#!csharp
+
+using System.Linq;
+
+public class IndicatorAnalysisOutput
+{
+    public string IndicatorName { get; set; } = string.Empty;
+    public string IndicatorDataElement { get; set; } = string.Empty;
+    public int DataModelId { get; set; }
+    public string GlobalId { get; set; } = string.Empty;
+    public string DataWarehouseLocations { get; set; } = string.Empty;
+}
+
+var outputRecords = connectionAnalysis.Select(x => new IndicatorAnalysisOutput
+{
+    IndicatorName = ((string)x.Connection).Contains(':') 
+                ? ((string)x.Connection).Substring(0, ((string)x.Connection).IndexOf(':')).Trim()
+                : (string)x.Connection, // take only up to the colon if present, this should be the exact indicator name.
+    IndicatorDataElement = x.ElementPath,
+    DataModelId = x.DataModelId,
+    GlobalId = x.GlobalId ?? string.Empty,
+    DataWarehouseLocations = string.Join("; ", 
+        ((IEnumerable<CedsDwMetadata>)x.DwColumns).Select(c => $"{c.SchemaName}.{c.TableName}.{c.ColumnName}"))
+}).ToList();
+
+var outputPath = "ew-connection-to-ceds-dw-mapping.csv";
+
+using (var writer = new StringWriter())
+using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+{
+    csv.WriteRecords(outputRecords);
+    
+    var csvContent = writer.ToString();
+    File.WriteAllText(outputPath, csvContent);
+    
+    Console.WriteLine($"Exported {outputRecords.Count} records to {outputPath}");
+}
+
+#!csharp
+
+var percentageCoverage = ((float)outputRecords.Where(x => string.IsNullOrWhiteSpace(x.DataWarehouseLocations)).Count()) / outputRecords.Count();
+percentageCoverage.Display();
+
+var outputDistinctByGlobalId = outputRecords.DistinctBy(x => x.GlobalId);
+var percentageGlobalCoverage = ((float)outputDistinctByGlobalId.Where(x => string.IsNullOrWhiteSpace(x.DataWarehouseLocations)).Count()) / outputDistinctByGlobalId.Count();
+percentageGlobalCoverage.Display();
+
+#!csharp
+
+var outputPath = "ew-connection-to-ceds-dw-mapping-distinct.csv";
+
+using (var writer = new StringWriter())
+using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+{
+    var filteredRecords = outputRecords.DistinctBy(x => x.GlobalId).ToList();
+    csv.WriteRecords(filteredRecords);
+    
+    var csvContent = writer.ToString();
+    File.WriteAllText(outputPath, csvContent);
+    
+    Console.WriteLine($"Exported {filteredRecords.Count} records to {outputPath}");
+}
+
+#!csharp
+
+uniqueDataElements.Where(x => cedsElements.SingleOrDefault(y => y.DataModelId == x.DataModelId.ToString()) == null)
+
+#!csharp
+
+var elements = uniqueDataElements.Select(x => new {
+    x.Path,
+    x.DataModelId,
+    x.TermId,
+    GlobalId = cedsElements.Single(el => el.DataModelId == x.DataModelId.ToString()).GlobalId
+});
+
+var outputPath = "ew-connection-elements-unique-by-path.csv";
+
+using (var writer = new StringWriter())
+using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+{
+    csv.WriteRecords(elements);
+    
+    var csvContent = writer.ToString();
+    File.WriteAllText(outputPath, csvContent);
+}

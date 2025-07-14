@@ -1,0 +1,276 @@
+Path,DataModelId,TermId,GlobalId
+Early Learning -> Early Learning Child -> Demographic -> Birthdate,70617,26033,000033
+Early Learning -> Early Learning Child -> Demographic -> Hispanic or Latino Ethnicity,70624,26144,000144
+Early Learning -> Early Learning Child -> Demographic -> Homelessness Status,70625,26149,000149
+Early Learning -> Early Learning Child -> Demographic -> Migrant Status,73291,26189,000189
+Early Learning -> Early Learning Child -> Demographic -> Military Connected Student Indicator,75731,27555,001576
+Early Learning -> Early Learning Child -> Demographic -> Race,75501,27955,001943
+Early Learning -> Early Learning Child -> Demographic -> Sex,70632,26255,000255
+Early Learning -> Early Learning Child -> Disability -> Disability Status,74718,26569,000577
+Early Learning -> Early Learning Child -> Disability -> IDEA Indicator,74716,26151,000151
+Early Learning -> Early Learning Child -> Disability -> Primary Disability Type,70631,26218,000218
+Early Learning -> Early Learning Child -> Disability -> Section 504 Status,74717,26249,000249
+Early Learning -> Early Learning Child -> English Learner -> English Learner Status,75734,26180,000180
+Early Learning -> Early Learning Child -> Enrollment -> Number of Days Absent,75735,26201,000201
+Early Learning -> Early Learning Child -> Identity -> Child Identification System,71352,26782,000785
+Early Learning -> Early Learning Child -> Identity -> Child Identifier,71351,26781,001080
+Early Learning -> Early Learning Child -> Individualized Program -> Student Support Service Type,75738,26273,000273
+Early Learning -> Early Learning Child -> Language -> ISO 639-3 Language Code,74219,27618,001637
+Early Learning -> Early Learning Child -> Language -> Language Type,70645,26316,000316
+Early Learning -> Early Learning Child -> Program -> Early Childhood Program Enrollment Type,74133,26829,000829
+Early Learning -> Early Learning Child -> Program -> Program Participation Exit Date,70662,26584,000591
+Early Learning -> Early Learning Child -> Program -> Program Participation Start Date,70661,26583,000590
+Early Learning -> Early Learning Family -> Family/Household Information -> Family Income,70674,26331,000332
+Early Learning -> Early Learning Organization -> Identification -> Local Education Agency Identification System,75814,26159,001072
+Early Learning -> Early Learning Organization -> Identification -> Local Education Agency Identifier,75815,26153,001068
+Early Learning -> Early Learning Organization -> Identification -> Organization Identification System,72283,26827,000827
+Early Learning -> Early Learning Organization -> Identification -> Organization Identifier,72282,26825,000826
+Early Learning -> Early Learning Organization -> Identification -> School Identification System,75817,26161,001073
+Early Learning -> Early Learning Organization -> Identification -> School Identifier,75818,26155,001069
+Early Learning -> Early Learning Organization -> Identification -> State Agency Identification System,75820,27463,001491
+Early Learning -> Early Learning Organization -> Identification -> State Agency Identifier,75821,27462,001490
+Early Learning -> Early Learning Organization -> Organization Information -> Early Childhood Program Enrollment Type,72285,26829,000829
+Early Learning -> Early Learning Organization -> Organization Information -> Early Learning Program Year,72315,26864,000864
+Early Learning -> Parent/Guardian -> Education -> Highest Level of Education Completed,71152,26141,000141
+K12 -> K12 Student -> Homeless -> Homeless Serviced Indicator,71767,26147,000147
+Assessments -> Assessment -> Assessment Identifier,71178,26152,001067
+Assessments -> Assessment -> Assessment Short Name,71390,26932,000931
+Assessments -> Assessment -> Assessment Type,71177,26029,000029
+Assessments -> Assessment Administration -> Assessment Administration Finish Date,72850,26965,000964
+Assessments -> Assessment Result -> Assessment Result Score Value,71227,26245,000245
+Early Learning -> Early Learning Child -> Developmental Assessments -> Assessment Early Learning Developmental Domain,71419,27003,001000
+Early Learning -> Early Learning Child -> Developmental Assessments -> Developmental Evaluation Finding,70644,26315,000315
+Early Learning -> Early Learning Organization -> Directory -> Program Type,75786,26225,000225
+Assessments -> Assessment Administration -> Assessment Administration Organization Name,72852,26967,000966
+Adult Education -> AE Student -> Status -> Low-income Status,71279,26758,000775
+Assessments -> Assessment -> Assessment Academic Subject,71174,26021,000021
+Assessments -> Assessment Administration -> Assessment Administration Start Date,72853,26963,000962
+Assessments -> Assessment Result -> Assessment Score Metric Type,71515,26368,000369
+Assessments -> Assessment Subtest -> Assessment Academic Subject,71206,26021,000021
+K12 -> Calendar -> Session -> School Year,71063,26243,000243
+K12 -> K12 School -> Directory -> Administrative Funding Control,70813,26012,000012
+K12 -> K12 School -> Directory -> Charter School Type,70881,26686,000710
+K12 -> K12 School -> Directory -> School Type,70846,26242,000242
+K12 -> K12 School -> Identification -> Organization Type,71809,27165,001156
+K12 -> K12 School -> Identification -> School Identification System,70826,26161,001073
+K12 -> K12 School -> Identification -> School Identifier,70825,26155,001069
+K12 -> K12 Student -> Attendance -> Chronic Student Absenteeism Indicator,76200,28008,002022
+K12 -> K12 Student -> Attendance -> Student Attendance Rate,71816,26271,000271
+K12 -> K12 Student -> Demographic -> Birthdate,70995,26033,000033
+K12 -> K12 Student -> Demographic -> Hispanic or Latino Ethnicity,71765,26144,000144
+K12 -> K12 Student -> Demographic -> Military Connected Student Indicator,73933,27555,001576
+K12 -> K12 Student -> Demographic -> Race,75548,27955,001943
+K12 -> K12 Student -> Demographic -> Rural Residency Status,76201,26761,000778
+K12 -> K12 Student -> Demographic -> Sex,71811,26255,000255
+K12 -> K12 Student -> Disability -> Disability Status,71884,26569,000577
+K12 -> K12 Student -> Disability -> IDEA Indicator,71771,26151,000151
+K12 -> K12 Student -> Disability -> Primary Disability Type,71800,26218,000218
+K12 -> K12 Student -> Disability -> Section 504 Status,71810,26249,000249
+K12 -> K12 Student -> Disability -> Status End Date,76202,27193,001228
+K12 -> K12 Student -> Disability -> Status Start Date,76203,27192,001227
+K12 -> K12 Student -> Discipline -> Disciplinary Action End Date,71738,26082,000082
+K12 -> K12 Student -> Discipline -> Disciplinary Action Start Date,71739,26083,000083
+K12 -> K12 Student -> Discipline -> Disciplinary Action Taken,71855,26479,000488
+K12 -> K12 Student -> Economically Disadvantaged -> Eligibility Status for School Food Service Programs,71744,26092,000092
+K12 -> K12 Student -> English Learner -> English Learner Status,71783,26180,000180
+K12 -> K12 Student -> English Learner -> Program Participation Exit Date,71986,26584,000591
+K12 -> K12 Student -> English Learner -> Program Participation Start Date,71985,26583,000590
+K12 -> K12 Student -> Enrollment -> Enrollment Entry Date,71747,26097,000097
+K12 -> K12 Student -> Enrollment -> Enrollment Exit Date,71750,26107,000107
+K12 -> K12 Student -> Enrollment -> Entry Grade Level,71749,26100,000100
+K12 -> K12 Student -> Homeless -> Homelessness Status,71769,26149,000149
+K12 -> K12 Student -> Homeless -> Status End Date,71543,27193,001228
+K12 -> K12 Student -> Homeless -> Status Start Date,71420,27192,001227
+K12 -> K12 Student -> IDEA -> Program Participation Exit Date,71996,26584,000591
+K12 -> K12 Student -> IDEA -> Program Participation Start Date,71995,26583,000590
+K12 -> K12 Student -> Identity -> Student Identification System,71779,26163,001075
+K12 -> K12 Student -> Identity -> Student Identifier,71775,26157,001071
+K12 -> K12 Student -> Individualized Program -> Student Support Service Type,71710,26273,000273
+K12 -> K12 Student -> Language -> ISO 639-3 Language Code,74215,27618,001637
+K12 -> K12 Student -> Language -> Language Type,71828,26316,000316
+K12 -> K12 Student -> Migrant -> Migrant Status,71789,26189,000189
+K12 -> K12 Student -> Migrant -> Program Participation Exit Date,71988,26584,000591
+K12 -> K12 Student -> Migrant -> Program Participation Start Date,71987,26583,000590
+K12 -> K12 Student -> Program -> Program Participation Exit Date,71994,26584,000591
+K12 -> K12 Student -> Program -> Program Participation Start Date,71993,26583,000590
+K12 -> K12 Student -> Program -> Program Participation Status,71708,27209,001243
+K12 -> K12 Student -> Program -> Program Type,71992,26225,000225
+K12 -> LEA -> Identification -> Local Education Agency Identification System,70894,26159,001072
+K12 -> LEA -> Identification -> Local Education Agency Identifier,70893,26153,001068
+K12 -> Parent/Guardian -> Education -> Highest Level of Education Completed,75577,26141,000141
+K12 -> Course Section -> Session Type,71017,26254,000254
+K12 -> K12 Student -> Enrollment -> Enrollment Status,71746,26094,000094
+K12 -> Organization -> Identification -> Organization Type,74122,27165,001156
+K12 -> SEA -> Identification -> State Agency Identification System,73431,27463,001491
+K12 -> SEA -> Identification -> State Agency Identifier,73430,27462,001490
+Assessments -> Assessment -> Assessment Identification System,71179,26158,000365
+Assessments -> Assessment -> Assessment Purpose,71175,26026,000026
+K12 -> Calendar -> Session -> Session Begin Date,73916,26251,000251
+K12 -> Course Section -> Session End Date,71016,26253,000253
+K12 -> K12 Student -> Individualized Program -> IDEA Disability Type,74931,27714,001733
+K12 -> Course Section -> Enrollment -> Grade Value Qualifier,71029,26609,000616
+K12 -> Course Section -> Enrollment -> Student Course Section Grade Earned,71953,26124,000124
+K12 -> K12 Student -> Graduation Plan -> School Courses for the Exchange of Data Course Code,74152,27490,001517
+K12 -> K12 Student -> Graduation Plan -> School Courses for the Exchange of Data Course Subject Area,74150,27491,001518
+K12 -> K12 School -> Session -> School Year,70847,26243,000243
+K12 -> K12 Student -> Academic Record -> Grade Point Average Given Session,71760,26129,000129
+K12 -> K12 Student -> Graduation Plan -> School Courses for the Exchange of Data Course Subject Area,74146,27491,001518
+K12 -> K12 Student -> Individualized Program -> Student Support Service Type,74778,26273,000273
+K12 -> Course Section -> Course Section Identifier,71430,26979,000978
+K12 -> Course Section -> Enrollment -> Course Section Exit Type,71035,26654,000652
+K12 -> K12 Course -> Course Begin Date,76135,26054,000054
+K12 -> K12 Course -> Course End Date,76136,26059,000059
+K12 -> K12 Course -> School Courses for the Exchange of Data Course Code,73670,27490,001517
+K12 -> K12 Course -> School Courses for the Exchange of Data Course Subject Area,73671,27491,001518
+K12 -> K12 Student -> Enrollment -> Cohort Year,71000,26046,000046
+K12 -> K12 Student -> Identity -> Personal Information Type,75570,27951,001945
+K12 -> K12 Student -> Academic Record -> Grade Point Average Cumulative,71759,26128,000128
+Assessments -> Assessment -> Assessment Level for Which Designed,71180,26177,000177
+Assessments -> Assessment -> Assessment Title,71176,26028,000028
+K12 -> Course Section -> Course Level Type,75002,27278,001312
+K12 -> K12 Course -> Advanced Placement Course Code,73566,27244,001278
+K12 -> K12 Course -> Course Identifier,71925,26055,000055
+K12 -> K12 Course -> Course Level Characteristic,71928,26061,000061
+Postsecondary -> PS Student -> Academic Record -> Dual Credit Dual Enrollment Credits Awarded,70742,26085,000085
+Assessments -> Assessment Result -> Assessment Result Date Created,71423,26972,000971
+K12 -> K12 School -> Directory -> School Level,70845,26241,000241
+K12 -> K12 School -> Session -> Session Type,74244,26254,000254
+K12 -> Calendar -> Session -> Session End Date,73917,26253,000253
+Postsecondary -> PS Student -> Financial Aid -> Financial Aid Applicant,71266,26745,000763
+Postsecondary -> PS Student -> Financial Aid -> Financial Aid Application Type,71564,27186,001223
+Postsecondary -> PS Student -> Financial Aid -> Financial Aid Year Designator,74081,27590,001611
+Postsecondary -> PS Applicant -> Application Date,75586,26323,000323
+Postsecondary -> PS Applicant -> Postsecondary Applicant,71255,26735,000755
+Postsecondary -> PS Institution -> Directory -> Name of Institution,70808,26191,000191
+Postsecondary -> PS Institution -> Directory -> Office of Postsecondary Education Identifier,70809,26203,000203
+K12 -> K12 Student -> Academic Record -> Diploma or Credential Award Date,71737,26081,000081
+K12 -> K12 Student -> Enrollment -> Exit or Withdrawal Type,71752,26110,000110
+Credentials -> Credential Definition -> Credential Type,76027,26071,000071
+K12 -> K12 Staff -> Credential or License -> Credential Type,71079,26071,000071
+K12 -> K12 Student -> Demographic -> First Generation College Student,75547,27933,001947
+Postsecondary -> PS Student -> Institution Enrollment -> Degree or Certificate Seeking Student,70739,26078,000078
+Postsecondary -> PS Student -> Institution Enrollment -> Enrollment Entry Date,73971,26097,000097
+Postsecondary -> PS Student -> Institution Enrollment -> First Time Postsecondary Student,70751,26117,000117
+Postsecondary -> PS Student -> Institution Enrollment -> Initial Enrollment Term,70764,26165,000165
+K12 -> K12 Student -> Academic Record -> High School Diploma Type,71764,26138,000138
+Postsecondary -> PS Student -> Institution Enrollment -> Entry Date into Postsecondary,70745,26098,000098
+Postsecondary -> Course Section -> Course Level Type,73114,27278,001312
+Postsecondary -> PS Institution -> Directory -> Control of Institution,70804,26048,000048
+Postsecondary -> PS Institution -> Directory -> Level of Institution,70807,26178,000178
+Postsecondary -> PS Student -> Academic Record -> Credits Attempted Cumulative,75643,26073,000073
+Postsecondary -> PS Student -> Academic Record -> Credits Earned Cumulative,75644,26074,000074
+Postsecondary -> PS Student -> Demographic -> Birthdate,70730,26033,000033
+Postsecondary -> PS Student -> Demographic -> First Generation College Student,75653,27933,001947
+Postsecondary -> PS Student -> Disability -> Disability Status,73127,26569,000577
+Postsecondary -> PS Student -> Disability -> Section 504 Status,75660,26249,000249
+Postsecondary -> PS Student -> Homeless -> Homelessness Status,75667,26149,000149
+Postsecondary -> PS Student -> Homeless -> Status End Date,75668,27193,001228
+Postsecondary -> PS Student -> Homeless -> Status Start Date,75669,27192,001227
+Postsecondary -> PS Student -> Identity -> Student Identification System,70763,26163,001075
+Postsecondary -> PS Student -> Identity -> Student Identifier,70760,26157,001071
+Postsecondary -> PS Student -> Institution Enrollment -> Classification of Instructional Program Code,73950,26043,000043
+Postsecondary -> PS Student -> Institution Enrollment -> Enrollment Exit Date,70747,26107,000107
+Postsecondary -> PS Student -> Language -> ISO 639-3 Language Code,75436,27618,001637
+Postsecondary -> PS Student -> Language -> Language Type,75438,26316,000316
+Postsecondary -> PS Student -> Status -> Military Connected Student Indicator,75678,27555,001576
+Postsecondary -> PS Student -> Term Enrollment -> Academic Term Designator,74015,26703,000727
+Postsecondary -> PS Student -> Term Enrollment -> Academic Year Designator,74014,26702,000726
+Postsecondary -> PS Student -> Term Enrollment -> Postsecondary Enrollment Status,70744,26096,000096
+Postsecondary -> PS Student -> Term Enrollment -> Postsecondary Enrollment Type,70743,26095,000095
+Adult Education -> AE Student -> Status -> Dislocated Worker Status,71280,26759,000776
+Postsecondary -> Course Section -> Course Credit Level Type,73101,27270,001304
+Postsecondary -> PS Student -> Academic Record -> Number of Credits Earned,75646,26200,000200
+Postsecondary -> PS Student -> Demographic -> Cohort Graduation Year,73677,26577,000584
+Postsecondary -> PS Student -> Institution Enrollment -> Enrollment in Postsecondary Award Type,70795,26360,000361
+Postsecondary -> PS Student -> Institution Enrollment -> Transfer-ready,70792,26296,000296
+Postsecondary -> PS Student -> Academic Record -> Academic Award Date,70725,26001,000001
+Postsecondary -> PS Student -> Academic Record -> Academic Award Level Conferred,73939,26002,000002
+Postsecondary -> PS Student -> Institution Enrollment -> Student Level,70788,26272,000272
+Early Learning -> Early Learning Organization -> QRIS Rating -> Quality Rating and Improvement System Expiration Date,72287,26831,000831
+Early Learning -> Early Learning Organization -> QRIS Rating -> Quality Rating and Improvement System Participation,70719,26356,000357
+Early Learning -> Early Learning Organization -> QRIS Rating -> Quality Rating and Improvement System Score,70720,26357,000358
+Early Learning -> Early Learning Organization -> Quality -> Quality Initiative Minimum Score,73368,27433,001461
+Early Learning -> Early Learning Organization -> Directory -> Days Available Per Week,70717,26354,000355
+Early Learning -> Early Learning Organization -> Directory -> Hours Available Per Day,70716,26353,000354
+Assessments -> Assessment Administration -> Assessment Administration Code,72849,26962,000961
+Assessments -> Assessment Result -> Assessment Result Score Type,73822,27523,001547
+Early Learning -> Early Learning Family -> Identification -> Family Identifier,72224,26784,000787
+K12 -> Organization -> Identification -> Organization Identification System,73717,26827,000827
+K12 -> Organization -> Identification -> Organization Identifier,73715,26825,000826
+K12 -> Parent/Guardian -> Identity -> Person Identification System,74388,27550,001571
+K12 -> Parent/Guardian -> Identity -> Person Identifier,74387,27551,001572
+K12 -> Parent/Guardian -> Relationship -> Person Relationship Type,71249,26415,000425
+K12 -> K12 Student -> Academic Record -> Student Course Section Grade Earned,71757,26124,000124
+K12 -> K12 Student -> Economically Disadvantaged -> Economic Disadvantage Status,71741,26086,000086
+K12 -> K12 School -> Directory -> Grades Offered,70822,26131,000131
+K12 -> K12 School -> Directory -> Operational Status Effective Date,70869,26525,000534
+K12 -> K12 School -> Directory -> School Operational Status,70868,26524,000533
+K12 -> K12 School -> Session -> Minutes Per Day,70866,26491,000500
+K12 -> LEA -> Directory -> Grades Offered,75353,26131,000131
+K12 -> LEA -> Directory -> Local Education Agency Operational Status,70898,26174,000174
+K12 -> LEA -> Directory -> Operational Status Effective Date,70950,26525,000534
+K12 -> LEA -> Programs and Services -> Frequency of Service,75926,27323,001356
+K12 -> LEA -> Programs and Services -> Kindergarten Daily Length,70948,26482,000491
+K12 -> K12 School -> Session -> Session Begin Date,74250,26251,000251
+K12 -> K12 School -> Session -> Session End Date,74251,26253,000253
+K12 -> K12 Student -> English Learner -> Title III Accountability Progress Status,71865,26527,000536
+Early Learning -> Early Learning Class/Group -> Staff -> Assignment End Date,75766,26518,000527
+Early Learning -> Early Learning Class/Group -> Staff -> Assignment Start Date,75767,26517,000526
+Early Learning -> Early Learning Organization -> Directory -> School Level,75787,26241,000241
+Early Learning -> Early Learning Staff -> Assignment -> Assignment End Date,75830,26518,000527
+Early Learning -> Early Learning Staff -> Assignment -> Assignment Start Date,75831,26517,000526
+Early Learning -> Early Learning Staff -> Assignment -> Classroom Position Type,75832,26615,000622
+Early Learning -> Early Learning Staff -> Credential or License -> Credential Expiration Date,72251,26069,000069
+Early Learning -> Early Learning Staff -> Credential or License -> Early Childhood Credential,70700,26344,000345
+Early Learning -> Early Learning Staff -> Demographic -> Hispanic or Latino Ethnicity,72231,26144,000144
+Early Learning -> Early Learning Staff -> Demographic -> Race,75512,27955,001943
+Early Learning -> Early Learning Staff -> Demographic -> Sex,70691,26255,000255
+Early Learning -> Early Learning Staff -> Education -> Degree or Certificate Conferring Date,70699,26343,000344
+Early Learning -> Early Learning Staff -> Education -> Degree or Certificate Type,70698,26342,000343
+Early Learning -> Early Learning Staff -> Employment -> K12 Staff Classification,75860,26087,000087
+Early Learning -> Early Learning Staff -> Identity -> Staff Member Identification System,72248,26162,001074
+Early Learning -> Early Learning Staff -> Identity -> Staff Member Identifier,72247,26156,001070
+Early Learning -> Early Learning Staff -> Professional Development Activity -> Professional Development Activity Education Levels Addressed,73062,27245,001279
+Early Learning -> Early Learning Staff -> Assignment -> Teaching Assignment End Date,75844,26648,000646
+Early Learning -> Early Learning Staff -> Assignment -> Teaching Assignment Start Date,75845,26647,000645
+K12 -> K12 Staff -> Assignment -> K12 Staff Classification,71080,26087,000087
+K12 -> K12 Staff -> Assignment -> Teaching Assignment End Date,71142,26648,000646
+K12 -> K12 Staff -> Assignment -> Teaching Assignment Start Date,71141,26647,000645
+K12 -> K12 Staff -> Demographic -> Hispanic or Latino Ethnicity,71092,26144,000144
+K12 -> K12 Staff -> Demographic -> Race,75536,27955,001943
+K12 -> K12 Staff -> Demographic -> Sex,71111,26255,000255
+K12 -> K12 Staff -> Employment -> Employment Status,71124,26346,000347
+K12 -> K12 Staff -> Identity -> Staff Member Identification System,71098,26162,001074
+K12 -> K12 Staff -> Identity -> Staff Member Identifier,71095,26156,001070
+Assessments -> Assessment -> Assessment Score Metric Type,71181,26368,000369
+K12 -> K12 Student -> Economically Disadvantaged -> Status End Date,71982,27193,001228
+K12 -> K12 Student -> Economically Disadvantaged -> Status Start Date,71917,27192,001227
+K12 -> K12 Staff -> Assignment -> Assignment End Date,71127,26518,000527
+K12 -> K12 Staff -> Assignment -> Assignment Start Date,71126,26517,000526
+K12 -> K12 Staff -> Professional Development -> Staff Evaluation Outcome,71081,26102,000102
+K12 -> K12 Staff -> Professional Development -> Staff Evaluation Part Name,75542,27965,001985
+K12 -> K12 Staff -> Professional Development -> Staff Evaluation Part Scale,75543,27966,001987
+K12 -> K12 Staff -> Professional Development -> Staff Evaluation System,71084,26105,000105
+Postsecondary -> PS Institution -> Program -> Postsecondary Program Level,74092,27595,001616
+Postsecondary -> PS Staff -> Employment -> IPEDS Occupational Category,72156,26708,000731
+Assessments -> Assessment Session -> Assessment Session Actual End Date Time,71461,27024,001022
+Assessments -> Assessment Session -> Assessment Session Actual Start Date Time,71459,27023,001021
+K12 -> K12 Course -> Course Subject Abbreviation,75531,26066,000066
+K12 -> Course Section -> Session Begin Date,71014,26251,000251
+K12 -> Course Section -> Course -> Course Level Characteristic,71946,26061,000061
+K12 -> Course Section -> Enrollment -> Course Section Enrollment Status Type,71428,26977,000976
+K12 -> K12 Student -> Enrollment -> Gifted and Talented Indicator,71756,26122,000122
+Early Learning -> Early Learning Child -> Enrollment -> Enrollment Entry Date,70620,26097,000097
+Early Learning -> Early Learning Child -> Enrollment -> Enrollment Exit Date,70621,26107,000107
+Early Learning -> Early Learning Organization -> Finance -> Financial Account Category,75792,27312,001345
+Early Learning -> Early Learning Organization -> Finance -> Financial Accounting Period Actual Value,75803,27317,001350
+Early Learning -> Early Learning Organization -> Finance -> Financial Expenditure Level of Instruction Code,75807,27531,001555
+Early Learning -> Early Learning Organization -> Finance -> Financial Expenditure Project Reporting Code,75809,27532,001556
+Early Learning -> Early Learning Organization -> Finance -> Fiscal Period Begin Date,75810,27623,001642
+Early Learning -> Early Learning Organization -> Finance -> Fiscal Period End Date,75811,27624,001643
+K12 -> K12 School -> Finance -> Financial Account Category,73163,27312,001345
+K12 -> K12 School -> Finance -> Financial Accounting Period Actual Value,73187,27317,001350
+K12 -> K12 School -> Finance -> Financial Expenditure Level of Instruction Code,73846,27531,001555
+K12 -> K12 School -> Finance -> Financial Expenditure Project Reporting Code,73850,27532,001556
+K12 -> K12 School -> Finance -> Fiscal Period Begin Date,74315,27623,001642
+K12 -> K12 School -> Finance -> Fiscal Period End Date,74319,27624,001643
