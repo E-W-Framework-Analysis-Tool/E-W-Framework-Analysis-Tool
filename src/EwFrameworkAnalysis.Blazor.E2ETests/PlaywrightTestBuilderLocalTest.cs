@@ -1,15 +1,19 @@
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using SoloX.CodeQuality.Playwright;
+using Xunit.Abstractions;
 
 namespace EwFrameworkAnalysis.Blazor.E2ETests;
 
 public class PlaywrightTestBuilderLocalTest : IClassFixture<PlaywrightTestFixture>
 {
     private readonly IPlaywrightTestBuilder? _builder;
+    private readonly ITestOutputHelper _output;
 
-    public PlaywrightTestBuilderLocalTest(PlaywrightTestFixture fixture)
+    public PlaywrightTestBuilderLocalTest(PlaywrightTestFixture fixture, ITestOutputHelper output)
     {
         _builder = fixture.Builder;
+        _output = output;
     }
 
     [Theory]
@@ -21,6 +25,7 @@ public class PlaywrightTestBuilderLocalTest : IClassFixture<PlaywrightTestFixtur
 
         if (_builder == null)
         {
+            _output.WriteLine("Skipping: Fixture not initialized. Upgrade to xUnit v3 for graceful dynamic skipping.");
             return;
         }
 
