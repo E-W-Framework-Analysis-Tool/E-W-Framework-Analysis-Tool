@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FluentAssertions;
 using SoloX.CodeQuality.Playwright;
 
@@ -71,6 +72,46 @@ public class PlaywrightTestBuilderLocalTest
                     var title = await page.TitleAsync().ConfigureAwait(true);
 
                     title.Should().Be("E-W Framework Analysis Tool");
+                }).ConfigureAwait(true);
+    }
+
+    [Theory]
+    [InlineData(Browser.Chromium, null)]
+    [InlineData(Browser.Firefox, null)]
+    [InlineData(Browser.Webkit, null)]
+    public async Task HomePage_Should_Have_No_Critical_Accessibility_Issues_Async(Browser browser, string? deviceName)
+    {
+        var playwrightTest = await _builder
+            .BuildAsync(browser, deviceName: deviceName)
+            .ConfigureAwait(true);
+
+        await using var _ = playwrightTest.ConfigureAwait(false);
+
+        await playwrightTest
+            .GotoPageAsync(
+                "/",
+                async (page) =>
+                {
+                    var root = Environment.GetEnvironmentVariable("PUBLISH_PATH")
+                        ?? throw new InvalidOperationException("PUBLISH_PATH not set");
+
+                    var path = Path.Combine(root, "wwwroot/scripts/axe.min.js");
+
+                    // Inject axe-core
+                    var axeScript = await File.ReadAllTextAsync(path);
+                    await page.EvaluateAsync(axeScript);
+
+                    // Run axe
+                    var resultsJson = await page.EvaluateAsync<string>(@"async () => {
+                        return JSON.stringify(await axe.run(document));
+                    }");
+
+                    // Parse results
+                    var results = JsonDocument.Parse(resultsJson);
+                    var violations = results.RootElement.GetProperty("violations");
+
+                    Assert.True(violations.GetArrayLength() == 0, $"Accessibility violations found:\n{violations}");
+
                 }).ConfigureAwait(true);
     }
 }
