@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EwFrameworkAnalysis.Blazor.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EwFrameworkAnalysis.Common", "EwFrameworkAnalysis.Common\EwFrameworkAnalysis.Common.csproj", "{69C88A92-4567-46FC-AD93-BB3DC072D65B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EwFrameworkAnalysis.Blazor.E2ETests", "EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETests.csproj", "{23C18E44-0A97-4880-9FAD-22FF19C97BBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{69C88A92-4567-46FC-AD93-BB3DC072D65B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C88A92-4567-46FC-AD93-BB3DC072D65B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69C88A92-4567-46FC-AD93-BB3DC072D65B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23C18E44-0A97-4880-9FAD-22FF19C97BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23C18E44-0A97-4880-9FAD-22FF19C97BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23C18E44-0A97-4880-9FAD-22FF19C97BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23C18E44-0A97-4880-9FAD-22FF19C97BBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
