@@ -6,6 +6,7 @@ namespace EwFrameworkAnalysis.Blazor.E2ETests;
 public class PlaywrightTestFixture : IDisposable
 {
     public IPlaywrightTestBuilder? Builder { get; }
+    public string? RootPath { get; }
 
     public PlaywrightTestFixture()
     {
@@ -17,14 +18,14 @@ public class PlaywrightTestFixture : IDisposable
             return;
         }
 
-        var path = Path.Combine(root, "wwwroot");
+        RootPath = Path.Combine(root, "wwwroot");
 
         Builder = PlaywrightTestBuilder.Create()
             .WithLocalHost(localHostBuilder =>
             {
                 localHostBuilder
                     .UsePortRange(new PortRange(5000, 6000))
-                    .UseWebHostWithWwwRoot(path, "index.html");
+                    .UseWebHostWithWwwRoot(RootPath, "index.html");
             })
             .WithPlaywrightOptions(opt =>
             {
