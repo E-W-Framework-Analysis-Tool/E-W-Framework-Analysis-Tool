@@ -7,6 +7,7 @@ public class PlaywrightTestFixture : IDisposable
 {
     public IPlaywrightTestBuilder? Builder { get; }
     public string? RootPath { get; }
+    public string AxeScript { get; private set; } = "";
 
     public PlaywrightTestFixture()
     {
@@ -33,6 +34,13 @@ public class PlaywrightTestFixture : IDisposable
                 //opt.SlowMo = 5000;
                 //opt.Timeout = 60000;
             });
+
+        LoadAxeScriptAsync().GetAwaiter().GetResult();
+    }
+    private async Task LoadAxeScriptAsync()
+    {
+        using var httpClient = new HttpClient();
+        AxeScript = await httpClient.GetStringAsync("https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.3/axe.min.js");
     }
 
     public void Dispose()

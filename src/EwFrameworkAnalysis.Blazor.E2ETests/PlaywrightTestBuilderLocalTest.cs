@@ -10,11 +10,13 @@ public class PlaywrightTestBuilderLocalTest : IClassFixture<PlaywrightTestFixtur
     private readonly IPlaywrightTestBuilder? _builder;
     private readonly ITestOutputHelper _output;
     private readonly string _rootPath;
+    private readonly string _axeScript;
 
     public PlaywrightTestBuilderLocalTest(PlaywrightTestFixture fixture, ITestOutputHelper output)
     {
         _builder = fixture.Builder;
         _rootPath = fixture.RootPath ?? "";
+        _axeScript = fixture.AxeScript;
         _output = output;
     }
 
@@ -82,11 +84,8 @@ public class PlaywrightTestBuilderLocalTest : IClassFixture<PlaywrightTestFixtur
                 "/",
                 async (page) =>
                 {
-                    var path = Path.Combine(_rootPath, "scripts/axe.min.js");
-
-                    // Inject axe-core
-                    var axeScript = await File.ReadAllTextAsync(path);
-                    await page.EvaluateAsync(axeScript);
+                    // Inject axe-core script loaded from CDN
+                    await page.EvaluateAsync(_axeScript);
 
                     // Run axe
                     var resultsJson = await page.EvaluateAsync<string>(@"async () => {
@@ -129,13 +128,10 @@ public class PlaywrightTestBuilderLocalTest : IClassFixture<PlaywrightTestFixtur
                                 }
                             }
                         }
+                        _output.WriteLine($"Accessibility violations found. See report at: {reportPath}");
+                    }
 
-                        Assert.True(true, $"Accessibility violations found. See report at: {reportPath}");
-                    }
-                    else
-                    {
-                        Assert.True(true, "No accessibility violations found.");
-                    }
+                    violations.GetArrayLength().Should().Be(0);
 
                 }).ConfigureAwait(true);
     }
