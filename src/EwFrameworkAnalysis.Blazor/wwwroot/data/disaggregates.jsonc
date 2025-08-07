@@ -1,0 +1,132 @@
+[
+    {
+        "Name": "Race and ethnicity",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Gender",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "LGBT status",
+        "Sectors": [ "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Disability status",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Income level",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Parental education level",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "First-generation college student",
+        "Sectors": [ "K12", "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Student from migrant family household",
+        "Sectors": [ "PK", "K12" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Home language",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "English learner",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Attendance intensity",
+        "Sectors": [ "PK", "K12", "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "K-12 school type",
+        "Sectors": [ "K12" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Postsecondary institution classification",
+        "Sectors": [ "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Transfer enrollment status",
+        "Sectors": [ "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Credential-seeking status",
+        "Sectors": [ "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Student parenting status",
+        "Sectors": [ "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Postsecondary major",
+        "Sectors": [ "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Occupation category",
+        "Sectors": [ "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Dislocated worker status",
+        "Sectors": [ "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Basic skills level",
+        "Sectors": [ "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Age group (for example, adult learners)",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Urbanicity",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Individuals experiencing homelessness",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Individual or family military status",
+        "Sectors": [ "PK", "K12", "PS", "WF" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Individual with current or past child welfare involvement",
+        "Sectors": [ "PK", "K12", "PS" ],
+        "DataElements": []
+    },
+    {
+        "Name": "Justice involvement",
+        "Sectors": [ "K12", "PS", "WF" ],
+        "DataElements": []
+    }
+]

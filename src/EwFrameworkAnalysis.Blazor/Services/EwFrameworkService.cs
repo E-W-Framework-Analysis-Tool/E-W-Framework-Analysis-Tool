@@ -64,4 +64,14 @@ public class EwFrameworkService
             return response;
         }) ?? throw new ApplicationException("Unable to load data elements");
     }
+
+    public async Task<List<Disaggregate>> GetDisaggregatesAsync()
+    {
+        return await _cache.GetOrCreateAsync("disaggregates", async entry =>
+        {
+            entry.SlidingExpiration = TimeSpan.FromHours(1);
+            var response = await _httpClient.GetFromJsonAsync<List<Disaggregate>>("data/disaggregates.jsonc?v=1", _jsonSerializerOptions) ?? throw new ApplicationException("Unable to load disaggregates");
+            return response;
+        }) ?? throw new ApplicationException("Unable to load disaggregates");
+    }
 }
