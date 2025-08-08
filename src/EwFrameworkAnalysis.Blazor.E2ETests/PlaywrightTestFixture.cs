@@ -72,7 +72,7 @@ public class PlaywrightTestFixture : IAsyncLifetime, IDisposable
             A11yReady = false; // a11y tests will Assert.Skip
             return;
         }
-        
+
         AxeScript = await File.ReadAllTextAsync(path);
         A11yReady = !string.IsNullOrWhiteSpace(AxeScript);
     }
