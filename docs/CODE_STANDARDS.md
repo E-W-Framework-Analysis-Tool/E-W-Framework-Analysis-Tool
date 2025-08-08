@@ -1,4 +1,4 @@
-# Coding Standards
+# Code Standards
 
 This document outlines the coding standards and conventions used in this project.
 
@@ -184,11 +184,34 @@ Use constructor injection in code-behind classes and `@inject` directives in `.r
 }
 ```
 
-## Build and Deployment
+## Testing Standards
 
-Use the provided build scripts for consistent compilation and deployment:
+### Unit Tests
 
-- `./eng/build-solution.ps1` - Main build script with formatting, testing, and publishing
-- `./eng/lint-markdown.ps1` - Markdown formatting and linting
+- Use descriptive test method names: `Should_ReturnExpectedResult_When_GivenValidInput`
+- Follow AAA pattern: Arrange, Act, Assert
+- Use FluentAssertions for readable assertions
+- Mock external dependencies using interfaces
 
-These scripts enforce the same standards used in CI/CD pipelines and ensure consistent builds across environments.
+### E2E Tests
+
+- Inherit from `BaseE2ETest` for consistent setup
+- Use descriptive test names that include browser and scenario
+- Group related tests with `[Trait]` attributes for better organization
+- Follow accessibility testing guidelines with appropriate fail levels
+
+```csharp
+[Theory]
+[MemberData(nameof(Browsers))]
+public async Task HomePage_Should_Display_Correct_Title_Async(Browser browser, string? deviceName)
+{
+    await using var test = await Fixture.Builder!.BuildAsync(browser, deviceName: deviceName);
+
+    await test.GotoPageAsync("/", async page =>
+    {
+        await page.Locator("body").WaitForAsync();
+        var title = await page.TitleAsync();
+        title.Should().Be("E-W Framework Analysis Tool");
+    });
+}
+```

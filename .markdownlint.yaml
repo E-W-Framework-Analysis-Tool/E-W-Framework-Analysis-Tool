@@ -10,9 +10,8 @@ heading-punctuation:
 # Allow inline HTML (used in some GitHub READMEs)
 no-inline-html: true
 
-# Allow duplicate heading text if nesting is different (e.g., FAQ sections)
-no-duplicate-heading: 
-  allow_different_nesting: true
+# Disallow duplicate headings
+no-duplicate-heading: true
 
 # Use `-` for unordered list bullets
 ul-style:
