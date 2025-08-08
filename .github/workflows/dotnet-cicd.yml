@@ -71,7 +71,7 @@ jobs:
             ./eng/run-e2e.ps1 -Configuration Release -A11yFailLevel "critical"
           } else {
             # Main/Tags: Comprehensive tests - all browsers, serious A11y level
-            ./eng/run-e2e.ps1 -Configuration Release -AllBrowsers -A11yFailLevel "serious"
+            ./eng/run-e2e.ps1 -Configuration Release -AllBrowsers -A11yFailLevel "critical"
           }
 
       - name: Upload E2E test reports
