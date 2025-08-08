@@ -2,7 +2,6 @@ using EwFrameworkAnalysis.Common.Models;
 
 namespace EwFrameworkAnalysis.Blazor.Tests;
 
-[Trait("TestPhase", "OnBuild")]
 public class DataSourceSectorDataItemTests
 {
     [Fact]

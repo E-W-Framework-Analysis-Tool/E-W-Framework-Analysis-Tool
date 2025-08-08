@@ -30,4 +30,8 @@
   <ItemGroup>
     <ProjectReference Include="..\EwFrameworkAnalysis.Common\EwFrameworkAnalysis.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\scripts\" />
+  </ItemGroup>
 </Project>

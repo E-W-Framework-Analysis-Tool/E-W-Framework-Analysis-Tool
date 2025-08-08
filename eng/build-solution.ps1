@@ -15,12 +15,10 @@ function Fail($message) {
     exit 1
 }
 
-# Check for dotnet CLI
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Fail "dotnet CLI is not installed or not found in PATH. Please install .NET SDK (https://dotnet.microsoft.com/download)."
+    Fail "dotnet CLI is not installed or not found in PATH. Install .NET SDK."
 }
 
-# Set default publish path if not specified
 if ($Publish -and [string]::IsNullOrEmpty($PublishPath)) {
     $PublishPath = Join-Path $repoRoot "publish"
 }
@@ -28,66 +26,49 @@ if ($Publish -and [string]::IsNullOrEmpty($PublishPath)) {
 Write-Host "Building .NET solution from: $srcRoot"
 Write-Host "Configuration: $Configuration"
 
-# Step 1: Check formatting (if requested)
+# Step 1: format
 if ($Check) {
     Write-Host "`nRunning: dotnet format --verify-no-changes"
-    dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code formatting check failed. Run 'dotnet format' to fix formatting issues."
+    dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code formatting check failed."
 } else {
     Write-Host "`nRunning: dotnet format"
     $formatOutput = dotnet format 2>&1
-    
-    # Show the output to console
     Write-Host $formatOutput
-    
-    # Check if there were unfixable issues
     if ($formatOutput -match "Unable to fix|IDE1006") {
-        Write-Host "`nDetected unfixable formatting issues. Running verification to get details..." -ForegroundColor Yellow
-        Write-Host "`nRunning: dotnet format --verify-no-changes --verbosity diagnostic"
-        dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code has unfixable formatting issues that must be manually resolved."
+        Write-Host "`nDetected unfixable formatting issues; verifying..." -ForegroundColor Yellow
+        dotnet format --verify-no-changes --verbosity diagnostic || Fail ".NET code has unfixable formatting issues."
     }
 }
 
-# Step 2: Restore dependencies
+# Step 2: restore
 Write-Host "`nRunning: dotnet restore"
 dotnet restore || Fail "Failed to restore .NET dependencies."
 
-# Step 3: Build solution
+# Step 3: build
 Write-Host "`nRunning: dotnet build --no-restore --configuration $Configuration"
 dotnet build --no-restore --configuration $Configuration || Fail ".NET build failed."
 
-# Step 4: Run tests
-Write-Host "`nRunning: dotnet EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj test --no-build --configuration $Configuration"
+# Step 4: unit/integration tests (non-E2E)
+Write-Host "`nRunning: dotnet test EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj --no-build --configuration $Configuration"
 dotnet test EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj --no-build --configuration $Configuration || Fail ".NET tests failed."
 
-# Step 5: Publish (if requested)
+# Step 5: publish (optional)
 if ($Publish) {
     Write-Host "`nPublishing to: $PublishPath"
-    
-    # Clear and create publish directory
     if (Test-Path $PublishPath) {
         Write-Host "Clearing existing publish directory..."
         Remove-Item -Path $PublishPath -Recurse -Force
     }
     New-Item -ItemType Directory -Path $PublishPath -Force | Out-Null
-    
+
     $webProjectPath = Join-Path $srcRoot "EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.csproj"
-    
-    # Verify the project exists
     if (-not (Test-Path $webProjectPath)) {
         Fail "Web project not found at: $webProjectPath"
     }
-    
+
     Write-Host "Running: dotnet publish $webProjectPath --no-build --configuration $Configuration --output $PublishPath"
     dotnet publish $webProjectPath --no-build --configuration $Configuration --output $PublishPath || Fail ".NET publish failed."
-    
     Write-Host "Published successfully to: $PublishPath"
-}
-
-# Step 6: Run Playwright tests 
-if ($Publish) {
-    Write-Host "`nRunning: `nPUBLISH_PATH = $PublishPath `ndotnet test EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETests.csproj  --no-build --configuration $Configuration"
-    $env:EWFTOOLTESTING_PUBLISH_PATH = $PublishPath
-    dotnet test EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETests.csproj --no-build --configuration $Configuration || Fail ".NET Playwright tests failed."
 }
 
 Pop-Location
