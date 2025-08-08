@@ -1,5 +1,8 @@
 # E-W Framework Analysis Tool
 
+![Build Status](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/workflows/.NET%20CI%2FCD/badge.svg)
+![E2E Tests](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet.yml/badge.svg?job=e2e-tests)
+
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
 [Education-to-Workforce Indicator Framework (E-W Framework)](https://www.e-wframework.org/). It supports states and LEAs
