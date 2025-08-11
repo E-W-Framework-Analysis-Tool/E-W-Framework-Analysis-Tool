@@ -1,113 +1,3 @@
-# # SPDX-License-Identifier: Apache-2.0
-# # Licensed to the Ed-Fi Alliance under one or more agreements.
-# # The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
-# # See the LICENSE and NOTICES files in the project root for more information.
-
-# services:
-#   db-ods:
-#     image: edfialliance/ods-api-db-ods-minimal:${TAG}
-#     environment:
-#       POSTGRES_USER: "${POSTGRES_USER}"
-#       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-#       TPDM_ENABLED: "${TPDM_ENABLED:-true}"
-#     volumes:
-#       - vol-db-ods:/var/lib/postgresql/data
-#     restart: always
-#     container_name: ed-fi-db-ods
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready  -U ${POSTGRES_USER}"]
-#       start_period: "60s"
-#       retries: 3
-
-#   api:
-#     image: edfialliance/ods-api-web-api:${TAG}
-#     environment:
-#       ADMIN_POSTGRES_HOST: db-admin
-#       API_HEALTHCHECK_TEST: ${API_HEALTHCHECK_TEST?Please consult env.example to set the API healthcheck test}
-#       ConnectionStrings__EdFi_Admin: "host=pb-admin;port=${POSTGRES_PORT};username=${POSTGRES_USER};password=${POSTGRES_PASSWORD};database=EdFi_Admin;pooling=false"
-#       ConnectionStrings__EdFi_Security: "host=pb-admin;port=${POSTGRES_PORT};username=${POSTGRES_USER};password=${POSTGRES_PASSWORD};database=EdFi_Security;pooling=false"
-#       NPG_API_MAX_POOL_SIZE_ADMIN: "${NPG_API_MAX_POOL_SIZE_ADMIN}"
-#       NPG_API_MAX_POOL_SIZE_MASTER: "${NPG_API_MAX_POOL_SIZE_MASTER}"
-#       NPG_API_MAX_POOL_SIZE_ODS: "${NPG_API_MAX_POOL_SIZE_ODS}"
-#       NPG_API_MAX_POOL_SIZE_SECURITY: "${NPG_API_MAX_POOL_SIZE_SECURITY}"
-#       NPG_POOLING_ENABLED: "${NPG_POOLING_ENABLED:-false}"
-#       ODS_CONNECTION_STRING_ENCRYPTION_KEY: "${ODS_CONNECTION_STRING_ENCRYPTION_KEY}"
-#       ODS_POSTGRES_HOST: pb-ods
-#       PATH_BASE: "${ODS_VIRTUAL_NAME:-api}"
-#       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-#       POSTGRES_PORT: "${PGBOUNCER_LISTEN_PORT:-6432}"
-#       POSTGRES_USER: "${POSTGRES_USER}"
-#       TPDM_ENABLED: "${TPDM_ENABLED:-true}"
-#     volumes:
-#       - ${LOGS_FOLDER:-./logs}:/app/logs
-#     depends_on:
-#       - pb-ods
-#       - db-admin
-#     restart: always
-#     hostname: api
-#     container_name: ed-fi-ods-api
-#     healthcheck:
-#       test: $$API_HEALTHCHECK_TEST
-#       start_period: "60s"
-#       retries: 3
-
-#   pb-ods:
-#     image: bitnami/pgbouncer:1.23.1
-#     environment:
-#       PGBOUNCER_DATABASE: "*"
-#       PGBOUNCER_PORT: "${PGBOUNCER_LISTEN_PORT:-6432}"
-#       PGBOUNCER_EXTRA_FLAGS: ${PGBOUNCER_EXTRA_FLAGS}
-#       POSTGRESQL_USER: "${POSTGRES_USER}"
-#       POSTGRESQL_PASSWORD: "${POSTGRES_PASSWORD}"
-#       POSTGRESQL_HOST: db-ods
-#       PGBOUNCER_SET_DATABASE_USER: "yes"
-#       PGBOUNCER_SET_DATABASE_PASSWORD: "yes"
-#     restart: always
-#     container_name: ed-fi-pb-ods
-#     depends_on:
-#       - db-ods
-  
-#   db-admin:
-#       image: edfialliance/ods-admin-api-db:${ADMIN_API_DB_TAG}
-#       environment:
-#         POSTGRES_USER: "${POSTGRES_USER}"
-#         POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-#       volumes:
-#         - vol-db-admin:/var/lib/postgresql/data
-#       restart: always
-#       container_name: ed-fi-db-admin  
-
-#   pb-admin:
-#     image: pgbouncer/pgbouncer@sha256:aa8a38b7b33e5fe70c679053f97a8e55c74d52b00c195f0880845e52b50ce516 #pgbouncer:1.15.0
-#     environment:
-#       DATABASES: "* = host = db-admin port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
-#       PGBOUNCER_LISTEN_PORT: "${PGBOUNCER_LISTEN_PORT:-6432}"
-#     ports:
-#       - "5401:${PGBOUNCER_LISTEN_PORT:-6432}"
-#     restart: always
-#     container_name: ed-fi-pb-admin-adminapi
-#     depends_on:
-#       - db-admin
-
-# volumes:
-#   vol-db-admin:
-#     driver: local
-#     name: vol-db-admin
-#   vol-db-ods:
-#     driver: local
-#     name: vol-db-ods
-
-
-# SPDX-License-Identifier: Apache-2.0
-# Licensed to the Ed-Fi Alliance under one or more agreements.
-# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
-# See the LICENSE and NOTICES files in the project root for more information.
-
-# SPDX-License-Identifier: Apache-2.0
-# Licensed to the Ed-Fi Alliance under one or more agreements.
-# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
-# See the LICENSE and NOTICES files in the project root for more information.
-
 version: "3.8"
 
 services:
@@ -174,6 +64,9 @@ services:
       NPG_API_MAX_POOL_SIZE_SECURITY: "${NPG_API_MAX_POOL_SIZE_SECURITY}"
       NPG_API_MAX_POOL_SIZE_MASTER: "${NPG_API_MAX_POOL_SIZE_MASTER}"
       ODS_CONNECTION_STRING_ENCRYPTION_KEY: "${ODS_CONNECTION_STRING_ENCRYPTION_KEY}"
+      ApiSettings__OverrideForForwardingHostServer: "localhost"
+      ApiSettings__OverrideForForwardingHostPort: "8443"
+
     volumes:
       - ${LOGS_FOLDER}:/app/logs
     depends_on:
@@ -228,7 +121,7 @@ services:
     environment:
       SAMPLE_KEY: "${POPULATED_KEY}"
       SAMPLE_SECRET: "${POPULATED_SECRET}"
-      WebApiVersionUrl: "https://localhost/${ODS_VIRTUAL_NAME:-api}/"
+      WebApiVersionUrl: "https://localhost:8443/${ODS_VIRTUAL_NAME:-api}/"
       PathBase: "${DOCS_VIRTUAL_NAME:-docs}"
       SWAGGER_HEALTHCHECK_TEST: ${SWAGGER_HEALTHCHECK_TEST?Please consult env.example to set the SWAGGER healthcheck test}
     depends_on:
