@@ -10,7 +10,7 @@ public class EdFiDataAvailabilityTests : BaseApiTest
 
     [Fact]
     public async Task CheckDataAvailability_Attendance_ReturnsResultAsync()
-    {        
+    {
         var testDataItem = new DataElementDataItem
         {
             DataElement = new DataElement { Name = DataElementNames.Attendance, Category = "" }

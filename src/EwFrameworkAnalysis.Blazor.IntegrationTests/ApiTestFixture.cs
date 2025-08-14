@@ -9,20 +9,20 @@ public class ApiTestFixture : IDisposable
     public IMemoryCache? Cache { get; private set; }
     public string? ClientId { get; }
     public string? ClientSecret { get; }
-    public string? AuthUrl { get; }    
+    public string? AuthUrl { get; }
     public string? AccessToken { get; }
     public Uri? BaseUrl { get; private set; }
     public bool Ready { get; private set; }
     public EdFiApiDataItemAvailabilityProvider? AvailabilityProvider { get; }
 
     public ApiTestFixture()
-    {                
+    {
         var baseUrl = Environment.GetEnvironmentVariable("EWFTOOL_EDFI_BASE_URL");
         var authUrl = Environment.GetEnvironmentVariable("EWFTOOLTESTING_EDFI_AUTH_URL");
         if (!string.IsNullOrWhiteSpace(baseUrl) && Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
         {
             BaseUrl = uri;
-             
+
             AuthUrl = authUrl ?? $"{BaseUrl.OriginalString}/oauth/token";
 
             HttpClient = new HttpClient
@@ -42,8 +42,8 @@ public class ApiTestFixture : IDisposable
                     HttpClient,
                     Cache,
                     BaseUrl.OriginalString,
-                    ClientId, 
-                    ClientSecret, 
+                    ClientId,
+                    ClientSecret,
                     AccessToken,
                     AuthUrl
                 );
