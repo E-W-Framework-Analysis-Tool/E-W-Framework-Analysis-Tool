@@ -28,7 +28,7 @@ if ($BaseUrl) {
 else {
   Write-Host "BaseUrl has not been defined and integration tests will be skipped." -ForegroundColor DarkMagenta -BackgroundColor Yellow
   Pop-Location
-  exit 1
+  exit 0
 }
 
 if (-not [string]::IsNullOrEmpty($ClientId) -and -not [string]::IsNullOrEmpty($ClientSecret) ) {
