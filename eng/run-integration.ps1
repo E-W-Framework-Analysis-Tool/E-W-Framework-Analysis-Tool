@@ -26,7 +26,9 @@ if ($BaseUrl) {
   Write-Host "EWFTOOL_EDFI_BASE_URL = $BaseUrl"
 }
 else {
-  Fail "Provide -BaseUrl."
+  Write-Host "BaseUrl has not been defined and integration tests will be skipped." -ForegroundColor DarkMagenta -BackgroundColor Yellow
+  Pop-Location
+  exit 1
 }
 
 if (-not [string]::IsNullOrEmpty($ClientId) -and -not [string]::IsNullOrEmpty($ClientSecret) ) {
