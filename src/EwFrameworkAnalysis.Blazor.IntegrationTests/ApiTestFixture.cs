@@ -18,7 +18,7 @@ public class ApiTestFixture : IDisposable
     public ApiTestFixture()
     {
         var baseUrl = Environment.GetEnvironmentVariable("EWFTOOL_EDFI_BASE_URL");
-        var authUrl = Environment.GetEnvironmentVariable("EWFTOOLTESTING_EDFI_AUTH_URL");
+        var authUrl = Environment.GetEnvironmentVariable("EWFTOOL_EDFI_AUTH_URL");
         if (!string.IsNullOrWhiteSpace(baseUrl) && Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
         {
             BaseUrl = uri;

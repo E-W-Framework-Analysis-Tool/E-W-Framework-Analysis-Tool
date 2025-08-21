@@ -3,7 +3,6 @@ param(
   [string]$BaseUrl = "",
   [string]$ClientId = "",
   [string]$ClientSecret = "",
-  [string]$AccessToken = "",
   [string]$AuthUrl = ""
 )
 
@@ -17,6 +16,12 @@ function Fail($message) {
   exit 1
 }
 
+function Warning($message) {
+  Write-Warning $message
+  Pop-Location
+  exit 0
+}
+
 # Sanity checks
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) { Fail "dotnet CLI not found." }
 
@@ -26,9 +31,7 @@ if ($BaseUrl) {
   Write-Host "EWFTOOL_EDFI_BASE_URL = $BaseUrl"
 }
 else {
-  Write-Host "BaseUrl has not been defined and integration tests will be skipped." -ForegroundColor DarkMagenta -BackgroundColor Yellow
-  Pop-Location
-  exit 0
+  Warning "BaseUrl has not been defined and integration tests will be skipped."
 }
 
 if (-not [string]::IsNullOrEmpty($ClientId) -and -not [string]::IsNullOrEmpty($ClientSecret) ) {
@@ -39,16 +42,18 @@ if (-not [string]::IsNullOrEmpty($ClientId) -and -not [string]::IsNullOrEmpty($C
   Write-Host "EWFTOOL_EDFI_CLIENT_SECRET = $ClientSecret"
 
 }
-elseif (-not [string]::IsNullOrEmpty($AccessToken)) {
-  
-  $env:EWFTOOL_EDFI_ACCESS_TOKEN = $AccessToken
-  Write-Host "EWFTOOL_EDFI_ACCESS_TOKEN = $AccessToken"
-
-}
 else {
-  Fail "Provide -ClientId and -ClientSecret or -AccessToken."
+  Warning "Both -ClientId and -ClientSecret have not been defined, integration tests will be skipped."
 }
 
+if (-not [string]::IsNullOrEmpty($AuthUrl)) {
+  $env:EWFTOOL_EDFI_AUTH_URL = $AuthUrl
+  Write-Host "EWFTOOL_EDFI_AUTH_URL = $AuthUrl"
+}
+elseif (Test-Path Env:EWFTOOL_EDFI_AUTH_URL) {
+  Remove-Item Env:EWFTOOL_EDFI_AUTH_URL
+  Write-Host "EWFTOOL_EDFI_AUTH_URL removed"
+}
 
 # Run Integration tests project
 $integrationProj = "EwFrameworkAnalysis.Blazor.IntegrationTests\EwFrameworkAnalysis.Blazor.IntegrationTests.csproj"
