@@ -5,6 +5,7 @@ Scripts for managing the SQL Server development environment.
 ## Normal Usage
 
 For typical development tasks, see the [parent README](../README.md) which covers:
+
 - Starting the environment
 - Creating scenarios
 - Updating images
@@ -13,7 +14,8 @@ For typical development tasks, see the [parent README](../README.md) which cover
 
 - **Ed-Fi Data Standard:** v5.2
 - **CEDS Data Warehouse:** v11.0.0.0
-  - Source: [CEDS-Data-Warehouse-V11.0.0.0.sql](https://github.com/CEDStandards/CEDS-Data-Warehouse/blob/V11.0.0.0/src/ddl/CEDS-Data-Warehouse-V11.0.0.0.sql)
+  - Source:
+    [CEDS-Data-Warehouse-V11.0.0.0.sql](https://github.com/CEDStandards/CEDS-Data-Warehouse/blob/V11.0.0.0/src/ddl/CEDS-Data-Warehouse-V11.0.0.0.sql)
 
 ## Building New Images
 
@@ -24,6 +26,7 @@ For typical development tasks, see the [parent README](../README.md) which cover
 ## Troubleshooting Scripts
 
 ### View all ODS Instances
+
 ```sql
 SELECT * FROM EdFi_Admin.dbo.ApiClientOdsInstances
 SELECT * FROM EdFi_Admin.dbo.OdsInstanceContexts
@@ -31,18 +34,19 @@ SELECT * FROM EdFi_Admin.dbo.OdsInstances
 ```
 
 ### Clean up a specific ODS Instance
+
 ```sql
-DELETE aco 
+DELETE aco
 FROM EdFi_Admin.dbo.ApiClientOdsInstances aco
 INNER JOIN EdFi_Admin.dbo.OdsInstances oi ON aco.OdsInstance_OdsInstanceId = oi.OdsInstanceId
 WHERE oi.Name = 'TestScenarioName';
 
-DELETE oic 
+DELETE oic
 FROM EdFi_Admin.dbo.OdsInstanceContexts oic
 INNER JOIN EdFi_Admin.dbo.OdsInstances oi ON oic.OdsInstance_OdsInstanceId = oi.OdsInstanceId
 WHERE oi.Name = 'TestScenarioName';
 
-DELETE FROM EdFi_Admin.dbo.OdsInstances 
+DELETE FROM EdFi_Admin.dbo.OdsInstances
 WHERE Name = 'TestScenarioName';
 ```
 
