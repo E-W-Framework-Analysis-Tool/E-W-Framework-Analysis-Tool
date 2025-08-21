@@ -1,0 +1,49 @@
+services:
+  sqlserver:
+    image: ewftool.azurecr.io/ewftool-dev-sqlserver:latest
+    container_name: ewftool-dev-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=P@ssw0rd123
+      - MSSQL_PID=Developer
+    ports:
+      - "14333:1433"
+    volumes:
+      - ewftool_sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "P@ssw0rd123" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ewftool_dev
+
+  webapi:
+    image: ewftool.azurecr.io/ewftool-dev-edfi-api:latest
+    container_name: ewftool-dev-edfi-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - InstallType=SingleTenant
+      - ApiSettings__OdsConnectionStringEncryptionKey=eSWfXBkHlWV0QzmIy//G9EiiDQlYSYUNvI2uXLwEXXY=
+      - ApiSettings__Engine=SqlServer
+      - ApiSettings__OdsContextRouteTemplate={Scenario}
+      - ConnectionStrings__EdFi_Admin=Server=sqlserver;Database=EdFi_Admin;Integrated Security=false;User ID=sa;Password=P@ssw0rd123;TrustServerCertificate=true;
+      - ConnectionStrings__EdFi_Security=Server=sqlserver;Database=EdFi_Security;Integrated Security=false;User ID=sa;Password=P@ssw0rd123;TrustServerCertificate=true;
+      - ConnectionStrings__EdFi_Master=Server=sqlserver;Database=master;Integrated Security=false;User ID=sa;Password=P@ssw0rd123;TrustServerCertificate=true;
+      - Logging__LogLevel__Default=Debug
+      - Logging__LogLevel__Microsoft=Warning
+    ports:
+      - "5000:80"
+    networks:
+      - ewftool_dev
+    restart: unless-stopped
+
+volumes:
+  ewftool_sqlserver_data:
+    driver: local
+
+networks:
+  ewftool_dev:
+    driver: bridge

@@ -140,3 +140,5 @@ vite.config.ts.timestamp-*
 
 
 publish/
+
+eng/dev-dependencies/database/backups/

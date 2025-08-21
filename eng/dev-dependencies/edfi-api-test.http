@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:5000
+@scenario = GrandBend
+@clientId = RvcohKz9zHI4
+@clientSecret = E1676E88-4D3B-4E4E-B7B7-7C3F8E5D2A9C
+
+### Get OAuth Token
+# @name getToken
+POST {{baseUrl}}/{{scenario}}/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{clientId}}&client_secret={{clientSecret}}
+
+### Get Local Education Agencies
+GET {{baseUrl}}/{{scenario}}/data/v3/ed-fi/localEducationAgencies?limit=25&pageSize=25&totalCount=false
+Authorization: Bearer {{getToken.response.body.access_token}}
+Accept: application/json
