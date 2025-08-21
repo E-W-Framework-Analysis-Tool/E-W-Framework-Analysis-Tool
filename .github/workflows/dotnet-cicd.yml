@@ -100,7 +100,7 @@ jobs:
       - name: Run Integration tests
         shell: pwsh
         run: |
-          ./eng/run-integration.ps1 -Configuration Release -BaseUrl "${{ vars.EWTEST_EDFI_BASE_URL }}" -ClientId "${{ vars.EWETEST_EDFI_CLIENT_ID }}" -ClientSecret "${{ vars.EWTEST_EDFI_CLIENT_SECRET }}" -AccessToken "${{ vars.EWTEST_EDFI_ACCESS_TOKEN }}" -AuthUrl "${{ vars.EWTEST_EDFI_AUTH_URL }}"
+          ./eng/run-integration.ps1 -Configuration Release -BaseUrl "${{ vars.EWTEST_EDFI_BASE_URL }}" -ClientId "${{ vars.EWETEST_EDFI_CLIENT_ID }}" -ClientSecret "${{ vars.EWTEST_EDFI_CLIENT_SECRET }}" -AuthUrl "${{ vars.EWTEST_EDFI_AUTH_URL }}"
 
   prepare-deployment:
     name: Prepare Deployment
