@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'eng/build-solution.ps1'
       - 'eng/run-e2e.ps1'
+      - 'eng/run-integration.ps1'
       - '**/*.sln'
       - '**/*.csproj'
       - '**/*.props'
@@ -81,6 +82,25 @@ jobs:
           name: e2e-reports-${{ github.run_number }}
           path: publish/wwwroot/accessibility-reports/
           retention-days: ${{ github.event_name == 'pull_request' && '7' || '30' }}
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Run Integration tests
+        shell: pwsh
+        run: |
+          ./eng/run-integration.ps1 -Configuration Release -BaseUrl "${{ vars.EWTEST_EDFI_BASE_URL }}" -ClientId "${{ vars.EWETEST_EDFI_CLIENT_ID }}" -ClientSecret "${{ vars.EWTEST_EDFI_CLIENT_SECRET }}" -AuthUrl "${{ vars.EWTEST_EDFI_AUTH_URL }}"
 
   prepare-deployment:
     name: Prepare Deployment
