@@ -1,7 +1,6 @@
 # E-W Framework Analysis Tool
 
-![Build Status](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/workflows/.NET%20CI%2FCD/badge.svg)
-![E2E Tests](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet.yml/badge.svg?job=e2e-tests)
+[![Dev Environment](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml/badge.svg)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml)
 
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
