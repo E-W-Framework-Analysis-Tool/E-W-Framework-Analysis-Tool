@@ -87,7 +87,7 @@ runs:
                         $current | Add-Member -MemberType NoteProperty -Name $finalProp -Value $value
                     }
                     
-                    Write-Host "  ✓ Set $jsonPath = $value"
+                    Write-Host "  Set $jsonPath = $value"
                 }
             }
             
@@ -96,6 +96,16 @@ runs:
             Set-Content $appsettingsPath -Value $jsonOutput -Encoding UTF8
             
             Write-Host "Successfully updated appsettings.json" -ForegroundColor Green
+            
+            # Remove compressed versions so the plain JSON gets served
+            $compressedFiles = @($appsettingsPath + ".gz", $appsettingsPath + ".br")
+            
+            foreach ($file in $compressedFiles) {
+                if (Test-Path $file) {
+                    Remove-Item $file -Force
+                    Write-Host "Removed compressed file: $(Split-Path $file -Leaf)"
+                }
+            }
             
             # Show the updated content for debugging
             Write-Host "Updated appsettings.json content:"
