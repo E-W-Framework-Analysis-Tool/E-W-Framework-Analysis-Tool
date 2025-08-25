@@ -66,10 +66,13 @@ jobs:
 
       - name: Run E2E and accessibility tests
         shell: pwsh
+        env: 
+          DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: 1
+          TERM: xterm-256color
         run: |
           if ("${{ github.event_name }}" -eq "pull_request") {
             # PR: Fast smoke tests - Chrome only, critical A11y issues only
-            ./eng/run-e2e.ps1 -Configuration Release -A11yFailLevel "critical"
+            ./eng/run-e2e.ps1 -Configuration Release -A11yFailLevel "serious"
           } else {
             # Main/Tags: Comprehensive tests - all browsers, serious A11y level
             ./eng/run-e2e.ps1 -Configuration Release -AllBrowsers -A11yFailLevel "critical"

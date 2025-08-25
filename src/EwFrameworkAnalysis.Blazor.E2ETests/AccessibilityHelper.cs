@@ -131,11 +131,11 @@ public static class AccessibilityHelper
         {
             colorOutput.WriteLine($"A11y violations (impact >= {result.FailLevel}). See: {mdPath}", ConsoleColor.Red);
 
-            colorOutput.WriteLine($"X Found {result.Violations.Length} accessibility violation(s):", ConsoleColor.Red);
+            colorOutput.WriteLine($" ❌ Found {result.Violations.Length} accessibility violation(s):", ConsoleColor.Red);
 
             foreach (var violation in result.Violations)
             {
-                colorOutput.WriteLine($"## X {violation.Id}: {violation.Description}", ConsoleColor.Red);
+                colorOutput.WriteLine($"## ❌ {violation.Id}: {violation.Description}", ConsoleColor.Red);
                 colorOutput.WriteLine($"**Impact**: {violation.Impact}", ConsoleColor.Red);
                 colorOutput.WriteLine("", ConsoleColor.Red);
             }
