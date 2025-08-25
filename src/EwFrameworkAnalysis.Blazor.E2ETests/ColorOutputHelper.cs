@@ -31,8 +31,11 @@ public class ColorOutputHelper
 
         try
         {
-            // Works in console (`dotnet test`)
-            _output?.WriteLine($"{ansiColor}{message}{reset}");
+            // Also write to console (for CI/CD logs)
+            Console.WriteLine($"{ansiColor}{message}{reset}");
+
+            // Always write to test output (visible in VS and test explorer)
+            _output?.WriteLine(message);
         }
         catch
         {
