@@ -32,14 +32,14 @@ public class ColorOutputHelper
         try
         {
             // Works in console (`dotnet test`)
-            _output?.WriteLine($"{ansiColor}{message}{reset}");
+            _output?.WriteLine($">>> {ansiColor}{message}{reset}");
         }
         catch
         {
             // Fallback (e.g. Visual Studio Test Explorer ignores ANSI codes)
             var original = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.WriteLine(message);
+            Console.WriteLine($">>> {message}");
             Console.ForegroundColor = original;
         }
     }
