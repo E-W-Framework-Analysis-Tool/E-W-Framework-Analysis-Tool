@@ -124,9 +124,25 @@ public static class AccessibilityHelper
         }
 
         // Log to test output
-        if (output != null && result.Violations.Length > 0)
+
+        var colorOutput = new ColorOutputHelper(output);
+
+        if (result.Violations.Length > 0)
         {
-            output.WriteLine($"A11y violations (impact >= {result.FailLevel}). See: {mdPath}");
+            colorOutput.WriteLine($"A11y violations (impact >= {result.FailLevel}). See: {mdPath}", ConsoleColor.Red);
+
+            colorOutput.WriteLine($"X Found {result.Violations.Length} accessibility violation(s):", ConsoleColor.Red);
+
+            foreach (var violation in result.Violations)
+            {
+                colorOutput.WriteLine($"## X {violation.Id}: {violation.Description}", ConsoleColor.Red);
+                colorOutput.WriteLine($"**Impact**: {violation.Impact}", ConsoleColor.Red);
+                colorOutput.WriteLine("", ConsoleColor.Red);
+            }
+        }
+        else
+        {
+            colorOutput.WriteLine("✅ No accessibility violations found at the specified fail level.", ConsoleColor.Green);
         }
     }
 
