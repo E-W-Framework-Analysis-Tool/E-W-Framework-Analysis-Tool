@@ -33,8 +33,6 @@ public class ColorOutputHelper
         {
             // Works in console (`dotnet test`)
             _output?.WriteLine($"{ansiColor}{message}{reset}");
-
-            Console.WriteLine($"CWL - {ansiColor}{message}{reset}");
         }
         catch
         {
