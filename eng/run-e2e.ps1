@@ -46,6 +46,7 @@ $e2eProj = "EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETe
 Write-Host "`nRunning: dotnet test $e2eProj --configuration $Configuration"
 dotnet test $e2eProj --configuration $Configuration `
     --logger "trx;LogFileName=e2e.trx" `
+    --logger "console;verbosity=detailed" `
     || Fail "Playwright E2E tests failed."
 
 Pop-Location
