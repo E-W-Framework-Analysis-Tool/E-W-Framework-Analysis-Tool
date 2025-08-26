@@ -138,9 +138,17 @@ public static class AccessibilityHelper
 
             foreach (var violation in result.Violations)
             {
-                output.WriteLine($">>> ## ❌ {violation.Id}: {violation.Description}");
-                output.WriteLine($">>> **Impact**: {violation.Impact}");
                 output.WriteLine(">>> ");
+                output.WriteLine($">>>   ## ❌ {violation.Id}: {violation.Description}");
+                output.WriteLine($">>>   Impact: {violation.Impact}");
+                output.WriteLine(">>> ");
+
+                output.WriteLine(">>> --- Affected Nodes --- ");
+
+                foreach (var node in violation.Nodes)
+                {
+                    output.WriteLine($">>> - HTML : `{Truncate(node.Html, 500)}`");
+                }
             }
         }
         else
