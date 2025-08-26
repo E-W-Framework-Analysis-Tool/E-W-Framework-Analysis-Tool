@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Playwright;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 
 namespace EwFrameworkAnalysis.Blazor.E2ETests;
 
@@ -123,13 +124,12 @@ public static class AccessibilityHelper
             }
         }
 
-        // Log to test output
-
         if (output == null)
         {
             return;
         }
 
+        // GitHub CI: prefer console
         if (result.Violations.Length > 0)
         {
             output.WriteLine($">>> A11y violations (impact >= {result.FailLevel}). See: {mdPath}");
