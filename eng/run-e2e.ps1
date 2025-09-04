@@ -64,9 +64,9 @@ $testExitCode = $LASTEXITCODE
 if ($env:GITHUB_STEP_SUMMARY) {
     Write-Host "Writing test summary to GitHub step summary..."
     Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### E2E Test Results"
-    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "```"
+    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```'
     Get-Content $summaryLog | Add-Content -Path $env:GITHUB_STEP_SUMMARY
-    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "```"
+    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```'
 }
  
 if ($testExitCode -ne 0) {
