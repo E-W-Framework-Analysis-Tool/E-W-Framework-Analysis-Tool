@@ -58,9 +58,7 @@ dotnet test $e2eProj --configuration $Configuration `
 | ForEach-Object { $_.Line -replace ">>> ", "" }` # Remove string that identifies messages to display
 | Tee-Object -FilePath $summaryLog  # save console output
 
-if ($LASTEXITCODE -ne 0) {
-    Fail "Playwright E2E tests failed."
-}
+$testExitCode = $LASTEXITCODE
 
 # Append to GitHub summary if running inside GitHub Actions
 if ($env:GITHUB_STEP_SUMMARY) {
@@ -70,6 +68,10 @@ if ($env:GITHUB_STEP_SUMMARY) {
     Get-Content $summaryLog | Add-Content -Path $env:GITHUB_STEP_SUMMARY
     Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "```"
 }
-    
+ 
+if ($testExitCode -ne 0) {
+    Fail "Playwright E2E tests failed."
+}
+
 Pop-Location
 Write-Host "E2E run completed."
