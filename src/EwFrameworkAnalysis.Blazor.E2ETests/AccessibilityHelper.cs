@@ -43,7 +43,9 @@ public static class AccessibilityHelper
     public static async Task<AccessibilityTestResult> RunAccessibilityTestAsync(
         IPage page,
         string axeScript,
-        FailLevel? failLevel = null)
+        string testName,
+        FailLevel? failLevel = null
+    )
     {
         // Use provided fail level or get from environment
         var effectiveFailLevel = failLevel ?? GetFailLevelFromEnvironment();
@@ -65,8 +67,10 @@ public static class AccessibilityHelper
                              .Select(ConvertViolationToObject)
                              .ToArray();
 
+
         return new AccessibilityTestResult
         {
+            TestName = testName,
             FailLevel = effectiveFailLevel,
             Violations = violations,
             RawResultsJson = resultsJson
@@ -84,15 +88,15 @@ public static class AccessibilityHelper
 
         var safeBrowser = browser.ToLowerInvariant();
         var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-        var mdPath = Path.Combine(reportDir, $"report-{safeBrowser}-{stamp}.md");
-        var jsonPath = Path.Combine(reportDir, $"report-{safeBrowser}-{stamp}.json");
+        var mdPath = Path.Combine(reportDir, $"report-{result.TestName}-{safeBrowser}-{stamp}.md");
+        var jsonPath = Path.Combine(reportDir, $"report-{result.TestName}-{safeBrowser}-{stamp}.json");
 
         // Write JSON report
         await File.WriteAllTextAsync(jsonPath, result.RawResultsJson);
 
         // Write Markdown report
         await using var writer = new StreamWriter(mdPath);
-        await writer.WriteLineAsync("# Axe Accessibility Report");
+        await writer.WriteLineAsync($"# Axe Accessibility Report: {result.TestName}");
         await writer.WriteLineAsync($"Generated: {DateTime.Now}");
         await writer.WriteLineAsync($"Fail Level: {result.FailLevel}");
         await writer.WriteLineAsync($"Browser: {browser}");
@@ -132,24 +136,36 @@ public static class AccessibilityHelper
         // GitHub CI: prefer console
         if (result.Violations.Length > 0)
         {
-            output.WriteLine($">>> A11y violations (impact >= {result.FailLevel}). See: {mdPath}");
+            //output.WriteLine($">>> A11y violations (impact >= {result.FailLevel}). See: {mdPath}");
 
-            output.WriteLine($">>>  ❌ Found {result.Violations.Length} accessibility violation(s):");
+            output.WriteLine($">>> # Axe Accessibility Report: **{result.TestName}**");
+            output.WriteLine($">>> Generated: {DateTime.Now}");
+            output.WriteLine($">>> Fail Level: {result.FailLevel}");
+            output.WriteLine($">>> Browser: {browser}");
+            output.WriteLine(">>> ");
+
+            output.WriteLine($">>> ❌ Found {result.Violations.Length} accessibility violation(s):");
+            output.WriteLine(">>> <details>");
+            output.WriteLine(">>> <summary> Click to expand logs </summary>");
 
             foreach (var violation in result.Violations)
             {
+                // < details >
+                // < summary > Click to expand logs </ summary >
                 output.WriteLine(">>> ");
-                output.WriteLine($">>>   ## ❌ {violation.Id}: {violation.Description}");
-                output.WriteLine($">>>   Impact: {violation.Impact}");
+                output.WriteLine($">>> ## ❌ {violation.Id}: {violation.Description}");
+                output.WriteLine($">>> **Impact**: {violation.Impact}");
                 output.WriteLine(">>> ");
 
-                output.WriteLine(">>> --- Affected Nodes --- ");
+                output.WriteLine(">>> ### Affected Nodes");
 
                 foreach (var node in violation.Nodes)
                 {
-                    output.WriteLine($">>> - HTML : `{Truncate(node.Html, 500)}`");
+                    output.WriteLine($">>> - **HTML**: `{Truncate(node.Html, 500)}`");
+                    output.WriteLine(">>> ");
                 }
             }
+            output.WriteLine(">>> </details>");
         }
         else
         {
@@ -190,6 +206,7 @@ public static class AccessibilityHelper
 
 public class AccessibilityTestResult
 {
+    public required string TestName { get; init; }
     public required AccessibilityHelper.FailLevel FailLevel { get; init; }
     public required AccessibilityViolation[] Violations { get; init; }
     public required string RawResultsJson { get; init; }
