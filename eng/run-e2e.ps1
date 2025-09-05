@@ -61,7 +61,7 @@ dotnet test $e2eProj --configuration $Configuration `
 $testExitCode = $LASTEXITCODE
 
 # Append to GitHub summary if running inside GitHub Actions
-if ($env:GITHUB_STEP_SUMMARY) {
+if ($env:GITHUB_STEP_SUMMARY -and (Test-Path $summaryLog)) {
     Write-Host "Writing test summary to GitHub step summary..."
     Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### E2E Test Results"    
     Get-Content $summaryLog | Add-Content -Path $env:GITHUB_STEP_SUMMARY
