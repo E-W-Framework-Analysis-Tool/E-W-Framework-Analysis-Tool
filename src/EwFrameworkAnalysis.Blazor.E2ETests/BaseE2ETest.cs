@@ -42,12 +42,12 @@ public abstract class BaseE2ETest : IClassFixture<PlaywrightTestFixture>
     /// <summary>
     /// Runs accessibility test on the current page and asserts no violations at the configured fail level.
     /// </summary>
-    protected async Task AssertNoAccessibilityViolationsAsync(IPage page, Browser browser, AccessibilityHelper.FailLevel? failLevel = null)
+    protected async Task AssertNoAccessibilityViolationsAsync(IPage page, Browser browser, string testName, AccessibilityHelper.FailLevel? failLevel = null)
     {
         if (!Fixture.A11yReady)
             Assert.Skip("axe.min.js not found in test output; a11y tests skipped.");
 
-        var result = await AccessibilityHelper.RunAccessibilityTestAsync(page, Fixture.AxeScript, failLevel);
+        var result = await AccessibilityHelper.RunAccessibilityTestAsync(page, Fixture.AxeScript, testName, failLevel);
 
         var reportDir = Path.Combine(Fixture.ArtifactsBasePath, "accessibility-reports");
         var safeBrowser = browser.ToString().ToLowerInvariant();
@@ -62,11 +62,11 @@ public abstract class BaseE2ETest : IClassFixture<PlaywrightTestFixture>
     /// <summary>
     /// Runs accessibility test and returns the result without asserting. Useful for custom validation logic.
     /// </summary>
-    protected async Task<AccessibilityTestResult> RunAccessibilityTestAsync(IPage page, AccessibilityHelper.FailLevel? failLevel = null)
+    protected async Task<AccessibilityTestResult> RunAccessibilityTestAsync(IPage page, string testName, AccessibilityHelper.FailLevel? failLevel = null)
     {
         if (!Fixture.A11yReady)
             throw new InvalidOperationException("axe.min.js not found in test output; accessibility testing not available.");
 
-        return await AccessibilityHelper.RunAccessibilityTestAsync(page, Fixture.AxeScript, failLevel);
+        return await AccessibilityHelper.RunAccessibilityTestAsync(page, Fixture.AxeScript, testName, failLevel);
     }
 }

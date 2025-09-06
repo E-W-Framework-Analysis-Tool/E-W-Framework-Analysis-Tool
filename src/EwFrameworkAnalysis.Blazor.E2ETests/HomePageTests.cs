@@ -37,7 +37,7 @@ public class HomePageTests : BaseE2ETest
         {
             await page.Locator("body").WaitForAsync();
 
-            await AssertNoAccessibilityViolationsAsync(page, browser);
+            await AssertNoAccessibilityViolationsAsync(page, browser, "Home Page A11y Test");
         });
     }
 }

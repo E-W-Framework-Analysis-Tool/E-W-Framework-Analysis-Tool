@@ -27,13 +27,15 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) { Fail "dotnet CLI 
 if ($BaseUrl) {
     $env:EWFTOOL_E2E_BASE_URL = $BaseUrl
     Write-Host "EWFTOOL_E2E_BASE_URL = $BaseUrl"
-} elseif ($PublishPath) {
+}
+elseif ($PublishPath) {
     if (-not (Test-Path (Join-Path $PublishPath 'wwwroot'))) {
         Fail "PublishPath missing wwwroot: $PublishPath"
     }
     $env:EWFTOOL_E2E_PUBLISH_PATH = $PublishPath
     Write-Host "EWFTOOL_E2E_PUBLISH_PATH = $PublishPath"
-} else {
+}
+else {
     Fail "Provide either -BaseUrl or -PublishPath."
 }
 
@@ -44,9 +46,30 @@ $env:EWFTOOL_A11Y_FAIL_LEVEL = $A11yFailLevel
 # Run E2E tests project
 $e2eProj = "EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETests.csproj"
 Write-Host "`nRunning: dotnet test $e2eProj --configuration $Configuration"
+
+# Temporary log file
+$summaryLog = "e2e-summary.log"
+
 dotnet test $e2eProj --configuration $Configuration `
     --logger "trx;LogFileName=e2e.trx" `
-    || Fail "Playwright E2E tests failed."
+    --logger "console;verbosity=normal" `
+| Select-String ">>> " ` # Clear out any error stack trace  
+| Select-String -NotMatch "xUnit.net " ` # Remove duplicate printing of messages from output.WriteLine
+| ForEach-Object { $_.Line -replace ">>> ", "" }` # Remove string that identifies messages to display
+| Tee-Object -FilePath $summaryLog  # save console output
+
+$testExitCode = $LASTEXITCODE
+
+# Append to GitHub summary if running inside GitHub Actions
+if ($env:GITHUB_STEP_SUMMARY -and (Test-Path $summaryLog)) {
+    Write-Host "Writing test summary to GitHub step summary..."
+    Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### E2E Test Results"    
+    Get-Content $summaryLog | Add-Content -Path $env:GITHUB_STEP_SUMMARY
+}
+ 
+if ($testExitCode -ne 0) {
+    Fail "Playwright E2E tests failed."
+}
 
 Pop-Location
 Write-Host "E2E run completed."
