@@ -54,11 +54,6 @@ public class DataCharacteristic
     public string? Remarks { get; set; } // either manually entered or notes from automatic processing
 }
 
-
-
-
-
-
 public interface IDataSourceAssessor
 {
     DataSourceType DataSourceType { get; }

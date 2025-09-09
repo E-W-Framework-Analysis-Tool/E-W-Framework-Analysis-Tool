@@ -44,7 +44,7 @@ $env:EWFTOOL_E2E_ALL_BROWSERS = $(if ($AllBrowsers) { "true" } else { "false" })
 $env:EWFTOOL_A11Y_FAIL_LEVEL = $A11yFailLevel
 
 # Run E2E tests project
-$e2eProj = "EwFrameworkAnalysis.Blazor.E2ETests\EwFrameworkAnalysis.Blazor.E2ETests.csproj"
+$e2eProj = "EwFrameworkAnalysis.E2ETests\EwFrameworkAnalysis.E2ETests.csproj"
 Write-Host "`nRunning: dotnet test $e2eProj --configuration $Configuration"
 
 # Temporary log file

@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+    name: "ewframework";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+    /* Base colors */
+    --color-base-100: oklch(100% 0 0); /* #ffffff - white background */
+    --color-base-200: oklch(91% 0.03 85); /* #e0d4b5 - tan */
+    --color-base-300: oklch(86% 0.03 85); /* #d1c7a8 - darker tan */
+    --color-base-content: oklch(27% 0.08 245); /* #0b2949 - blue text */
+    /* Semantic colors */
+    --color-primary: oklch(78% 0.13 85); /* #f1b51c - yellow */
+    --color-primary-content: oklch(27% 0.08 245); /* #0b2949 - blue text on yellow */
+    --color-secondary: oklch(27% 0.08 245); /* #0b2949 - blue */
+    --color-secondary-content: oklch(100% 0 0); /* white text on blue */
+    --color-accent: oklch(55% 0.08 152); /* #12885e - green */
+    --color-accent-content: oklch(100% 0 0); /* white text on green */
+    --color-neutral: oklch(45% 0.02 245); /* #5b6771 - gray */
+    --color-neutral-content: oklch(100% 0 0); /* white text on gray */
+    /* Standard status colors */
+    --color-info: oklch(70% 0.2 220);
+    --color-info-content: oklch(98% 0.01 220);
+    --color-success: oklch(65% 0.25 140);
+    --color-success-content: oklch(98% 0.01 140);
+    --color-warning: oklch(78% 0.13 85); /* Using your yellow */
+    --color-warning-content: oklch(27% 0.08 245); /* Blue text on yellow */
+    --color-error: oklch(65% 0.3 30);
+    --color-error-content: oklch(98% 0.01 30);
+    /* Design tokens */
+    --radius-selector: 0.75rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
+
+@theme {
+    /* Custom brand colors for additional Tailwind utilities */
+    --color-yellow: #f1b51c;
+    --color-blue: #0b2949;
+    --color-green: #12885e;
+    --color-gray: #5b6771;
+    --color-tan: #e0d4b5;
+    /* Fonts */
+    --font-family-title: 'Zilla Slab', serif;
+    --font-family-sans: 'Montserrat', system-ui, sans-serif;
+}
+
+[data-theme="light"] {
+    --p: 48 90 32; /* primary: #f1b51c in oklch */
+    --s: 213 100 15; /* secondary: #0b2949 in oklch */
+    --a: 152 41 35; /* accent: #12885e in oklch */
+    --n: 44 8 67; /* neutral: #5b6771 in oklch */
+    --b1: 100 0 100; /* base-100: #ffffff in oklch */
+    --b2: 91 18 86; /* base-200: #e0d4b5 in oklch */
+    --b3: 86 16 81; /* base-300: #d1c7a8 in oklch */
+    --bc: 213 100 15; /* base-content: #0b2949 in oklch */
+}
+
+.font-title {
+  font-family: 'Zilla Slab', serif !important;
+}

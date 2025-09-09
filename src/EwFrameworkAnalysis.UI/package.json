@@ -1,0 +1,13 @@
+{
+    "name": "blazor-css-build",
+    "version": "1.0.0",
+    "description": "Tailwind CSS + DaisyUI build for Blazor application",
+    "private": true,
+    "scripts": {
+    },
+    "devDependencies": {
+      "@tailwindcss/cli": "^4.1.0",
+      "daisyui": "^5.0.54"
+    }
+  }
+  

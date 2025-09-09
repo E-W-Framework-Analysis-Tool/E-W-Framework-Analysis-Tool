@@ -49,8 +49,8 @@ Write-Host "`nRunning: dotnet build --no-restore --configuration $Configuration"
 dotnet build --no-restore --configuration $Configuration || Fail ".NET build failed."
 
 # Step 4: unit/integration tests (non-E2E)
-Write-Host "`nRunning: dotnet test EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj --no-build --configuration $Configuration"
-dotnet test EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj --no-build --configuration $Configuration || Fail ".NET tests failed."
+Write-Host "`nRunning: dotnet test EwFrameworkAnalysis.UI.UnitTests\EwFrameworkAnalysis.UI.UnitTests.csproj --no-build --configuration $Configuration"
+dotnet test EwFrameworkAnalysis.UI.UnitTests\EwFrameworkAnalysis.UI.UnitTests.csproj --no-build --configuration $Configuration || Fail ".NET tests failed."
 
 # Step 5: publish (optional)
 if ($Publish) {
@@ -61,7 +61,7 @@ if ($Publish) {
     }
     New-Item -ItemType Directory -Path $PublishPath -Force | Out-Null
 
-    $webProjectPath = Join-Path $srcRoot "EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.csproj"
+    $webProjectPath = Join-Path $srcRoot "EwFrameworkAnalysis.UI\EwFrameworkAnalysis.UI.csproj"
     if (-not (Test-Path $webProjectPath)) {
         Fail "Web project not found at: $webProjectPath"
     }
