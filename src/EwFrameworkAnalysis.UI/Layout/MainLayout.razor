@@ -1,3 +1,77 @@
-﻿@inherits LayoutComponentBase
+@using Microsoft.Extensions.Configuration
+@inherits LayoutComponentBase
+@inject IConfiguration Configuration
 
-@Body
+<div class="min-h-screen flex flex-col">
+    <!-- Main Content -->
+    <main class="flex-1">
+        @Body
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-4 bg-secondary text-white border-t border-base-300 mt-auto">
+        <div class="w-full max-w-7xl">
+            @if (DeploymentInfo.ShowDetails)
+            {
+                <!-- Development/Staging Footer with Full Details -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
+                        <span>Version: @DeploymentInfo.Version</span>
+                        @if (!string.IsNullOrEmpty(DeploymentInfo.DeployDateTime) &&
+                       !DeploymentInfo.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <span class="hidden sm:inline">•</span>
+                            <span>Deployed: @DeploymentInfo.DeployDateTime</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(DeploymentInfo.EnvironmentLabel))
+                    {
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">Environment:</span>
+                            <div class="badge badge-accent badge-sm">
+                                @DeploymentInfo.EnvironmentLabel
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Production Footer - Clean and Simple -->
+                <div class="text-center">
+                    <p class="text-sm">
+                        Built by Double Line in support of the Education-to-Workforce Indicator Framework
+                    </p>
+                </div>
+            }
+        </div>
+    </footer>
+</div>
+
+@code {
+    private DeploymentInfoModel DeploymentInfo = new();
+
+    protected override void OnInitialized()
+    {
+        // Load deployment info from configuration
+        var deploymentSection = Configuration.GetSection("DeploymentInfo");
+        DeploymentInfo = new DeploymentInfoModel
+            {
+                Version = deploymentSection["Version"] ?? "Unknown",
+                DeployDateTime = deploymentSection["DeployDateTime"] ?? "Unknown",
+                EnvironmentLabel = deploymentSection["EnvironmentLabel"] ?? "Unknown",
+                ShowDetails = deploymentSection.GetValue<bool>("ShowDetails")
+            };
+    }
+
+
+
+    public class DeploymentInfoModel
+    {
+        public string Version { get; set; } = string.Empty;
+        public string DeployDateTime { get; set; } = string.Empty;
+        public string EnvironmentLabel { get; set; } = string.Empty;
+        public bool ShowDetails { get; set; }
+    }
+}
