@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.csproj" />
+    <ProjectReference Include="..\EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.Legacy.csproj" />
   </ItemGroup>
 
   <ItemGroup>

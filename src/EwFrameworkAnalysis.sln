@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EwFrameworkAnalysis.Blazor", "EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.csproj", "{EDD7FD06-1593-4E2C-B75C-66F230530BE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EwFrameworkAnalysis.Blazor.Legacy", "EwFrameworkAnalysis.Blazor\EwFrameworkAnalysis.Blazor.Legacy.csproj", "{EDD7FD06-1593-4E2C-B75C-66F230530BE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EwFrameworkAnalysis.Blazor.Tests", "EwFrameworkAnalysis.Blazor.Tests\EwFrameworkAnalysis.Blazor.Tests.csproj", "{76CCA5B0-AC17-4F00-B51C-6707A48F81A0}"
 EndProject
