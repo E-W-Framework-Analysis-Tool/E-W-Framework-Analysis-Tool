@@ -56,7 +56,7 @@ elseif (Test-Path Env:EWFTOOL_EDFI_AUTH_URL) {
 }
 
 # Run Integration tests project
-$integrationProj = "EwFrameworkAnalysis.Blazor.IntegrationTests\EwFrameworkAnalysis.Blazor.IntegrationTests.csproj"
+$integrationProj = "EwFrameworkAnalysis.IntegrationTests\EwFrameworkAnalysis.IntegrationTests.csproj"
 Write-Host "`nRunning: dotnet test $integrationProj --configuration $Configuration"
 dotnet test $integrationProj --configuration $Configuration --logger "trx;LogFileName=integration.trx" || Fail "Integration tests failed."
 
