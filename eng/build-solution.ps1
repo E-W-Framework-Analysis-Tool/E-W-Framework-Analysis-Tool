@@ -19,6 +19,40 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     Fail "dotnet CLI is not installed or not found in PATH. Install .NET SDK."
 }
 
+# Check for npm and run install if needed
+$uiProjectDir = Join-Path $srcRoot "EwFrameworkAnalysis.UI"
+if (Test-Path $uiProjectDir) {
+    Push-Location $uiProjectDir
+    
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        Write-Warning "npm not found in PATH. Skipping npm install."
+    } else {
+        # Check if package.json exists
+        if (Test-Path "package.json") {
+            # Check if node_modules exists and is up to date
+            $needsInstall = $false
+            if (-not (Test-Path "node_modules")) {
+                $needsInstall = $true
+                Write-Host "node_modules directory not found."
+            } elseif ((Get-Item "package.json").LastWriteTime -gt (Get-Item "node_modules").LastWriteTime) {
+                $needsInstall = $true
+                Write-Host "package.json is newer than node_modules."
+            }
+            
+            if ($needsInstall) {
+                Write-Host "`nRunning: npm install"
+                npm install || Fail "npm install failed."
+            } else {
+                Write-Host "npm dependencies are up to date."
+            }
+        } else {
+            Write-Host "No package.json found in UI project, skipping npm install."
+        }
+    }
+    
+    Pop-Location
+}
+
 if ($Publish -and [string]::IsNullOrEmpty($PublishPath)) {
     $PublishPath = Join-Path $repoRoot "publish"
 }
