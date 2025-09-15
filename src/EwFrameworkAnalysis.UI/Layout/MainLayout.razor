@@ -3,6 +3,27 @@
 @inject IConfiguration Configuration
 
 <div class="min-h-screen flex flex-col">
+
+    <div class="navbar bg-secondary text-secondary-content justify-center">
+        <div class="w-full max-w-7xl flex justify-center bg-green-500*">
+            <div class="flex-1 align-middle">
+                <a class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none font-semibold ">
+                    <span class="text-primary-content bg-primary rounded p-2 mr-2">EW</span>
+                    Framework Analysis Tool
+                </a>
+            </div>
+
+            <div class="flex-none">
+                <ul class="menu menu-horizontal px-1">
+                    <li><a class="link link-hover">Home</a></li>
+                    <li><a class="link link-hover">About</a></li>
+                    <li><a class="link link-hover">Framework</a></li>
+                    <li><a class="link link-hover">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="flex-1">
         @Body
@@ -18,7 +39,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
                         <span>Version: @DeploymentInfo.Version</span>
                         @if (!string.IsNullOrEmpty(DeploymentInfo.DeployDateTime) &&
-                       !DeploymentInfo.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
+                                            !DeploymentInfo.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
                         {
                             <span class="hidden sm:inline">•</span>
                             <span>Deployed: @DeploymentInfo.DeployDateTime</span>
@@ -36,15 +57,45 @@
                     }
                 </div>
             }
-            else
-            {
-                <!-- Production Footer - Clean and Simple -->
-                <div class="text-center">
-                    <p class="text-sm">
-                        Built by Double Line in support of the Education-to-Workforce Indicator Framework
+
+            <div class="footer sm:footer-horizontal text-secondary-content p-10 mx-auto max-w-7xl">
+                <aside class="">
+                    <div class=" font-semibold ">
+                        <span class="text-primary-content bg-primary rounded p-2 mr-2">EW</span>
+                        Framework Analysis Tool
+                    </div>
+                    <p class="font-thin">
+                        Empowering Education through data-driven insights.
                     </p>
-                </div>
-            }
+                </aside>
+                <nav class="text-secondary-content/70 text-xs">
+                    <h6 class="text-sm font-semibold text-secondary-content">Framework</h6>
+                    <a class="link link-hover">Early Learning</a>
+                    <a class="link link-hover">K-12</a>
+                    <a class="link link-hover">Postsecondary</a>
+                    <a class="link link-hover">Workforce</a>
+                </nav>
+                <nav class="text-secondary-content/70 text-xs">
+                    <h6 class="text-sm font-semibold text-secondary-content">Resources</h6>
+                    <a class="link link-hover">Documentation</a>
+                    <a class="link link-hover">Support</a>
+                    <a class="link link-hover">Training</a>
+                    <a class="link link-hover">FAQ</a>
+                </nav>
+                <nav class="text-secondary-content/70 text-xs">
+                    <h6 class="text-sm font-semibold text-secondary-content">Contact</h6>
+                    <span class="font-light">info@example.com</span>
+                    <span class="font-light">(555) 123-4567</span>
+                    <span class="font-light">123 Education St.</span>
+                    <span class="font-light">City, State 12345</span>
+                </nav>
+            </div>
+
+            <div class="footer footer-center text-secondary-content pb-5">
+                <p class="text-secondary-content font-light text-xs text-center ">
+                    &copy; 2025 E-W Framework Analysis Tool. All rights reserved.
+                </p>
+            </div>
         </div>
     </footer>
 </div>
@@ -57,12 +108,12 @@
         // Load deployment info from configuration
         var deploymentSection = Configuration.GetSection("DeploymentInfo");
         DeploymentInfo = new DeploymentInfoModel
-            {
-                Version = deploymentSection["Version"] ?? "Unknown",
-                DeployDateTime = deploymentSection["DeployDateTime"] ?? "Unknown",
-                EnvironmentLabel = deploymentSection["EnvironmentLabel"] ?? "Unknown",
-                ShowDetails = deploymentSection.GetValue<bool>("ShowDetails")
-            };
+        {
+            Version = deploymentSection["Version"] ?? "Unknown",
+            DeployDateTime = deploymentSection["DeployDateTime"] ?? "Unknown",
+            EnvironmentLabel = deploymentSection["EnvironmentLabel"] ?? "Unknown",
+            ShowDetails = deploymentSection.GetValue<bool>("ShowDetails")
+        };
     }
 
 
