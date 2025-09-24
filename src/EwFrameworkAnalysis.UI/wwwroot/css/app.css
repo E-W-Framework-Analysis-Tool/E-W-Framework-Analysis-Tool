@@ -9,6 +9,7 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-100: oklch(93.6% 0.032 17.717);
     --color-red-200: oklch(88.5% 0.062 18.334);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-blue-100: oklch(93.2% 0.032 255.585);
@@ -1217,6 +1218,9 @@
   .mb-12 {
     margin-bottom: calc(var(--spacing) * 12);
   }
+  .mb-16 {
+    margin-bottom: calc(var(--spacing) * 16);
+  }
   .mb-20 {
     margin-bottom: calc(var(--spacing) * 20);
   }
@@ -1627,6 +1631,27 @@
   .border-base-300 {
     border-color: var(--color-base-300);
   }
+  .border-gray-100\/50 {
+    border-color: color-mix(in srgb, oklch(96.7% 0.003 264.542) 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-gray-100) 50%, transparent);
+    }
+  }
+  .border-gray-300 {
+    border-color: var(--color-gray-300);
+  }
+  .border-gray-300\/40 {
+    border-color: color-mix(in srgb, oklch(87.2% 0.01 258.338) 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-gray-300) 40%, transparent);
+    }
+  }
+  .border-gray-300\/60 {
+    border-color: color-mix(in srgb, oklch(87.2% 0.01 258.338) 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-gray-300) 60%, transparent);
+    }
+  }
   .border-neutral {
     border-color: var(--color-neutral);
   }
@@ -1655,6 +1680,12 @@
     border-color: var(--color-primary);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-primary) 60%, transparent);
+    }
+  }
+  .border-red-100\/50 {
+    border-color: color-mix(in srgb, oklch(93.6% 0.032 17.717) 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-red-100) 50%, transparent);
     }
   }
   .border-secondary {
@@ -2032,6 +2063,14 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+  .duration-50 {
+    --tw-duration: 50ms;
+    transition-duration: 50ms;
+  }
+  .duration-150 {
+    --tw-duration: 150ms;
+    transition-duration: 150ms;
+  }
   .duration-500 {
     --tw-duration: 500ms;
     transition-duration: 500ms;
@@ -2051,6 +2090,11 @@
   .peer-checked\:bg-primary {
     &:is(:where(.peer):checked ~ *) {
       background-color: var(--color-primary);
+    }
+  }
+  .peer-checked\:bg-secondary {
+    &:is(:where(.peer):checked ~ *) {
+      background-color: var(--color-secondary);
     }
   }
   .peer-checked\:text-primary {
@@ -2077,6 +2121,13 @@
       }
     }
   }
+  .hover\:text-primary-content {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-primary-content);
+      }
+    }
+  }
   .hover\:text-primary\/80 {
     &:hover {
       @media (hover: hover) {
@@ -2091,6 +2142,14 @@
     &:hover {
       @media (hover: hover) {
         text-decoration-line: underline;
+      }
+    }
+  }
+  .hover\:btn-primary {
+    &:hover {
+      @media (hover: hover) {
+        --btn-color: var(--color-primary);
+        --btn-fg: var(--color-primary-content);
       }
     }
   }

@@ -6,9 +6,9 @@
 
 <div class="min-h-screen bg-base-100">
 
-    <section class="relative items-center flex py-24">
-        <div class="container mx-auto items-center flex flex-wrap justify-center">
-            <div class="w-full md:w-8/12 lg:w-6/12 xl:w-6/12 px-4">
+    <section class="relative items-center py-24">
+        <div class="container mx-auto items-center flex flex-wrap* justify-center">
+            <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4">
                 <div class="pt-32* sm:pt-0">
                     <h2 class="font-semibold text-4xl text-secondary pb-4">
                         What is the EW Framework?
@@ -17,23 +17,54 @@
                         The <a href="https://educationtoworkforce.org/" class="link link-hover font-bold hover:text-primary/80">Education-to-Workforce Indicator Framework</a>
                         (or E-W Framework) is an extensive framework developed with input from leading experts from over 20 national and community organizations.
                         It highlights key connections needed between systems to support students as they progress from early education through their career.
-                        <span class="font-bold">The E-W Framework includes:</span>
+                        
                     </p>
+                    <button class="btn btn-secondary hover:btn-primary hover:text-primary-content mt-12">Get Started!</button>                    
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- What EW Framework Includes Section -->
-    <section class="py-24 relative bg-gray-100/60 inset-shadow-sm shadow-sm">
-        <div class="container mx-auto items-center flex flex-wrap justify-center mb-20">
-            <div class="w-full md:w-10/12 xl:w-8/12 px-4 ">
-                <img alt="EW Data Equity Principals Diagram" src="images/ew-diagram.png" class="w-full align-middle shadow rounded-lg bg-white p-5" />
-            </div>
-        </div>
-        <div class="container mx-auto items-center flex flex-wrap justify-center">
-            <div class="md:w-10/12 xl:w-8/12 flex flex-col lg:flex-row px-4 gap-x-2 gap-y-2 justify-center">
-                <div class="flex-1 p-4 justify-center align-middle border-2 border-neutral bg-neutral/20">
+        <div class="container mx-auto items-center flex justify-center mt-20">
+            <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4">
+
+                <h2 class="font-semibold text-4xl text-secondary pb-4">
+                    The E-W Framework includes
+                </h2>
+
+                <ul class="list-disc px-6">
+                    <li>
+                        <h2 class="text-xl mb-4 font-semibold text-secondary">Essential Questions</h2>
+                        <p class="mb-4 text-secondary">
+                            Twenty questions essential for E-W data systems to answer about how students are
+                            progressing from early education through career—and using the answers to guide action.
+                        </p>
+                    </li>
+                    <li>
+                        <h6 class="text-xl mb-4 font-semibold text-secondary">Indicators</h6>
+                        <p class="mb-4 text-secondary">
+                            Student outcomes and milestones and related system conditions
+                            associated with economic mobility and security, plus guidance
+                            on how to measure them (Metrics).
+                        </p>
+                    </li>
+                    <li>
+                        <h6 class="text-xl mb-4 font-semibold text-secondary">Disaggregates</h6>
+                        <p class="mb-4 text-secondary">
+                            Characteristics that E-W systems should use to break down
+                            data, plus guidance on how to collect them.
+                        </p>
+                    </li>
+                    <li>
+                        <h6 class="text-xl mb-4 font-semibold text-secondary">Evidence-Based Practices</h6>
+                        <p class="mb-4 text-secondary">
+                            The framework is centered around equity-based
+                            principles and also provides evidence based practices.
+                        </p>
+                    </li>
+                </ul>
+
+
+                @* <div class="flex p-4 justify-center align-middle border-2 border-neutral bg-neutral/20">
                     <h6 class="text-xl mb-4 font-semibold text-secondary">Essential Questions</h6>
                     <p class="mb-4 text-secondary">
                         Twenty questions essential for E-W data systems to answer about how students are
@@ -61,32 +92,44 @@
                         The framework is centered around equity-based
                         principles and also provides evidence based practices.
                     </p>
-                </div>
+                </div> *@
+            </div>
+        </div>
+
+        <div class="container mx-auto items-center flex justify-center mt-8 ">
+            <div class="w-full md:w-10/12 xl:w-8/12 px-4 ">
+                <img alt="EW Data Equity Principals Diagram" src="images/ew-diagram.png" class="w-full align-middle shadow rounded-lg bg-white p-5" />
             </div>
         </div>
     </section>
 
     <!-- What EW Tool Does Section -->
-    <section class="py-24 relative items-center flex">
+    <section class="relative items-center pb-24">
         <div class="container mx-auto items-center flex flex-wrap justify-center">
-            <div class="w-full md:w-8/12 lg:w-6/12 xl:w-6/12 px-4 ">
-                <div class="pt-32* sm:pt-0">
-                    <h2 class="font-semibold text-4xl text-secondary pb-4">
-                        What does the E-W Analysis Tool do?
-                    </h2>
-                    <p class="mt-4 text-lg leading-relaxed font-semibold text-secondary/80">
-                        This Analysis Tool was developed by Double Line to build upon the rich information in the
-                        E-W Framework and enable you to understand which indicators your data systems are prepared for.
-                        It then calculates how well your data satisfies the recommended metrics for each Indicator,
-                        giving you a visual representation of your system's readiness by Indicator and by Essential Question.
-                    </p>
-                </div>
+            <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4 ">
+                <h2 class="font-semibold text-4xl text-secondary pb-4">
+                    What does the E-W Analysis Tool do?
+                </h2>
+                <p class="mt-4 text-lg leading-relaxed font-semibold text-secondary/80">
+                    This Analysis Tool was developed by Double Line to build upon the rich information in the
+                    E-W Framework and enable you to understand which indicators your data systems are prepared for.
+                    It then calculates how well your data satisfies the recommended metrics for each Indicator,
+                    giving you a visual representation of your system's readiness by Indicator and by Essential Question.
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-24 bg-gray-100/60 inset-shadow-sm shadow-sm">
+    <section class="py-24 bg-gray-100/60 inset-shadow-sm border-b border-t border-gray-300/40">
+        <div class="container mx-auto items-center flex flex-wrap justify-center">
+            <div class="w-full md:w-10/12 lg:w-10/12 xl:w-10/12 px-4 justify-center ">
+                <h2 class="font-semibold text-4xl text-secondary pb-4 text-center">
+                    How To Use the E-W Analysis Tool
+                </h2>
+            </div>
+        </div>
+
         <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto px-6">
             <div class="card">
                 <div class="card-body text-center">
@@ -117,133 +160,23 @@
             </div>
         </div>
 
-        <div class="pt-24 container  mx-auto items-center flex flex-wrap justify-center">
+        <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
             <div class="w-full max-w-6xl lg:w-8/12* px-6">
 
                 <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
                     Input your Data Inventory
                 </h2>
 
-                <div class="join join-vertical w-full text-secondary/80 ">
-                    <!-- Step 1 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition">
-                            Navigate to the Dashboard
+                @foreach (var item in inventory)
+                {
+                    <div class="collapse collapse-arrow *join-item border-b rounded-none">
+                        <input type="checkbox" name="data-inventory-list" class="peer" aria-label="data-inventory-list" />
+                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary">
+                            @item.Title
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Create an E-W data readiness inventory directly from the dashboard.</li>
-                            </ul>
-                        </div>
+                        <div class="collapse-content font-semibold text-secondary/80">@((MarkupString)item.Content)</div>
                     </div>
-
-                    <!-- Step 2 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Select and automatically interrogate an Ed-Fi ODS
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2 opacity-70* font-semibold">
-                                <li>The E-W Analysis Tool can securely interrogate an Ed-Fi ODS through an API connection.</li>
-                                <li>Select <strong>Ed-Fi ODS</strong> as a Data Source.</li>
-                                <li>Input the appropriate connection details for your ODS.</li>
-                                <li>Click <strong>“Interrogate Data”</strong> to check data availability.</li>
-                                <li>View record counts and updated readiness results in Quick View.</li>
-                                <li>Provide extra info or manual scoring in the Details view.</li>
-                                <li>Supports multiple historical versions of this data source.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Select and automatically interrogate a CEDS Data Warehouse
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Download the CEDS DW SQL Interrogation Scripts.</li>
-                                <li>Run the scripts in your environment to interrogate CEDS DW tables.</li>
-                                <li>Scripts generate a Results File you can save to your computer.</li>
-                                <li>Upload the Results File into the E-W Analysis Tool.</li>
-                                <li>View record counts and readiness results in Quick View.</li>
-                                <li>Supports multiple historical versions of this data source.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 4 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Create Data Sources for manual input
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Create additional Data Sources for repositories not automatically interrogated.</li>
-                                <li>Input descriptions (e.g., Student Assessments, Postsecondary Statistics).</li>
-                                <li>Navigate to each data element to provide scoring and notes.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 5 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Download your results
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Choose <strong>Save My Work</strong> to download your inventory results anytime.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 6 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Upload previous results
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Choose <strong>Upload My Work</strong> to re-use previously saved results.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 7 -->
-                    <div class="collapse collapse-arrow join-item border-b">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            Configure which Data Sources to analyze
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Mark Data Sources you want to analyze as <strong>Active</strong>.</li>
-                                <li>Select <strong>Run Analysis</strong> to generate reports.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Step 8 -->
-                    <div class="collapse collapse-arrow join-item">
-                        <input type="checkbox" class="peer" />
-                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                            View quick results on the Dashboard
-                        </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
-                            <ul class="list-disc pl-6 space-y-2">
-                                <li>Summary results for multiple measures appear on the Dashboard.</li>
-                                <li>Quick view of essential questions is also available.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
 
@@ -254,14 +187,25 @@
                     View Readiness Scores and Plan your Roadmap
                 </h2>
 
-                <div class="join join-vertical w-full text-secondary/80 ">
+                @foreach (var item in readinessScore)
+                {
+                    <div class="collapse collapse-arrow border-b rounded-none">
+                        <input type="checkbox" name="readiness-score-list" class="peer" aria-label="readiness-score-list" />
+                        <div class="collapse-title text-lg font-semibold peer-checked:text-primary">
+                            @item.Title
+                        </div>
+                        <div class="collapse-content font-semibold text-secondary/80">@((MarkupString)item.Content)</div>
+                    </div>
+                }
+
+                <div class="hidden join join-vertical w-full text-secondary/80 ">
                     <!-- Step 1 -->
                     <div class="collapse collapse-arrow join-item border-b">
                         <input type="checkbox" class="peer" />
                         <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
                             Navigate to the Reports and Analysis page for detailed insight into your E-W data readiness
                         </div>
-                        <div class="collapse-content font-semibold transition duration-800">
+                        <div class="collapse-content font-semibold transition duration">
                             <ul class="list-disc pl-6 space-y-2">
                                 <li>Create an E-W data readiness inventory directly from the dashboard.</li>
                             </ul>
@@ -274,7 +218,7 @@
                         <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
                             View Overall Summary Scores of Data Readiness
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
+                        <div class="collapse-content font-semibold text-secondary/80 transition duration">
                             <ul class="list-disc pl-6 space-y-2 opacity-70* font-semibold">
                                 <li>
                                     The Analysis Tool takes the results of the Data Source Inventory and runs an analysis
@@ -291,7 +235,7 @@
                         <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
                             View Essential Question readiness scoring
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
+                        <div class="collapse-content font-semibold text-secondary/80 transition duration">
                             <ul class="list-disc pl-6 space-y-2">
                                 <li>Each Essential Question will be listed, with a readiness score based on the availability and quality of the data in your data inventory.</li>
                                 <li>Click on an EQ to see a more detailed breakdown of data readiness by the associated Indicators.</li>
@@ -307,7 +251,7 @@
                         <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
                             View Indicator readiness scoring
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
+                        <div class="collapse-content font-semibold text-secondary/80 transition duration">
                             <ul class="list-disc pl-6 space-y-2">
                                 <li>
                                     Each Indicator will be listed, with a readiness score based on the availability
@@ -325,7 +269,7 @@
                         <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
                             Print a one-page summary to use in discussions with stakeholders
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">
+                        <div class="collapse-content font-semibold text-secondary/80 transition duration">
                             <ul class="list-disc pl-6 space-y-2">
                                 <li>
                                     The Analysis Tool generates various Readiness and Benchmarking reports to
@@ -337,240 +281,10 @@
                 </div>
             </div>
         </div>
-
-    </section>
-
-    <!-- Input Data Inventory Section -->
-    <section class="hidden pt-24 items-center flex bg-gray-100/60">
-        <div class="container mx-auto items-center flex flex-wrap justify-center">
-            <div class="w-full lg:w-8/12 xl:w-8/12 px-4 xl:px-24">
-                <div class="sm:pt-0 ">
-                    <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
-                        Input your Data Inventory
-                    </h2>
-
-                    <div class="join join-vertical">
-                        <!-- Step 1 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition">
-                                Navigate to the Dashboard
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 2 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Select and automatically interrogate an Ed-Fi ODS
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2 opacity-70* font-semibold">
-                                    <li>The E-W Analysis Tool can securely interrogate an Ed-Fi ODS through an API connection.</li>
-                                    <li>Select <strong>Ed-Fi ODS</strong> as a Data Source.</li>
-                                    <li>Input the appropriate connection details for your ODS.</li>
-                                    <li>Click <strong>“Interrogate Data”</strong> to check data availability.</li>
-                                    <li>View record counts and updated readiness results in Quick View.</li>
-                                    <li>Provide extra info or manual scoring in the Details view.</li>
-                                    <li>Supports multiple historical versions of this data source.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 3 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Select and automatically interrogate a CEDS Data Warehouse
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Download the CEDS DW SQL Interrogation Scripts.</li>
-                                    <li>Run the scripts in your environment to interrogate CEDS DW tables.</li>
-                                    <li>Scripts generate a Results File you can save to your computer.</li>
-                                    <li>Upload the Results File into the E-W Analysis Tool.</li>
-                                    <li>View record counts and readiness results in Quick View.</li>
-                                    <li>Supports multiple historical versions of this data source.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 4 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Create Data Sources for manual input
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Create additional Data Sources for repositories not automatically interrogated.</li>
-                                    <li>Input descriptions (e.g., Student Assessments, Postsecondary Statistics).</li>
-                                    <li>Navigate to each data element to provide scoring and notes.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 5 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Download your results
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Choose <strong>Save My Work</strong> to download your inventory results anytime.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 6 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Upload previous results
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Choose <strong>Upload My Work</strong> to re-use previously saved results.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 7 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Configure which Data Sources to analyze
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Mark Data Sources you want to analyze as <strong>Active</strong>.</li>
-                                    <li>Select <strong>Run Analysis</strong> to generate reports.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 8 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                View quick results on the Dashboard
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Summary results for multiple measures appear on the Dashboard.</li>
-                                    <li>Quick view of essential questions is also available.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Readiness Scores and Roadmap Section -->
-    <section class="hidden py-24 relative items-center flex bg-gray-100/60">
-        <div class="container mx-auto items-center flex flex-wrap justify-center">
-            <div class="w-full lg:w-8/12 xl:w-8/12 px-4 xl:px-24">
-                <div class="pt-32* sm:pt-0 ">
-                    <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
-                        View Readiness Scores and Plan your Roadmap
-                    </h2>
-
-                    <div class="join join-vertical">
-                        <!-- Step 1 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Navigate to the Reports and Analysis page for detailed insight into your E-W data readiness
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 2 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                View Overall Summary Scores of Data Readiness
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2 opacity-70* font-semibold">
-                                    <li>
-                                        The Analysis Tool takes the results of the Data Source Inventory and runs an analysis
-                                        of data availability against each Essential Question and Indicator, displaying
-                                        Readiness Scores and enabling the user to drill down into the details to the data element level
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 3 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                View Essential Question readiness scoring
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>Each Essential Question will be listed, with a readiness score based on the availability and quality of the data in your data inventory.</li>
-                                    <li>Click on an EQ to see a more detailed breakdown of data readiness by the associated Indicators.</li>
-                                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements.</li>
-                                    <li>EQ’s can be sorted by various factors.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 4 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                View Indicator readiness scoring
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>
-                                        Each Indicator will be listed, with a readiness score based on the availability
-                                        and quality of the data in your data inventory.
-                                    </li>
-                                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements.</li>
-                                    <li>Indicators can be sorted by various factors.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Step 5 -->
-                        <div class="collapse collapse-arrow join-item">
-                            <input type="checkbox" class="peer" />
-                            <div class="collapse-title text-lg font-semibold peer-checked:text-primary transition ">
-                                Print a one-page summary to use in discussions with stakeholders
-                            </div>
-                            <div class="collapse-content">
-                                <ul class="list-disc pl-6 space-y-2">
-                                    <li>
-                                        The Analysis Tool generates various Readiness and Benchmarking reports to
-                                        help support discussions at the Data / Policy / Agency level.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- FAQ Section-->
-    <section class="relative pt-24 items-center flex inset-shadow-sm">
+    <section class="relative pt-24 items-center flex">
         <div class="container mx-auto items-center flex flex-wrap justify-center">
             <div class="w-full xl:w-11/12 px-4 sm:px-0">
                 <h2 class="font-semibold text-4xl text-secondary mb-12">
@@ -580,11 +294,11 @@
                 @foreach (var faq in faqs)
                 {
                     <div class="collapse collapse-arrow collapse-left pb-4 list-[square] rounded-lg">
-                        <input type="checkbox" name="faq-list" class="peer" />
+                        <input type="checkbox" name="faq-list" class="peer" aria-label="faq-list" />
                         <div class="collapse-title bg-gray-100 rounded-lg font-semibold text-secondary/80 text-xl hover:cursor-pointer peer-checked:text-primary transition">
                             @faq.Title
                         </div>
-                        <div class="collapse-content font-semibold text-secondary/80 transition duration-800">@((MarkupString)faq.Content)</div>
+                        <div class="collapse-content font-semibold text-secondary/80 transition duration">@((MarkupString)faq.Content)</div>
                     </div>
                 }
             </div>
@@ -618,6 +332,167 @@
         public string Content { get; set; } = String.Empty;
     }
 
+    private List<ListItem> inventory = new()
+    {
+        new ListItem
+        {
+            Title = "Navigate to the Dashboard",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Select and automatically interrogate an Ed-Fi ODS",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2 opacity-70* font-semibold"">
+                    <li>The E-W Analysis Tool can securely interrogate an Ed-Fi ODS through an API connection.</li>
+                    <li>Select <strong>Ed-Fi ODS</strong> as a Data Source.</li>
+                    <li>Input the appropriate connection details for your ODS.</li>
+                    <li>Click <strong>“Interrogate Data”</strong> to check data availability.</li>
+                    <li>View record counts and updated readiness results in Quick View.</li>
+                    <li>Provide extra info or manual scoring in the Details view.</li>
+                    <li>Supports multiple historical versions of this data source.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Select and automatically interrogate a CEDS Data Warehouse",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Download the CEDS DW SQL Interrogation Scripts.</li>
+                    <li>Run the scripts in your environment to interrogate CEDS DW tables.</li>
+                    <li>Scripts generate a Results File you can save to your computer.</li>
+                    <li>Upload the Results File into the E-W Analysis Tool.</li>
+                    <li>View record counts and readiness results in Quick View.</li>
+                    <li>Supports multiple historical versions of this data source.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Create Data Sources for manual input",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Create additional Data Sources for repositories not automatically interrogated.</li>
+                    <li>Input descriptions (e.g., Student Assessments, Postsecondary Statistics).</li>
+                    <li>Navigate to each data element to provide scoring and notes.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Download your results",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Choose <strong>Save My Work</strong> to download your inventory results anytime.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Upload previous results",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Choose <strong>Upload My Work</strong> to re-use previously saved results.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "Configure which Data Sources to analyze",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Mark Data Sources you want to analyze as <strong>Active</strong>.</li>
+                    <li>Select <strong>Run Analysis</strong> to generate reports.</li>
+                </ul>
+            "
+        },
+
+        new ListItem
+        {
+            Title = "View quick results on the Dashboard",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Summary results for multiple measures appear on the Dashboard.</li>
+                    <li>Quick view of essential questions is also available.</li>
+                </ul>
+            "
+        }
+    };
+
+    private List<ListItem> readinessScore = new()
+    {
+        new ListItem
+        {
+            Title = "Navigate to the Reports and Analysis page for detailed insight into your E-W data readiness",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
+                </ul>
+            "
+        },
+        new ListItem
+        {
+            Title = "View Overall Summary Scores of Data Readiness",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2 opacity-70* font-semibold"">
+                    <li>
+                        The Analysis Tool takes the results of the Data Source Inventory and runs an analysis
+                        of data availability against each Essential Question and Indicator, displaying
+                        Readiness Scores and enabling the user to drill down into the details to the data element level
+                    </li>
+                </ul>
+            "
+        },
+        new ListItem
+        {
+            Title = "View Essential Question readiness scoring",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>Each Essential Question will be listed, with a readiness score based on the availability and quality of the data in your data inventory.</li>
+                    <li>Click on an EQ to see a more detailed breakdown of data readiness by the associated Indicators.</li>
+                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements.</li>
+                    <li>EQ’s can be sorted by various factors.</li>
+                </ul>
+            "
+        },
+        new ListItem
+        {
+            Title = "View Indicator readiness scoring",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>
+                        Each Indicator will be listed, with a readiness score based on the availability
+                        and quality of the data in your data inventory.
+                    </li>
+                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements.</li>
+                    <li>Indicators can be sorted by various factors.</li>
+                </ul>
+            "
+        },
+        new ListItem
+        {
+            Title = "Print a one-page summary to use in discussions with stakeholders",
+            Content = @"
+                <ul class=""list-disc pl-6 space-y-2"">
+                    <li>
+                        The Analysis Tool generates various Readiness and Benchmarking reports to
+                        help support discussions at the Data / Policy / Agency level.
+                    </li>
+                </ul>
+            "
+        }
+    };
 
     private List<ListItem> faqs = new()
     {
