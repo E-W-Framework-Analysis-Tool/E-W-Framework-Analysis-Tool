@@ -1,4 +1,4 @@
-namespace EwFrameworkAnalysis.Common.Models;
+namespace EwFrameworkAnalysis.Common.Models.Framework;
 
 public enum Sector
 {

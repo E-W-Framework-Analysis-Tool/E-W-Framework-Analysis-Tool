@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EdFi.Suite3.OdsApi.Sdk.Standard.5.2.0" Version="7.4.383" />
     <PackageReference Include="Flurl" Version="4.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
