@@ -2,7 +2,8 @@ using EwFrameworkAnalysis.Common.Assessors.Ceds;
 using EwFrameworkAnalysis.Common.Services;
 using FluentAssertions;
 
-namespace EwFrameworkAnalysis.UI.UnitTests.Services;
+namespace EwFrameworkAnalysis.Common.UnitTests.Services;
+
 public class CedsDWAssessmentOrchestratorTests
 {
     [Fact]

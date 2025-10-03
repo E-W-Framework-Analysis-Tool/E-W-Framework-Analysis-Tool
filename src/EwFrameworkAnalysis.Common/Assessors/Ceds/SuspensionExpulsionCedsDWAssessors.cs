@@ -8,6 +8,7 @@ SELECT
     '{DataElementName}' AS DataElementName,
     'RecordCount' AS CharacteristicType,
     CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
+    NULL AS SubItemLabel,
     NULL AS Remarks
 FROM RDS.FactK12StudentDisciplines fact
 JOIN RDS.DimDisciplineStatuses discStat ON fact.DisciplineStatusId = discStat.DimDisciplineStatusId
@@ -36,6 +37,7 @@ SELECT
     '{DataElementName}' AS DataElementName,
     'RecordCount' AS CharacteristicType,
     CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
+    NULL AS SubItemLabel,
     NULL AS Remarks
 FROM RDS.FactK12StudentDisciplines fact
 JOIN RDS.DimDisciplineStatuses discStat ON fact.DisciplineStatusId = discStat.DimDisciplineStatusId
