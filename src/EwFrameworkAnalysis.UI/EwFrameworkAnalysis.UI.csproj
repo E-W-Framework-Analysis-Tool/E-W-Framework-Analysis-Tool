@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -11,20 +11,20 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.8" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EwFrameworkAnalysis.Common\EwFrameworkAnalysis.Common.csproj" />
+  </ItemGroup>
+
   <Target Name="EnsureNodeModules" BeforeTargets="Build">
     <Message Text="Checking Tailwind CSS setup..." Importance="high" />
     
     <!-- Check if node_modules exists -->
-    <Error Condition="!Exists('node_modules')" 
-           Text="Node modules not found. Run 'npm install' in $(MSBuildProjectDirectory) first." />
+    <Error Condition="!Exists('node_modules')" Text="Node modules not found. Run 'npm install' in $(MSBuildProjectDirectory) first." />
     
     <!-- Check if input.css exists -->
-    <Error Condition="!Exists('wwwroot/css/input.css')" 
-           Text="Missing wwwroot/css/input.css. Create this file with your Tailwind imports." />
+    <Error Condition="!Exists('wwwroot/css/input.css')" Text="Missing wwwroot/css/input.css. Create this file with your Tailwind imports." />
     
-    <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/app.css" 
-          WorkingDirectory="$(MSBuildProjectDirectory)" 
-          ContinueOnError="false" />
+    <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/app.css" WorkingDirectory="$(MSBuildProjectDirectory)" ContinueOnError="false" />
   </Target>
 
 </Project>

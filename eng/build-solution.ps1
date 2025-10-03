@@ -86,6 +86,10 @@ dotnet build --no-restore --configuration $Configuration || Fail ".NET build fai
 Write-Host "`nRunning: dotnet test EwFrameworkAnalysis.UI.UnitTests\EwFrameworkAnalysis.UI.UnitTests.csproj --no-build --configuration $Configuration"
 dotnet test EwFrameworkAnalysis.UI.UnitTests\EwFrameworkAnalysis.UI.UnitTests.csproj --no-build --configuration $Configuration || Fail ".NET tests failed."
 
+Write-Host "`nRunning: dotnet test EwFrameworkAnalysis.Common.UnitTests\EwFrameworkAnalysis.Common.UnitTests.csproj --no-build --configuration $Configuration"
+dotnet test EwFrameworkAnalysis.Common.UnitTests\EwFrameworkAnalysis.Common.UnitTests.csproj --no-build --configuration $Configuration || Fail ".NET tests failed."
+
+
 # Step 5: publish (optional)
 if ($Publish) {
     Write-Host "`nPublishing to: $PublishPath"
