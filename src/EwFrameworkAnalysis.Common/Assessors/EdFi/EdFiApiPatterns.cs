@@ -142,4 +142,99 @@ public static class EdFiApiPatterns
 
         throw new InvalidOperationException("total header not found in response. Ensure totalCount=true is in query params.");
     }
+
+    /// <summary>
+    /// Pages through an Ed-Fi API endpoint and processes each item with a custom action.
+    /// </summary>
+    /// <typeparam name="T">The type of resource returned by the API endpoint.</typeparam>
+    /// <param name="client">The HTTP client configured with base address and authentication.</param>
+    /// <param name="endpoint">The API endpoint path (e.g., "ed-fi/students").</param>
+    /// <param name="processItem">An action to process each item. Use this to accumulate state, filter, etc.</param>
+    /// <param name="context">Optional assessor context for progress reporting.</param>
+    /// <param name="queryParams">Optional query parameters to include in each request.</param>
+    /// <param name="pageSize">The number of records to retrieve per page. Default is 200.</param>
+    /// <param name="ct">A cancellation token to cancel the operation.</param>
+    /// <returns>The total number of records processed.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an API request returns a non-success status code.</exception>
+    /// <remarks>
+    /// This method retrieves and deserializes all pages of results, calling processItem for each record.
+    /// The processItem action can modify external state (e.g., min/max tracking, custom filtering).
+    /// </remarks>
+    public static async Task<int> PageAndProcessAsync<T>(
+        HttpClient client,
+        string endpoint,
+        Action<T> processItem,
+        AssessorContext? context = null,
+        Dictionary<string, string>? queryParams = null,
+        int pageSize = 200,
+        CancellationToken ct = default)
+    {
+        // Try to get total count for progress reporting
+        int? estimatedTotal = null;
+        try
+        {
+            estimatedTotal = await CountFromHeaderAsync(client, endpoint, queryParams, ct);
+        }
+        catch
+        {
+            // Silently continue - we'll just page without progress percentage
+        }
+
+        var offset = 0;
+        var recordsProcessed = 0;
+        var hasMorePages = true;
+        var pageNumber = 1;
+
+        while (hasMorePages)
+        {
+            var url = endpoint
+                .SetQueryParams(queryParams ?? [])
+                .SetQueryParam("offset", offset)
+                .SetQueryParam("limit", pageSize);
+
+            var response = await client.GetAsync(url, ct);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException($"API request failed: {response.StatusCode}");
+
+            var json = await response.Content.ReadAsStringAsync(ct);
+            var items = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (items == null || items.Count == 0)
+            {
+                hasMorePages = false;
+                break;
+            }
+
+            // Process each item
+            foreach (var item in items)
+            {
+                processItem(item);
+            }
+
+            recordsProcessed += items.Count;
+
+            // Report progress if we have multiple pages
+            if (estimatedTotal.HasValue && estimatedTotal.Value > pageSize)
+            {
+                var progressPercent = Math.Min(100, (int)((recordsProcessed * 100.0) / estimatedTotal.Value));
+                context?.ReportProgress(
+                    progressPercent,
+                    $"Page {pageNumber} - {recordsProcessed:N0} / {estimatedTotal:N0} records"
+                );
+            }
+
+            if (items.Count < pageSize)
+                hasMorePages = false;
+            else
+                offset += pageSize;
+
+            pageNumber++;
+        }
+
+        return recordsProcessed;
+    }
 }
