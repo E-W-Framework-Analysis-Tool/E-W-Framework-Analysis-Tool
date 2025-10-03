@@ -1,4 +1,5 @@
 using System.Text.Json;
+using EwFrameworkAnalysis.Common.Services;
 using Flurl;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
@@ -15,6 +16,7 @@ public static class EdFiApiPatterns
     /// <param name="client">The HTTP client configured with base address and authentication.</param>
     /// <param name="endpoint">The API endpoint path (e.g., "ed-fi/students").</param>
     /// <param name="predicate">A function to test each resource for a match condition.</param>
+    /// <param name="context">Optional assessor context for progress reporting.</param>
     /// <param name="queryParams">Optional query parameters to include in each request.</param>
     /// <param name="pageSize">The number of records to retrieve per page. Default is 200.</param>
     /// <param name="ct">A cancellation token to cancel the operation.</param>
@@ -28,13 +30,27 @@ public static class EdFiApiPatterns
         HttpClient client,
         string endpoint,
         Func<T, bool> predicate,
+        AssessorContext? context = null,
         Dictionary<string, string>? queryParams = null,
         int pageSize = 200,
         CancellationToken ct = default)
     {
+        // First, try to get total count from header to provide better progress
+        int? estimatedTotal = null;
+        try
+        {
+            estimatedTotal = await CountFromHeaderAsync(client, endpoint, queryParams, ct);
+        }
+        catch
+        {
+            // Silently continue - we'll just page without progress percentage
+        }
+
         var offset = 0;
         var totalMatches = 0;
+        var recordsProcessed = 0;
         var hasMorePages = true;
+        var pageNumber = 1;
 
         while (hasMorePages)
         {
@@ -42,6 +58,7 @@ public static class EdFiApiPatterns
                 .SetQueryParams(queryParams ?? [])
                 .SetQueryParam("offset", offset)
                 .SetQueryParam("limit", pageSize);
+
             var response = await client.GetAsync(url, ct);
 
             if (!response.IsSuccessStatusCode)
@@ -59,12 +76,26 @@ public static class EdFiApiPatterns
                 break;
             }
 
-            totalMatches += items.Count(predicate);
+            var pageMatches = items.Count(predicate);
+            totalMatches += pageMatches;
+            recordsProcessed += items.Count;
+
+            // Only report progress if we have multiple pages
+            if (estimatedTotal.HasValue && estimatedTotal.Value > pageSize)
+            {
+                var progressPercent = Math.Min(100, (int)((recordsProcessed * 100.0) / estimatedTotal.Value));
+                context?.ReportProgress(
+                    progressPercent,
+                    $"Page {pageNumber} - {recordsProcessed:N0} / {estimatedTotal:N0} records - {totalMatches:N0} matches"
+                );
+            }
 
             if (items.Count < pageSize)
                 hasMorePages = false;
             else
                 offset += pageSize;
+
+            pageNumber++;
         }
 
         return totalMatches;
@@ -74,7 +105,7 @@ public static class EdFiApiPatterns
     /// Retrieves the total count of resources from the Ed-Fi API response header.
     /// </summary>
     /// <param name="client">The HTTP client configured with base address and authentication.</param>
-    /// <param name="endpoint">The API endpoint path (e.g., "ed-fi/students").</param>
+    /// <param name="endpoint">The API endpoint path (e.g., "/ed-fi/students").</param>
     /// <param name="queryParams">Optional query parameters to filter the count.</param>
     /// <param name="ct">A cancellation token to cancel the operation.</param>
     /// <returns>The total count of resources as reported by the API's total-count header.</returns>
@@ -93,7 +124,9 @@ public static class EdFiApiPatterns
     {
         queryParams ??= [];
         queryParams["totalCount"] = "true";
+
         var url = endpoint.SetQueryParams(queryParams);
+
         var response = await client.GetAsync(url, ct);
 
         if (!response.IsSuccessStatusCode)

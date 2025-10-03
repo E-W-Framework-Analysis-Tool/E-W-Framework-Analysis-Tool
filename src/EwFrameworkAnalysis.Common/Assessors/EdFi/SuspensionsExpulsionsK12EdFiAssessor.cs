@@ -1,5 +1,6 @@
 using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
+using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
@@ -20,15 +21,25 @@ public class SuspensionsExpulsionsK12EdFiAssessor : IEdFiAssessor
 
     public string AssessmentDescription => $"Count of /ed-fi/disciplineActions where disciplines contains one of: {string.Join(",", _standardDescriptors)}";
 
-    public async Task<DataElementAssessment> AssessAsync(HttpClient httpClient, DataSource dataSource)
+    public async Task<DataElementAssessment> AssessAsync(
+        HttpClient httpClient,
+        DataSource dataSource,
+        AssessorContext context)
     {
+        context.Log($"Beginning assessment: {DataElementName}");
+        context.ReportProgress(0, "Initializing...");
+
         var count = await EdFiApiPatterns.PageAndCountMatchesAsync<EdFiDisciplineAction>(
             httpClient,
             "ed-fi/disciplineActions",
             resp => resp.Disciplines?.Any(d =>
                 d.DisciplineDescriptor != null &&
-                _standardDescriptors.Contains(d.DisciplineDescriptor)) ?? false
+                _standardDescriptors.Contains(d.DisciplineDescriptor)) ?? false,
+            context
         );
+
+        context.Log($"Assessment complete: Found {count:N0} suspension/expulsion records");
+        context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment()
         {
