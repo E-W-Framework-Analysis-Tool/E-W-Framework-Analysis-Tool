@@ -189,13 +189,13 @@ public class DataSourceAssessmentFileParser
                 }
                 return new ReportedAvailability(judgment) { Remarks = row.Remarks };
 
-            case "CompletenessScore":
-                if (!decimal.TryParse(row.Value, out var score))
-                {
-                    throw new FormatException(
-                        $"Invalid CompletenessScore value for '{row.DataElementName}': '{row.Value}'. Expected decimal.");
-                }
-                return new CompletenessScore(score) { Remarks = row.Remarks };
+            //case "Completeness":
+            //    if (!decimal.TryParse(row.Value, out var score))
+            //    {
+            //        throw new FormatException(
+            //            $"Invalid CompletenessScore value for '{row.DataElementName}': '{row.Value}'. Expected decimal.");
+            //    }
+            //    return new Completeness(score) { Remarks = row.Remarks };
 
             default:
                 throw new NotSupportedException(

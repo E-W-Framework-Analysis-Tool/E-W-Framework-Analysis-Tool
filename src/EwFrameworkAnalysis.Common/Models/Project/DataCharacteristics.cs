@@ -71,7 +71,7 @@ public class Completeness : DataCharacteristicBase
     public int TotalRecords { get; }
     public int PopulatedRecords { get; }
     public string AttributeName { get; }
-    public double Percentage => TotalRecords == 0 ? 0 : (PopulatedRecords * 100.0) / TotalRecords;
+    public decimal Percentage => (decimal)(TotalRecords == 0 ? 0 : (PopulatedRecords * 100.0) / TotalRecords);
 }
 
 public class Distribution : DataCharacteristicBase

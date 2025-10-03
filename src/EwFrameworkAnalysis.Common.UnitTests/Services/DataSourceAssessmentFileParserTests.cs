@@ -150,12 +150,12 @@ Suspensions (K-12),CompletenessScore,87.5,""Based on StudentId, IncidentDate, Di
         Assert.Equal(2, element.Characteristics.Count);
 
         var recordCount = element.Characteristics.OfType<RecordCount>().FirstOrDefault();
-        var completeness = element.Characteristics.OfType<CompletenessScore>().FirstOrDefault();
+        var completeness = element.Characteristics.OfType<Completeness>().FirstOrDefault();
 
         Assert.NotNull(recordCount);
         Assert.NotNull(completeness);
         Assert.Equal(1020, recordCount.Value);
-        Assert.Equal(87.5m, completeness.Score);
+        Assert.Equal(87.5m, completeness.Percentage);
         Assert.Equal("Based on StudentId, IncidentDate, DisciplinaryActionTaken", completeness.Remarks);
 
         _output.WriteLine($"Element has {element.Characteristics.Count} characteristics grouped correctly");
