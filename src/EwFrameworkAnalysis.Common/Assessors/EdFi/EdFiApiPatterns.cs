@@ -1,6 +1,6 @@
-using System.Text.Json;
 using EwFrameworkAnalysis.Common.Services;
 using Flurl;
+using Newtonsoft.Json;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
@@ -65,10 +65,7 @@ public static class EdFiApiPatterns
                 throw new HttpRequestException($"API request failed: {response.StatusCode}");
 
             var json = await response.Content.ReadAsStringAsync(ct);
-            var items = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var items = JsonConvert.DeserializeObject<List<T>>(json);
 
             if (items == null || items.Count == 0)
             {
@@ -198,10 +195,7 @@ public static class EdFiApiPatterns
                 throw new HttpRequestException($"API request failed: {response.StatusCode}");
 
             var json = await response.Content.ReadAsStringAsync(ct);
-            var items = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var items = JsonConvert.DeserializeObject<List<T>>(json);
 
             if (items == null || items.Count == 0)
             {
