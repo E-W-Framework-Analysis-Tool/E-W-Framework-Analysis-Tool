@@ -10,8 +10,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
+builder.Services.AddSingleton<AnalysisProjectService>();
 
-var assessorAssembly = typeof(IEdFiAssessor).Assembly; // Gets the assembly where IEdFiAssessor is defined
+var assessorAssembly = typeof(IEdFiAssessor).Assembly;
 var assessorImplementations = assessorAssembly
     .GetTypes()
     .Where(t => typeof(IEdFiAssessor).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
@@ -21,4 +22,10 @@ foreach (var implementation in assessorImplementations)
     builder.Services.AddScoped(typeof(IEdFiAssessor), implementation);
 }
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+// Initialize the project service after the app is built (JSRuntime is now available)
+var projectService = host.Services.GetRequiredService<AnalysisProjectService>();
+await projectService.InitializeAsync();
+
+await host.RunAsync();

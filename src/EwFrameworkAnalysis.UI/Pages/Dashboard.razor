@@ -5,6 +5,7 @@
 @inject IJSRuntime JSRuntime
 @inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
+
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Project Header -->
     <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
@@ -386,20 +387,23 @@
     private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
     private int AutomatedSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type != DataSourceType.Custom) ?? 0;
     private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
         ProjectSvc.Changed += OnProjectChanged;
-        await ProjectSvc.InitializeAsync();
         InitializeQuestionScores();
     }
+
     public void Dispose()
     {
         ProjectSvc.Changed -= OnProjectChanged;
     }
+
     private void OnProjectChanged()
     {
         InvokeAsync(StateHasChanged);
     }
+
     private void InitializeQuestionScores()
     {
         questionScores = new List<QuestionScore>
@@ -409,23 +413,28 @@
             new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
         };
     }
+
     // Navigation methods
     private void NavigateToAnalysis()
     {
         Nav.NavigateTo("/analysis");
     }
+
     private void NavigateToAssessments()
     {
         Nav.NavigateTo("/assessments");
     }
+
     private void NavigateToBenchmarks()
     {
         Nav.NavigateTo("/benchmarks");
     }
+
     private void GoToDataSourceDetails(DataSource dataSource)
     {
         Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(dataSource.Id));
     }
+
     // Event handlers
     private async Task HandleEditProject()
     {
@@ -436,22 +445,26 @@
             await ProjectSvc.UpdateProjectDetailsAsync(newTitle);
         }
     }
+
     private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
     {
         _isModalOpen = false;
         await ProjectSvc.AddDataSourceAsync(dataSourceType);
     }
+
     private Task HandleGenerateReport()
     {
         Nav.NavigateTo("/reports");
         return Task.CompletedTask;
     }
+
     private async Task HandleExportProject()
     {
         var json = await ProjectSvc.ExportProjectAsync();
         var fileName = $"{ProjectSvc.Project.Title?.Replace(" ", "_") ?? "project"}_{DateTime.Now:yyyyMMdd_HHmm}.json";
         await JSRuntime.InvokeVoidAsync("downloadFile", fileName, json, "application/json");
     }
+
     // Utility methods
     private string GetFormattedLastModified()
     {
@@ -464,6 +477,7 @@
                 ? $"{(int)timeSpan.TotalHours} hours ago"
                 : lastModified.ToString("MMMM d, yyyy 'at' h:mm tt");
     }
+
     private string GetLastAnalysisTime()
     {
         if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
@@ -482,8 +496,10 @@
                 ? $"{(int)timeSpan.TotalHours} hours ago"
                 : $"{(int)timeSpan.TotalDays} days ago";
     }
+
     private bool IsNewlyAdded(DataSource dataSource)
         => ProjectSvc.NewlyAddedDataSourceId.HasValue && dataSource.Id == ProjectSvc.NewlyAddedDataSourceId.Value;
+
     private string GetSourceIcon(DataSourceType type) => type switch
     {
         DataSourceType.EdFiApi => "fas fa-network-wired",
@@ -491,10 +507,12 @@
         DataSourceType.Custom => "fas fa-list-check",
         _ => "fas fa-database"
     };
+
     private bool HasRecentAssessment(DataSource dataSource)
     {
         return ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).Any();
     }
+
     private string GetAssessmentSummary(DataSource dataSource)
     {
         var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
@@ -508,6 +526,7 @@
 
         return $"Last run: {timeAgo} | {elementCount} elements assessed";
     }
+
     private string GetNeverRunSummary(DataSourceType type) => type switch
     {
         DataSourceType.EdFiApi => "Never run • ~127 potential elements",
@@ -515,6 +534,7 @@
         DataSourceType.Custom => "Never run • Manual checklist items",
         _ => "Never run"
     };
+
     private string GetTimeAgo(DateTime dateTime)
     {
         var timeSpan = DateTime.UtcNow - dateTime;
@@ -522,18 +542,21 @@
              : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
              : $"{(int)timeSpan.TotalDays} days ago";
     }
+
     private string GetScoreBorderColor(decimal score) => score switch
     {
         >= 0.8m => "border-green",
         >= 0.6m => "border-yellow",
         _ => "border-red-500"
     };
+
     private string GetScoreTextColor(decimal score) => score switch
     {
         >= 0.8m => "text-green",
         >= 0.6m => "text-yellow",
         _ => "text-red-600"
     };
+
     private string GetQuestionTitle(int questionNumber) => questionNumber switch
     {
         1 => "Kindergarten Readiness",
@@ -543,6 +566,7 @@
         5 => "Early Childhood Development",
         _ => $"Question {questionNumber}"
     };
+
     private string GetIndicatorSummary(List<IndicatorScore> indicators)
     {
         if (indicators?.Any() != true) return "No indicators analyzed";
@@ -550,6 +574,7 @@
         var totalCount = indicators.Count;
         return $"{availableCount}/{totalCount} indicators available";
     }
+
     private int GetPercentage(int current, int total)
     {
         if (total == 0) return 0;

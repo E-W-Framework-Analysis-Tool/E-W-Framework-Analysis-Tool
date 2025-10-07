@@ -25,6 +25,10 @@ public class AnalysisProjectService
         _jsRuntime = jsRuntime;
     }
 
+    /// <summary>
+    /// Initialize the service - load from localStorage or create new project.
+    /// Called once on app startup from Program.cs
+    /// </summary>
     public async Task InitializeAsync()
     {
         try
@@ -33,19 +37,18 @@ public class AnalysisProjectService
             if (!string.IsNullOrEmpty(json))
             {
                 var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
-                Project = project ?? CreateSampleProject();
+                Project = project ?? new AnalysisProject();
             }
             else
             {
-                Project = CreateSampleProject();
-                await SaveAsync();
+                // No saved project, start fresh
+                Project = new AnalysisProject();
             }
         }
         catch
         {
-            // If deserialization fails, fall back to sample data
-            Project = CreateSampleProject();
-            await SaveAsync();
+            // Deserialization failed, start with empty project
+            Project = new AnalysisProject();
         }
 
         Notify();
@@ -73,7 +76,7 @@ public class AnalysisProjectService
         return Task.FromResult(JsonSerializer.Serialize(Project, GetJsonOptions()));
     }
 
-    public async Task SaveAsync()
+    private async Task SaveAsync()
     {
         try
         {
@@ -98,13 +101,11 @@ public class AnalysisProjectService
         Project.DataSources.Insert(0, dataSource);
         Project.LastModifiedAt = DateTime.UtcNow;
 
-        // Track for highlighting
         NewlyAddedDataSourceId = dataSource.Id;
 
         await SaveAsync();
         Notify();
 
-        // Clear highlighting after delay
         _ = Task.Run(async () =>
         {
             await Task.Delay(3000);
@@ -129,7 +130,7 @@ public class AnalysisProjectService
 
     public async Task SetEnabledAsync(Guid id, bool enabled)
     {
-        var ds = GetDataSource(id);
+        var ds = DataSources.FirstOrDefault(d => d.Id == id);
         if (ds is null) return;
 
         ds.Enabled = enabled;
@@ -157,6 +158,18 @@ public class AnalysisProjectService
     public DataSourceAssessment? GetAssessment(Guid id) =>
         Assessments.FirstOrDefault(a => a.Id == id);
 
+    public IEnumerable<DataSourceAssessment> GetAssessmentsForDataSource(Guid dataSourceId)
+    {
+        return Assessments.Where(a =>
+            a.DataElementAssessments.Any(dea => dea.DataSourceId == dataSourceId));
+    }
+
+    public IEnumerable<DataElementAssessment> GetDataElementAssessments(Guid assessmentId)
+    {
+        var assessment = GetAssessment(assessmentId);
+        return assessment?.DataElementAssessments ?? Enumerable.Empty<DataElementAssessment>();
+    }
+
     public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment)
     {
         if (string.IsNullOrWhiteSpace(assessment.Name))
@@ -167,13 +180,11 @@ public class AnalysisProjectService
         Project.DataSourceAssessments.Insert(0, assessment);
         Project.LastModifiedAt = DateTime.UtcNow;
 
-        // Track for highlighting
         NewlyAddedAssessmentId = assessment.Id;
 
         await SaveAsync();
         Notify();
 
-        // Clear highlighting after delay
         _ = Task.Run(async () =>
         {
             await Task.Delay(3000);
@@ -206,18 +217,6 @@ public class AnalysisProjectService
             await SaveAsync();
             Notify();
         }
-    }
-
-    public IEnumerable<DataSourceAssessment> GetAssessmentsForDataSource(Guid dataSourceId)
-    {
-        return Assessments.Where(a =>
-            a.DataElementAssessments.Any(dea => dea.DataSourceId == dataSourceId));
-    }
-
-    public IEnumerable<DataElementAssessment> GetDataElementAssessments(Guid assessmentId)
-    {
-        var assessment = GetAssessment(assessmentId);
-        return assessment?.DataElementAssessments ?? Enumerable.Empty<DataElementAssessment>();
     }
 
     #endregion
@@ -267,8 +266,8 @@ public class AnalysisProjectService
 
     private string GetDefaultDataSourceName(DataSourceType type) => type switch
     {
-        DataSourceType.EdFiApi => "Ed-Fi ODS API",
-        DataSourceType.CedsDw => "CEDS Data Warehouse",
+        DataSourceType.EdFiApi => "Ed-Fi ODS API v7.3 (DS v5.2)",
+        DataSourceType.CedsDw => "CEDS Data Warehouse v11",
         DataSourceType.Custom => "Custom Assessment",
         _ => "New Data Source"
     };
@@ -280,82 +279,6 @@ public class AnalysisProjectService
         DataSourceType.Custom => "Manual assessment checklist",
         _ => "Data source description"
     };
-
-    private AnalysisProject CreateSampleProject()
-    {
-        var project = new AnalysisProject
-        {
-            Id = Guid.NewGuid().ToString(),
-            Title = "District XYZ Analysis Project",
-            CreatedAt = DateTime.UtcNow.AddDays(-7),
-            LastModifiedAt = DateTime.UtcNow.AddHours(-2),
-            DataSources =
-            [
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Ed-Fi ODS API v7.3",
-                    Description = "Production API - District SIS",
-                    Type = DataSourceType.EdFiApi,
-                    Enabled = true
-                },
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "CEDS Data Warehouse v12",
-                    Description = "State reporting warehouse",
-                    Type = DataSourceType.CedsDw,
-                    Enabled = true
-                },
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Department of Health Data Warehouse",
-                    Description = "Manual assessment - health indicators",
-                    Type = DataSourceType.Custom,
-                    Enabled = true
-                },
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Statewide K-12 Survey Tracker",
-                    Description = "Manual assessment - survey data availability",
-                    Type = DataSourceType.Custom,
-                    Enabled = false
-                }
-            ],
-            DataSourceAssessments = []
-        };
-
-        // Create a sample assessment
-        var edFiDataSource = project.DataSources.First(ds => ds.Type == DataSourceType.EdFiApi);
-        var sampleAssessment = new DataSourceAssessment
-        {
-            Id = Guid.NewGuid(),
-            Name = "Latest Scan",
-            ConductedAt = DateTime.UtcNow.AddHours(-2),
-            Notes = "Initial assessment of Ed-Fi API",
-            DataElementAssessments =
-            [
-                new DataElementAssessment
-                {
-                    Id = Guid.NewGuid(),
-                    DataElementName = "Student Demographics",
-                    DataSourceId = edFiDataSource.Id,
-                    AssessedAt = DateTime.UtcNow.AddHours(-2),
-                    Characteristics =
-                    [
-                        new RecordCount(15420),
-                        new ReportedAvailability(AvailabilityJudgment.Available)
-                    ]
-                }
-            ]
-        };
-
-        project.DataSourceAssessments.Add(sampleAssessment);
-
-        return project;
-    }
 
     private JsonSerializerOptions GetJsonOptions()
     {
