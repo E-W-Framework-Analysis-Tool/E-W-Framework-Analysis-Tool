@@ -1,0 +1,113 @@
+@using System.Text.Json
+@using Blazored.LocalStorage
+@inject AnalysisProjectService ProjectSvc
+
+<div class="card shadow-sm rounded-lg">
+    <div class="card-body">
+
+        <div class="card-title flex justify-between pb-4">
+            <h2 class="font-title">Data Sources</h2>
+            <button href="data-source" class="btn btn-primary shadow-none border-none" onclick="add_datasource_modal.showModal()">+ Add Data Source</button>
+        </div>
+
+
+        @if (DataSources is null)
+        {
+            <p> Loading datasources. Please wait... </p>
+        }
+        else if (DataSources.Any())
+        {
+            @foreach (var datasource in DataSources)
+            {
+                <DataSourceCard DataSource="datasource" />
+            }
+        }
+        else
+        {
+            <p> No datasources found. </p>
+        }
+
+    </div>
+</div>
+
+
+<dialog id="add_datasource_modal" class="modal">
+    <div class="modal-box">
+        <!-- Header -->
+        <div class="pb-2">
+            <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
+                    <i class="fas fa-plus text-blue text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-title text-lg font-semibold text-blue">Add Data Source</h3>
+                    <p class="mt-1 text-sm text-gray">Choose the type of data source you want to add.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="">
+            <form method="dialog" class="space-y-4">
+
+                @foreach (DataSourceType type in Enum.GetValues(typeof(DataSourceType)))
+                {
+                    <!-- Data Source Type Option -->
+                    <button @onclick="() => HandleDataSourceTypeSelected(type)"
+                            class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
+                                       focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
+                                <i class="fas @GetMethodIcon(type) text-blue"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-blue">@type.GetDisplayName()</h4>
+                                <p class="mt-1 text-xs text-gray">@type.GetDisplayDescription()</p>
+                                <p class="mt-1 text-xs text-blue font-medium">@GetTypeSub(type)</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray"></i>
+                        </div>
+                    </button>
+                }
+            </form>
+        </div>
+
+
+        <div class="modal-action">
+            <form method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+
+
+@code {
+
+    [Parameter]
+    public List<DataSource>? DataSources { get; set; }
+
+    private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
+    {
+        await ProjectSvc.AddDataSourceAsync(dataSourceType);
+    }
+
+    private string GetTypeSub(DataSourceType type) =>
+    type switch
+    {
+        DataSourceType.EdFiApi => "Automated • Real-time",
+        DataSourceType.CedsDw => "SQL-based • Upload",
+        DataSourceType.Custom => "Manual • Flexible",
+        _ => ""
+    };
+
+    private string GetMethodIcon(DataSourceType type) =>
+    type switch
+    {
+        DataSourceType.EdFiApi => "fa-solid fa-plug text-secondary",
+        DataSourceType.CedsDw => "fa-solid fa-warehouse text-secondary",
+        DataSourceType.Custom => "fa-solid fa-list-check text-secondary",
+        _ => "fa-solid fa-question text-gray-600"
+    };
+}

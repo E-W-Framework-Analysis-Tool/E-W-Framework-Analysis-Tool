@@ -1,0 +1,105 @@
+
+<div class="card border border-gray-300 rounded-lg w-full mb-4 last:mb-0">
+    <div class="card-body flex flex-col p-4">
+        <div class="flex flex-row items-center justify-between">
+            <!-- Left Section -->
+            <div class="flex flex-row items-center gap-4">
+                <!-- Icon -->
+                <div class="flex w-12 h-12 bg-secondary/20 rounded-md justify-center items-center font-semibold">
+                    <i class="@GetMethodIcon(DataSource.Type) text-xl"></i>
+                </div>
+
+                <!-- Name & Description -->
+                <div>
+                    <a href="data-source/@DataSource.Id" class="font-semibold text-lg link link-hover">@DataSource.Name</a>
+                    <p class="text-sm text-gray-500">@DataSource.Description</p>
+                </div>
+            </div>
+
+            <!-- Right Section -->
+            <div class="flex flex-col items-end gap-2">
+                <!-- Status -->
+                <div class="flex items-center gap-1 text-sm">
+                    <span class="badge border-none bg-accent/20 text-accent font-semibold text-xs">
+                        <i class="fa-solid fa-circle-check"></i> @DataSource.Enabled
+                    </span>
+                    <div class="link p-2 text-black opacity-50 hover:opacity-80">
+                        <i class="fa-solid fa-gear"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-row items-center justify-between">
+            <!-- Left Section -->
+            <div class="flex flex-row items-center gap-4">
+                <!-- Last Run -->
+                <p class="text-xs text-gray-400 mt-1">
+                    Last run: <span class="font-medium">@* @(FormatLastRun(DataSource.LastRun)) *@</span> |
+                    <span class="font-medium">127</span> data elements checked
+                </p>
+            </div>
+
+            <!-- Right Section -->
+            <div class="flex flex-col items-end gap-2">
+                <!-- Actions -->
+                <div class="flex gap-3 text-sm">
+                    <a class="link link-hover font-semibold">Run Analysis</a>
+                    <a class="link link-hover font-semibold">View Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // private bool showConfirmDialog;
+
+    [Parameter]
+    public required DataSource DataSource { get; set; }
+
+    private string FormatLastRun(DateTime? lastRun)
+    {
+        if (lastRun == null) return "Never";
+
+        var diff = DateTime.UtcNow - lastRun.Value.ToUniversalTime();
+
+        if (diff.TotalSeconds < 60)
+            return $"{Math.Floor(diff.TotalSeconds)} seconds ago";
+        if (diff.TotalMinutes < 60)
+            return $"{Math.Floor(diff.TotalMinutes)} minutes ago";
+        if (diff.TotalHours < 24)
+            return $"{Math.Floor(diff.TotalHours)} hours ago";
+        if (diff.TotalDays < 7)
+            return $"{Math.Floor(diff.TotalDays)} days ago";
+
+        return lastRun.Value.ToString("MMM dd, yyyy HH:mm");
+    }
+
+    // private string GetStatusClass(bool status) =>
+    // status switch
+    // {
+    //     DataSourceStatus.Active => "badge border-none bg-accent/20 text-accent font-semibold text-xs",
+    //     DataSourceStatus.Pending => "badge border-none bg-primary/20 text-primary-content font-semibold text-xs",
+    //     DataSourceStatus.Disabled => "badge border-none bg-red-200 text-red-800 font-semibold text-xs",
+    //     _ => "badge border-none bg-gray-200 text-gray-800 font-semibold text-xs"
+    // };
+
+    // private string GetStatusIcon(DataSourceStatus status) =>
+    //     status switch
+    //     {
+    //         DataSourceStatus.Active => "fa-solid fa-circle-check",
+    //         DataSourceStatus.Pending => "fa-solid fa-clock",
+    //         DataSourceStatus.Disabled => "fa-solid fa-circle-xmark",
+    //         _ => "fa-solid fa-question text-gray-600"
+    //     };
+
+    private string GetMethodIcon(DataSourceType type) =>
+    type switch
+    {        
+        DataSourceType.EdFiApi => "fa-solid fa-plug text-secondary",
+        DataSourceType.CedsDw => "fa-solid fa-warehouse text-secondary",
+        DataSourceType.Custom => "fa-solid fa-list-check text-secondary",
+        _ => "fa-solid fa-question text-gray-600"
+    };
+}

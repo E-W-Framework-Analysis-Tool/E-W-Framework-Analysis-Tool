@@ -1,684 +1,120 @@
 @page "/dashboard"
-@using EwFrameworkAnalysis.Common.FrameworkReferenceData
-@using EwFrameworkAnalysis.Common.Models.Project
-@using EwFrameworkAnalysis.Common.Models.Scoring
-@inject IJSRuntime JSRuntime
+@using EwFrameworkAnalysis.UI.Components
 @inject AnalysisProjectService ProjectSvc
-@inject NavigationManager Nav
 
-<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+<div class="container mx-auto max-w-7xl p-4">
+
     <!-- Project Header -->
-    <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
-        <div class="px-4 py-5 sm:p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-title font-bold text-blue">@(ProjectSvc.Project?.Title ?? "Untitled Project")</h2>
-                    <p class="mt-1 text-sm text-gray">Last modified: @GetFormattedLastModified()</p>
+    <div class="card rounded-lg shadow-sm mb-4">
+        <div class="card-body p-4 flex flex-col flex-col-reverse sm:flex-row justify-between">
+            <div>
+                <h2 class="card-title font-title text-3xl mb-2">District XYZ Analysis Project</h2>
+                <p class="text-gray text-sm">Last modified: January 15, 2025 at 2:30 PM</p>
+            </div>
+
+            <div class="flex items-center justify-end">
+                <div class="badge border-none bg-accent/20 text-accent font-semibold">
+                    <i class="fa-solid fa-circle-check"></i>
+                    4 Sources Active
                 </div>
-                <div class="flex items-center space-x-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green bg-opacity-20 text-white">
-                        <i class="fas fa-check-circle mr-1"></i>
-                        @ActiveSourceCount Sources Active
-                    </span>
-                    <button @onclick="HandleEditProject" class="text-gray hover:text-blue">
-                        <i class="fas fa-edit"></i>
-                    </button>
+
+                <div class="link text-black opacity-50 hover:opacity-80 ml-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
                 </div>
             </div>
+
         </div>
     </div>
+
     <!-- Dashboard Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
         <!-- Overall Score -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-xl"></i>
-                        </div>
+        <div class="card rounded-lg shadow-sm">
+            <div class="card-body p-4 font-semibold">
+
+                <div class="flex">
+                    <div class="flex w-12 h-12 bg-primary/20 text-primary rounded-lg justify-center items-center mr-4 text-lg">
+                        <i class="fa-solid fa-chart-line"></i>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray truncate">Overall Framework Score</dt>
-                            <dd class="text-2xl font-title font-bold text-blue">@((overallScore * 100).ToString("F0"))%</dd>
-                        </dl>
+
+                    <div>
+                        <p class="text-gray-500">Overall Framework Score</p>
+                        <p class="text-xl">74%</p>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <div class="bg-tan rounded-full h-2">
-                        <div class="bg-yellow h-2 rounded-full" style="width: @((overallScore * 100).ToString("F0"))%"></div>
-                    </div>
-                </div>
+
+                <progress class="progress progress-primary w-full mt-2" value="74" max="100"></progress>
+
             </div>
         </div>
+
         <!-- Data Sources -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-database text-white text-xl"></i>
-                        </div>
+        <div class="card rounded-lg shadow-sm">
+            <div class="card-body p-4 font-semibold">
+
+                <div class="flex">
+                    <div class="flex w-12 h-12 bg-secondary/20 text-secondary rounded-lg justify-center items-center mr-4 text-lg">
+                        <i class="fa-solid fa-database"></i>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray truncate">Data Sources</dt>
-                            <dd class="text-2xl font-title font-bold text-blue">@TotalDataSources</dd>
-                        </dl>
+
+                    <div>
+                        <p class="text-gray-500">Data Sources</p>
+                        <p class="text-xl">4</p>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <div class="text-sm text-gray">@AutomatedSourceCount automated, @ManualSourceCount manual</div>
-                </div>
+
+                <p class="text-gray text-sm">2 automated, 2 manual</p>
+
             </div>
         </div>
+
         <!-- Last Analysis -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-clock text-white text-xl"></i>
-                        </div>
+        <div class="card rounded-lg shadow-sm">
+            <div class="card-body p-4 font-semibold">
+
+                <div class="flex">
+                    <div class="flex w-12 h-12 bg-accent/20 text-accent rounded-lg justify-center items-center mr-4 text-lg">
+                        <i class="fa-solid fa-clock"></i>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray truncate">Last Analysis Run</dt>
-                            <dd class="text-lg font-title font-bold text-blue">@GetLastAnalysisTime()</dd>
-                        </dl>
+
+                    <div>
+                        <p class="text-gray-500">Last Analysis Run</p>
+                        <p class="text-xl">2 hours ago</p>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <button @onclick="NavigateToAssessments" class="text-sm text-blue hover:text-yellow font-medium">
-                        View Details <i class="fas fa-arrow-right ml-1"></i>
-                    </button>
-                </div>
+
+                <a class="link link-hover font-semibold">View Details <i class="fa-solid fa-arrow-right"></i></a>
+
             </div>
         </div>
+
     </div>
+
     <!-- Main Content Area -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
         <!-- Data Sources Panel -->
-        <div class="lg:col-span-2" id="data-sources">
-            <div class="card bg-white shadow-xl">
-                <div class="card-body">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-title font-semibold text-blue">Data Sources</h3>
-                        <button @onclick="() => _isModalOpen = true" class="btn btn-primary gap-2">
-                            <i class="fas fa-plus"></i>Add Data Source
-                        </button>
-                    </div>
-                    <!-- Data Source Items -->
-                    <div class="space-y-3">
-                        @if (ProjectSvc.DataSources?.Any() == true)
-                        {
-                            @foreach (var dataSource in ProjectSvc.DataSources)
-                            {
-                                <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer"
-                                     @onclick="() => GoToDataSourceDetails(dataSource)">
-                                    <div class="card-body p-4">
-                                        <div class="flex items-center justify-between w-full">
-                                            <div class="flex items-center space-x-3">
-                                                <div class="flex-shrink-0">
-                                                    <div class="w-10 h-10 bg-blue rounded-lg flex items-center justify-center">
-                                                        <i class="@GetSourceIcon(dataSource.Type) text-white"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="text-left">
-                                                    <h4 class="text-sm font-semibold text-blue">@dataSource.Name</h4>
-                                                    <p class="text-xs text-gray">@dataSource.Description</p>
-                                                    <p class="mt-1 text-[11px] text-gray">@GetAssessmentSummary(dataSource)</p>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center gap-2 flex-shrink-0">
-                                                @if (IsNewlyAdded(dataSource))
-                                                {
-                                                    <div class="badge badge-primary gap-1 animate-pulse">
-                                                        <i class="fas fa-sparkles"></i>New
-                                                    </div>
-                                                }
-                                                @if (dataSource.Enabled)
-                                                {
-                                                    @if (HasRecentAssessment(dataSource))
-                                                    {
-                                                        <div class="badge badge-accent gap-1">
-                                                            <i class="fas fa-check-circle"></i>Active
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="badge badge-warning gap-1">
-                                                            <i class="fas fa-clock"></i>Pending
-                                                        </div>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <div class="badge badge-error gap-1">
-                                                        <i class="fas fa-times-circle"></i>Disabled
-                                                    </div>
-                                                }
-                                                <i class="fas fa-chevron-right text-gray ml-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="text-center py-8 text-base-content/70">
-                                <i class="fas fa-database text-4xl mb-4 text-base-content/30"></i>
-                                <p>No data sources configured yet.</p>
-                                <p class="text-xs mt-2">Add your first data source to begin analysis.</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+        <div class="lg:col-span-2">
+            <DataSourcesList DataSources="ProjectSvc.DataSources" />
         </div>
+
         <!-- Sidebar -->
-        <div class="space-y-6">
-            <!-- Essential Questions Summary -->
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg leading-6 font-title font-semibold text-blue">Essential Questions</h3>
-                        <button @onclick="NavigateToAnalysis" class="text-sm text-blue hover:text-yellow font-medium">
-                            View All <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
-                    </div>
-                    <div class="space-y-3">
-                        @if (questionScores?.Any() == true)
-                        {
-                            @foreach (var question in questionScores.Take(3))
-                            {
-                                <div class="border-l-4 @GetScoreBorderColor(question.ReadinessScore) pl-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-medium text-blue">@GetQuestionTitle(question.QuestionNumber)</span>
-                                        <span class="text-sm font-semibold @GetScoreTextColor(question.ReadinessScore)">@((question.ReadinessScore * 100).ToString("F0"))%</span>
-                                    </div>
-                                    <p class="text-xs text-gray mt-1">@GetIndicatorSummary(question.IndicatorScores)</p>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="text-center py-4 text-gray">
-                                <p class="text-sm">No analysis results yet.</p>
-                                <p class="text-xs mt-1">Run data source analyses to see scores.</p>
-                            </div>
-                        }
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-tan">
-                        <div class="text-xs text-gray">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Scores based on data availability and quality
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Quick Actions -->
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-title font-semibold text-blue mb-4">Quick Actions</h3>
-                    <div class="space-y-3">
-                        <button @onclick="HandleGenerateReport" class="w-full text-left px-4 py-3 rounded-md bg-tan hover:bg-yellow hover:bg-opacity-30 flex items-center transition-colors">
-                            <i class="fas fa-file-pdf text-red-600 mr-3"></i>
-                            <span class="text-sm font-medium text-blue">Generate Report</span>
-                        </button>
-                        <button @onclick="NavigateToBenchmarks" class="w-full text-left px-4 py-3 rounded-md bg-tan hover:bg-yellow hover:bg-opacity-30 flex items-center transition-colors">
-                            <i class="fas fa-chart-bar text-blue mr-3"></i>
-                            <span class="text-sm font-medium text-blue">View Benchmarks</span>
-                        </button>
-                        <button @onclick="HandleExportProject" class="w-full text-left px-4 py-3 rounded-md bg-tan hover:bg-yellow hover:bg-opacity-30 flex items-center transition-colors">
-                            <i class="fas fa-download text-blue mr-3"></i>
-                            <span class="text-sm font-medium text-blue">Export Project</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-title font-semibold text-blue mb-4">Data Coverage</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray">Total Characteristics</span>
-                                <span class="font-medium text-blue">@totalCharacteristics</span>
-                            </div>
-                            <div class="text-xs text-gray mt-1">
-                                @uniqueCharacteristics unique across @ActiveSourceCount active source(s)
-                            </div>
-                        </div>
+        <div class="space-y-4">
+            <EssentialQuestionsSummary />
 
-                        <div class="border-t border-tan pt-3">
-                            <div class="text-xs font-medium text-gray mb-2">Indicators by Type</div>
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-gray">Outcomes & Milestones</span>
-                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.OutcomesMilestones) indicators</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-gray">EW System Conditions</span>
-                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.EWSystemConditions) indicators</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-gray">Adjacent Systems</span>
-                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.AdjacentSystemConditions) indicators</span>
-                                </div>
-                            </div>
-                        </div>
+            <RecentActivity />
 
-                        <div class="border-t border-tan pt-3">
-                            <div class="text-xs font-medium text-gray mb-2">Data Categories Available</div>
-                            <div class="flex flex-wrap gap-1">
-                                @foreach (var category in GetAvailableDataCategories())
-                                {
-                                    <span class="badge badge-sm bg-blue bg-opacity-20 text-blue border-none">
-                                        @FormatDataCategory(category)
-                                    </span>
-                                }
-                            </div>
-                            @if (!GetAvailableDataCategories().Any())
-                            {
-                                <div class="text-xs text-gray italic">No data collected yet</div>
-                            }
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <button @onclick="NavigateToAnalysis" class="text-sm text-blue hover:text-yellow font-medium">
-                            View Detailed Analysis <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <QuickActions />
         </div>
+
     </div>
+
 </div>
-<!-- Add Data Source Modal -->
-@if (_isModalOpen)
-{
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 ease-out"
-             @onclick="() => _isModalOpen = false"
-             aria-hidden="true">
-        </div>
-        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
-                    transition-all duration-200 ease-out">
-            <!-- Header -->
-            <div class="px-6 pt-6 pb-2">
-                <div class="flex items-start gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
-                        <i class="fas fa-plus text-blue text-xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-title text-lg font-semibold text-blue">Add Data Source</h3>
-                        <p class="mt-1 text-sm text-gray">Choose the type of data source you want to add.</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Body -->
-            <div class="px-6 pb-6 space-y-3">
-                <!-- Ed-Fi API Option -->
-                <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.EdFiApi)"
-                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                               focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-network-wired text-blue"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-blue">Ed-Fi ODS API</h4>
-                            <p class="mt-1 text-xs text-gray">Automated discovery & analysis</p>
-                            <p class="mt-1 text-xs text-blue font-medium">Automated • Real-time</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray"></i>
-                    </div>
-                </button>
-                <!-- CEDS Data Warehouse Option -->
-                <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.CedsDw)"
-                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                               focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-warehouse text-blue"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-blue">CEDS Data Warehouse</h4>
-                            <p class="mt-1 text-xs text-gray">Upload SQL result sets from CEDS DW</p>
-                            <p class="mt-1 text-xs text-blue font-medium">SQL-based • Upload</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray"></i>
-                    </div>
-                </button>
-                <!-- Manual/Custom Option -->
-                <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.Custom)"
-                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                               focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-green/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-list-check text-green-700"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-blue">Manual Assessment</h4>
-                            <p class="mt-1 text-xs text-gray">Flexible checklist for manual review</p>
-                            <p class="mt-1 text-xs text-blue font-medium">Manual • Flexible</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray"></i>
-                    </div>
-                </button>
-            </div>
-            <!-- Footer -->
-            <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl">
-                <div class="flex justify-end">
-                    <button @onclick="() => _isModalOpen = false"
-                            type="button"
-                            class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                   bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                   hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+
 @code {
-    // State variables
-    private List<QuestionScore> questionScores = new();
-    private decimal overallScore = 0.74m;
-    private bool _isModalOpen = false;
-    // Framework overview stats
-    private int totalQuestions = EwFrameworkEssentialQuestions.Questions.Count;
-    private int totalIndicators = EwFrameworkIndicators.Indicators.Count;
-    // Computed properties
-    private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
-    private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
-    private int AutomatedSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type != DataSourceType.Custom) ?? 0;
-    private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        ProjectSvc.Changed += OnProjectChanged;
-        InitializeQuestionScores();
-    }
-
-    public void Dispose()
-    {
-        ProjectSvc.Changed -= OnProjectChanged;
-    }
-
-    private void OnProjectChanged()
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    private void InitializeQuestionScores()
-    {
-        if (HasAnyAssessments)
-        {
-            questionScores = new List<QuestionScore>
-        {
-            new QuestionScore { QuestionNumber = 1, ReadinessScore = 0.85m },
-            new QuestionScore { QuestionNumber = 2, ReadinessScore = 0.72m },
-            new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
-        };
-        }
-        else
-        {
-            questionScores = new List<QuestionScore>();
-        }
-    }
-
-    // Navigation methods
-    private void NavigateToAnalysis()
-    {
-        Nav.NavigateTo("/analysis");
-    }
-
-    private void NavigateToAssessments()
-    {
-        Nav.NavigateTo("/assessments");
-    }
-
-    private void NavigateToBenchmarks()
-    {
-        Nav.NavigateTo("/benchmarks");
-    }
-
-    private void GoToDataSourceDetails(DataSource dataSource)
-    {
-        Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(dataSource.Id));
-    }
-
-    // Event handlers
-    private async Task HandleEditProject()
-    {
-        var currentTitle = ProjectSvc.Project.Title;
-        var newTitle = await JSRuntime.InvokeAsync<string>("prompt", "Enter project title:", currentTitle);
-        if (!string.IsNullOrWhiteSpace(newTitle) && newTitle != currentTitle)
-        {
-            await ProjectSvc.UpdateProjectDetailsAsync(newTitle);
-        }
-    }
-
-    private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
-    {
-        _isModalOpen = false;
-        await ProjectSvc.AddDataSourceAsync(dataSourceType);
-    }
-
-    private Task HandleGenerateReport()
-    {
-        Nav.NavigateTo("/reports");
-        return Task.CompletedTask;
-    }
-
-    private async Task HandleExportProject()
-    {
-        var json = await ProjectSvc.ExportProjectAsync();
-        var fileName = $"{ProjectSvc.Project.Title?.Replace(" ", "_") ?? "project"}_{DateTime.Now:yyyyMMdd_HHmm}.json";
-        await JSRuntime.InvokeVoidAsync("downloadFile", fileName, json, "application/json");
-    }
-
-    // Utility methods
-    private string GetFormattedLastModified()
-    {
-        if (ProjectSvc.Project?.LastModifiedAt == null) return "Never";
-        var lastModified = ProjectSvc.Project.LastModifiedAt;
-        var timeSpan = DateTime.UtcNow - lastModified;
-        return timeSpan.TotalHours < 1
-            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-            : timeSpan.TotalDays < 1
-                ? $"{(int)timeSpan.TotalHours} hours ago"
-                : lastModified.ToString("MMMM d, yyyy 'at' h:mm tt");
-    }
-
-    private string GetLastAnalysisTime()
-    {
-        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
-            return "Never";
-
-        var latestAssessment = ProjectSvc.Assessments
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault();
-
-        if (latestAssessment == null) return "Never";
-
-        var timeSpan = DateTime.UtcNow - latestAssessment.ConductedAt;
-        return timeSpan.TotalHours < 1
-            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-            : timeSpan.TotalDays < 1
-                ? $"{(int)timeSpan.TotalHours} hours ago"
-                : $"{(int)timeSpan.TotalDays} days ago";
-    }
-
-    private bool IsNewlyAdded(DataSource dataSource)
-        => ProjectSvc.NewlyAddedDataSourceId.HasValue && dataSource.Id == ProjectSvc.NewlyAddedDataSourceId.Value;
-
-    private string GetSourceIcon(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "fas fa-network-wired",
-        DataSourceType.CedsDw => "fas fa-warehouse",
-        DataSourceType.Custom => "fas fa-list-check",
-        _ => "fas fa-database"
-    };
-
-    private bool HasRecentAssessment(DataSource dataSource)
-    {
-        return ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).Any();
-    }
-
-    private string GetAssessmentSummary(DataSource dataSource)
-    {
-        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
-
-        if (!assessments.Any())
-            return GetNeverRunSummary(dataSource.Type);
-
-        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
-        var timeAgo = GetTimeAgo(latest.ConductedAt);
-        var elementCount = latest.DataElementAssessments?.Count ?? 0;
-
-        return $"Last run: {timeAgo} | {elementCount} elements assessed";
-    }
-
-    private string GetNeverRunSummary(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
-        DataSourceType.CedsDw => "Never run • Upload CSV results",
-        DataSourceType.Custom => "Never run • Manual checklist items",
-        _ => "Never run"
-    };
-
-    private string GetTimeAgo(DateTime dateTime)
-    {
-        var timeSpan = DateTime.UtcNow - dateTime;
-        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
-             : $"{(int)timeSpan.TotalDays} days ago";
-    }
-
-    private string GetScoreBorderColor(decimal score) => score switch
-    {
-        >= 0.8m => "border-green",
-        >= 0.6m => "border-yellow",
-        _ => "border-red-500"
-    };
-
-    private string GetScoreTextColor(decimal score) => score switch
-    {
-        >= 0.8m => "text-green",
-        >= 0.6m => "text-yellow",
-        _ => "text-red-600"
-    };
-
-    private string GetQuestionTitle(int questionNumber) => questionNumber switch
-    {
-        1 => "Kindergarten Readiness",
-        2 => "Quality School Environments",
-        3 => "High School Transition",
-        4 => "Post-Secondary Success",
-        5 => "Early Childhood Development",
-        _ => $"Question {questionNumber}"
-    };
-
-    private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
-
-    private string GetIndicatorSummary(List<IndicatorScore> indicators)
-    {
-        if (indicators?.Any() != true) return "No indicators analyzed";
-        var availableCount = indicators.Count(i => i.ReadinessScore >= 0.5m);
-        var totalCount = indicators.Count;
-        return $"{availableCount}/{totalCount} indicators available";
-    }
-
-    private int GetPercentage(int current, int total)
-    {
-        if (total == 0) return 0;
-        return (int)Math.Round((double)current / total * 100);
-    }
-
-    private int totalCharacteristics => ProjectSvc.DataSources?
-        .Where(ds => ds.Enabled)
-        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault())
-        .Where(a => a != null)
-#pragma warning disable CS8602
-        .SelectMany(a => a.DataElementAssessments)
-#pragma warning restore CS8602
-        .SelectMany(d => d.Characteristics)
-        .Count() ?? 0;
-
-    private int uniqueCharacteristics => ProjectSvc.DataSources?
-        .Where(ds => ds.Enabled)
-        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault())
-        .Where(a => a != null)
-#pragma warning disable CS8602
-        .SelectMany(a => a.DataElementAssessments)
-#pragma warning restore CS8602
-        .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
-        .Distinct()
-        .Count() ?? 0;
-
-    private string GetCharacteristicKey(DataCharacteristicBase characteristic)
-    {
-        return characteristic switch
-        {
-            RecordCount rc => $"RecordCount",
-            ReportedAvailability ra => $"Availability_{ra.Value}",
-            Completeness c => $"Completeness_{c.AttributeName}",
-            IntegerRange ir => $"Range_{ir.Label}_{ir.Minimum}_{ir.Maximum}",
-            Distribution d => $"Distribution_{d.Label}_{d.TotalCount}",
-            _ => characteristic.GetType().Name
-        };
-    }
-
-    private int GetIndicatorCount(IndicatorType type)
-    {
-        return EwFrameworkIndicators.Indicators.Count(i => i.Value.Type == type);
-    }
-
-    private List<DataCategory> GetAvailableDataCategories()
-    {
-        if (!HasAnyAssessments) return new List<DataCategory>();
-
-        // Get all assessed data element names
-        var assessedElements = ProjectSvc.Assessments
-            .SelectMany(a => a.DataElementAssessments)
-            .Select(d => d.DataElementName)
-            .Distinct()
-            .ToList();
-
-        // Find which data categories those elements map to
-        var categories = EwFrameworkIndicators.Indicators
-            .Where(i => i.Value.DataElementNames.Any(name => assessedElements.Contains(name)))
-            .SelectMany(i => i.Value.DataNeeded)
-            .Distinct()
-            .OrderBy(c => c.ToString())
-            .ToList();
-
-        return categories;
-    }
-
-    private string FormatDataCategory(DataCategory category)
-    {
-        return category switch
-        {
-            DataCategory.AdministrativeData => "Admin Data",
-            DataCategory.Assessments => "Assessments",
-            DataCategory.ClassroomObservations => "Observations",
-            DataCategory.CurriculumMaterials => "Curriculum",
-            DataCategory.EducatorAdministrativeData => "Educator Data",
-            DataCategory.Rubrics => "Rubrics",
-            DataCategory.StudentTranscripts => "Transcripts",
-            DataCategory.Surveys => "Surveys",
-            _ => category.ToString()
-        };
+        await ProjectSvc.InitializeAsync();
     }
 }
