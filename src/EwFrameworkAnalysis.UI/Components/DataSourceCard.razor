@@ -1,3 +1,4 @@
+@inject AnalysisProjectService ProjectSvc
 
 <div class="card border border-gray-300 rounded-lg w-full mb-4 last:mb-0">
     <div class="card-body flex flex-col p-4">
@@ -11,7 +12,7 @@
 
                 <!-- Name & Description -->
                 <div>
-                    <a href="data-source/@DataSource.Id" class="font-semibold text-lg link link-hover">@DataSource.Name</a>
+                    <a href="data-sources/@DataSource.Id" class="font-semibold text-lg link link-hover">@DataSource.Name</a>
                     <p class="text-sm text-gray-500">@DataSource.Description</p>
                 </div>
             </div>
@@ -20,9 +21,25 @@
             <div class="flex flex-col items-end gap-2">
                 <!-- Status -->
                 <div class="flex items-center gap-1 text-sm">
-                    <span class="badge border-none bg-accent/20 text-accent font-semibold text-xs">
-                        <i class="fa-solid fa-circle-check"></i> @DataSource.Enabled
-                    </span>
+                    @if (!DataSource.Enabled)
+                    {
+                        <span class="badge border-none bg-red-500/20 text-red-500 font-semibold text-xs">
+                            <i class="fa-solid fa-circle-xmark"></i> Disabled
+                        </span>
+                    }
+                    else if (HasAssessments())
+                    {
+                        <span class="badge border-none bg-green-500/20 text-green-500 font-semibold text-xs">
+                            <i class="fa-solid fa-circle-check"></i> Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge border-none bg-yellow-500/20 text-yellow-500 font-semibold text-xs">
+                            <i class="fa-solid fa-clock"></i> Pending
+                        </span>
+                    }
+
                     <div class="link p-2 text-black opacity-50 hover:opacity-80">
                         <i class="fa-solid fa-gear"></i>
                     </div>
@@ -53,8 +70,7 @@
 </div>
 
 @code {
-    // private bool showConfirmDialog;
-
+    
     [Parameter]
     public required DataSource DataSource { get; set; }
 
@@ -76,30 +92,14 @@
         return lastRun.Value.ToString("MMM dd, yyyy HH:mm");
     }
 
-    // private string GetStatusClass(bool status) =>
-    // status switch
-    // {
-    //     DataSourceStatus.Active => "badge border-none bg-accent/20 text-accent font-semibold text-xs",
-    //     DataSourceStatus.Pending => "badge border-none bg-primary/20 text-primary-content font-semibold text-xs",
-    //     DataSourceStatus.Disabled => "badge border-none bg-red-200 text-red-800 font-semibold text-xs",
-    //     _ => "badge border-none bg-gray-200 text-gray-800 font-semibold text-xs"
-    // };
-
-    // private string GetStatusIcon(DataSourceStatus status) =>
-    //     status switch
-    //     {
-    //         DataSourceStatus.Active => "fa-solid fa-circle-check",
-    //         DataSourceStatus.Pending => "fa-solid fa-clock",
-    //         DataSourceStatus.Disabled => "fa-solid fa-circle-xmark",
-    //         _ => "fa-solid fa-question text-gray-600"
-    //     };
-
     private string GetMethodIcon(DataSourceType type) =>
     type switch
     {        
-        DataSourceType.EdFiApi => "fa-solid fa-plug text-secondary",
+        DataSourceType.EdFiApi => "fa-solid fa-gears text-secondary",
         DataSourceType.CedsDw => "fa-solid fa-warehouse text-secondary",
         DataSourceType.Custom => "fa-solid fa-list-check text-secondary",
         _ => "fa-solid fa-question text-gray-600"
     };
+
+    private bool HasAssessments() => ProjectSvc.GetDataSourceAssessments(DataSource.Id).Any() == true;
 }

@@ -8,19 +8,23 @@
     <div class="card rounded-lg shadow-sm mb-4">
         <div class="card-body p-4 flex flex-col flex-col-reverse sm:flex-row justify-between">
             <div>
-                <h2 class="card-title font-title text-3xl mb-2">District XYZ Analysis Project</h2>
+                <h2 class="card-title font-title text-3xl mb-2">@(ProjectSvc.Project?.Title ?? "Unnamed Project")</h2>
                 <p class="text-gray text-sm">Last modified: January 15, 2025 at 2:30 PM</p>
             </div>
 
             <div class="flex items-center justify-end">
-                <div class="badge border-none bg-accent/20 text-accent font-semibold">
-                    <i class="fa-solid fa-circle-check"></i>
-                    4 Sources Active
-                </div>
+                @if (ProjectSvc.DataSources.Count > 0)
+                {
+                    <div class="badge border-none bg-accent/20 text-accent font-semibold">
+                        <i class="fa-solid fa-circle-check"></i>
+                        @ProjectSvc.DataSources.Count Sources Active
+                    </div>
+                }
 
-                <div class="link text-black opacity-50 hover:opacity-80 ml-2">
+
+                <a onclick="edit_project_modal.showModal()" class="link text-black opacity-50 hover:opacity-80 ml-2">
                     <i class="fa-solid fa-pen-to-square"></i>
-                </div>
+                </a>
             </div>
 
         </div>
@@ -112,9 +116,60 @@
 
 </div>
 
+<dialog id="edit_project_modal" class="modal">
+    <div class="modal-box">
+        <!-- Header -->
+        <div class="pb-2">
+            <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
+                    <i class="fa-solid fa-file-pen text-blue text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-title text-lg font-semibold text-blue">Edit Project</h3>
+                    <p class="mt-1 text-sm text-gray">Enter project title:</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="">
+            <form method="dialog" class="space-y-4">
+
+                <!-- Name -->
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">Title</legend>
+                    <input type="text" class="input w-full" placeholder="Project Title ..." @bind="NewProjectTitle" />
+                </fieldset>
+
+            </form>
+        </div>
+
+
+        <div class="modal-action">
+            <form method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                <button class="btn btn-gray">Close</button>
+                <button class="btn btn-primary" @onclick="HandleEditProject">Save</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
 @code {
+    private string NewProjectTitle = "";
+
     protected override async Task OnInitializedAsync()
     {
         await ProjectSvc.InitializeAsync();
+        NewProjectTitle = ProjectSvc.Project?.Title ?? "";
+    }
+
+    private async Task HandleEditProject()
+    {
+        var currentTitle = ProjectSvc.Project.Title;
+
+        if (!string.IsNullOrWhiteSpace(NewProjectTitle) && NewProjectTitle != currentTitle)
+        {
+            await ProjectSvc.UpdateProjectDetailsAsync(NewProjectTitle);
+        }
     }
 }

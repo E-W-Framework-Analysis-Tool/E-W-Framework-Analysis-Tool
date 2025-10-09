@@ -369,10 +369,10 @@ else
     private string? _notificationMessage;
     private bool _showNotification = false;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await ProjectSvc.InitializeAsync();
         LoadDataSource();
-        return Task.CompletedTask;
     }
 
     protected override void OnParametersSet()
