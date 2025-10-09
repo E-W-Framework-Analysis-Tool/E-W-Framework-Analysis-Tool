@@ -239,37 +239,52 @@
                     </div>
                 </div>
             </div>
-            <!-- E-W Framework Status -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-title font-semibold text-blue mb-4">Framework Overview</h3>
+                    <h3 class="text-lg leading-6 font-title font-semibold text-blue mb-4">Data Coverage</h3>
                     <div class="space-y-4">
                         <div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray">Essential Questions</span>
-                                <span class="font-medium text-blue">@questionsComplete/@totalQuestions Complete</span>
+                                <span class="text-gray">Total Characteristics</span>
+                                <span class="font-medium text-blue">@totalCharacteristics</span>
                             </div>
-                            <div class="mt-1 bg-tan rounded-full h-2">
-                                <div class="bg-blue h-2 rounded-full" style="width: @(GetPercentage(questionsComplete, totalQuestions))%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray">Indicators</span>
-                                <span class="font-medium text-blue">@indicatorsAvailable/@totalIndicators Available</span>
-                            </div>
-                            <div class="mt-1 bg-tan rounded-full h-2">
-                                <div class="bg-green h-2 rounded-full" style="width: @(GetPercentage(indicatorsAvailable, totalIndicators))%"></div>
+                            <div class="text-xs text-gray mt-1">
+                                @uniqueCharacteristics unique across @ActiveSourceCount active source(s)
                             </div>
                         </div>
-                        <div>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray">Data Elements</span>
-                                <span class="font-medium text-blue">@dataElementsFound/@totalDataElements Found</span>
+
+                        <div class="border-t border-tan pt-3">
+                            <div class="text-xs font-medium text-gray mb-2">Indicators by Type</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray">Outcomes & Milestones</span>
+                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.OutcomesMilestones) indicators</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray">EW System Conditions</span>
+                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.EWSystemConditions) indicators</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray">Adjacent Systems</span>
+                                    <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.AdjacentSystemConditions) indicators</span>
+                                </div>
                             </div>
-                            <div class="mt-1 bg-tan rounded-full h-2">
-                                <div class="bg-yellow h-2 rounded-full" style="width: @(GetPercentage(dataElementsFound, totalDataElements))%"></div>
+                        </div>
+
+                        <div class="border-t border-tan pt-3">
+                            <div class="text-xs font-medium text-gray mb-2">Data Categories Available</div>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach (var category in GetAvailableDataCategories())
+                                {
+                                    <span class="badge badge-sm bg-blue bg-opacity-20 text-blue border-none">
+                                        @FormatDataCategory(category)
+                                    </span>
+                                }
                             </div>
+                            @if (!GetAvailableDataCategories().Any())
+                            {
+                                <div class="text-xs text-gray italic">No data collected yet</div>
+                            }
                         </div>
                     </div>
                     <div class="mt-4">
@@ -376,12 +391,8 @@
     private decimal overallScore = 0.74m;
     private bool _isModalOpen = false;
     // Framework overview stats
-    private int questionsComplete = 17;
     private int totalQuestions = EwFrameworkEssentialQuestions.Questions.Count;
-    private int indicatorsAvailable = 87;
     private int totalIndicators = EwFrameworkIndicators.Indicators.Count;
-    private int dataElementsFound = 156;
-    private int totalDataElements = 203;
     // Computed properties
     private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
     private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
@@ -406,12 +417,19 @@
 
     private void InitializeQuestionScores()
     {
-        questionScores = new List<QuestionScore>
+        if (HasAnyAssessments)
+        {
+            questionScores = new List<QuestionScore>
         {
             new QuestionScore { QuestionNumber = 1, ReadinessScore = 0.85m },
             new QuestionScore { QuestionNumber = 2, ReadinessScore = 0.72m },
             new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
         };
+        }
+        else
+        {
+            questionScores = new List<QuestionScore>();
+        }
     }
 
     // Navigation methods
@@ -567,6 +585,8 @@
         _ => $"Question {questionNumber}"
     };
 
+    private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
+
     private string GetIndicatorSummary(List<IndicatorScore> indicators)
     {
         if (indicators?.Any() != true) return "No indicators analyzed";
@@ -579,5 +599,86 @@
     {
         if (total == 0) return 0;
         return (int)Math.Round((double)current / total * 100);
+    }
+
+    private int totalCharacteristics => ProjectSvc.DataSources?
+        .Where(ds => ds.Enabled)
+        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault())
+        .Where(a => a != null)
+#pragma warning disable CS8602
+        .SelectMany(a => a.DataElementAssessments)
+#pragma warning restore CS8602
+        .SelectMany(d => d.Characteristics)
+        .Count() ?? 0;
+
+    private int uniqueCharacteristics => ProjectSvc.DataSources?
+        .Where(ds => ds.Enabled)
+        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault())
+        .Where(a => a != null)
+#pragma warning disable CS8602
+        .SelectMany(a => a.DataElementAssessments)
+#pragma warning restore CS8602
+        .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
+        .Distinct()
+        .Count() ?? 0;
+
+    private string GetCharacteristicKey(DataCharacteristicBase characteristic)
+    {
+        return characteristic switch
+        {
+            RecordCount rc => $"RecordCount",
+            ReportedAvailability ra => $"Availability_{ra.Value}",
+            Completeness c => $"Completeness_{c.AttributeName}",
+            IntegerRange ir => $"Range_{ir.Label}_{ir.Minimum}_{ir.Maximum}",
+            Distribution d => $"Distribution_{d.Label}_{d.TotalCount}",
+            _ => characteristic.GetType().Name
+        };
+    }
+
+    private int GetIndicatorCount(IndicatorType type)
+    {
+        return EwFrameworkIndicators.Indicators.Count(i => i.Value.Type == type);
+    }
+
+    private List<DataCategory> GetAvailableDataCategories()
+    {
+        if (!HasAnyAssessments) return new List<DataCategory>();
+
+        // Get all assessed data element names
+        var assessedElements = ProjectSvc.Assessments
+            .SelectMany(a => a.DataElementAssessments)
+            .Select(d => d.DataElementName)
+            .Distinct()
+            .ToList();
+
+        // Find which data categories those elements map to
+        var categories = EwFrameworkIndicators.Indicators
+            .Where(i => i.Value.DataElementNames.Any(name => assessedElements.Contains(name)))
+            .SelectMany(i => i.Value.DataNeeded)
+            .Distinct()
+            .OrderBy(c => c.ToString())
+            .ToList();
+
+        return categories;
+    }
+
+    private string FormatDataCategory(DataCategory category)
+    {
+        return category switch
+        {
+            DataCategory.AdministrativeData => "Admin Data",
+            DataCategory.Assessments => "Assessments",
+            DataCategory.ClassroomObservations => "Observations",
+            DataCategory.CurriculumMaterials => "Curriculum",
+            DataCategory.EducatorAdministrativeData => "Educator Data",
+            DataCategory.Rubrics => "Rubrics",
+            DataCategory.StudentTranscripts => "Transcripts",
+            DataCategory.Surveys => "Surveys",
+            _ => category.ToString()
+        };
     }
 }
