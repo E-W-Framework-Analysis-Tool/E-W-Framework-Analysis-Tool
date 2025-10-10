@@ -141,3 +141,12 @@ vite.config.ts.timestamp-*
 
 publish/
 eng/dev-dependencies/database/backups/
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
