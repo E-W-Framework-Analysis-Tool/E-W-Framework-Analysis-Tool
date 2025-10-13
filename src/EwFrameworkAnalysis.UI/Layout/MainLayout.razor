@@ -14,17 +14,25 @@
 
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
-                    <li><a class="link link-hover">Home</a></li>
-                    <li><a class="link link-hover">About</a></li>
-                    <li><a class="link link-hover">Framework</a></li>
-                    <li><a class="link link-hover">Contact</a></li>
+                    <NavLink href="@AppRoutes.Dashboard" Match="NavLinkMatch.All" class="border-transparent text-tan hover:text-white hover:border-tan inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" ActiveClass="border-yellow text-white border-b-2">
+                        Dashboard
+                    </NavLink>
+                    <a href="#" class="border-transparent text-tan hover:text-white hover:border-tan inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Analysis
+                    </a>
+                    <a href="#" class="border-transparent text-tan hover:text-white hover:border-tan inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Report
+                    </a>
+                    <a href="#" class="border-transparent text-tan hover:text-white hover:border-tan inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Benchmarks
+                    </a>
                 </ul>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <main class="flex-1">
+    <main class="flex-1 bg-tan">
         @Body
     </main>
 

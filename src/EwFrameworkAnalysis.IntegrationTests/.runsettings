@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <EWFTOOL_EDFI_BASE_URL>http://localhost:5000/GrandBend/data/v3/</EWFTOOL_EDFI_BASE_URL>
+      <EWFTOOL_EDFI_AUTH_URL>http://localhost:5000/GrandBend/oauth/token</EWFTOOL_EDFI_AUTH_URL>
+      <EWFTOOL_EDFI_CLIENT_ID>RvcohKz9zHI4</EWFTOOL_EDFI_CLIENT_ID>
+      <EWFTOOL_EDFI_CLIENT_SECRET>E1676E88-4D3B-4E4E-B7B7-7C3F8E5D2A9C</EWFTOOL_EDFI_CLIENT_SECRET>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>
