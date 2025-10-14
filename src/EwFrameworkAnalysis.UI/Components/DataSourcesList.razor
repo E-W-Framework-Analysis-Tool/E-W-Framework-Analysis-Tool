@@ -87,7 +87,7 @@
 @code {
 
     [Parameter]
-    public List<DataSource>? DataSources { get; set; }
+    public IReadOnlyList<DataSource>? DataSources { get; set; }
 
     private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
     {

@@ -408,7 +408,7 @@ else
     private void LoadDataSource()
     {
         _dataSource = ProjectSvc.GetDataSource(Id);
-        _dataSourceAssesments = ProjectSvc.GetDataSourceAssessments(Id);
+        _dataSourceAssesments = ProjectSvc.GetAssessmentsForDataSource(Id).ToList();
         if (_dataSourceAssesments?.Any() == true && _selectedAssessment == null)
         {
             // Default to most recent assessment if none selected
@@ -416,34 +416,34 @@ else
         }
     }
 
-    private async Task SetActiveAssessment(int version)
-    {
-        if (_dataSource is null) return;
-        await ProjectSvc.SetActiveAssessmentAsync(_dataSource.Id, version);
-        ShowNotification($"Version {version} is now active");
-    }
+    // private async Task SetActiveAssessment(int version)
+    // {
+    //     if (_dataSource is null) return;
+    //     await ProjectSvc.SetActiveAssessmentAsync(_dataSource.Id, version);
+    //     ShowNotification($"Version {version} is now active");
+    // }
 
     private void SelectAssessment(DataSourceAssessment assessment)
     {
         _selectedAssessment = assessment;
     }
 
-    private async Task RunNewAssessment()
-    {
-        if (_dataSource is null) return;
+    // private async Task RunNewAssessment()
+    // {
+    //     if (_dataSource is null) return;
 
-        var assessment = new DataSourceAssessment
-        {
-            Name = $"Assessment {DateTime.Now:yyyy-MM-dd HH:mm}",
-            ConductedAt = DateTime.UtcNow
-        };
+    //     var assessment = new DataSourceAssessment
+    //     {
+    //         Name = $"Assessment {DateTime.Now:yyyy-MM-dd HH:mm}",
+    //         ConductedAt = DateTime.UtcNow
+    //     };
 
-        await ProjectSvc.AddAssessmentAsync(_dataSource.Id, assessment);
-        ShowNotification("New assessment started");
+    //     await ProjectSvc.AddAssessmentAsync(assessment);
+    //     ShowNotification("New assessment started");
 
-        // Select the newly created assessment
-        _selectedAssessment = assessment;
-    }
+    //     // Select the newly created assessment
+    //     _selectedAssessment = assessment;
+    // }
 
     private async Task ToggleEnabled()
     {

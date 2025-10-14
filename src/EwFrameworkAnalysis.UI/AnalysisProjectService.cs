@@ -1,7 +1,5 @@
 // Services/AnalysisProjectService.cs
-using System.ComponentModel;
 using System.Text.Json;
-using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Models.Project;
 using Microsoft.JSInterop;
 
@@ -18,7 +16,6 @@ public class AnalysisProjectService
 
     // Track newly added items for UI highlighting
     public Guid? NewlyAddedDataSourceId { get; private set; }
-    public Guid? NewlyAddedAssessmentId { get; private set; }
     public Guid? NewlyAddedAssessmentId { get; private set; }
 
     public event Action? Changed;
@@ -48,8 +45,9 @@ public class AnalysisProjectService
                 Project = new AnalysisProject();
             }
         }
-        catch
+        catch(Exception e)
         {
+            Console.WriteLine(e.Message);
             // Deserialization failed, start with empty project
             Project = new AnalysisProject();
         }
@@ -86,9 +84,8 @@ public class AnalysisProjectService
             var json = JsonSerializer.Serialize(Project, GetJsonOptions());
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", STORAGE_KEY, json);
         }
-        catch(Exception e)
+        catch
         {
-            Console.WriteLine(e.Message);
             // Handle save errors gracefully
         }
     }
@@ -284,87 +281,6 @@ public class AnalysisProjectService
         _ => "Data source description"
     };
 
-    public async Task DeleteDataSourceAsync(Guid id)
-    {
-        var index = Project.DataSources.FindIndex(d => d.Id == id);
-        if (index >= 0)
-        {
-            Project.DataSources.RemoveAt(index);
-            Project.LastModifiedAt = DateTime.UtcNow;
-            await SaveAsync();
-            Notify();
-        }
-    }
-
-    private AnalysisProject CreateSampleProject()
-    {
-        var dataSource_1 = Guid.NewGuid();
-        var dataSource_2 = Guid.NewGuid();
-        var dataSource_3 = Guid.NewGuid();
-        var dataSource_4 = Guid.NewGuid();
-
-        return new AnalysisProject
-        {
-            Title = "District XYZ Analysis Project",
-            LastModifiedAt = DateTime.Now.AddHours(-2),
-            DataSources =
-            [
-                new DataSource
-                {
-                    Id = dataSource_1, //Guid.NewGuid(),
-                    Name = "Ed-Fi ODS API v7.3",
-                    Description = "Production API - District SIS",
-                    Type = DataSourceType.EdFiApi,
-                    Enabled = true,
-                    //Assessments =
-                    //[
-                    //    new DataSourceAssessment
-                    //    {
-                    //        Version = 1,
-                    //        Name = "Latest Scan",
-                    //        ConductedAt = DateTime.Now.AddHours(-2)
-                    //    }
-                    //]
-                },
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "CEDS Data Warehouse v12",
-                    Description = "State reporting warehouse",
-                    Type = DataSourceType.CedsDw,
-                    Enabled = true,
-                    //Assessments = []
-                },
-                new DataSource
-                {
-                    Id = dataSource_3, // Guid.NewGuid(),
-                    Name = "Department of Health Data Warehouse",
-                    Description = "Manual assessment - health indicators",
-                    Type = DataSourceType.Custom,
-                    Enabled = true,
-                    //Assessments =
-                    //[
-                    //    new DataSourceAssessment
-                    //    {
-                    //        Version = 1,
-                    //        Name = "Manual Review",
-                    //        ConductedAt = DateTime.Now.AddDays(-3)
-                    //    }
-                    //]
-                },
-                new DataSource
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Statewide K-12 Survey Tracker",
-                    Description = "Manual assessment - survey data availability",
-                    Type = DataSourceType.Custom,
-                    Enabled = false,
-                    //Assessments = []
-                }
-            ]
-        };
-    }
-
     private JsonSerializerOptions GetJsonOptions()
     {
         return new JsonSerializerOptions
@@ -374,28 +290,5 @@ public class AnalysisProjectService
         };
     }
 
-    public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment)
-    {
-        if (string.IsNullOrWhiteSpace(assessment.Name))
-        {
-            assessment.Name = $"Assessment {DateTime.UtcNow:yyyy-MM-dd HH:mm}";
-        }
-
-        Project.DataSourceAssessments.Insert(0, assessment);
-        Project.LastModifiedAt = DateTime.UtcNow;
-
-        NewlyAddedAssessmentId = assessment.Id;
-
-        await SaveAsync();
-        Notify();
-
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(3000);
-            NewlyAddedAssessmentId = null;
-            Notify();
-        });
-
-        return assessment.Id;
-    }
+    #endregion
 }

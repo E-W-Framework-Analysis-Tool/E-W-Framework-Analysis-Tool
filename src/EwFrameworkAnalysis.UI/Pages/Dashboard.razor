@@ -200,10 +200,10 @@
 
     private string GetLastAnalysisTime()
     {
-        if (ProjectSvc.DataSourceAssessments == null || !ProjectSvc.DataSourceAssessments.Any())
+        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
             return "Never";
 
-        var latestAssessment = ProjectSvc.DataSourceAssessments
+        var latestAssessment = ProjectSvc.Assessments
             .OrderByDescending(a => a.ConductedAt)
             .FirstOrDefault();
 

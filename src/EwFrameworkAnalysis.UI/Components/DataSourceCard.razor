@@ -102,5 +102,5 @@
         _ => "fa-solid fa-question text-gray-600"
     };
 
-    private bool HasAssessments() => ProjectSvc.GetDataSourceAssessments(DataSource.Id).Any() == true;
+    private bool HasAssessments() => ProjectSvc.GetAssessmentsForDataSource(DataSource.Id).Any();
 }
