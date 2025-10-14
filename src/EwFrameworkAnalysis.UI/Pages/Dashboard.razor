@@ -1,23 +1,24 @@
 @page "/dashboard"
+@using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
 @inject AnalysisProjectService ProjectSvc
 
 <div class="container mx-auto max-w-7xl p-4">
 
     <!-- Project Header -->
-    <div class="card rounded-lg shadow-sm mb-4">
+    <div class="card border border-gray-200 rounded-lg shadow mb-4">
         <div class="card-body p-4 flex flex-col flex-col-reverse sm:flex-row justify-between">
             <div>
                 <h2 class="card-title font-title text-3xl mb-2">@(ProjectSvc.Project?.Title ?? "Unnamed Project")</h2>
-                <p class="text-gray text-sm">Last modified: January 15, 2025 at 2:30 PM</p>
+                <p class="text-gray text-sm">Last modified: @GetFormattedLastModified() </p>
             </div>
 
             <div class="flex items-center justify-end">
-                @if (ProjectSvc.DataSources.Count > 0)
+                @if (ActiveDatasources.Count > 0)
                 {
                     <div class="badge border-none bg-accent/20 text-accent font-semibold">
                         <i class="fa-solid fa-circle-check"></i>
-                        @ProjectSvc.DataSources.Count Sources Active
+                        @ActiveDatasources.Count Sources Active
                     </div>
                 }
 
@@ -34,7 +35,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
 
         <!-- Overall Score -->
-        <div class="card rounded-lg shadow-sm">
+        <div class="card border border-gray-200 rounded-lg shadow">
             <div class="card-body p-4 font-semibold">
 
                 <div class="flex">
@@ -54,7 +55,7 @@
         </div>
 
         <!-- Data Sources -->
-        <div class="card rounded-lg shadow-sm">
+        <div class="card border border-gray-200 rounded-lg shadow">
             <div class="card-body p-4 font-semibold">
 
                 <div class="flex">
@@ -64,17 +65,22 @@
 
                     <div>
                         <p class="text-gray-500">Data Sources</p>
-                        <p class="text-xl">4</p>
+                        <p class="text-xl">@ProjectSvc.DataSources.Count</p>
                     </div>
                 </div>
 
-                <p class="text-gray text-sm">2 automated, 2 manual</p>
+                <p class="text-gray text-sm">
+                    @foreach (DataSourceType type in Enum.GetValues(typeof(DataSourceType)))
+                    {
+                        <div class="badge bg-gray-200 text-xs mr-2 mb-2">@GetDataSourcesByType(type, true)/@GetDataSourcesByType(type) @type.GetDisplayName()</div>
+                    }
+                </p>
 
             </div>
         </div>
 
         <!-- Last Analysis -->
-        <div class="card rounded-lg shadow-sm">
+        <div class="card border border-gray-200 rounded-lg shadow">
             <div class="card-body p-4 font-semibold">
 
                 <div class="flex">
@@ -84,7 +90,7 @@
 
                     <div>
                         <p class="text-gray-500">Last Analysis Run</p>
-                        <p class="text-xl">2 hours ago</p>
+                        <p class="text-xl">@GetLastAnalysisTime()</p>
                     </div>
                 </div>
 
@@ -157,6 +163,8 @@
 @code {
     private string NewProjectTitle = "";
 
+    private List<DataSource> ActiveDatasources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
+
     protected override async Task OnInitializedAsync()
     {
         await ProjectSvc.InitializeAsync();
@@ -171,5 +179,41 @@
         {
             await ProjectSvc.UpdateProjectDetailsAsync(NewProjectTitle);
         }
+    }
+
+    private int GetDataSourcesByType(DataSourceType type, bool? enabled = null)
+    {
+        return ProjectSvc.DataSources.Where(x => x.Type == type && (enabled == null || x.Enabled == enabled)).ToList().Count;
+    }
+
+    private string GetFormattedLastModified()
+    {
+        if (ProjectSvc.Project?.LastModifiedAt == null) return "Never";
+        var lastModified = ProjectSvc.Project.LastModifiedAt;
+        var timeSpan = DateTime.UtcNow - lastModified;
+        return timeSpan.TotalHours < 1
+            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+            : timeSpan.TotalDays < 1
+                ? $"{(int)timeSpan.TotalHours} hours ago"
+                : lastModified.ToString("MMMM d, yyyy 'at' h:mm tt");
+    }
+
+    private string GetLastAnalysisTime()
+    {
+        if (ProjectSvc.DataSourceAssessments == null || !ProjectSvc.DataSourceAssessments.Any())
+            return "Never";
+
+        var latestAssessment = ProjectSvc.DataSourceAssessments
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault();
+
+        if (latestAssessment == null) return "Never";
+
+        var timeSpan = DateTime.UtcNow - latestAssessment.ConductedAt;
+        return timeSpan.TotalHours < 1
+            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+            : timeSpan.TotalDays < 1
+                ? $"{(int)timeSpan.TotalHours} hours ago"
+                : $"{(int)timeSpan.TotalDays} days ago";
     }
 }
