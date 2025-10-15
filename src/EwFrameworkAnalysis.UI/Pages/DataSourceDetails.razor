@@ -112,15 +112,15 @@ else
                                 <div class="flex items-center gap-2">
                                     @if (_dataSource.Enabled)
                                     {
-                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green bg-opacity-20 text-white">
-                                            <i class="fas fa-check-circle mr-1"></i>
+                                        <div class="badge border-none bg-accent/20 text-accent text-xs font-semibold">
+                                            <i class="fa-solid fa-circle-check"></i>
                                             Enabled
                                         </div>
                                     }
                                     else
                                     {
-                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-white">
-                                            <i class="fas fa-times-circle mr-1"></i>
+                                        <div class="badge border-none bg-red-700/20 text-red-700 text-xs font-semibold">
+                                            <i class="fa-solid fa-times-circle"></i>
                                             Disabled
                                         </div>
                                     }
@@ -129,16 +129,18 @@ else
                                     </button>
                                 </div>
                             </div>
-                            @if (true) // _dataSource.ActiveVersion.HasValue)
+                            @if (_selectedAssessment is not null) @* _dataSource.ActiveVersion.HasValue) *@
                             {
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm font-medium text-gray">Active Version</span>
-                                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue bg-opacity-20 text-white">@* @_dataSource.ActiveVersion *@</div>
+                                    <div class="badge badge-secondary border-none text-xs font-medium ">
+                                        Version @(GetAssessmentIndex(@_selectedAssessment.Id) + 1) @* @_dataSource.ActiveVersion *@
+                                    </div>
                                 </div>
                             }
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray">Total Assessments</span>
-                                <span class="text-sm font-semibold text-blue">@* @(_dataSource.Assessments?.Count ?? 0) *@ 0 </span>
+                                <span class="text-sm font-semibold text-blue">@(_dataSourceAssesments?.Count ?? 0) </span>
                             </div>
                         </div>
                     </div>
@@ -156,15 +158,15 @@ else
                             <div class="space-y-3">
                                 @foreach (var a in _dataSourceAssesments.OrderByDescending(x => x.ConductedAt))
                                 {
-                                    var isActive = true; //a.Version == _dataSource.ActiveVersion;
-                                    var isViewing = true; //a.Version == _selectedAssessment?.Version;
-                                                          <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer @(isViewing ? "ring-2 ring-blue ring-opacity-30 bg-tan" : "")"
+                                    var isActive = false; //a.Version == _dataSource.ActiveVersion;
+                                    var isViewing = _selectedAssessment?.Id == a.Id; //a.Version == _selectedAssessment?.Version;
+                                                          <div class="card bg-white border border-gray-200 shadow-md hover:bg-gray-200 hover:shadow hover:-translate-y-0.5 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer @(isViewing ? "ring-2 ring-blue ring-opacity-30 bg-white" : "")"
                                                                @onclick="() => SelectAssessment(a)">
                                                               <div class="card-body p-4">
                                                                   <div class="flex items-center justify-between">
                                                                       <div class="flex-1">
                                                                           <div class="text-sm font-semibold text-blue flex items-center gap-2">
-                                                                              Version 1 @* @a.Version *@
+                                                                              Version @(GetAssessmentIndex(@a.Id) + 1)
                                                         @if (isActive)
                                                         {
                                                             <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green bg-opacity-20 text-white">active</div>
@@ -184,12 +186,10 @@ else
                                                         </div>
                                                     }
                                                 </div>
-                                                <div class="flex items-center gap-2">
+                                                <div class="hidden flex items-center gap-2">
                                                     @if (!isActive)
                                                     {
-                                                        <button class="btn btn-sm bg-blue text-white border-blue hover:bg-yellow hover:text-yellow hover:border-yellow"
-                                                                @onclick:stopPropagation="true"
-                                                                @* @onclick="() => SetActiveAssessment(a.Version)" *@>
+                                                        <button class="btn btn-sm bg-blue text-white border-blue hover:bg-yellow hover:text-yellow hover:border-yellow">
                                                             Set Active
                                                         </button>
                                                     }
@@ -248,7 +248,7 @@ else
                     <div class="card shadow border border-gray-200">
                         <div class="px-4 py-5 sm:p-6">
                             <h3 class="text-lg font-title font-semibold text-blue mb-4">
-                                Assessment Details (Version @* @_selectedAssessment.Version *@)
+                                Assessment Details (Version @(GetAssessmentIndex(@_selectedAssessment.Id) + 1))
                             </h3>
 
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -266,40 +266,98 @@ else
                                 </div>
                                 <div class="bg-white rounded-lg p-4">
                                     <div class="text-xs text-gray uppercase tracking-wide">Version</div>
-                                    <div class="text-sm font-semibold text-blue">@* @_selectedAssessment.Version *@</div>
+                                    <div class="text-sm font-semibold text-blue">@(GetAssessmentIndex(@_selectedAssessment.Id) + 1)</div>
                                 </div>
                             </div>
 
                             @if (_selectedAssessment.DataElementAssessments?.Any() == true)
                             {
-                                <div class="border-t border-tan pt-4">
+                                <div class="border-t border-white pt-4">
                                     <h4 class="text-sm font-semibold text-blue mb-3">Data Elements Summary</h4>
-                                    <div class="bg-tan rounded-lg overflow-hidden">
-                                        <div class="max-h-64 overflow-y-auto">
-                                            <table class="min-w-full">
-                                                <thead class="bg-blue bg-opacity-20">
-                                                    <tr>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-blue uppercase tracking-wide">Element Name</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-blue uppercase tracking-wide">Characteristics</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-gray-200">
-                                                    @foreach (var element in _selectedAssessment.DataElementAssessments.Take(10))
-                                                    {
-                                                        <tr class="hover:bg-yellow hover:bg-opacity-20">
-                                                            <td class="px-4 py-2 text-sm font-medium text-blue">@element.DataElementName</td>
-                                                            <td class="px-4 py-2 text-xs text-gray">
-                                                                @if (element.Characteristics?.Any() == true)
-                                                                {
-                                                                    <span>@string.Join(", ", element.Characteristics.Select(c => $"c.CharacteristicType: c.Value"))</span>
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
+
+                                    <div class="space-y-4">
+                                        @foreach (var element in _selectedAssessment.DataElementAssessments.Take(10))
+                                        {
+                                            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                                <h5 class="font-semibold text-blue mb-3">@element.DataElementName</h5>
+                                                @if (element.Characteristics?.Any() == true)
+                                                {
+                                                    <div class="space-y-3">
+                                                        @foreach (var characteristic in element.Characteristics)
+                                                        {
+                                                            @if (characteristic is RecordCount rc)
+                                                            {
+                                                                <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                                                                    <span class="text-sm text-gray-700 font-medium">Record Count</span>
+                                                                    <span class="text-lg font-bold text-gray-900">@rc.Value.ToString("N0")</span>
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is ReportedAvailability ra)
+                                                            {
+                                                                <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                                                                    <span class="text-sm text-gray-700 font-medium">Availability</span>
+                                                                    <span class="badge @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is Completeness c)
+                                                            {
+                                                                <div class="p-3 bg-gray-100 rounded">
+                                                                    <div class="flex items-center justify-between mb-2">
+                                                                        <span class="text-sm font-medium text-gray-700">@c.AttributeName Completeness</span>
+                                                                        <span class="text-sm font-bold text-gray-900">@c.Percentage.ToString("F1")%</span>
+                                                                    </div>
+                                                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                                                        <div class="bg-blue h-2 rounded-full transition-all" style="width: @c.Percentage.ToString("F1")%"></div>
+                                                                    </div>
+                                                                    <div class="text-xs text-gray-600 mt-1">@c.PopulatedRecords.ToString("N0") / @c.TotalRecords.ToString("N0") records</div>
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is IntegerRange ir)
+                                                            {
+                                                                <div class="p-2 bg-gray-100 rounded">
+                                                                    <span class="text-sm font-medium text-gray-700">@ir.Label:</span>
+                                                                    <span class="text-sm font-bold text-gray-900 ml-2">@ir.Minimum - @ir.Maximum</span>
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is Distribution dist)
+                                                            {
+                                                                <div class="p-3 bg-gray-100 rounded">
+                                                                    <div class="text-sm font-medium text-gray-700 mb-2">@dist.Label Distribution (@dist.TotalCount.ToString("N0") total)</div>
+                                                                    <div class="space-y-2">
+                                                                        @foreach (var kvp in dist.Counts.OrderByDescending(k => k.Value).Take(10))
+                                                                        {
+                                                                            var percentage = dist.TotalCount > 0 ? (kvp.Value * 100.0 / dist.TotalCount) : 0;
+                                                                            <div>
+                                                                                <div class="flex items-center justify-between text-xs mb-1">
+                                                                                    <span class="font-medium text-gray-700 truncate mr-2">@kvp.Key</span>
+                                                                                    <span class="font-mono text-gray-900 whitespace-nowrap">@kvp.Value.ToString("N0") (@percentage.ToString("F1")%)</span>
+                                                                                </div>
+                                                                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                                                                    <div class="bg-secondary h-1.5 rounded-full transition-all" style="width: @percentage.ToString("F1")%"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                    @if (dist.Counts.Count > 10)
+                                                                    {
+                                                                        <div class="text-xs text-gray-600 mt-2">Showing top 10 of @dist.Counts.Count items</div>
+                                                                    }
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <div class="text-xs text-gray mt-2">Assessed: @element.AssessedAt.ToString("g")</div>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-sm text-gray">No characteristics recorded</p>
+                                                }
+                                            </div>
+                                        }
                                     </div>
+
+
+
                                     @if (_selectedAssessment.DataElementAssessments.Count > 10)
                                     {
                                         <div class="text-xs text-gray mt-2">
@@ -310,7 +368,7 @@ else
                             }
                             else
                             {
-                                <div class="text-center py-4 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
+                                <div class="text-center py-4 text-gray border border-white rounded-lg bg-white bg-opacity-50">
                                     <i class="fas fa-exclamation-triangle text-blue mb-2"></i>
                                     <p class="text-sm">No detailed data elements in this assessment.</p>
                                 </div>
@@ -520,4 +578,21 @@ else
         // Navigate back to dashboard after deletion
         Nav.NavigateTo(AppRoutes.Dashboard);
     }
+
+    private int GetAssessmentIndex(Guid assesmentId)
+    {
+        return _dataSourceAssesments
+            .OrderByDescending(a => a.ConductedAt)
+            .ToList()
+            .FindIndex(a => a.Id == assesmentId);
+    }
+
+    private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => "badge-success",
+        AvailabilityJudgment.PartiallyAvailable => "badge-warning",
+        AvailabilityJudgment.NotAvailable => "badge-error",
+        AvailabilityJudgment.InsufficientData => "badge-ghost",
+        _ => "badge-ghost"
+    };
 }

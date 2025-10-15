@@ -8,7 +8,7 @@
 @if (Show)
 {
     <div class="modal modal-open">
-        <div class="modal-box max-h-5/6 @(_currentProgress != null ? "min-w-3/4" : "")">
+        <div class="modal-box max-h-5/6 @(_currentProgress != null ? "min-w-3/4" : "") pb-0">
             <h3 class="font-bold text-lg mb-4">Run Assessment</h3>
 
             @if (_showAssessmentRunner && DataSource.Type == DataSourceType.EdFiApi)
@@ -188,6 +188,7 @@
                 <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><span>@_error</span></div>
             }
 
+
             @if (_assessmentResult != null)
             {
                 <div class="alert alert-success">
@@ -198,9 +199,26 @@
                     </div>
                 </div>
             }
-            <div class="modal-action">
-                <button class="btn btn-primary" @onclick="StartAssessment">Run</button>
-                <button class="btn" @onclick="Close">Cancel</button>
+
+
+            <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
+                @* <button class="btn btn-primary" @onclick="StartAssessment">Run</button>
+                <button class="btn" @onclick="Close">Cancel</button> *@
+
+                @if (_isRunning)
+                {
+                    <button class="btn btn-error" @onclick="CancelAssessment"><i class="fas fa-stop mr-2"></i>Cancel Assessment</button>
+                }
+                else if (_assessmentResult != null)
+                {
+                    <button class="btn btn-ghost" @onclick="ResetAssessmentRunner">Run Another</button>
+                    <button class="btn btn-primary" @onclick="CloseAssessmentRunner">Done</button>
+                }
+                else
+                {
+                    <button class="btn btn-ghost" @onclick="CloseAssessmentRunner">Cancel</button>
+                    <button class="btn btn-primary" @onclick="StartAssessment"><i class="fas fa-play mr-2"></i>Start Assessment</button>
+                }
             </div>
 
         </div>
@@ -288,8 +306,8 @@
         finally
         {
             _isRunning = false;
-            // _cancellationTokenSource?.Dispose();
-            // _cancellationTokenSource = null;
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = null;
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -359,6 +377,33 @@
         if (string.IsNullOrWhiteSpace(url))
             return url;
         return url.EndsWith("/") ? url : url + "/";
+    }
+
+    private async Task CancelAssessment()
+    {
+        _cancellationTokenSource?.Cancel();
+        await Close();
+    }
+
+    private async void CloseAssessmentRunner()
+    {
+        _showAssessmentRunner = false;
+        if (_assessmentResult != null)
+        {
+            // LoadDataSource();
+            // // Auto-select the newly completed assessment
+            // _selectedAssessment = _assessmentResult;
+        }
+        ResetAssessmentRunner();
+        await Close();
+    }
+
+    private void ResetAssessmentRunner()
+    {
+        _currentProgress = null;
+        _assessmentResult = null;
+        _error = null;
+        _validationError = null;
     }
 
     private string GetStatusBadgeClass(AssessorStatus status) => status switch
