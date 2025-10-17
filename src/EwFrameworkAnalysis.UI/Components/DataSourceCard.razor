@@ -52,18 +52,15 @@
             <!-- Left Section -->
             <div class="flex flex-row items-center gap-4">
                 <!-- Last Run -->
-                <p class="text-xs text-gray-400 mt-1">
-                    Last run: <span class="font-medium">@* @(FormatLastRun(DataSource.LastRun)) *@</span> |
-                    <span class="font-medium">127</span> data elements checked
-                </p>
+                <p class="text-xs text-gray-400 mt-1">@GetAssessmentSummary(DataSource)</p>
             </div>
 
             <!-- Right Section -->
             <div class="flex flex-col items-end gap-2">
                 <!-- Actions -->
                 <div class="flex gap-3 text-sm">
-                    <a class="link link-hover font-semibold">Run Analysis</a>
-                    <a class="link link-hover font-semibold">View Results</a>
+                    <a href="data-sources/@DataSource.Id" class="link link-hover font-semibold">Run Analysis</a>
+                    <a href="data-sources/@DataSource.Id" class="link link-hover font-semibold">View Results</a>
                 </div>
             </div>
         </div>
@@ -103,4 +100,34 @@
     };
 
     private bool HasAssessments() => ProjectSvc.GetAssessmentsForDataSource(DataSource.Id).Any();
+
+    private string GetAssessmentSummary(DataSource dataSource)
+    {
+        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
+
+        if (!assessments.Any())
+            return GetNeverRunSummary(dataSource.Type);
+
+        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
+        var timeAgo = GetTimeAgo(latest.ConductedAt);
+        var elementCount = latest.DataElementAssessments?.Count ?? 0;
+
+        return $"Last run: {timeAgo} | {elementCount} elements assessed";
+    }
+
+    private string GetNeverRunSummary(DataSourceType type) => type switch
+    {
+        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
+        DataSourceType.CedsDw => "Never run • Upload CSV results",
+        DataSourceType.Custom => "Never run • Manual checklist items",
+        _ => "Never run"
+    };
+
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.UtcNow - dateTime;
+        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
+             : $"{(int)timeSpan.TotalDays} days ago";
+    }
 }

@@ -202,9 +202,6 @@
 
 
             <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
-                @* <button class="btn btn-primary" @onclick="StartAssessment">Run</button>
-                <button class="btn" @onclick="Close">Cancel</button> *@
-
                 @if (_isRunning)
                 {
                     <button class="btn btn-error" @onclick="CancelAssessment"><i class="fas fa-stop mr-2"></i>Cancel Assessment</button>
@@ -212,12 +209,12 @@
                 else if (_assessmentResult != null)
                 {
                     <button class="btn btn-ghost" @onclick="ResetAssessmentRunner">Run Another</button>
-                    <button class="btn btn-primary" @onclick="CloseAssessmentRunner">Done</button>
+                    <button class="btn btn-secondary" @onclick="CloseAssessmentRunner">Done</button>
                 }
                 else
                 {
                     <button class="btn btn-ghost" @onclick="CloseAssessmentRunner">Cancel</button>
-                    <button class="btn btn-primary" @onclick="StartAssessment"><i class="fas fa-play mr-2"></i>Start Assessment</button>
+                    <button class="btn btn-secondary" @onclick="StartAssessment"><i class="fas fa-play mr-2"></i>Start Assessment</button>
                 }
             </div>
 

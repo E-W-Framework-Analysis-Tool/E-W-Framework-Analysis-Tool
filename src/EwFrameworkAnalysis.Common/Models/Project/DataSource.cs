@@ -16,7 +16,7 @@ public class DataSource
 
 public enum DataSourceType
 {
-    [Display(Name = "Ed-Fi ODS API", Description = "Automated discovery & analysis")]
+    [Display(Name = "Ed-Fi ODS API", Description = "Ed-Fi ODS API endpoint for automated data discovery")]
     EdFiApi,
 
     [Display(Name = "CEDS Data Warehouse", Description = "Upload SQL result sets from CEDS DW")]

@@ -258,28 +258,12 @@ public class AnalysisProjectService
         return new DataSource
         {
             Id = Guid.NewGuid(),
-            Name = GetDefaultDataSourceName(type),
-            Description = GetDefaultDataSourceDescription(type),
+            Name = type.GetDisplayName(),
+            Description = type.GetDisplayDescription(),
             Type = type,
             Enabled = true
         };
     }
-
-    private string GetDefaultDataSourceName(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "Ed-Fi ODS API v7.3 (DS v5.2)",
-        DataSourceType.CedsDw => "CEDS Data Warehouse v11",
-        DataSourceType.Custom => "Custom Assessment",
-        _ => "New Data Source"
-    };
-
-    private string GetDefaultDataSourceDescription(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "Ed-Fi ODS API endpoint for automated data discovery",
-        DataSourceType.CedsDw => "CEDS Data Warehouse for SQL-based analysis",
-        DataSourceType.Custom => "Manual assessment checklist",
-        _ => "Data source description"
-    };
 
     private JsonSerializerOptions GetJsonOptions()
     {
