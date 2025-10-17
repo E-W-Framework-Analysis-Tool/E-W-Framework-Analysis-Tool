@@ -8,10 +8,10 @@
     "test": "tests"
   },
   "scripts": {
-    "format": "prettier --write \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!**/bin/**\"",
-    "lint": "markdownlint-cli2 --fix \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!**/bin/**\"",
-    "check": "prettier --check --loglevel info \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!**/bin/**\" && markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!bin/**\"",
-    "check:debug": "prettier --check --log-level=debug \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!**/bin/**\" && markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!publish/**\" \"!bin/**\""
+    "format": "prettier --write \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\"",
+    "lint": "markdownlint-cli2 --fix \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\"",
+    "check": "prettier --check --loglevel info \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\" && markdownlint-cli2 \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\"",
+    "check:debug": "prettier --check --log-level=debug \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\" && markdownlint-cli2 \"**/*.md\" \"!**/node_modules/**\" \"!publish/**\" \"!**/bin/**\""
   },
   "keywords": [],
   "author": "",
