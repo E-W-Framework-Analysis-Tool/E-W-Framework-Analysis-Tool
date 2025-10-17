@@ -45,7 +45,7 @@ public class AnalysisProjectService
                 Project = new AnalysisProject();
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
             // Deserialization failed, start with empty project
