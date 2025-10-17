@@ -4,8 +4,8 @@
 
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
-[Education-to-Workforce Indicator Framework (E-W Framework)](https://www.e-wframework.org/). It supports states and LEAs
-in identifying priority indicators, assessing gaps, and planning improvements in data infrastructure.
+[Education-to-Workforce Indicator Framework (E-W Framework)](https://educationtoworkforce.org). It supports states and
+LEAs in identifying priority indicators, assessing gaps, and planning improvements in data infrastructure.
 
 ## Key Features
 
@@ -29,6 +29,11 @@ in identifying priority indicators, assessing gaps, and planning improvements in
 ## Quick Start
 
 > Development is in progress. Documentation and installation instructions will be available as the project progresses.
+
+## Documentation
+
+Documentation which is intrinsically technical or relevant to development can be found in this repository under
+[/docs/](./docs/).
 
 ## Contributing
 
