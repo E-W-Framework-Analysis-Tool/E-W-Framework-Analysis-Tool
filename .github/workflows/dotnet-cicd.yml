@@ -171,10 +171,13 @@ jobs:
         env:
           EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
           EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
-          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "DEV"
-          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "true"
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
           EWFTOOLSETTING__DeploymentInfo__GitCommit: ${{ github.sha }}
           EWFTOOLSETTING__DeploymentInfo__BuildNumber: ${{ github.run_number }}
+          EWFTOOLSETTING__DemoEdFiApi__BaseUrl: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__BaseUrl }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
       - name: Deploy to Azure Static Web Apps (Dev)
         shell: pwsh
@@ -220,10 +223,13 @@ jobs:
         env:
           EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
           EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
-          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "TEST"
-          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "true"
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
           EWFTOOLSETTING__DeploymentInfo__GitCommit: ${{ github.sha }}
           EWFTOOLSETTING__DeploymentInfo__BuildNumber: ${{ github.run_number }}
+          EWFTOOLSETTING__DemoEdFiApi__BaseUrl: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__BaseUrl }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
       - name: Deploy to Azure Static Web Apps (Test)
         shell: pwsh
@@ -269,10 +275,13 @@ jobs:
         env:
           EWFTOOLSETTING__DeploymentInfo__Version: ${{ env.VERSION }}
           EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.head_commit.timestamp }}
-          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: "PROD"
-          EWFTOOLSETTING__DeploymentInfo__ShowDetails: "false"
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
           EWFTOOLSETTING__DeploymentInfo__GitCommit: ${{ github.sha }}
           EWFTOOLSETTING__DeploymentInfo__BuildNumber: ${{ github.run_number }}
+          EWFTOOLSETTING__DemoEdFiApi__BaseUrl: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__BaseUrl }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
       - name: Deploy to Azure Static Web Apps (Production)
         shell: pwsh
