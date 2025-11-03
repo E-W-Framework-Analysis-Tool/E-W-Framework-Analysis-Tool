@@ -1,5 +1,13 @@
+using System.Text.Json.Serialization;
+
 namespace EwFrameworkAnalysis.Common.Models.Project;
 
+// Register all derived types on the abstract base class
+[JsonDerivedType(typeof(RecordCount), typeDiscriminator: nameof(RecordCount))]
+[JsonDerivedType(typeof(ReportedAvailability), typeDiscriminator: nameof(ReportedAvailability))]
+[JsonDerivedType(typeof(IntegerRange), typeDiscriminator: nameof(IntegerRange))]
+[JsonDerivedType(typeof(Completeness), typeDiscriminator: nameof(Completeness))]
+[JsonDerivedType(typeof(Distribution), typeDiscriminator: nameof(Distribution))]
 public abstract class DataCharacteristicBase
 {
     public Guid Id { get; set; } = Guid.NewGuid();

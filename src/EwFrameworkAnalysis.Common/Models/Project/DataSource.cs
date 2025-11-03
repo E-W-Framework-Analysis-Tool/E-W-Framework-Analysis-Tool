@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EwFrameworkAnalysis.Common.Models.Project;
 
 /// <summary>
@@ -14,7 +16,12 @@ public class DataSource
 
 public enum DataSourceType
 {
+    [Display(Name = "Ed-Fi ODS API", Description = "Ed-Fi ODS API endpoint for automated data discovery")]
     EdFiApi,
+
+    [Display(Name = "CEDS Data Warehouse", Description = "Upload SQL result sets from CEDS DW")]
     CedsDw,
+
+    [Display(Name = "Manual Assessment", Description = "Flexible checklist for manual review")]
     Custom
 }

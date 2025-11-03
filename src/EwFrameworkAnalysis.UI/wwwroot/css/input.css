@@ -25,7 +25,7 @@
     /* Standard status colors */
     --color-info: oklch(70% 0.2 220);
     --color-info-content: oklch(98% 0.01 220);
-    --color-success: oklch(65% 0.25 140);
+    --color-success: #12885e; /*oklch(56% 0.12 162.17);*/
     --color-success-content: oklch(98% 0.01 140);
     --color-warning: oklch(78% 0.13 85); /* Using your yellow */
     --color-warning-content: oklch(27% 0.08 245); /* Blue text on yellow */
