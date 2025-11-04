@@ -52,6 +52,7 @@
     --font-weight-bold: 700;
     --tracking-wide: 0.025em;
     --leading-relaxed: 1.625;
+    --radius-sm: 0.25rem;
     --radius-md: 0.375rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
@@ -305,6 +306,99 @@
         visibility: hidden;
         opacity: 0%;
       }
+    }
+  }
+  .fab {
+    pointer-events: none;
+    position: fixed;
+    inset-inline-end: calc(0.25rem * 4);
+    bottom: calc(0.25rem * 4);
+    z-index: 999;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: calc(0.25rem * 2);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    white-space: nowrap;
+    > * {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: calc(0.25rem * 2);
+      &:hover, &:has(:focus-visible) {
+        z-index: 1;
+      }
+    }
+    > [tabindex] {
+      &:first-child {
+        position: relative;
+        display: grid;
+        transition-property: opacity, visibility, rotate;
+        transition-duration: 0.2s;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
+    .fab-close {
+      position: absolute;
+      inset-inline-end: calc(0.25rem * 0);
+      bottom: calc(0.25rem * 0);
+    }
+    .fab-main-action {
+      position: absolute;
+      inset-inline-end: calc(0.25rem * 0);
+      bottom: calc(0.25rem * 0);
+    }
+    &:focus-within {
+      &:has(.fab-close), &:has(.fab-main-action) {
+        > [tabindex] {
+          rotate: 90deg;
+          opacity: 0%;
+        }
+      }
+      > [tabindex]:first-child {
+        pointer-events: none;
+      }
+      > :nth-child(n + 2) {
+        visibility: visible;
+        --tw-scale-x: 100%;
+        --tw-scale-y: 100%;
+        --tw-scale-z: 100%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        opacity: 100%;
+      }
+    }
+    > :nth-child(n + 2) {
+      visibility: hidden;
+      --tw-scale-x: 80%;
+      --tw-scale-y: 80%;
+      --tw-scale-z: 80%;
+      scale: var(--tw-scale-x) var(--tw-scale-y);
+      opacity: 0%;
+      transition-property: opacity, scale, visibility;
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      &.fab-main-action, &.fab-close {
+        --tw-scale-x: 100%;
+        --tw-scale-y: 100%;
+        --tw-scale-z: 100%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+      }
+    }
+    > :nth-child(3) {
+      transition-delay: 30ms;
+    }
+    > :nth-child(4) {
+      transition-delay: 60ms;
+    }
+    > :nth-child(5) {
+      transition-delay: 90ms;
+    }
+    > :nth-child(6) {
+      transition-delay: 120ms;
+    }
+    > :nth-child(7) {
+      display: none;
     }
   }
   .menu {
@@ -1347,9 +1441,6 @@
   .mt-8 {
     margin-top: calc(var(--spacing) * 8);
   }
-  .mt-12 {
-    margin-top: calc(var(--spacing) * 12);
-  }
   .mt-20 {
     margin-top: calc(var(--spacing) * 20);
   }
@@ -1364,6 +1455,9 @@
   }
   .mr-4 {
     margin-right: calc(var(--spacing) * 4);
+  }
+  .mr-6 {
+    margin-right: calc(var(--spacing) * 6);
   }
   .fieldset-legend {
     margin-bottom: calc(0.25rem * -1);
@@ -1904,6 +1998,9 @@
   .rounded-none {
     border-radius: 0;
   }
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
   .rounded-xl {
     border-radius: var(--radius-xl);
   }
@@ -2131,6 +2228,9 @@
   .px-2\.5 {
     padding-inline: calc(var(--spacing) * 2.5);
   }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
   }
@@ -2172,6 +2272,12 @@
   }
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
+  }
+  .pt-6 {
+    padding-top: calc(var(--spacing) * 6);
+  }
+  .pt-12 {
+    padding-top: calc(var(--spacing) * 12);
   }
   .pt-24 {
     padding-top: calc(var(--spacing) * 24);
@@ -2486,6 +2592,11 @@
       }
     }
   }
+  .btn-lg {
+    --fontsize: 1.125rem;
+    --btn-p: 1.25rem;
+    --size: calc(var(--size-field, 0.25rem) * 12);
+  }
   .btn-sm {
     --fontsize: 0.75rem;
     --btn-p: 0.75rem;
@@ -2621,13 +2732,6 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-primary);
-      }
-    }
-  }
-  .hover\:text-primary-content {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-primary-content);
       }
     }
   }
