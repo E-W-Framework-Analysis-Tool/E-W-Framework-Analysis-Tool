@@ -16,13 +16,13 @@ public static class AppRoutes
     public static readonly Dictionary<string, string> RouteTitles = new()
     {
         public static string ForDataSource(Guid id) => $"/data-sources/{id}";
-        public static bool IsMatch(string path) => path.StartsWith("/data-sources/");
-        public static Guid? ExtractDataSourceId(string path)
-        {
-            var segments = path.Split('/');
-            if (segments.Length >= 3 && Guid.TryParse(segments[2], out var id))
-                return id;
-            return null;
-        }
+    public static bool IsMatch(string path) => path.StartsWith("/data-sources/");
+    public static Guid? ExtractDataSourceId(string path)
+    {
+        var segments = path.Split('/');
+        if (segments.Length >= 3 && Guid.TryParse(segments[2], out var id))
+            return id;
+        return null;
     }
+}
 };
