@@ -224,7 +224,10 @@ public class AnalysisProjectService
 
     #region Project Management
 
-    public async Task NewProjectAsync()
+    /// <summary>
+    /// Create a brand new empty project
+    /// </summary>
+    public async Task CreateNewProjectAsync()
     {
         Project = new AnalysisProject
         {
@@ -237,6 +240,29 @@ public class AnalysisProjectService
         };
         await SaveAsync();
         Notify();
+    }
+
+    /// <summary>
+    /// Import a project from JSON string
+    /// </summary>
+    public async Task<bool> ImportProjectAsync(string json)
+    {
+        try
+        {
+            var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
+            if (project != null)
+            {
+                Project = project;
+                await SaveAsync();
+                Notify();
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to import project: {ex.Message}");
+        }
+        return false;
     }
 
     public async Task UpdateProjectDetailsAsync(string? title)

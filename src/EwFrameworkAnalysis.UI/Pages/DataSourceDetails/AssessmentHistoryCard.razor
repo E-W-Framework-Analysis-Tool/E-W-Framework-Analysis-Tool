@@ -1,0 +1,59 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Variant="Card.CardVariant.Shadow">
+    <ChildContent>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-title font-semibold text-blue">Assessment History</h3>
+            <span class="text-sm font-semibold text-gray">
+                @(Assessments?.Count ?? 0) total
+            </span>
+        </div>
+
+        @if (Assessments?.Any() == true)
+        {
+            <div class="space-y-3">
+                @foreach (var a in Assessments.OrderByDescending(x => x.ConductedAt))
+                {
+                    var isViewing = a.Id == SelectedAssessment?.Id;
+                    <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer @(isViewing ? "ring-2 ring-blue ring-opacity-30 bg-tan" : "")"
+                         @onclick="() => OnSelectAssessment.InvokeAsync(a)">
+                        <div class="card-body p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="text-sm font-semibold text-blue flex items-center gap-2">
+                                        @(a.Name ?? "Unnamed Assessment")
+                                        @if (isViewing)
+                                        {
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue bg-opacity-20 text-white">viewing</div>
+                                        }
+                                    </div>
+                                    <div class="text-xs text-gray mt-1">@a.ConductedAt.ToString("g")</div>
+                                    @if (a.DataElementAssessments?.Any() == true)
+                                    {
+                                        <div class="text-xs text-gray mt-1">@a.DataElementAssessments.Count data elements assessed</div>
+                                    }
+                                </div>
+                                <div class="flex items-center gap-2"><i class="fas fa-chevron-right text-gray"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-8 text-gray">
+                <i class="fas fa-clock text-4xl mb-4 opacity-50"></i>
+                <p class="font-semibold">No assessments yet</p>
+                <p class="text-xs mt-2">Click "Run New Assessment" to get started.</p>
+            </div>
+        }
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter] public List<DataSourceAssessment>? Assessments { get; set; }
+    [Parameter] public DataSourceAssessment? SelectedAssessment { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnSelectAssessment { get; set; }
+}

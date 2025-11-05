@@ -1,0 +1,54 @@
+<div class="@GetCardClasses()">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="@GetHeaderClasses()">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-title font-semibold text-blue">@Title</h3>
+                @HeaderActions
+            </div>
+        </div>
+    }
+    <div class="@GetBodyClasses()">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? HeaderActions { get; set; }
+    [Parameter] public string AdditionalClasses { get; set; } = "";
+    [Parameter] public bool NoPadding { get; set; } = false;
+    [Parameter] public CardVariant Variant { get; set; } = CardVariant.Default;
+
+    private string GetCardClasses()
+    {
+        var baseClasses = Variant switch
+        {
+            CardVariant.Shadow => "bg-white shadow rounded-lg",
+            CardVariant.ShadowXl => "bg-white shadow-xl rounded-lg",
+            CardVariant.Overflow => "bg-white overflow-hidden shadow rounded-lg",
+            _ => "bg-white shadow rounded-lg"
+        };
+
+        return $"{baseClasses} {AdditionalClasses}".Trim();
+    }
+
+    private string GetHeaderClasses()
+    {
+        return NoPadding ? "px-4 py-5 sm:p-6" : "px-4 py-5 sm:p-6 pb-0";
+    }
+
+    private string GetBodyClasses()
+    {
+        return NoPadding ? "" : "p-5";
+    }
+
+    public enum CardVariant
+    {
+        Default,
+        Shadow,
+        ShadowXl,
+        Overflow
+    }
+}

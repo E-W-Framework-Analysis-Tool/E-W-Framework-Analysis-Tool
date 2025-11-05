@@ -1,0 +1,82 @@
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+@inject NavigationManager Nav
+
+<Card Title="Essential Questions" Variant="Card.CardVariant.ShadowXl">
+    <HeaderActions>
+        <button @onclick="NavigateToAnalysis" class="text-sm text-blue hover:text-yellow font-medium">
+            View All <i class="fas fa-arrow-right ml-1"></i>
+        </button>
+    </HeaderActions>
+    <ChildContent>
+        <div class="space-y-3">
+            @if (QuestionScores?.Any() == true)
+            {
+                @foreach (var question in QuestionScores.Take(3))
+                {
+                    <div class="border-l-4 @GetScoreBorderColor(question.ReadinessScore) pl-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue">@GetQuestionTitle(question.QuestionNumber)</span>
+                            <span class="text-sm font-semibold @GetScoreTextColor(question.ReadinessScore)">@((question.ReadinessScore * 100).ToString("F0"))%</span>
+                        </div>
+                        <p class="text-xs text-gray mt-1">@GetIndicatorSummary(question.IndicatorScores)</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-4 text-gray">
+                    <p class="text-sm">No analysis results yet.</p>
+                    <p class="text-xs mt-1">Run data source analyses to see scores.</p>
+                </div>
+            }
+        </div>
+        <div class="mt-4 pt-3 border-t border-tan">
+            <div class="text-xs text-gray">
+                <i class="fas fa-info-circle mr-1"></i>
+                Scores based on data availability and quality
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter] public List<QuestionScore>? QuestionScores { get; set; }
+
+    private void NavigateToAnalysis()
+    {
+        Nav.NavigateTo("/analysis");
+    }
+
+    private string GetScoreBorderColor(decimal score) => score switch
+    {
+        >= 0.8m => "border-green",
+        >= 0.6m => "border-yellow",
+        _ => "border-red-500"
+    };
+
+    private string GetScoreTextColor(decimal score) => score switch
+    {
+        >= 0.8m => "text-green",
+        >= 0.6m => "text-yellow",
+        _ => "text-red-600"
+    };
+
+    private string GetQuestionTitle(int questionNumber) => questionNumber switch
+    {
+        1 => "Kindergarten Readiness",
+        2 => "Quality School Environments",
+        3 => "High School Transition",
+        4 => "Post-Secondary Success",
+        5 => "Early Childhood Development",
+        _ => $"Question {questionNumber}"
+    };
+
+    private string GetIndicatorSummary(List<IndicatorScore> indicators)
+    {
+        if (indicators?.Any() != true) return "No indicators analyzed";
+        var availableCount = indicators.Count(i => i.ReadinessScore >= 0.5m);
+        var totalCount = indicators.Count;
+        return $"{availableCount}/{totalCount} indicators available";
+    }
+}

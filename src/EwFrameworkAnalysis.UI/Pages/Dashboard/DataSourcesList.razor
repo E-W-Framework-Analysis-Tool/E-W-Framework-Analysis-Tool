@@ -1,0 +1,87 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+@inject AnalysisProjectService ProjectSvc
+@inject NavigationManager Nav
+
+<div class="lg:col-span-2" id="data-sources">
+    <Card Variant="Card.CardVariant.ShadowXl">
+        <ChildContent>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-title font-semibold text-blue">Data Sources</h3>
+                <button @onclick="OnAddDataSource" class="btn btn-primary gap-2">
+                    <i class="fas fa-plus"></i>Add Data Source
+                </button>
+            </div>
+            <!-- Data Source Items -->
+            <div class="space-y-3">
+                @if (DataSources?.Any() == true)
+                {
+                    @foreach (var dataSource in DataSources)
+                    {
+                        <DataSourceCard DataSource="@dataSource"
+                                        OnClick="@(() => GoToDataSourceDetails(dataSource))"
+                                        IsNewlyAdded="@IsNewlyAdded(dataSource)"
+                                        HasRecentAssessment="@HasRecentAssessment(dataSource)"
+                                        AssessmentSummary="@GetAssessmentSummary(dataSource)" />
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-8 text-base-content/70">
+                        <i class="fas fa-database text-4xl mb-4 text-base-content/30"></i>
+                        <p>No data sources configured yet.</p>
+                        <p class="text-xs mt-2">Add your first data source to begin analysis.</p>
+                    </div>
+                }
+            </div>
+        </ChildContent>
+    </Card>
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<DataSource>? DataSources { get; set; }
+    [Parameter] public EventCallback OnAddDataSource { get; set; }
+    
+    private void GoToDataSourceDetails(DataSource dataSource)
+    {
+        Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(dataSource.Id));
+    }
+    
+    private bool IsNewlyAdded(DataSource dataSource)
+        => ProjectSvc.NewlyAddedDataSourceId.HasValue && dataSource.Id == ProjectSvc.NewlyAddedDataSourceId.Value;
+    
+    private bool HasRecentAssessment(DataSource dataSource)
+    {
+        return ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).Any();
+    }
+    
+    private string GetAssessmentSummary(DataSource dataSource)
+    {
+        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
+        
+        if (!assessments.Any())
+            return GetNeverRunSummary(dataSource.Type);
+        
+        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
+        var timeAgo = GetTimeAgo(latest.ConductedAt);
+        var elementCount = latest.DataElementAssessments?.Count ?? 0;
+        
+        return $"Last run: {timeAgo} | {elementCount} elements assessed";
+    }
+    
+    private string GetNeverRunSummary(DataSourceType type) => type switch
+    {
+        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
+        DataSourceType.CedsDw => "Never run • Upload CSV results",
+        DataSourceType.Custom => "Never run • Manual checklist items",
+        _ => "Never run"
+    };
+    
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.UtcNow - dateTime;
+        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
+             : $"{(int)timeSpan.TotalDays} days ago";
+    }
+}

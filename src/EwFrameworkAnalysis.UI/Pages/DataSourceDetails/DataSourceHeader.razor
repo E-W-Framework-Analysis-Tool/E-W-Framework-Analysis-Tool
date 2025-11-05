@@ -1,0 +1,36 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+
+<EditableHeader Title="@DataSource.Name"
+                Description="@DataSource.Description"
+                Subtitle="@GetSubtitle()"
+                TitlePlaceholder="Enter data source name"
+                DescriptionPlaceholder="Enter description (optional)"
+                AllowDescriptionEdit="true"
+                OnSave="@HandleSave">
+    <Actions>
+        @if (DataSource.Type == DataSourceType.EdFiApi)
+        {
+            <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
+                <i class="fas fa-play"></i>
+                Run New Assessment
+            </button>
+        }
+    </Actions>
+</EditableHeader>
+
+@code {
+    [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
+    [Parameter] public EventCallback<(string name, string? description)> OnSave { get; set; }
+    [Parameter] public EventCallback OnRunAssessment { get; set; }
+
+    private async Task HandleSave((string title, string? description) data)
+    {
+        await OnSave.InvokeAsync((data.title, data.description));
+    }
+
+    private string GetSubtitle()
+    {
+        return $"Type: {DataSource.Type.GetDisplayName()}";
+    }
+}

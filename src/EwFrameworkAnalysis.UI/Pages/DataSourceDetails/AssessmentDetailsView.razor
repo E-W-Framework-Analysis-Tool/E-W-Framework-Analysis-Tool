@@ -1,0 +1,68 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Assessment Details" Variant="Card.CardVariant.ShadowXl">
+    <ChildContent>
+        @if (Assessment is not null)
+        {
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4">
+                    <div class="text-xs text-gray uppercase tracking-wide">Name</div>
+                    <div class="text-sm font-semibold text-blue">@(Assessment.Name ?? "Unnamed")</div>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <div class="text-xs text-gray uppercase tracking-wide">Conducted</div>
+                    <div class="text-sm font-semibold text-blue">@Assessment.ConductedAt.ToString("g")</div>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <div class="text-xs text-gray uppercase tracking-wide">Data Elements</div>
+                    <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrWhiteSpace(Assessment.Notes))
+            {
+                <div class="mb-6 p-4 bg-tan bg-opacity-50 rounded-lg">
+                    <div class="text-xs text-gray uppercase tracking-wide mb-1">Notes</div>
+                    <div class="text-sm text-blue">@Assessment.Notes</div>
+                </div>
+            }
+            
+            @if (Assessment.DataElementAssessments?.Any() == true)
+            {
+                <div class="border-t border-tan pt-4">
+                    <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
+                    <div class="space-y-4">
+                        @foreach (var element in Assessment.DataElementAssessments.Take(10))
+                        {
+                            <DataElementCard Element="@element" />
+                        }
+                    </div>
+                    @if (Assessment.DataElementAssessments.Count > 10)
+                    {
+                        <div class="text-xs text-gray mt-4 text-center">Showing 10 of @Assessment.DataElementAssessments.Count elements</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
+                    <i class="fas fa-exclamation-triangle text-blue mb-2"></i>
+                    <p class="text-sm">No detailed data elements in this assessment.</p>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-8 text-gray">
+                <i class="fas fa-mouse-pointer text-4xl mb-4 opacity-50"></i>
+                <p class="text-sm">Click on an assessment above to view detailed information.</p>
+            </div>
+        }
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter] public DataSourceAssessment? Assessment { get; set; }
+}

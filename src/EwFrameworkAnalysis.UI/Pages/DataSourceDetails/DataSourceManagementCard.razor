@@ -1,0 +1,26 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Management" Variant="Card.CardVariant.ShadowXl">
+    <ChildContent>
+        <div class="space-y-3">
+            <button class="btn btn-sm w-full @(DataSource.Enabled ? "btn-outline" : "bg-green text-white border-green")" 
+                    @onclick="OnToggleEnabled">
+                <i class="fas @(DataSource.Enabled ? "fa-pause" : "fa-play") mr-2"></i>
+                @(DataSource.Enabled ? "Disable" : "Enable") Data Source
+            </button>
+            <div class="border-t border-gray-200 pt-3">
+                <p class="text-xs text-gray mb-2">Danger Zone</p>
+                <button class="btn btn-sm btn-error btn-outline w-full" @onclick="OnDelete">
+                    <i class="fas fa-trash mr-2"></i>Delete Data Source
+                </button>
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
+    [Parameter] public EventCallback OnToggleEnabled { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+}

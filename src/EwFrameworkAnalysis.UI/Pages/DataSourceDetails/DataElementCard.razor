@@ -1,0 +1,91 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+
+<div class="bg-white border border-gray-200 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-200">
+    <h5 class="font-semibold text-blue mb-3">@Element.DataElementName</h5>
+    @if (Element.Characteristics?.Any() == true)
+    {
+        <div class="space-y-3">
+            @foreach (var characteristic in Element.Characteristics)
+            {
+                @if (characteristic is RecordCount rc)
+                {
+                    <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                        <span class="text-sm text-gray-700 font-medium">Record Count</span>
+                        <span class="text-lg font-bold text-gray-900">@rc.Value.ToString("N0")</span>
+                    </div>
+                }
+                else if (characteristic is ReportedAvailability ra)
+                {
+                    <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                        <span class="text-sm text-gray-700 font-medium">Availability</span>
+                        <span class="badge @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
+                    </div>
+                }
+                else if (characteristic is Completeness c)
+                {
+                    <div class="p-3 bg-gray-100 rounded">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">@c.AttributeName Completeness</span>
+                            <span class="text-sm font-bold text-gray-900">@c.Percentage.ToString("F1")%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue h-2 rounded-full transition-all" style="width: @c.Percentage.ToString("F1")%"></div>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">@c.PopulatedRecords.ToString("N0") / @c.TotalRecords.ToString("N0") records</div>
+                    </div>
+                }
+                else if (characteristic is IntegerRange ir)
+                {
+                    <div class="p-2 bg-gray-100 rounded">
+                        <span class="text-sm font-medium text-gray-700">@ir.Label:</span>
+                        <span class="text-sm font-bold text-gray-900 ml-2">@ir.Minimum - @ir.Maximum</span>
+                    </div>
+                }
+                else if (characteristic is Distribution dist)
+                {
+                    <div class="p-3 bg-gray-100 rounded">
+                        <div class="text-sm font-medium text-gray-700 mb-2">@dist.Label Distribution (@dist.TotalCount.ToString("N0") total)</div>
+                        <div class="space-y-2">
+                            @foreach (var kvp in dist.Counts.OrderByDescending(k => k.Value).Take(10))
+                            {
+                                var percentage = dist.TotalCount > 0 ? (kvp.Value * 100.0 / dist.TotalCount) : 0;
+                                <div>
+                                    <div class="flex items-center justify-between text-xs mb-1">
+                                        <span class="font-medium text-gray-700 truncate mr-2">@kvp.Key</span>
+                                        <span class="font-mono text-gray-900 whitespace-nowrap">@kvp.Value.ToString("N0") (@percentage.ToString("F1")%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-secondary h-1.5 rounded-full transition-all" style="width: @percentage.ToString("F1")%"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (dist.Counts.Count > 10)
+                        {
+                            <div class="text-xs text-gray-600 mt-2">Showing top 10 of @dist.Counts.Count items</div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+        <div class="text-xs text-gray mt-2">Assessed: @Element.AssessedAt.ToString("g")</div>
+    }
+    else
+    {
+        <p class="text-sm text-gray">No characteristics recorded</p>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public DataElementAssessment Element { get; set; } = null!;
+
+    private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => "badge-success",
+        AvailabilityJudgment.PartiallyAvailable => "badge-warning",
+        AvailabilityJudgment.NotAvailable => "badge-error",
+        AvailabilityJudgment.InsufficientData => "badge-ghost",
+        _ => "badge-ghost"
+    };
+}

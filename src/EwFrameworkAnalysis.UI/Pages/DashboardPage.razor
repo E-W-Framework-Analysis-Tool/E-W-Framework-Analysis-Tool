@@ -1,0 +1,93 @@
+@page "/dashboard"
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Pages.Dashboard
+@inject AnalysisProjectService ProjectSvc
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+    <!-- Project Header -->
+    <ProjectHeader ActiveSourceCount="@ActiveSourceCount" />
+
+    <!-- Dashboard Overview -->
+    <DashboardOverview OverallScore="@overallScore"
+                       TotalDataSources="@TotalDataSources"
+                       AutomatedSourceCount="@AutomatedSourceCount"
+                       ManualSourceCount="@ManualSourceCount" />
+
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <!-- Data Sources Panel -->
+        <DataSourcesList DataSources="@ProjectSvc.DataSources"
+                         OnAddDataSource="@(() => _isModalOpen = true)" />
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Essential Questions Summary -->
+            <EssentialQuestionsSummary QuestionScores="@questionScores" />
+
+            <!-- Quick Actions (not sure we need this) -->
+            @* <QuickActions /> *@
+
+            <!-- Data Coverage -->
+            <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
+                                 HasAnyAssessments="@HasAnyAssessments" />
+        </div>
+    </div>
+</div>
+
+<!-- Add Data Source Modal -->
+<AddDataSourceModal IsOpen="@_isModalOpen"
+                    IsOpenChanged="@((value) => _isModalOpen = value)"
+                    OnDataSourceTypeSelected="@HandleDataSourceTypeSelected" />
+
+@code {
+    // State variables
+    private List<QuestionScore> questionScores = new();
+    private decimal overallScore = 0.74m;
+    private bool _isModalOpen = false;
+
+    // Computed properties
+    private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
+    private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
+    private int AutomatedSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type != DataSourceType.Custom) ?? 0;
+    private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
+    private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
+
+    protected override void OnInitialized()
+    {
+        ProjectSvc.Changed += OnProjectChanged;
+        InitializeQuestionScores();
+    }
+
+    public void Dispose()
+    {
+        ProjectSvc.Changed -= OnProjectChanged;
+    }
+
+    private void OnProjectChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void InitializeQuestionScores()
+    {
+        if (HasAnyAssessments)
+        {
+            questionScores = new List<QuestionScore>
+            {
+                new QuestionScore { QuestionNumber = 1, ReadinessScore = 0.85m },
+                new QuestionScore { QuestionNumber = 2, ReadinessScore = 0.72m },
+                new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
+            };
+        }
+        else
+        {
+            questionScores = new List<QuestionScore>();
+        }
+    }
+
+    private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
+    {
+        await ProjectSvc.AddDataSourceAsync(dataSourceType);
+    }
+}
