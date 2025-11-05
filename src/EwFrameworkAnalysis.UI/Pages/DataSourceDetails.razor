@@ -137,7 +137,7 @@ else
                             }
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray">Total Assessments</span>
-                                <span class="text-sm font-semibold text-blue">@(_dataSourceAssesments?.Count ?? 0) </span>
+                                <span class="text-sm font-semibold text-blue">@(_dataSourceAssessments?.Count ?? 0) </span>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@ else
                             <h3 class="text-lg font-title font-semibold text-blue">Assessment History</h3>
                         </div>
 
-                        @if (_dataSourceAssesments?.Any() == true)
+                        @if (_dataSourceAssessments?.Any() == true)
                         {
                             <div class="space-y-3">
                                 @foreach (var a in _dataSourceAssesments.OrderByDescending(x => x.ConductedAt))
@@ -288,7 +288,7 @@ else
 
 
     private DataSource? _dataSource;
-    private List<DataSourceAssessment> _dataSourceAssesments = [];
+    private List<DataSourceAssessment> _dataSourceAssessments = [];
     private DataSourceAssessment? _selectedAssessment;
     private bool _showDeleteModal = false;
 
@@ -326,11 +326,11 @@ else
     private void LoadDataSource()
     {
         _dataSource = ProjectSvc.GetDataSource(Id);
-        _dataSourceAssesments = ProjectSvc.GetAssessmentsForDataSource(Id).ToList();
-        if (_dataSourceAssesments?.Any() == true && _selectedAssessment == null)
+        _dataSourceAssessments = ProjectSvc.GetAssessmentsForDataSource(Id).ToList();
+        if (_dataSourceAssessments?.Any() == true && _selectedAssessment == null)
         {
             // Default to most recent assessment if none selected
-            _selectedAssessment = _dataSourceAssesments.OrderByDescending(a => a.ConductedAt).First();
+            _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
         }
     }
 
@@ -419,7 +419,7 @@ else
     {
         if (assessment is null) return 0;
 
-        return _dataSourceAssesments
+        return _dataSourceAssessments
             .OrderBy(a => a.ConductedAt)
             .ToList()
             .FindIndex(a => a.Id == assessment.Id) + 1;

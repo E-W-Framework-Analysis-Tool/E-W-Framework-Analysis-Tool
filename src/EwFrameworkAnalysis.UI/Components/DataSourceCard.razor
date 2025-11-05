@@ -13,7 +13,7 @@
 
                 <!-- Name & Description -->
                 <div>
-                    <a href="data-sources/@DataSource.Id" class="font-semibold text-lg link link-hover">@DataSource.Name</a>
+                    <a href="@GetDataSourceDetailsLink()" class="font-semibold text-lg link link-hover">@DataSource.Name</a>
                     <p class="text-sm text-gray-500">@DataSource.Description</p>
                 </div>
             </div>
@@ -59,8 +59,8 @@
             <div class="flex flex-col items-end gap-2">
                 <!-- Actions -->
                 <div class="flex gap-3 text-sm">
-                    <a href="data-sources/@DataSource.Id" class="link link-hover font-semibold">Run Analysis</a>
-                    <a href="data-sources/@DataSource.Id" class="link link-hover font-semibold">View Results</a>
+                    <a href="@GetDataSourceDetailsLink()" class="link link-hover font-semibold">Run Analysis</a>
+                    <a href="@GetDataSourceDetailsLink()" class="link link-hover font-semibold">View Results</a>
                 </div>
             </div>
         </div>
@@ -88,6 +88,11 @@
             return $"{Math.Floor(diff.TotalDays)} days ago";
 
         return lastRun.Value.ToString("MMM dd, yyyy HH:mm");
+    }
+
+    private string GetDataSourceDetailsLink()
+    {
+        return AppRoutes.DataSourceDetails.ForDataSource(DataSource.Id);
     }
 
     private string GetMethodIcon(DataSourceType type) =>
