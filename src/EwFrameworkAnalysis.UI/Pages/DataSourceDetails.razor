@@ -153,7 +153,7 @@ else
                         @if (_dataSourceAssessments?.Any() == true)
                         {
                             <div class="space-y-3">
-                                @foreach (var a in _dataSourceAssesments.OrderByDescending(x => x.ConductedAt))
+                                @foreach (var a in _dataSourceAssessments.OrderByDescending(x => x.ConductedAt))
                                 {
                                     var isActive = false;
                                     var isViewing = _selectedAssessment?.Id == a.Id;
