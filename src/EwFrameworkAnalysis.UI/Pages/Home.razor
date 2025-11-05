@@ -6,7 +6,63 @@
 
 <div class="min-h-screen bg-base-100">
 
-    <section class="relative items-center py-24">
+    <section class="bg-base-100 pt-6 pb-4 shadow">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
+            <div class="flex flex-wrap justify-center gap-4 mb-4 ">
+                <!-- Get Started -->
+                <a href="@AppRoutes.Dashboard"
+                   class="btn  btn-primary px-6 text-semibold text-lg rounded-sm">
+                    Get Started
+                </a>
+
+                <!-- Continue My Work -->
+                <a href="@AppRoutes.Dashboard"
+                   class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                    Continue My Work
+                </a>
+
+                <!-- Learn About the E-W Framework -->
+                <a onclick="scrollToSection('framework')"
+                   class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                    Learn About the E-W Framework
+                </a>
+
+                <!-- Learn How To Use This Tool -->
+                <a onclick="scrollToSection('faq')"
+                   class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                    Learn How To Use This Tool
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- What EW Tool Does Section -->
+    <section id="intro" class="relative items-center py-24">
+        <div class="container mx-auto items-center flex flex-wrap justify-center">
+            <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4 ">
+                <h2 class="font-semibold text-4xl text-secondary pb-4">
+                    Data Readiness Simplified
+                </h2>
+                <p class="mt-4 text-lg leading-relaxed font-semibold text-secondary/80 ">
+                    This Analysis Tool provides a way to analyze your data sources to
+                    measure how prepared your systems are for the E-W Framework.
+                </p>
+                <ul class="list-disc py-4 pl-6 space-y-2">
+                    <li>Run automated analyses via secure API connections to your Ed-Fi ODS instance.</li>
+
+                    <li>Interrogate the data in your CEDS DW through portable SQL queries.</li>
+
+                    <li>Manually inventory your other data sources.</li>
+                </ul>
+                <p class="mt-4 text-lg leading-relaxed font-semibold text-secondary/80 ">
+                    Resulting analysis can empower you and your stakeholders to prioritize research
+                    questions and investment decisions and guide the development of your data systems.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="framework" class="relative items-center pb-24">
         <div class="container mx-auto items-center flex justify-center">
             <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4">
                 <div class="pt-32* sm:pt-0">
@@ -17,9 +73,7 @@
                         The <a href="https://educationtoworkforce.org/" class="link link-hover font-bold hover:text-primary/80">Education-to-Workforce Indicator Framework</a>
                         (or E-W Framework) is an extensive framework developed with input from leading experts from over 20 national and community organizations.
                         It highlights key connections needed between systems to support students as they progress from early education through their career.
-
                     </p>
-                    <a href="@AppRoutes.Dashboard" class="btn btn-secondary hover:btn-primary hover:text-primary-content mt-12">Get Started!</a>
                 </div>
             </div>
         </div>
@@ -76,7 +130,7 @@
     </section>
 
     <!-- What EW Tool Does Section -->
-    <section class="relative items-center pb-24">
+    <section id="tool" class="relative items-center pb-24">
         <div class="container mx-auto items-center flex flex-wrap justify-center">
             <div class="w-full md:w-8/12 lg:w-10/12 xl:w-10/12 px-4 ">
                 <h2 class="font-semibold text-4xl text-secondary pb-4">
@@ -256,7 +310,7 @@
     </section>
 
     <!-- FAQ Section-->
-    <section class="relative pt-24 items-center flex">
+    <section id="faq" class="relative pt-12 items-center flex">
         <div class="container mx-auto items-center flex flex-wrap justify-center">
             <div class="w-full xl:w-11/12 px-4 sm:px-0">
                 <h2 class="font-semibold text-4xl text-secondary mb-12">
@@ -282,19 +336,30 @@
         <div class="container mx-auto items-center flex flex-wrap justify-center ">
             <div class="w-full xl:w-8/12 ">
                 <div class="pt-32 sm:pt-24">
-
                     <h2 class="font-semibold text-4xl pb-12">Ready to Get Started?</h2>
                     <p class="mb-6 font-semibold text-gray-600">
                         Begin your data readiness assessment today with the E-W Framework Analysis Tool.
                     </p>
-                    <a href="@AppRoutes.Dashboard" class="btn btn-secondary">Input Data Inventory</a>
-
+                    <a href="@AppRoutes.Dashboard" class="btn btn-secondary hover:btn-primary">Input Data Inventory</a>
                 </div>
             </div>
         </div>
     </section>
+
+    <div class="fab mr-6">
+        <a onclick="scrollToSection('app')" class="btn btn-lg btn-circle btn-primary px-3">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path d="M201.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 173.3 54.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z" />
+            </svg>
+        </a>
+    </div>
 </div>
 
+<script>
+    function scrollToSection(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
 
 @code {
 
