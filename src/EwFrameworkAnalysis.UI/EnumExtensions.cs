@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace EwFrameworkAnalysis.UI;
+
 public static class EnumExtensions
 {
     public static string GetDisplayName(this Enum value)

@@ -1,6 +1,8 @@
+@using EwFrameworkAnalysis.UI.Options
 @using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
 @inherits LayoutComponentBase
-@inject IConfiguration Configuration
+@inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
 
 <div class="min-h-screen flex flex-col">
 
@@ -31,26 +33,26 @@
     <!-- Footer -->
     <footer class="footer footer-center p-4 bg-secondary text-white border-t border-base-300 mt-auto">
         <div class="w-full max-w-7xl">
-            @if (DeploymentInfo.ShowDetails)
+            @if (DeploymentInfoOptions.Value.ShowDetails)
             {
                 <!-- Development/Staging Footer with Full Details -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 w-full">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
-                        <span>Version: @DeploymentInfo.Version</span>
-                        @if (!string.IsNullOrEmpty(DeploymentInfo.DeployDateTime) &&
-                                            !DeploymentInfo.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
+                        <span>Version: @DeploymentInfoOptions.Value.Version</span>
+                        @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.DeployDateTime) &&
+                       !DeploymentInfoOptions.Value.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
                         {
                             <span class="hidden sm:inline">•</span>
-                            <span>Deployed: @DeploymentInfo.DeployDateTime</span>
+                            <span>Deployed: @DeploymentInfoOptions.Value.DeployDateTime</span>
                         }
                     </div>
 
-                    @if (!string.IsNullOrEmpty(DeploymentInfo.EnvironmentLabel))
+                    @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.EnvironmentLabel))
                     {
                         <div class="flex items-center gap-2">
                             <span class="text-sm">Environment:</span>
                             <div class="badge badge-accent badge-sm">
-                                @DeploymentInfo.EnvironmentLabel
+                                @DeploymentInfoOptions.Value.EnvironmentLabel
                             </div>
                         </div>
                     }
@@ -99,28 +101,7 @@
 </div>
 
 @code {
-    private DeploymentInfoModel DeploymentInfo = new();
-
     protected override void OnInitialized()
     {
-        // Load deployment info from configuration
-        var deploymentSection = Configuration.GetSection("DeploymentInfo");
-        DeploymentInfo = new DeploymentInfoModel
-        {
-            Version = deploymentSection["Version"] ?? "Unknown",
-            DeployDateTime = deploymentSection["DeployDateTime"] ?? "Unknown",
-            EnvironmentLabel = deploymentSection["EnvironmentLabel"] ?? "Unknown",
-            ShowDetails = deploymentSection.GetValue<bool>("ShowDetails")
-        };
-    }
-
-
-
-    public class DeploymentInfoModel
-    {
-        public string Version { get; set; } = string.Empty;
-        public string DeployDateTime { get; set; } = string.Empty;
-        public string EnvironmentLabel { get; set; } = string.Empty;
-        public bool ShowDetails { get; set; }
     }
 }

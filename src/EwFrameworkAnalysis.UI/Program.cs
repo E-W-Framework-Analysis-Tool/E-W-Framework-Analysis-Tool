@@ -1,12 +1,23 @@
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
 using EwFrameworkAnalysis.Common.Services;
 using EwFrameworkAnalysis.UI;
+using EwFrameworkAnalysis.UI.Options;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Options;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+// Register Options (e.g. from appsettings.json)
+var demoApiOptions = new DemoEdFiApiOptions();
+builder.Configuration.GetSection("DemoEdFiApi").Bind(demoApiOptions);
+builder.Services.AddSingleton(Options.Create(demoApiOptions));
+
+var deploymentInfoOptions = new DeploymentInfoOptions();
+builder.Configuration.GetSection("DeploymentInfo").Bind(deploymentInfoOptions);
+builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
