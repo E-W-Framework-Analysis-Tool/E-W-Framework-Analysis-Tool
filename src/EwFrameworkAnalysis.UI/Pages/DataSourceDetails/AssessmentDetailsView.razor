@@ -1,17 +1,11 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-
 <Card Variant="Card.CardVariant.ShadowXl">
     <ChildContent>
         <div class="flex items-center gap-2 mb-4">
             <h3 class="text-lg font-title font-semibold text-blue">Assessment Details</h3>
-            @if (Version > 0)
-            {
-                <span class="badge badge-secondary">Version @Version</span>
-            }
         </div>
-
         @if (Assessment is not null)
         {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -32,7 +26,6 @@
                     <div class="text-sm font-semibold text-blue">@Version</div>
                 </div>
             </div>
-
             @if (!string.IsNullOrWhiteSpace(Assessment.Notes))
             {
                 <div class="mb-6 p-4 bg-tan bg-opacity-50 rounded-lg">
@@ -40,15 +33,20 @@
                     <div class="text-sm text-blue">@Assessment.Notes</div>
                 </div>
             }
-
             @if (Assessment.DataElementAssessments?.Any() == true)
             {
                 <div class="border-t border-tan pt-4">
-                    <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-sm font-semibold text-blue">Data Elements</h4>
+                        <button class="btn btn-ghost btn-xs gap-1" @onclick="ToggleAllElements">
+                            <i class="fas @(_allExpanded ? "fa-compress-alt" : "fa-expand-alt")"></i>
+                            @(_allExpanded ? "Collapse All" : "Expand All")
+                        </button>
+                    </div>
                     <div class="space-y-4">
                         @foreach (var element in Assessment.DataElementAssessments.Take(10))
                         {
-                            <DataElementCard Element="@element" />
+                            <DataElementCard Element="@element" IsExpanded="_allExpanded" @key="element" />
                         }
                     </div>
                     @if (Assessment.DataElementAssessments.Count > 10)
@@ -74,8 +72,14 @@
         }
     </ChildContent>
 </Card>
-
 @code {
     [Parameter] public DataSourceAssessment? Assessment { get; set; }
     [Parameter] public int Version { get; set; }
+
+    private bool _allExpanded = false;
+
+    private void ToggleAllElements()
+    {
+        _allExpanded = !_allExpanded;
+    }
 }
