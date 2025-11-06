@@ -3,15 +3,42 @@
 @using EwFrameworkAnalysis.UI.Components
 <Card Variant="Card.CardVariant.ShadowXl">
     <ChildContent>
-        <div class="flex items-center gap-2 mb-4">
-            <h3 class="text-lg font-title font-semibold text-blue">Assessment Details</h3>
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <h3 class="text-lg font-title font-semibold text-blue">Assessment Details</h3>
+                @if (Version > 0)
+                {
+                    <span class="badge badge-secondary">Version @Version</span>
+                }
+            </div>
+
+            @if (Assessment is not null)
+            {
+                <div class="dropdown dropdown-end">
+                    <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-lg w-52 border border-gray-200">
+                        <li>
+                            <button @onclick="ShowDeleteConfirmation" class="text-error">
+                                <i class="fas fa-trash"></i>
+                                Delete Assessment
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            }
         </div>
+
         @if (Assessment is not null)
         {
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white rounded-lg p-4">
-                    <div class="text-xs text-gray uppercase tracking-wide">Name</div>
-                    <div class="text-sm font-semibold text-blue">@(Assessment.Name ?? "Unnamed")</div>
+                    <div class="text-xs text-gray uppercase tracking-wide mb-1">Name</div>
+                    <EditableField Value="@Assessment.Name"
+                                   Placeholder="Enter assessment name"
+                                   Variant="EditableField.FieldVariant.Text"
+                                   OnSave="@HandleNameSave" />
                 </div>
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide">Conducted</div>
@@ -20,10 +47,6 @@
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide">Data Elements</div>
                     <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
-                </div>
-                <div class="bg-white rounded-lg p-4">
-                    <div class="text-xs text-gray uppercase tracking-wide">Version</div>
-                    <div class="text-sm font-semibold text-blue">@Version</div>
                 </div>
             </div>
             @if (!string.IsNullOrWhiteSpace(Assessment.Notes))
@@ -36,22 +59,56 @@
             @if (Assessment.DataElementAssessments?.Any() == true)
             {
                 <div class="border-t border-tan pt-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-semibold text-blue">Data Elements</h4>
-                        <button class="btn btn-ghost btn-xs gap-1" @onclick="ToggleAllElements">
-                            <i class="fas @(_allExpanded ? "fa-compress-alt" : "fa-expand-alt")"></i>
-                            @(_allExpanded ? "Collapse All" : "Expand All")
-                        </button>
+                    <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
+
+                    <!-- Search and Filters -->
+                    <div class="mb-4 space-y-3">
+                        <!-- Search Box -->
+                        <div class="relative">
+                            <input type="text"
+                                   placeholder="Search data elements..."
+                                   class="input input-bordered w-full pl-10"
+                                   @bind="_searchQuery"
+                                   @bind:event="oninput" />
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray opacity-50"></i>
+                        </div>
+
+                        <!-- Results Count and Expand/Collapse -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray">
+                                @if (FilteredElements.Count() != Assessment.DataElementAssessments.Count)
+                                {
+                                    <text>Showing @FilteredElements.Count() of @Assessment.DataElementAssessments.Count elements</text>
+                                }
+                                else
+                                {
+                                    <text>@Assessment.DataElementAssessments.Count elements</text>
+                                }
+                            </span>
+                            <button class="btn btn-ghost btn-xs gap-1" @onclick="ToggleAllElements">
+                                <i class="fas @(_allExpanded ? "fa-compress-alt" : "fa-expand-alt")"></i>
+                                @(_allExpanded ? "Collapse All" : "Expand All")
+                            </button>
+                        </div>
                     </div>
-                    <div class="space-y-4">
-                        @foreach (var element in Assessment.DataElementAssessments.Take(10))
-                        {
-                            <DataElementCard Element="@element" IsExpanded="_allExpanded" @key="element" />
-                        }
-                    </div>
-                    @if (Assessment.DataElementAssessments.Count > 10)
+
+                    <!-- Data Elements List -->
+                    @if (FilteredElements.Any())
                     {
-                        <div class="text-xs text-gray mt-4 text-center">Showing 10 of @Assessment.DataElementAssessments.Count elements</div>
+                        <div class="space-y-4">
+                            @foreach (var element in FilteredElements)
+                            {
+                                <DataElementCard Element="@element" IsExpanded="_allExpanded" @key="element" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-8 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
+                            <i class="fas fa-filter text-blue text-2xl mb-2 opacity-50"></i>
+                            <p class="text-sm">No elements match your search or filters</p>
+                            <button class="btn btn-ghost btn-xs mt-2" @onclick="ResetFilters">Clear filters</button>
+                        </div>
                     }
                 </div>
             }
@@ -72,14 +129,120 @@
         }
     </ChildContent>
 </Card>
+
+<!-- Delete Confirmation Modal -->
+@if (_showDeleteModal && Assessment is not null)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 ease-out"
+             @onclick="CancelDelete"
+             aria-hidden="true">
+        </div>
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
+                            transition-all duration-200 ease-out">
+            <!-- Header -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20">
+                        <i class="fas fa-trash text-red-500 text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-title text-lg font-semibold text-blue">Delete Assessment</h3>
+                        <p class="mt-1 text-sm text-gray">This action cannot be undone.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 pb-6">
+                <p class="text-sm text-gray">
+                    Are you sure you want to delete assessment "<span class="font-semibold text-blue">@Assessment.Name</span>"?
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl">
+                <div class="flex justify-end gap-3">
+                    <button @onclick="CancelDelete"
+                            type="button"
+                            class="inline-flex items-center justify-center rounded-md border border-gray-300
+                                           bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                           hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                        Cancel
+                    </button>
+                    <button @onclick="ConfirmDelete"
+                            class="inline-flex items-center justify-center rounded-md
+                                           bg-red-500 px-4 py-2 text-sm font-medium text-white
+                                           hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        <i class="fas fa-trash mr-2"></i>
+                        Delete Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     [Parameter] public DataSourceAssessment? Assessment { get; set; }
     [Parameter] public int Version { get; set; }
+    [Parameter] public EventCallback<string> OnRename { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
 
     private bool _allExpanded = false;
+    private string _searchQuery = string.Empty;
+    private bool _showDeleteModal = false;
+
+    private IEnumerable<DataElementAssessment> FilteredElements
+    {
+        get
+        {
+            if (Assessment?.DataElementAssessments == null) return Enumerable.Empty<DataElementAssessment>();
+
+            var elements = Assessment.DataElementAssessments.AsEnumerable();
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(_searchQuery))
+            {
+                elements = elements.Where(e =>
+                    e.DataElementName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return elements;
+        }
+    }
 
     private void ToggleAllElements()
     {
         _allExpanded = !_allExpanded;
+    }
+
+    private void ResetFilters()
+    {
+        _searchQuery = string.Empty;
+    }
+
+    private async Task HandleNameSave(string? name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            await OnRename.InvokeAsync(name);
+        }
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        _showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        _showDeleteModal = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        await OnDelete.InvokeAsync();
+        _showDeleteModal = false;
     }
 }

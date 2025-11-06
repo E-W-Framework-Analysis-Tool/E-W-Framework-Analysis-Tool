@@ -76,7 +76,9 @@ else
             <!-- Right: Assessment Details -->
             <div class="lg:col-span-2">
                 <AssessmentDetailsView Assessment="@_selectedAssessment"
-                                       Version="@GetAssessmentVersion(_selectedAssessment)" />
+                                       Version="@GetAssessmentVersion(_selectedAssessment)"
+                                       OnRename="@HandleRenameAssessment"
+                                       OnDelete="@HandleDeleteAssessment" />
             </div>
         </div>
     </div>
@@ -240,6 +242,37 @@ else
             .ToList();
 
         return orderedAssessments.IndexOf(assessment) + 1;
+    }
+
+    private async Task HandleRenameAssessment(string newName)
+    {
+        if (_selectedAssessment is null) return;
+
+        _selectedAssessment.Name = newName;
+        await ProjectSvc.UpdateAssessmentAsync(_selectedAssessment);
+        LoadDataSource();
+        ShowNotification("Assessment renamed successfully");
+    }
+
+    private async Task HandleDeleteAssessment()
+    {
+        if (_selectedAssessment is null) return;
+
+        var assessmentId = _selectedAssessment.Id;
+        await ProjectSvc.DeleteAssessmentAsync(assessmentId);
+
+        // Select a different assessment or clear selection
+        LoadDataSource();
+        if (_dataSourceAssessments?.Any() == true)
+        {
+            _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
+        }
+        else
+        {
+            _selectedAssessment = null;
+        }
+
+        ShowNotification("Assessment deleted successfully");
     }
 
     public void Dispose()
