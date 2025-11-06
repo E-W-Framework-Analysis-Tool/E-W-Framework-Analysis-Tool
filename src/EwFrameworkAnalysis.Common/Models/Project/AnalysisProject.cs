@@ -7,8 +7,8 @@ public class AnalysisProject
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string? Title { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime LastModifiedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset LastModifiedAt { get; set; } = DateTimeOffset.Now;
 
     // User configures which data sources they have
     public List<DataSource> DataSources { get; set; } = [];

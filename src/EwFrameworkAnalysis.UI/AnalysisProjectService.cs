@@ -100,7 +100,7 @@ public class AnalysisProjectService
     {
         var dataSource = CreateDataSource(dataSourceType);
         Project.DataSources.Insert(0, dataSource);
-        Project.LastModifiedAt = DateTime.UtcNow;
+        Project.LastModifiedAt = DateTimeOffset.Now;
 
         NewlyAddedDataSourceId = dataSource.Id;
 
@@ -123,7 +123,7 @@ public class AnalysisProjectService
         if (idx >= 0)
         {
             Project.DataSources[idx] = updated;
-            Project.LastModifiedAt = DateTime.UtcNow;
+            Project.LastModifiedAt = DateTimeOffset.Now;
             await SaveAsync();
             Notify();
         }
@@ -135,7 +135,7 @@ public class AnalysisProjectService
         if (ds is null) return;
 
         ds.Enabled = enabled;
-        Project.LastModifiedAt = DateTime.UtcNow;
+        Project.LastModifiedAt = DateTimeOffset.Now;
         await SaveAsync();
         Notify();
     }
@@ -146,7 +146,7 @@ public class AnalysisProjectService
         if (index >= 0)
         {
             Project.DataSources.RemoveAt(index);
-            Project.LastModifiedAt = DateTime.UtcNow;
+            Project.LastModifiedAt = DateTimeOffset.Now;
             await SaveAsync();
             Notify();
         }
@@ -175,11 +175,11 @@ public class AnalysisProjectService
     {
         if (string.IsNullOrWhiteSpace(assessment.Name))
         {
-            assessment.Name = $"Assessment {DateTime.UtcNow:yyyy-MM-dd HH:mm}";
+            assessment.Name = $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
         }
 
         Project.DataSourceAssessments.Insert(0, assessment);
-        Project.LastModifiedAt = DateTime.UtcNow;
+        Project.LastModifiedAt = DateTimeOffset.Now;
 
         NewlyAddedAssessmentId = assessment.Id;
 
@@ -202,7 +202,7 @@ public class AnalysisProjectService
         if (idx >= 0)
         {
             Project.DataSourceAssessments[idx] = updated;
-            Project.LastModifiedAt = DateTime.UtcNow;
+            Project.LastModifiedAt = DateTimeOffset.Now;
             await SaveAsync();
             Notify();
         }
@@ -214,7 +214,7 @@ public class AnalysisProjectService
         if (index >= 0)
         {
             Project.DataSourceAssessments.RemoveAt(index);
-            Project.LastModifiedAt = DateTime.UtcNow;
+            Project.LastModifiedAt = DateTimeOffset.Now;
             await SaveAsync();
             Notify();
         }
@@ -233,8 +233,8 @@ public class AnalysisProjectService
         {
             Id = Guid.NewGuid().ToString(),
             Title = "New Analysis Project",
-            CreatedAt = DateTime.UtcNow,
-            LastModifiedAt = DateTime.UtcNow,
+            CreatedAt = DateTimeOffset.Now,
+            LastModifiedAt = DateTimeOffset.Now,
             DataSources = [],
             DataSourceAssessments = []
         };
@@ -268,7 +268,7 @@ public class AnalysisProjectService
     public async Task UpdateProjectDetailsAsync(string? title)
     {
         Project.Title = title;
-        Project.LastModifiedAt = DateTime.UtcNow;
+        Project.LastModifiedAt = DateTimeOffset.Now;
         await SaveAsync();
         Notify();
     }

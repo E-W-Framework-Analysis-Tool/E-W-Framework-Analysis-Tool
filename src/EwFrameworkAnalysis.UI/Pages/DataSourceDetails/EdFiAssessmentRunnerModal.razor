@@ -1,244 +1,237 @@
 @using System.Text.Json
 @using System.Net.Http.Headers
+@using EwFrameworkAnalysis.UI.Options
+@using Microsoft.Extensions.Options
 @using EwFrameworkAnalysis.Common.Models.Project
-@using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.Common.Services
 @inject AnalysisProjectService ProjectSvc
 @inject EdFiAssessmentOrchestrator Orchestrator
+@inject IOptions<DemoEdFiApiOptions> DemoApiOptions
 
 @if (IsOpen)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @onclick="Close"></div>
-        <div class="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <!-- Header -->
-            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl z-10">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-title font-bold text-blue">Run Ed-Fi Assessment</h2>
-                    <button class="btn btn-sm btn-circle btn-ghost" @onclick="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
+    <div class="modal modal-open">
+        <div class="modal-box max-h-5/6 @(_currentProgress != null ? "min-w-3/4" : "") pb-0">
+            <h3 class="font-bold text-lg mb-4">Run Assessment</h3>
 
-            <!-- Body -->
-            <div class="px-6 py-6 space-y-6">
-                <!-- Configuration Form (only show when not running) -->
-                @if (_currentProgress == null)
+            @if (_showAssessmentRunner && DataSource.Type == DataSourceType.EdFiApi)
+            {
+                @if (_isRunning && _validationError == "") { }
+            }
+
+            @if (_currentProgress == null)
+            {
+                @if (DemoApiOptions.Value.IsConfigured)
                 {
-                    <div class="bg-tan bg-opacity-50 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-blue mb-4">API Configuration</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text font-semibold text-gray">Base URL</span></label>
-                                <input type="text" @bind="_rootUrl" class="input input-bordered w-full font-mono text-sm" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text font-semibold text-gray">Client ID</span></label>
-                                <input type="text" @bind="_clientId" class="input input-bordered w-full font-mono text-sm" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text font-semibold text-gray">Client Secret</span></label>
-                                <input type="password" @bind="_clientSecret" class="input input-bordered w-full font-mono text-sm" />
-                            </div>
-                        </div>
-                        @if (!string.IsNullOrEmpty(_validationError))
-                        {
-                            <div class="alert alert-error mt-4">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>@_validationError</span>
-                            </div>
-                        }
+                    <div class="alert bg-base-200 border-2 border-blue mb-4">
+                        <i class="fas fa-info-circle"></i>
+                        <span>A read-only demo Ed-Fi API is available for testing</span>
+                        <button class="btn btn-sm btn-primary" @onclick="UseDemoCredentials">
+                            <i class="fas fa-flask mr-2"></i>Use Demo API
+                        </button>
                     </div>
                 }
 
-                <!-- Progress Display -->
-                @if (_currentProgress != null)
-                {
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
-                            <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
-                            <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
-                            <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
-                        </div>
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
-                            <h3 class="text-sm text-gray mb-2">Assessors Complete</h3>
-                            <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
-                        </div>
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
-                            <h3 class="text-sm text-gray mb-2">Status</h3>
-                            <div class="space-y-1 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running</span>
-                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green"></span>Completed</span>
-                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>Failed</span>
-                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
-                                </div>
+                <div class="form-control mb-3">
+                    <label class="label">
+                        <span class="label-text">Client ID</span>
+                    </label>
+                    <input @bind="_clientId" type="text" placeholder="Enter client ID" class="input input-bordered w-full" />
+                </div>
+
+                <div class="form-control mb-3">
+                    <label class="label">
+                        <span class="label-text">Client Secret</span>
+                    </label>
+                    <input @bind="_clientSecret" type="password" placeholder="Enter client secret" class="input input-bordered w-full" />
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label">
+                        <span class="label-text">API URL</span>
+                    </label>
+                    <input @bind="_rootUrl" type="text" placeholder="https://api.example.com" class="input input-bordered w-full" />
+                </div>
+            }
+
+
+            @if (_currentProgress != null)
+            {
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 ">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
+                        <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
+                        <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        <h3 class="text-sm text-gray mb-2">Assessors Complete</h3>
+                        <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        <h3 class="text-sm text-gray mb-2">Status</h3>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running</span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span>Completed</span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>Failed</span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Assessor Progress Details -->
-                    <div class="bg-white border border-gray-200 rounded-lg shadow">
-                        <div class="px-4 py-3 border-b border-gray-200">
-                            <h3 class="font-semibold text-blue">Assessor Progress</h3>
-                        </div>
-                        <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
-                            @foreach (var assessor in _currentProgress.AssessorProgresses)
-                            {
-                                <div class="border border-gray-200 rounded-lg p-3 @GetAssessorBorderClass(assessor.Status)">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex items-center gap-2 mb-1">
-                                                @if (assessor.Status == AssessorStatus.Running)
-                                                {
-                                                    <span class="loading loading-spinner loading-sm text-yellow-500"></span>
-                                                }
-                                                else if (assessor.Status == AssessorStatus.Completed)
-                                                {
-                                                    <i class="fas fa-check-circle text-green"></i>
-                                                }
-                                                else if (assessor.Status == AssessorStatus.Failed)
-                                                {
-                                                    <i class="fas fa-times-circle text-red-500"></i>
-                                                }
-                                                else
-                                                {
-                                                    <i class="fas fa-clock text-gray"></i>
-                                                }
-                                                <span class="font-semibold text-sm text-blue truncate">@assessor.DataElementName</span>
-                                            </div>
-                                            @if (assessor.Status == AssessorStatus.Completed && assessor.Result != null)
+                <div class="bg-white border border-gray-200 rounded-lg shadow mb-4">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h3 class="font-semibold text-blue">Assessor Progress</h3>
+                    </div>
+                    <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
+                        @foreach (var assessor in _currentProgress.AssessorProgresses)
+                        {
+                            <div class="border border-gray-200 rounded-lg p-3 @GetAssessorBorderClass(assessor.Status)">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            @if (assessor.Status == AssessorStatus.Running)
                                             {
-                                                <div class="ml-6 mt-2 space-y-2">
-                                                    <div class="text-xs text-green">@assessor.Result.Characteristics?.Count characteristic(s) collected</div>
-                                                    @if (assessor.Result.Characteristics?.Any() == true)
-                                                    {
-                                                        <div class="space-y-1 pl-2 border-l-2 border-green">
-                                                            @foreach (var characteristic in assessor.Result.Characteristics)
-                                                            {
-                                                                @if (characteristic is RecordCount rc)
-                                                                {
-                                                                    <div class="text-xs text-gray-700">
-                                                                        <span class="font-medium">Records:</span> @rc.Value.ToString("N0")
-                                                                    </div>
-                                                                }
-                                                                else if (characteristic is ReportedAvailability ra)
-                                                                {
-                                                                    <div class="text-xs text-gray-700">
-                                                                        <span class="font-medium">Availability:</span>
-                                                                        <span class="badge badge-xs @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
-                                                                    </div>
-                                                                }
-                                                                else if (characteristic is Completeness c)
-                                                                {
-                                                                    <div class="text-xs text-gray-700">
-                                                                        <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
-                                                                    </div>
-                                                                }
-                                                                else if (characteristic is IntegerRange ir)
-                                                                {
-                                                                    <div class="text-xs text-gray-700">
-                                                                        <span class="font-medium">@ir.Label:</span> @ir.Minimum - @ir.Maximum
-                                                                    </div>
-                                                                }
-                                                                else if (characteristic is Distribution dist)
-                                                                {
-                                                                    <div class="text-xs text-gray-700">
-                                                                        <span class="font-medium">@dist.Label:</span> @dist.TotalCount.ToString("N0") items
-                                                                    </div>
-                                                                }
-                                                            }
-                                                        </div>
-                                                    }
-                                                </div>
+                                                <span class="loading loading-spinner loading-sm text-yellow-500"></span>
                                             }
-                                            else if (assessor.Status == AssessorStatus.Running)
+                                            else if (assessor.Status == AssessorStatus.Completed)
                                             {
-                                                <div class="ml-6 text-xs text-yellow-600">@(assessor.StatusMessage ?? "Processing...")</div>
+                                                <i class="fas fa-check-circle text-success"></i>
                                             }
                                             else if (assessor.Status == AssessorStatus.Failed)
                                             {
-                                                <div class="ml-6 text-xs text-red-500">@assessor.ErrorMessage</div>
+                                                <i class="fas fa-times-circle text-red-500"></i>
                                             }
-
-                                            @if (assessor.LogMessages?.Any() == true)
+                                            else
                                             {
-                                                <div class="collapse collapse-arrow bg-gray-50 border border-gray-200 ml-6 mt-2">
-                                                    <input type="checkbox" class="peer" />
-                                                    <div class="collapse-title text-xs text-blue">
-                                                        @assessor.LogMessages.Count log message(s)
-                                                    </div>
-                                                    <div class="collapse-content">
-                                                        <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
-                                                            @foreach (var log in assessor.LogMessages)
+                                                <i class="fas fa-clock text-gray"></i>
+                                            }
+                                            <span class="font-semibold text-sm text-blue truncate">@assessor.DataElementName</span>
+                                        </div>
+                                        @if (assessor.Status == AssessorStatus.Completed && assessor.Result != null)
+                                        {
+                                            <div class="ml-6 mt-2 space-y-2">
+                                                <div class="text-xs text-success">@assessor.Result.Characteristics?.Count characteristic(s) collected</div>
+                                                @if (assessor.Result.Characteristics?.Any() == true)
+                                                {
+                                                    <div class="space-y-1 pl-2 border-l-2 border-success">
+                                                        @foreach (var characteristic in assessor.Result.Characteristics)
+                                                        {
+                                                            @if (characteristic is RecordCount rc)
                                                             {
-                                                                <div class="text-gray-700">@log</div>
+                                                                <div class="text-xs text-gray-700">
+                                                                    <span class="font-medium">Records:</span> @rc.Value.ToString("N0")
+                                                                </div>
                                                             }
-                                                        </div>
+                                                            else if (characteristic is ReportedAvailability ra)
+                                                            {
+                                                                <div class="text-xs text-gray-700">
+                                                                    <span class="font-medium">Availability:</span>
+                                                                    <span class="badge badge-xs @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is Completeness c)
+                                                            {
+                                                                <div class="text-xs text-gray-700">
+                                                                    <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is IntegerRange ir)
+                                                            {
+                                                                <div class="text-xs text-gray-700">
+                                                                    <span class="font-medium">@ir.Label:</span> @ir.Minimum - @ir.Maximum
+                                                                </div>
+                                                            }
+                                                            else if (characteristic is Distribution dist)
+                                                            {
+                                                                <div class="text-xs text-gray-700">
+                                                                    <span class="font-medium">@dist.Label:</span> @dist.TotalCount.ToString("N0") items
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else if (assessor.Status == AssessorStatus.Running)
+                                        {
+                                            <div class="ml-6 text-xs text-yellow-600">@(assessor.StatusMessage ?? "Processing...")</div>
+                                        }
+                                        else if (assessor.Status == AssessorStatus.Failed)
+                                        {
+                                            <div class="ml-6 text-xs text-red-500">@assessor.ErrorMessage</div>
+                                        }
+
+                                        @if (assessor.LogMessages?.Any() == true)
+                                        {
+                                            <div class="collapse collapse-arrow bg-gray-50 border border-gray-200 ml-6 mt-2">
+                                                <input type="checkbox" class="peer" />
+                                                <div class="collapse-title text-xs text-blue">
+                                                    @assessor.LogMessages.Count log message(s)
+                                                </div>
+                                                <div class="collapse-content">
+                                                    <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
+                                                        @foreach (var log in assessor.LogMessages)
+                                                        {
+                                                            <div class="text-gray-700">@log</div>
+                                                        }
                                                     </div>
                                                 </div>
-                                            }
-                                        </div>
-                                        <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
+                                            </div>
+                                        }
                                     </div>
+                                    <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
                                 </div>
-                            }
-                        </div>
-                    </div>
-                }
+                            </div>
+                        }
 
-                <!-- Error Display -->
-                @if (_error != null)
-                {
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>@_error</span>
                     </div>
-                }
-
-                <!-- Success Display -->
-                @if (_assessmentResult != null)
-                {
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <h3 class="font-bold">Assessment Complete!</h3>
-                            <div class="text-sm">Collected @_assessmentResult.DataElementAssessments.Count assessments with @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics</div>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <!-- Footer -->
-            <div class="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 rounded-b-2xl">
-                <div class="flex justify-end gap-3">
-                    @if (_isRunning)
-                    {
-                        <button class="btn btn-error" @onclick="CancelAssessment">
-                            <i class="fas fa-stop mr-2"></i>Cancel Assessment
-                        </button>
-                    }
-                    else if (_assessmentResult != null)
-                    {
-                        <button class="btn btn-ghost" @onclick="ResetAssessmentRunner">Run Another</button>
-                        <button class="btn btn-primary" @onclick="CompleteAndClose">Done</button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-ghost" @onclick="Close">Cancel</button>
-                        <button class="btn btn-primary" @onclick="StartAssessment" disabled="@(!IsFormValid())">
-                            <i class="fas fa-play mr-2"></i>Start Assessment
-                        </button>
-                    }
                 </div>
+            }
+
+
+            @if (_error != null)
+            {
+                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><span>@_error</span></div>
+            }
+
+
+            @if (_assessmentResult != null)
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 class="font-bold">Assessment Complete!</h3>
+                        <div class="text-sm">Collected @_assessmentResult.DataElementAssessments.Count assessments with @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics</div>
+                    </div>
+                </div>
+            }
+
+
+            <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
+                @if (_isRunning)
+                {
+                    <button class="btn btn-error" @onclick="CancelAssessment"><i class="fas fa-stop mr-2"></i>Cancel Assessment</button>
+                }
+                else if (_assessmentResult != null)
+                {
+                    <button class="btn btn-ghost" @onclick="ResetAssessmentRunner">Run Another</button>
+                    <button class="btn btn-secondary" @onclick="CloseAssessmentRunner">Done</button>
+                }
+                else
+                {
+                    <button class="btn btn-ghost" @onclick="CloseAssessmentRunner">Cancel</button>
+                    <button class="btn btn-secondary" @onclick="StartAssessment"><i class="fas fa-play mr-2"></i>Start Assessment</button>
+                }
             </div>
+
         </div>
     </div>
 }
@@ -246,17 +239,19 @@
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
-    [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
+    [Parameter] public required DataSource DataSource { get; set; }
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
-    private string _clientId = "RvcohKz9zHI4";
-    private string _clientSecret = "E1676E88-4D3B-4E4E-B7B7-7C3F8E5D2A9C";
-    private string _rootUrl = "http://localhost:5000/GrandBend/";
+    private bool _showAssessmentRunner = false;
+    private bool _isRunning = false;
+
+    private string _clientId = "";
+    private string _clientSecret = "";
+    private string _rootUrl = "";
 
     private string DataApiUrl => EnsureTrailingSlash(_rootUrl) + "data/v3/";
     private string AuthUrl => EnsureTrailingSlash(_rootUrl) + "oauth/token";
 
-    private bool _isRunning = false;
     private AssessmentProgress? _currentProgress;
     private DataSourceAssessment? _assessmentResult;
     private string? _error;
@@ -265,33 +260,20 @@
     private Timer? _renderTimer;
     private volatile bool _pendingRender;
 
-    private bool IsFormValid()
+    protected override async Task OnInitializedAsync()
     {
-        return !string.IsNullOrWhiteSpace(_rootUrl)
-            && !string.IsNullOrWhiteSpace(_clientId)
-            && !string.IsNullOrWhiteSpace(_clientSecret);
+        await ProjectSvc.InitializeAsync();
     }
 
-    private static string EnsureTrailingSlash(string url)
+    private void UseDemoCredentials()
     {
-        if (string.IsNullOrWhiteSpace(url))
-            return url;
-        return url.EndsWith("/") ? url : url + "/";
-    }
+        var demoApi = DemoApiOptions.Value;
 
-    private void OnProgressUpdate(AssessmentProgress p)
-    {
-        _currentProgress = p;
-        _pendingRender = true;
+        _rootUrl = demoApi.BaseUrl ?? "";
+        _clientId = demoApi.ClientId ?? "";
+        _clientSecret = demoApi.ClientSecret ?? "";
 
-        _renderTimer ??= new Timer(_ =>
-        {
-            if (_pendingRender)
-            {
-                _pendingRender = false;
-                InvokeAsync(StateHasChanged);
-            }
-        }, null, 0, 500);
+        StateHasChanged();
     }
 
     private async Task StartAssessment()
@@ -319,8 +301,8 @@
 
             _assessmentResult = await Orchestrator.RunAssessmentsAsync(
                 httpClient,
-                DataSource,
-                $"Assessment {DateTime.Now:yyyy-MM-dd HH:mm}",
+                DataSource!,
+                $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
                 "",
                 progress,
                 true,
@@ -330,6 +312,7 @@
             if (_assessmentResult != null)
             {
                 await ProjectSvc.AddAssessmentAsync(_assessmentResult);
+                await OnAssessmentComplete.InvokeAsync(_assessmentResult);
             }
 
             httpClient.Dispose();
@@ -350,6 +333,7 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
 
     private async Task<string> GetAccessTokenAsync(string authUrl, string clientId, string clientSecret)
     {
@@ -383,9 +367,19 @@
         throw new InvalidOperationException("No access_token in response");
     }
 
-    private void CancelAssessment()
+    private void OnProgressUpdate(AssessmentProgress p)
     {
-        _cancellationTokenSource?.Cancel();
+        _currentProgress = p;
+        _pendingRender = true;
+
+        _renderTimer ??= new Timer(_ =>
+        {
+            if (_pendingRender)
+            {
+                _pendingRender = false;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 0, 500);
     }
 
     private async Task Close()
@@ -394,11 +388,27 @@
         await IsOpenChanged.InvokeAsync(IsOpen);
     }
 
-    private async Task CompleteAndClose()
+    private static string EnsureTrailingSlash(string url)
     {
+        if (string.IsNullOrWhiteSpace(url))
+            return url;
+        return url.EndsWith("/") ? url : url + "/";
+    }
+
+    private async Task CancelAssessment()
+    {
+        _cancellationTokenSource?.Cancel();
+        await Close();
+    }
+
+    private async void CloseAssessmentRunner()
+    {
+        _showAssessmentRunner = false;
         if (_assessmentResult != null)
         {
-            await OnAssessmentComplete.InvokeAsync(_assessmentResult);
+            // LoadDataSource();
+            // // Auto-select the newly completed assessment
+            // _selectedAssessment = _assessmentResult;
         }
         ResetAssessmentRunner();
         await Close();
@@ -411,14 +421,6 @@
         _error = null;
         _validationError = null;
     }
-
-    private string GetAssessorBorderClass(AssessorStatus status) => status switch
-    {
-        AssessorStatus.Running => "border-l-4 border-yellow-500",
-        AssessorStatus.Completed => "border-l-4 border-green",
-        AssessorStatus.Failed => "border-l-4 border-red-500",
-        _ => ""
-    };
 
     private string GetStatusBadgeClass(AssessorStatus status) => status switch
     {
@@ -438,10 +440,11 @@
         _ => "badge-ghost"
     };
 
-    public void Dispose()
+    private string GetAssessorBorderClass(AssessorStatus status) => status switch
     {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource?.Dispose();
-        _renderTimer?.Dispose();
-    }
+        AssessorStatus.Running => "border-l-4 border-yellow-500",
+        AssessorStatus.Completed => "border-l-4 border-success",
+        AssessorStatus.Failed => "border-l-4 border-red-500",
+        _ => ""
+    };
 }

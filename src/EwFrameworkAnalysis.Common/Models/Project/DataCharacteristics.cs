@@ -12,7 +12,7 @@ public abstract class DataCharacteristicBase
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Remarks { get; set; }
-    public DateTime MeasuredAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset MeasuredAt { get; set; } = DateTimeOffset.Now;
 }
 
 public class RecordCount : DataCharacteristicBase

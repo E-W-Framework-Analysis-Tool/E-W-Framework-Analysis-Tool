@@ -42,7 +42,7 @@
                 </div>
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide">Conducted</div>
-                    <div class="text-sm font-semibold text-blue">@Assessment.ConductedAt.ToString("g")</div>
+                    <div class="text-sm font-semibold text-blue">@Assessment.ConductedAt.ToLocalTime().ToString("g")</div>
                 </div>
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide">Data Elements</div>

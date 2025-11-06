@@ -77,9 +77,9 @@
         _ => "Never run"
     };
     
-    private string GetTimeAgo(DateTime dateTime)
+    private string GetTimeAgo(DateTimeOffset dateTime)
     {
-        var timeSpan = DateTime.UtcNow - dateTime;
+        var timeSpan = DateTimeOffset.Now - dateTime;
         return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
              : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
              : $"{(int)timeSpan.TotalDays} days ago";

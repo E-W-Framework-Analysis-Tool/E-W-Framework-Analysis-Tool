@@ -114,7 +114,7 @@
     private async Task HandleSaveProject()
     {
         var json = await ProjectSvc.ExportProjectAsync();
-        var fileName = $"{ProjectSvc.Project?.Title?.Replace(" ", "_") ?? "project"}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+        var fileName = $"{ProjectSvc.Project?.Title?.Replace(" ", "_") ?? "project"}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.json";
 
         await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.downloadFile", fileName, json, "application/json");
     }
@@ -137,7 +137,7 @@
     {
         if (ProjectSvc.Project?.LastModifiedAt == null) return "Last modified: Never";
         var lastModified = ProjectSvc.Project.LastModifiedAt;
-        var timeSpan = DateTime.UtcNow - lastModified;
+        var timeSpan = DateTimeOffset.Now - lastModified;
 
         var timeAgo = timeSpan.TotalHours < 1
             ? $"{(int)timeSpan.TotalMinutes} minutes ago"

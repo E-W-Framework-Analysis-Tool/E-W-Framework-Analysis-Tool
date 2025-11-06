@@ -55,7 +55,7 @@
 
         if (latestAssessment == null) return "Never";
 
-        var timeSpan = DateTime.UtcNow - latestAssessment.ConductedAt;
+        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
         return timeSpan.TotalHours < 1
             ? $"{(int)timeSpan.TotalMinutes} minutes ago"
             : timeSpan.TotalDays < 1
