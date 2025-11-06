@@ -2,11 +2,19 @@
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
 
-<Card Title="Assessment Details" Variant="Card.CardVariant.ShadowXl">
+<Card Variant="Card.CardVariant.ShadowXl">
     <ChildContent>
+        <div class="flex items-center gap-2 mb-4">
+            <h3 class="text-lg font-title font-semibold text-blue">Assessment Details</h3>
+            @if (Version > 0)
+            {
+                <span class="badge badge-secondary">Version @Version</span>
+            }
+        </div>
+
         @if (Assessment is not null)
         {
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide">Name</div>
                     <div class="text-sm font-semibold text-blue">@(Assessment.Name ?? "Unnamed")</div>
@@ -19,8 +27,12 @@
                     <div class="text-xs text-gray uppercase tracking-wide">Data Elements</div>
                     <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
                 </div>
+                <div class="bg-white rounded-lg p-4">
+                    <div class="text-xs text-gray uppercase tracking-wide">Version</div>
+                    <div class="text-sm font-semibold text-blue">@Version</div>
+                </div>
             </div>
-            
+
             @if (!string.IsNullOrWhiteSpace(Assessment.Notes))
             {
                 <div class="mb-6 p-4 bg-tan bg-opacity-50 rounded-lg">
@@ -28,7 +40,7 @@
                     <div class="text-sm text-blue">@Assessment.Notes</div>
                 </div>
             }
-            
+
             @if (Assessment.DataElementAssessments?.Any() == true)
             {
                 <div class="border-t border-tan pt-4">
@@ -65,4 +77,5 @@
 
 @code {
     [Parameter] public DataSourceAssessment? Assessment { get; set; }
+    [Parameter] public int Version { get; set; }
 }

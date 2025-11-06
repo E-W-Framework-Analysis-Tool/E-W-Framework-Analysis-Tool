@@ -64,10 +64,6 @@ else
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Sidebar -->
             <div class="lg:col-span-1 space-y-6">
-                <DataSourceMetadataCard DataSource="@_dataSource"
-                                       AssessmentCount="@(_dataSourceAssessments?.Count ?? 0)"
-                                       OnToggleEnabled="@ToggleEnabled" />
-
                 <AssessmentHistoryCard Assessments="@_dataSourceAssessments"
                                       SelectedAssessment="@_selectedAssessment"
                                       OnSelectAssessment="@SelectAssessment" />
@@ -79,7 +75,8 @@ else
 
             <!-- Right: Assessment Details -->
             <div class="lg:col-span-2">
-                <AssessmentDetailsView Assessment="@_selectedAssessment" />
+                <AssessmentDetailsView Assessment="@_selectedAssessment"
+                                       Version="@GetAssessmentVersion(_selectedAssessment)" />
             </div>
         </div>
     </div>
@@ -232,6 +229,17 @@ else
         await ProjectSvc.UpdateDataSourceAsync(updatedDs);
         LoadDataSource();
         ShowNotification("Updated successfully");
+    }
+
+    private int GetAssessmentVersion(DataSourceAssessment? assessment)
+    {
+        if (assessment == null || _dataSourceAssessments == null) return 0;
+
+        var orderedAssessments = _dataSourceAssessments
+            .OrderBy(a => a.ConductedAt)
+            .ToList();
+
+        return orderedAssessments.IndexOf(assessment) + 1;
     }
 
     public void Dispose()
