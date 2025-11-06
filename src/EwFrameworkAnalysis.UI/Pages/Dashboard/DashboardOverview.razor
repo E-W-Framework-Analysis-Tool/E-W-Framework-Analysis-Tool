@@ -5,7 +5,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Overall Score -->
-    <StatCard Label="Overall Framework Score" 
+    <StatCard Label="Overall Framework Score"
               Value="@($"{(OverallScore * 100):F0}%")"
               Variant="Card.CardVariant.ShadowXl"
               IconClass="fas fa-chart-line">
@@ -15,15 +15,18 @@
     </StatCard>
 
     <!-- Data Sources -->
-    <StatCard Label="Data Sources" 
+    <StatCard Label="Data Sources"
               Value="@TotalDataSources.ToString()"
               Variant="Card.CardVariant.ShadowXl"
               IconClass="fas fa-database">
-        <div class="text-sm text-gray">@AutomatedSourceCount automated, @ManualSourceCount manual</div>
+        <div class="text-sm text-gray space-y-1">
+            <div>@EdFiSourceCount Ed-Fi, @CedsSourceCount CEDS, @ManualSourceCount Manual</div>
+            <div class="text-xs">(@ActiveSourceCount active, @DisabledSourceCount disabled)</div>
+        </div>
     </StatCard>
 
     <!-- Last Analysis -->
-    <StatCard Label="Last Analysis Run" 
+    <StatCard Label="Last Analysis Run"
               Value="@GetLastAnalysisTime()"
               Variant="Card.CardVariant.ShadowXl"
               IconClass="fas fa-clock">
@@ -36,8 +39,11 @@
 @code {
     [Parameter] public decimal OverallScore { get; set; } = 0.74m;
     [Parameter] public int TotalDataSources { get; set; }
-    [Parameter] public int AutomatedSourceCount { get; set; }
+    [Parameter] public int EdFiSourceCount { get; set; }
+    [Parameter] public int CedsSourceCount { get; set; }
     [Parameter] public int ManualSourceCount { get; set; }
+    [Parameter] public int ActiveSourceCount { get; set; }
+    [Parameter] public int DisabledSourceCount { get; set; }
 
     private void NavigateToAssessments()
     {
@@ -56,6 +62,7 @@
         if (latestAssessment == null) return "Never";
 
         var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
+
         return timeSpan.TotalHours < 1
             ? $"{(int)timeSpan.TotalMinutes} minutes ago"
             : timeSpan.TotalDays < 1

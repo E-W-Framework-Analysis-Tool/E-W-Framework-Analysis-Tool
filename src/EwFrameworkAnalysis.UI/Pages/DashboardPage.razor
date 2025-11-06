@@ -11,8 +11,11 @@
     <!-- Dashboard Overview -->
     <DashboardOverview OverallScore="@overallScore"
                        TotalDataSources="@TotalDataSources"
-                       AutomatedSourceCount="@AutomatedSourceCount"
-                       ManualSourceCount="@ManualSourceCount" />
+                       EdFiSourceCount="@EdFiSourceCount"
+                       CedsSourceCount="@CedsSourceCount"
+                       ManualSourceCount="@ManualSourceCount"
+                       ActiveSourceCount="@ActiveSourceCount"
+                       DisabledSourceCount="@DisabledSourceCount" />
 
     <!-- Main Content Area -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
@@ -49,8 +52,10 @@
     // Computed properties
     private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
     private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
-    private int AutomatedSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type != DataSourceType.Custom) ?? 0;
+    private int EdFiSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.EdFiApi) ?? 0;
+    private int CedsSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.CedsDw) ?? 0;
     private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
+    private int DisabledSourceCount => ProjectSvc.DataSources?.Count(ds => !ds.Enabled) ?? 0;
     private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
 
     protected override void OnInitialized()
