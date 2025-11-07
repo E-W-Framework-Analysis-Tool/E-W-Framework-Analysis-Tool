@@ -9,7 +9,8 @@
 @using EwFrameworkAnalysis.UI.Pages.DataSourceDetails
 @inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
-@inject EdFiAssessmentOrchestrator Orchestrator
+@inject EdFiAssessmentOrchestrator EdFiOrchestrator
+@inject CedsDWAssessmentOrchestrator CedsOrchestrator
 @inject HttpClient HttpClient
 
 @if (_dataSource is null)
@@ -52,7 +53,7 @@ else
                           OnSave="@HandleSaveDataSource"
                           OnRunAssessment="@ShowAssessmentRunner" />
 
-        <!-- Assessment Runner Modal (Ed-Fi) -->
+        <!-- Assessment Runner Modals -->
         @if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EdFiApi)
         {
             <EdFiAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
@@ -60,17 +61,24 @@ else
                                        DataSource="@_dataSource"
                                        OnAssessmentComplete="@HandleAssessmentComplete" />
         }
+        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.CedsDw)
+        {
+            <CedsDWAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
+                                         IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                         DataSource="@_dataSource"
+                                         OnAssessmentComplete="@HandleAssessmentComplete" />
+        }
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Sidebar -->
             <div class="lg:col-span-1 space-y-6">
                 <AssessmentHistoryCard Assessments="@_dataSourceAssessments"
-                                      SelectedAssessment="@_selectedAssessment"
-                                      OnSelectAssessment="@SelectAssessment" />
+                                       SelectedAssessment="@_selectedAssessment"
+                                       OnSelectAssessment="@SelectAssessment" />
 
                 <DataSourceManagementCard DataSource="@_dataSource"
-                                         OnToggleEnabled="@ToggleEnabled"
-                                         OnDelete="@ShowDeleteConfirmation" />
+                                          OnToggleEnabled="@ToggleEnabled"
+                                          OnDelete="@ShowDeleteConfirmation" />
             </div>
 
             <!-- Right: Assessment Details -->
@@ -161,15 +169,10 @@ else
         _showAssessmentRunner = true;
     }
 
-    private void CloseAssessmentRunner()
-    {
-        _showAssessmentRunner = false;
-        LoadDataSource();
-    }
-
     private void HandleAssessmentComplete(DataSourceAssessment assessment)
     {
         _selectedAssessment = assessment;
+        LoadDataSource();
         ShowNotification("Assessment completed and saved");
     }
 

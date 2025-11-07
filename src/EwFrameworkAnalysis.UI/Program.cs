@@ -15,12 +15,18 @@ var demoApiOptions = new DemoEdFiApiOptions();
 builder.Configuration.GetSection("DemoEdFiApi").Bind(demoApiOptions);
 builder.Services.AddSingleton(Options.Create(demoApiOptions));
 
+var demoCedsOptions = new DemoCedsOptions();
+builder.Configuration.GetSection("DemoCeds").Bind(demoCedsOptions);
+builder.Services.AddSingleton(Options.Create(demoCedsOptions));
+
 var deploymentInfoOptions = new DeploymentInfoOptions();
 builder.Configuration.GetSection("DeploymentInfo").Bind(deploymentInfoOptions);
 builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
+builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
+builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 
 var assessorAssembly = typeof(IEdFiAssessor).Assembly;

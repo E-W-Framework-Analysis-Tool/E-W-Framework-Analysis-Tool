@@ -11,14 +11,14 @@ namespace EwFrameworkAnalysis.Common.Services;
 public class DataSourceAssessmentFileParser
 {
     /// <summary>
-    /// Parses a CSV stream containing assessment results
+    /// Parses a CSV stream containing assessment results (async version for Blazor compatibility)
     /// </summary>
     /// <param name="stream">Stream containing CSV data</param>
     /// <param name="dataSourceId">The ID of the data source being assessed</param>
     /// <param name="hasHeaderRow">Whether the CSV includes a header row (default: true)</param>
     /// <param name="assessmentSession">Optional existing assessment session to add results to</param>
     /// <returns>A DataSourceAssessment with all parsed results</returns>
-    public DataSourceAssessment ParseAssessmentStream(
+    public async Task<DataSourceAssessment> ParseAssessmentStreamAsync(
         Stream stream,
         Guid dataSourceId,
         bool hasHeaderRow = true,
@@ -42,7 +42,7 @@ public class DataSourceAssessmentFileParser
         };
 
         // Read and parse CSV
-        var rows = ReadCsvStream(stream, hasHeaderRow);
+        var rows = await ReadCsvStreamAsync(stream, hasHeaderRow);
 
         if (rows.Count == 0)
         {
@@ -89,6 +89,20 @@ public class DataSourceAssessmentFileParser
     }
 
     /// <summary>
+    /// Parses a CSV stream containing assessment results (synchronous version for backward compatibility)
+    /// </summary>
+    public DataSourceAssessment ParseAssessmentStream(
+        Stream stream,
+        Guid dataSourceId,
+        bool hasHeaderRow = true,
+        DataSourceAssessment? assessmentSession = null)
+    {
+        return ParseAssessmentStreamAsync(stream, dataSourceId, hasHeaderRow, assessmentSession)
+            .GetAwaiter()
+            .GetResult();
+    }
+
+    /// <summary>
     /// Parses a CSV file containing assessment results (convenience method)
     /// </summary>
     /// <param name="csvFilePath">Path to the CSV file exported from the database</param>
@@ -121,9 +135,9 @@ public class DataSourceAssessmentFileParser
     }
 
     /// <summary>
-    /// Reads CSV stream and returns parsed rows
+    /// Reads CSV stream and returns parsed rows (async version)
     /// </summary>
-    private List<AssessmentResultRow> ReadCsvStream(Stream stream, bool hasHeaderRow)
+    private async Task<List<AssessmentResultRow>> ReadCsvStreamAsync(Stream stream, bool hasHeaderRow)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -135,20 +149,21 @@ public class DataSourceAssessmentFileParser
         using var reader = new StreamReader(stream);
         using var csv = new CsvReader(reader, config);
 
-        List<AssessmentResultRow> rows;
+        List<AssessmentResultRow> rows = [];
 
         if (hasHeaderRow)
         {
             // Standard parsing with headers
-            rows = [.. csv.GetRecords<AssessmentResultRow>()];
+            await foreach (var record in csv.GetRecordsAsync<AssessmentResultRow>())
+            {
+                rows.Add(record);
+            }
         }
         else
         {
             // Manual parsing without headers - assume column order
             // DataElementName, CharacteristicType, Value, SubItemLabel, Remarks
-            rows = [];
-
-            while (csv.Read())
+            while (await csv.ReadAsync())
             {
                 var row = new AssessmentResultRow
                 {
