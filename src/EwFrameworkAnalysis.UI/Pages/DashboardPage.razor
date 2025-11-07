@@ -34,8 +34,7 @@
             <!-- Data Coverage -->
             <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
                                  TotalCharacteristics="@GetTotalCharacteristics()"
-                                 UniqueCharacteristics="@GetUniqueCharacteristics()"
-                                 AvailableDataCategories="@GetAvailableDataCategories()" />
+                                 UniqueCharacteristics="@GetUniqueCharacteristics()" />
         </div>
     </div>
 </div>
@@ -186,25 +185,5 @@
             .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
             .Distinct()
             .Count() ?? 0;
-    }
-
-    private IReadOnlyList<DataCategory> GetAvailableDataCategories()
-    {
-        if (!HasAnyAssessments) return Array.Empty<DataCategory>();
-
-        var assessedElements = ProjectSvc.Assessments
-            .SelectMany(a => a.DataElementAssessments)
-            .Select(d => d.DataElementName)
-            .Distinct()
-            .ToList();
-
-        var categories = EwFrameworkIndicators.Indicators
-            .Where(i => i.Value.DataElementNames.Any(name => assessedElements.Contains(name)))
-            .SelectMany(i => i.Value.DataNeeded)
-            .Distinct()
-            .OrderBy(c => c.ToString())
-            .ToList();
-
-        return categories;
     }
 }
