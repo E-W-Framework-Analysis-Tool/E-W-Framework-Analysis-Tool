@@ -1,4 +1,5 @@
 @page "/dashboard"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Pages.Dashboard
@@ -15,12 +16,14 @@
                        CedsSourceCount="@CedsSourceCount"
                        ManualSourceCount="@ManualSourceCount"
                        ActiveSourceCount="@ActiveSourceCount"
-                       DisabledSourceCount="@DisabledSourceCount" />
+                       DisabledSourceCount="@DisabledSourceCount"
+                       LastAnalysisTime="@GetLastAnalysisTime()" />
 
     <!-- Main Content Area -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <!-- Data Sources Panel -->
         <DataSourcesList DataSources="@ProjectSvc.DataSources"
+                         DataSourceItems="@GetDataSourceItems()"
                          OnAddDataSource="@(() => _isModalOpen = true)" />
 
         <!-- Sidebar -->
@@ -28,12 +31,11 @@
             <!-- Essential Questions Summary -->
             <EssentialQuestionsSummary QuestionScores="@questionScores" />
 
-            <!-- Quick Actions (not sure we need this) -->
-            @* <QuickActions /> *@
-
             <!-- Data Coverage -->
             <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
-                                 HasAnyAssessments="@HasAnyAssessments" />
+                                 TotalCharacteristics="@GetTotalCharacteristics()"
+                                 UniqueCharacteristics="@GetUniqueCharacteristics()"
+                                 AvailableDataCategories="@GetAvailableDataCategories()" />
         </div>
     </div>
 </div>
@@ -94,5 +96,115 @@
     private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
     {
         await ProjectSvc.AddDataSourceAsync(dataSourceType);
+    }
+
+    private string GetLastAnalysisTime()
+    {
+        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
+            return "Never";
+
+        var latestAssessment = ProjectSvc.Assessments
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault();
+
+        if (latestAssessment == null) return "Never";
+
+        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
+        return timeSpan.TotalHours < 1
+            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+            : timeSpan.TotalDays < 1
+                ? $"{(int)timeSpan.TotalHours} hours ago"
+                : $"{(int)timeSpan.TotalDays} days ago";
+    }
+
+    private IReadOnlyList<DataSourcesList.DataSourceListItem> GetDataSourceItems()
+    {
+        if (ProjectSvc.DataSources == null) return Array.Empty<DataSourcesList.DataSourceListItem>();
+
+        return ProjectSvc.DataSources
+            .Select(ds => new DataSourcesList.DataSourceListItem(
+                DataSource: ds,
+                IsNewlyAdded: ProjectSvc.NewlyAddedDataSourceId.HasValue && ds.Id == ProjectSvc.NewlyAddedDataSourceId.Value,
+                HasRecentAssessment: ProjectSvc.GetAssessmentsForDataSource(ds.Id).Any(),
+                AssessmentSummary: GetAssessmentSummary(ds)
+            ))
+            .ToList();
+    }
+
+    private string GetAssessmentSummary(DataSource dataSource)
+    {
+        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
+
+        if (!assessments.Any())
+            return GetNeverRunSummary(dataSource.Type);
+
+        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
+        var timeAgo = GetTimeAgo(latest.ConductedAt);
+        var elementCount = latest.DataElementAssessments?.Count ?? 0;
+
+        return $"Last run: {timeAgo} | {elementCount} elements assessed";
+    }
+
+    private string GetNeverRunSummary(DataSourceType type) => type switch
+    {
+        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
+        DataSourceType.CedsDw => "Never run • Upload CSV results",
+        DataSourceType.Custom => "Never run • Manual checklist items",
+        _ => "Never run"
+    };
+
+    private string GetTimeAgo(DateTimeOffset dateTime)
+    {
+        var timeSpan = DateTimeOffset.Now - dateTime;
+        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
+             : $"{(int)timeSpan.TotalDays} days ago";
+    }
+
+    private int GetTotalCharacteristics()
+    {
+        return ProjectSvc.DataSources?
+            .Where(ds => ds.Enabled)
+            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                .OrderByDescending(a => a.ConductedAt)
+                .FirstOrDefault())
+            .Where(a => a != null)
+            .SelectMany(a => a!.DataElementAssessments)
+            .SelectMany(d => d.Characteristics)
+            .Count() ?? 0;
+    }
+
+    private int GetUniqueCharacteristics()
+    {
+        return ProjectSvc.DataSources?
+            .Where(ds => ds.Enabled)
+            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                .OrderByDescending(a => a.ConductedAt)
+                .FirstOrDefault())
+            .Where(a => a != null)
+            .SelectMany(a => a!.DataElementAssessments)
+            .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
+            .Distinct()
+            .Count() ?? 0;
+    }
+
+    private IReadOnlyList<DataCategory> GetAvailableDataCategories()
+    {
+        if (!HasAnyAssessments) return Array.Empty<DataCategory>();
+
+        var assessedElements = ProjectSvc.Assessments
+            .SelectMany(a => a.DataElementAssessments)
+            .Select(d => d.DataElementName)
+            .Distinct()
+            .ToList();
+
+        var categories = EwFrameworkIndicators.Indicators
+            .Where(i => i.Value.DataElementNames.Any(name => assessedElements.Contains(name)))
+            .SelectMany(i => i.Value.DataNeeded)
+            .Distinct()
+            .OrderBy(c => c.ToString())
+            .ToList();
+
+        return categories;
     }
 }

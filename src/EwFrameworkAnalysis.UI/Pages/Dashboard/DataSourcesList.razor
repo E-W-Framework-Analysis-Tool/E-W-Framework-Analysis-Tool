@@ -1,10 +1,9 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
-@inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
 
 <div class="lg:col-span-2" id="data-sources">
-    <Card Variant="Card.CardVariant.ShadowXl">
+    <Card Shadow="Card.ShadowSize.XLarge">
         <ChildContent>
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-title font-semibold text-blue">Data Sources</h3>
@@ -12,17 +11,18 @@
                     <i class="fas fa-plus"></i>Add Data Source
                 </button>
             </div>
+
             <!-- Data Source Items -->
             <div class="space-y-3">
                 @if (DataSources?.Any() == true)
                 {
-                    @foreach (var dataSource in DataSources)
+                    @foreach (var item in DataSourceItems)
                     {
-                        <DataSourceCard DataSource="@dataSource"
-                                        OnClick="@(() => GoToDataSourceDetails(dataSource))"
-                                        IsNewlyAdded="@IsNewlyAdded(dataSource)"
-                                        HasRecentAssessment="@HasRecentAssessment(dataSource)"
-                                        AssessmentSummary="@GetAssessmentSummary(dataSource)" />
+                        <DataSourceCard DataSource="@item.DataSource"
+                                        OnClick="@(() => GoToDataSourceDetails(item.DataSource))"
+                                        IsNewlyAdded="@item.IsNewlyAdded"
+                                        HasRecentAssessment="@item.HasRecentAssessment"
+                                        AssessmentSummary="@item.AssessmentSummary" />
                     }
                 }
                 else
@@ -40,48 +40,18 @@
 
 @code {
     [Parameter] public IReadOnlyList<DataSource>? DataSources { get; set; }
+    [Parameter] public IReadOnlyList<DataSourceListItem> DataSourceItems { get; set; } = Array.Empty<DataSourceListItem>();
     [Parameter] public EventCallback OnAddDataSource { get; set; }
-    
+
     private void GoToDataSourceDetails(DataSource dataSource)
     {
         Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(dataSource.Id));
     }
-    
-    private bool IsNewlyAdded(DataSource dataSource)
-        => ProjectSvc.NewlyAddedDataSourceId.HasValue && dataSource.Id == ProjectSvc.NewlyAddedDataSourceId.Value;
-    
-    private bool HasRecentAssessment(DataSource dataSource)
-    {
-        return ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).Any();
-    }
-    
-    private string GetAssessmentSummary(DataSource dataSource)
-    {
-        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
-        
-        if (!assessments.Any())
-            return GetNeverRunSummary(dataSource.Type);
-        
-        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
-        var timeAgo = GetTimeAgo(latest.ConductedAt);
-        var elementCount = latest.DataElementAssessments?.Count ?? 0;
-        
-        return $"Last run: {timeAgo} | {elementCount} elements assessed";
-    }
-    
-    private string GetNeverRunSummary(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
-        DataSourceType.CedsDw => "Never run • Upload CSV results",
-        DataSourceType.Custom => "Never run • Manual checklist items",
-        _ => "Never run"
-    };
-    
-    private string GetTimeAgo(DateTimeOffset dateTime)
-    {
-        var timeSpan = DateTimeOffset.Now - dateTime;
-        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
-             : $"{(int)timeSpan.TotalDays} days ago";
-    }
+
+    public record DataSourceListItem(
+        DataSource DataSource,
+        bool IsNewlyAdded,
+        bool HasRecentAssessment,
+        string AssessmentSummary
+    );
 }

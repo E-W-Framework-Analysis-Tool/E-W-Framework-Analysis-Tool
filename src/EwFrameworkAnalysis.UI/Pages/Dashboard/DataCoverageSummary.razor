@@ -2,10 +2,9 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-@inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
 
-<Card Title="Data Coverage" Variant="Card.CardVariant.ShadowXl">
+<Card Title="Data Coverage" Shadow="Card.ShadowSize.XLarge">
     <ChildContent>
         <div class="space-y-4">
             <div>
@@ -39,14 +38,14 @@
             <div class="border-t border-tan pt-3">
                 <div class="text-xs font-medium text-gray mb-2">Data Categories Available</div>
                 <div class="flex flex-wrap gap-1">
-                    @foreach (var category in GetAvailableDataCategories())
+                    @foreach (var category in AvailableDataCategories)
                     {
                         <span class="badge badge-sm bg-blue bg-opacity-20 text-blue border-none">
                             @FormatDataCategory(category)
                         </span>
                     }
                 </div>
-                @if (!GetAvailableDataCategories().Any())
+                @if (!AvailableDataCategories.Any())
                 {
                     <div class="text-xs text-gray italic">No data collected yet</div>
                 }
@@ -62,32 +61,9 @@
 
 @code {
     [Parameter] public int ActiveSourceCount { get; set; }
-    [Parameter] public bool HasAnyAssessments { get; set; }
-
-    private int TotalCharacteristics => ProjectSvc.DataSources?
-        .Where(ds => ds.Enabled)
-        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault())
-        .Where(a => a != null)
-#pragma warning disable CS8602
-        .SelectMany(a => a.DataElementAssessments)
-#pragma warning restore CS8602
-        .SelectMany(d => d.Characteristics)
-        .Count() ?? 0;
-
-    private int UniqueCharacteristics => ProjectSvc.DataSources?
-        .Where(ds => ds.Enabled)
-        .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault())
-        .Where(a => a != null)
-#pragma warning disable CS8602
-        .SelectMany(a => a.DataElementAssessments)
-#pragma warning restore CS8602
-        .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
-        .Distinct()
-        .Count() ?? 0;
+    [Parameter] public int TotalCharacteristics { get; set; }
+    [Parameter] public int UniqueCharacteristics { get; set; }
+    [Parameter] public IReadOnlyList<DataCategory> AvailableDataCategories { get; set; } = Array.Empty<DataCategory>();
 
     private void NavigateToAnalysis()
     {
@@ -97,26 +73,6 @@
     private int GetIndicatorCount(IndicatorType type)
     {
         return EwFrameworkIndicators.Indicators.Count(i => i.Value.Type == type);
-    }
-
-    private List<DataCategory> GetAvailableDataCategories()
-    {
-        if (!HasAnyAssessments) return new List<DataCategory>();
-
-        var assessedElements = ProjectSvc.Assessments
-            .SelectMany(a => a.DataElementAssessments)
-            .Select(d => d.DataElementName)
-            .Distinct()
-            .ToList();
-
-        var categories = EwFrameworkIndicators.Indicators
-            .Where(i => i.Value.DataElementNames.Any(name => assessedElements.Contains(name)))
-            .SelectMany(i => i.Value.DataNeeded)
-            .Distinct()
-            .OrderBy(c => c.ToString())
-            .ToList();
-
-        return categories;
     }
 
     private string FormatDataCategory(DataCategory category)
