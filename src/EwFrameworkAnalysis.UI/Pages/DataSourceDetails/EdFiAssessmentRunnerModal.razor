@@ -1,5 +1,6 @@
 @using System.Text.Json
 @using System.Net.Http.Headers
+@using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
 @using Microsoft.Extensions.Options
 @using EwFrameworkAnalysis.Common.Models.Project
@@ -171,20 +172,17 @@
 
                                         @if (assessor.LogMessages?.Any() == true)
                                         {
-                                            <div class="collapse collapse-arrow bg-gray-50 border border-gray-200 ml-6 mt-2">
-                                                <input type="checkbox" class="peer" />
-                                                <div class="collapse-title text-xs text-blue">
-                                                    @assessor.LogMessages.Count log message(s)
+                                            <CollapsibleSection Title="@($"{assessor.LogMessages.Count} log message(s)")"
+                                                                SectionClasses="bg-gray-50 border border-gray-200 rounded"
+                                                                TitleClasses="text-xs text-blue"
+                                                                AdditionalClasses="ml-6 mt-2">
+                                                <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
+                                                    @foreach (var log in assessor.LogMessages)
+                                                    {
+                                                        <div class="text-gray-700">@log</div>
+                                                    }
                                                 </div>
-                                                <div class="collapse-content">
-                                                    <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
-                                                        @foreach (var log in assessor.LogMessages)
-                                                        {
-                                                            <div class="text-gray-700">@log</div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </CollapsibleSection>
                                         }
                                     </div>
                                     <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
