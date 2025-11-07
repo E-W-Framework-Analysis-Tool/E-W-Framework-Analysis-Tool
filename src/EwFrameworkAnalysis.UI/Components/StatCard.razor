@@ -1,0 +1,46 @@
+<Card Shadow="Shadow"
+      Overflow="Overflow"
+      Background="Background"
+      Border="Border"
+      Rounded="Rounded"
+      AdditionalClasses="@AdditionalClasses"
+      NoPadding>
+    <ChildContent>
+        <div class="p-5">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <i class="@IconClass text-white text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray truncate">@Label</dt>
+                        <dd class="text-2xl font-title font-bold text-blue">@Value</dd>
+                    </dl>
+                </div>
+            </div>
+            @if (ChildContent != null)
+            {
+                <div class="mt-4">
+                    @ChildContent
+                </div>
+            }
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter, EditorRequired] public string IconClass { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string AdditionalClasses { get; set; } = "";
+
+    // Granular visual parameters
+    [Parameter] public Card.ShadowSize Shadow { get; set; } = Card.ShadowSize.XLarge;
+    [Parameter] public bool Overflow { get; set; } = true;
+    [Parameter] public Card.BackgroundColor Background { get; set; } = Card.BackgroundColor.White;
+    [Parameter] public Card.BorderStyle? Border { get; set; } = null;
+    [Parameter] public bool Rounded { get; set; } = true;
+}

@@ -1,0 +1,150 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+@inject AnalysisProjectService ProjectSvc
+@inject IJSRuntime JSRuntime
+
+<Card Shadow="Card.ShadowSize.XLarge" Overflow AdditionalClasses="mb-6" NoPadding>
+    <ChildContent>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+                <!-- Left: Title and Metadata -->
+                <div class="flex-1 min-w-0 space-y-1">
+                    <!-- Editable Title -->
+                    <EditableField Value="@(ProjectSvc.Project?.Title ?? "Untitled Project")"
+                                   Placeholder="Enter project title"
+                                   Variant="EditableField.FieldVariant.Title"
+                                   OnSave="@HandleTitleSave" />
+
+                    <!-- Last Modified (Non-editable) -->
+                    <p class="text-sm text-gray">@GetFormattedLastModified()</p>
+                </div>
+
+                <!-- Right: Actions -->
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <!-- File Operations -->
+                    <div class="flex items-center gap-2 border-l border-gray-300 pl-3">
+                        <button @onclick="HandleNewProject"
+                                class="btn btn-sm btn-ghost gap-1"
+                                title="New Project">
+                            <i class="fas fa-file"></i>
+                            <span class="hidden sm:inline">New</span>
+                        </button>
+                        <button @onclick="HandleSaveProject"
+                                class="btn btn-sm btn-ghost gap-1"
+                                title="Save Project">
+                            <i class="fas fa-save"></i>
+                            <span class="hidden sm:inline">Save</span>
+                        </button>
+                        <button @onclick="HandleLoadProject"
+                                class="btn btn-sm btn-ghost gap-1"
+                                title="Load Project">
+                            <i class="fas fa-folder-open"></i>
+                            <span class="hidden sm:inline">Load</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+<!-- Hidden file input for loading projects -->
+<input type="file"
+       accept=".json"
+       @ref="_fileInput"
+       @onchange="OnFileSelected"
+       style="display: none;" />
+
+<script>
+    window.ProjectHeaderHelpers = {
+        downloadFile: function(filename, content, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        },
+
+        triggerFileInput: function(element) {
+            element.click();
+        },
+
+        readFileAsText: function(element) {
+            return new Promise((resolve) => {
+                const file = element.files[0];
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsText(file);
+            });
+        }
+    };
+</script>
+
+@code {
+    [Parameter] public int ActiveSourceCount { get; set; }
+
+    private ElementReference _fileInput;
+
+    private async Task HandleTitleSave(string? title)
+    {
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            await ProjectSvc.UpdateProjectDetailsAsync(title);
+        }
+    }
+
+    private async Task HandleNewProject()
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>(
+            "confirm",
+            "Create a new project? Any unsaved changes will be lost.");
+
+        if (confirmed)
+        {
+            await ProjectSvc.CreateNewProjectAsync();
+        }
+    }
+
+    private async Task HandleSaveProject()
+    {
+        var json = await ProjectSvc.ExportProjectAsync();
+        var fileName = $"{ProjectSvc.Project?.Title?.Replace(" ", "_") ?? "project"}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.json";
+
+        await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.downloadFile", fileName, json, "application/json");
+    }
+
+    private async Task HandleLoadProject()
+    {
+        await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.triggerFileInput", _fileInput);
+    }
+
+    private async Task OnFileSelected(ChangeEventArgs e)
+    {
+        var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
+        if (!string.IsNullOrWhiteSpace(file))
+        {
+            await ProjectSvc.ImportProjectAsync(file);
+        }
+    }
+
+    private string GetFormattedLastModified()
+    {
+        if (ProjectSvc.Project?.LastModifiedAt == null) return "Last modified: Never";
+        var lastModified = ProjectSvc.Project.LastModifiedAt;
+        var timeSpan = DateTimeOffset.Now - lastModified;
+
+        var timeAgo = timeSpan.TotalHours < 1
+            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+            : timeSpan.TotalDays < 1
+                ? $"{(int)timeSpan.TotalHours} hours ago"
+                : lastModified.ToString("MMMM d, yyyy 'at' h:mm tt");
+
+        return $"Last modified: {timeAgo}";
+    }
+}

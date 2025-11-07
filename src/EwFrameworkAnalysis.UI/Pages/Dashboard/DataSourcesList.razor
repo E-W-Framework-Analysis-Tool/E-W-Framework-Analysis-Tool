@@ -1,0 +1,57 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+@inject NavigationManager Nav
+
+<div class="lg:col-span-2" id="data-sources">
+    <Card Shadow="Card.ShadowSize.XLarge">
+        <ChildContent>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-title font-semibold text-blue">Data Sources</h3>
+                <button @onclick="OnAddDataSource" class="btn btn-primary gap-2">
+                    <i class="fas fa-plus"></i>Add Data Source
+                </button>
+            </div>
+
+            <!-- Data Source Items -->
+            <div class="space-y-3">
+                @if (DataSources?.Any() == true)
+                {
+                    @foreach (var item in DataSourceItems)
+                    {
+                        <DataSourceCard DataSource="@item.DataSource"
+                                        OnClick="@(() => GoToDataSourceDetails(item.DataSource))"
+                                        IsNewlyAdded="@item.IsNewlyAdded"
+                                        HasRecentAssessment="@item.HasRecentAssessment"
+                                        AssessmentSummary="@item.AssessmentSummary" />
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-8 text-base-content/70">
+                        <i class="fas fa-database text-4xl mb-4 text-base-content/30"></i>
+                        <p>No data sources configured yet.</p>
+                        <p class="text-xs mt-2">Add your first data source to begin analysis.</p>
+                    </div>
+                }
+            </div>
+        </ChildContent>
+    </Card>
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<DataSource>? DataSources { get; set; }
+    [Parameter] public IReadOnlyList<DataSourceListItem> DataSourceItems { get; set; } = Array.Empty<DataSourceListItem>();
+    [Parameter] public EventCallback OnAddDataSource { get; set; }
+
+    private void GoToDataSourceDetails(DataSource dataSource)
+    {
+        Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(dataSource.Id));
+    }
+
+    public record DataSourceListItem(
+        DataSource DataSource,
+        bool IsNewlyAdded,
+        bool HasRecentAssessment,
+        string AssessmentSummary
+    );
+}

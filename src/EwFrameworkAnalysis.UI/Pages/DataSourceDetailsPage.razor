@@ -1,0 +1,282 @@
+@page "/data-sources/{Id:guid}"
+@using System.Net.Http.Headers
+@using System.Text.Json
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.Common.Assessors.EdFi
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails
+@inject AnalysisProjectService ProjectSvc
+@inject NavigationManager Nav
+@inject EdFiAssessmentOrchestrator Orchestrator
+@inject HttpClient HttpClient
+
+@if (_dataSource is null)
+{
+    <div class="container mx-auto max-w-4xl p-6">
+        <Card Overflow>
+            <ChildContent>
+                <div class="text-center">
+                    <h2 class="text-2xl font-title font-bold text-blue mb-2">Data Source not found</h2>
+                    <p class="text-gray mb-4">We couldn't locate a data source with ID "@Id".</p>
+                    <div class="flex justify-center">
+                        <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo(AppRoutes.Dashboard))">
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </ChildContent>
+        </Card>
+    </div>
+}
+else
+{
+    <!-- Notification Toast -->
+    @if (_showNotification && !string.IsNullOrEmpty(_notificationMessage))
+    {
+        <div class="toast toast-top toast-end z-50">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span>@_notificationMessage</span>
+                <button class="btn btn-sm btn-circle btn-ghost" @onclick="() => _showNotification = false">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    }
+
+    <div class="container mx-auto max-w-7xl p-4 lg:p-8">
+        <!-- Header -->
+        <DataSourceHeader DataSource="@_dataSource"
+                          OnSave="@HandleSaveDataSource"
+                          OnRunAssessment="@ShowAssessmentRunner" />
+
+        <!-- Assessment Runner Modal (Ed-Fi) -->
+        @if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EdFiApi)
+        {
+            <EdFiAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
+                                       IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                       DataSource="@_dataSource"
+                                       OnAssessmentComplete="@HandleAssessmentComplete" />
+        }
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Sidebar -->
+            <div class="lg:col-span-1 space-y-6">
+                <AssessmentHistoryCard Assessments="@_dataSourceAssessments"
+                                      SelectedAssessment="@_selectedAssessment"
+                                      OnSelectAssessment="@SelectAssessment" />
+
+                <DataSourceManagementCard DataSource="@_dataSource"
+                                         OnToggleEnabled="@ToggleEnabled"
+                                         OnDelete="@ShowDeleteConfirmation" />
+            </div>
+
+            <!-- Right: Assessment Details -->
+            <div class="lg:col-span-2">
+                <AssessmentDetailsView Assessment="@_selectedAssessment"
+                                       Version="@GetAssessmentVersion(_selectedAssessment)"
+                                       OnRename="@HandleRenameAssessment"
+                                       OnDelete="@HandleDeleteAssessment" />
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (_showDeleteModal)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg text-blue font-title">Delete Data Source</h3>
+            <p class="py-4 text-gray">
+                Are you sure you want to delete "<span class="font-semibold text-blue">@_dataSource?.Name</span>"?
+                This action cannot be undone. Note that assessments will remain in the project history.
+            </p>
+            <div class="modal-action">
+                <button class="btn btn-ghost" @onclick="CancelDelete">Cancel</button>
+                <button class="btn btn-error" @onclick="ConfirmDelete">
+                    <i class="fas fa-trash mr-2"></i>
+                    Delete Data Source
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private DataSource? _dataSource;
+    private List<DataSourceAssessment>? _dataSourceAssessments;
+    private DataSourceAssessment? _selectedAssessment;
+    private bool _showDeleteModal = false;
+
+    private string? _notificationMessage;
+    private bool _showNotification = false;
+
+    private bool _showAssessmentRunner = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProjectSvc.Changed += OnProjectChanged;
+        LoadDataSource();
+        await Task.CompletedTask;
+    }
+
+    protected override void OnParametersSet()
+    {
+        LoadDataSource();
+    }
+
+    private void OnProjectChanged()
+    {
+        LoadDataSource();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void LoadDataSource()
+    {
+        _dataSource = ProjectSvc.GetDataSource(Id);
+
+        if (_dataSource != null)
+        {
+            _dataSourceAssessments = ProjectSvc.GetAssessmentsForDataSource(_dataSource.Id).ToList();
+
+            if (_dataSourceAssessments?.Any() == true && _selectedAssessment == null)
+            {
+                _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
+            }
+        }
+    }
+
+    private void SelectAssessment(DataSourceAssessment assessment)
+    {
+        _selectedAssessment = assessment;
+    }
+
+    private void ShowAssessmentRunner()
+    {
+        _showAssessmentRunner = true;
+    }
+
+    private void CloseAssessmentRunner()
+    {
+        _showAssessmentRunner = false;
+        LoadDataSource();
+    }
+
+    private void HandleAssessmentComplete(DataSourceAssessment assessment)
+    {
+        _selectedAssessment = assessment;
+        ShowNotification("Assessment completed and saved");
+    }
+
+    private async Task ToggleEnabled()
+    {
+        if (_dataSource is null) return;
+        await ProjectSvc.SetEnabledAsync(_dataSource.Id, !_dataSource.Enabled);
+        LoadDataSource();
+        ShowNotification($"Data source {(_dataSource.Enabled ? "enabled" : "disabled")}");
+    }
+
+    private void ShowNotification(string message)
+    {
+        _notificationMessage = message;
+        _showNotification = true;
+        StateHasChanged();
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            _showNotification = false;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        _showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        _showDeleteModal = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (_dataSource is null) return;
+
+        await ProjectSvc.DeleteDataSourceAsync(_dataSource.Id);
+        _showDeleteModal = false;
+
+        Nav.NavigateTo(AppRoutes.Dashboard);
+    }
+
+    private async Task HandleSaveDataSource((string name, string? description) data)
+    {
+        if (_dataSource is null) return;
+
+        var updatedDs = new DataSource
+        {
+            Id = _dataSource.Id,
+            Name = data.name,
+            Description = data.description,
+            Type = _dataSource.Type,
+            Enabled = _dataSource.Enabled
+        };
+
+        await ProjectSvc.UpdateDataSourceAsync(updatedDs);
+        LoadDataSource();
+        ShowNotification("Updated successfully");
+    }
+
+    private int GetAssessmentVersion(DataSourceAssessment? assessment)
+    {
+        if (assessment == null || _dataSourceAssessments == null) return 0;
+
+        var orderedAssessments = _dataSourceAssessments
+            .OrderBy(a => a.ConductedAt)
+            .ToList();
+
+        return orderedAssessments.IndexOf(assessment) + 1;
+    }
+
+    private async Task HandleRenameAssessment(string newName)
+    {
+        if (_selectedAssessment is null) return;
+
+        _selectedAssessment.Name = newName;
+        await ProjectSvc.UpdateAssessmentAsync(_selectedAssessment);
+        LoadDataSource();
+        ShowNotification("Assessment renamed successfully");
+    }
+
+    private async Task HandleDeleteAssessment()
+    {
+        if (_selectedAssessment is null) return;
+
+        var assessmentId = _selectedAssessment.Id;
+        await ProjectSvc.DeleteAssessmentAsync(assessmentId);
+
+        // Select a different assessment or clear selection
+        LoadDataSource();
+        if (_dataSourceAssessments?.Any() == true)
+        {
+            _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
+        }
+        else
+        {
+            _selectedAssessment = null;
+        }
+
+        ShowNotification("Assessment deleted successfully");
+    }
+
+    public void Dispose()
+    {
+        ProjectSvc.Changed -= OnProjectChanged;
+    }
+}

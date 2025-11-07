@@ -1,0 +1,75 @@
+<div class="collapse collapse-arrow @SectionClasses @AdditionalClasses">
+    <input type="checkbox" class="peer" checked="@IsExpanded" @onchange="OnToggle" />
+    <div class="collapse-title @TitleClasses">
+        @if (TitleContent != null)
+        {
+            @TitleContent
+        }
+        else
+        {
+            @Title
+        }
+    </div>
+    <div class="collapse-content">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The content to display inside the collapsible section
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Simple string title (alternative to TitleContent)
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Custom title content (alternative to Title)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? TitleContent { get; set; }
+
+    /// <summary>
+    /// Whether the section starts expanded
+    /// </summary>
+    [Parameter]
+    public bool IsExpanded { get; set; } = false;
+
+    /// <summary>
+    /// Callback when expansion state changes
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> IsExpandedChanged { get; set; }
+
+    /// <summary>
+    /// CSS classes for the section container, primarily for background color, border, and rounded corners
+    /// </summary>
+    [Parameter]
+    public string SectionClasses { get; set; } = "bg-white border border-gray-200 rounded";
+
+    /// <summary>
+    /// CSS classes for the title area (defaults to standard styling)
+    /// </summary>
+    [Parameter]
+    public string TitleClasses { get; set; } = "text-sm font-medium text-blue";
+
+    /// <summary>
+    /// Additional CSS classes for positioning, spacing, etc.
+    /// </summary>
+    [Parameter]
+    public string AdditionalClasses { get; set; } = "";
+
+    private async Task OnToggle(ChangeEventArgs e)
+    {
+        if (e.Value is bool newValue)
+        {
+            IsExpanded = newValue;
+            await IsExpandedChanged.InvokeAsync(IsExpanded);
+        }
+    }
+}

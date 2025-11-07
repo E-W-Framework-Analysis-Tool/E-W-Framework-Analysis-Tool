@@ -1,0 +1,163 @@
+<div class="@GetCardClasses()">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="@GetHeaderClasses()">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-title font-semibold text-blue">@Title</h3>
+                @HeaderActions
+            </div>
+        </div>
+    }
+    <div class="@GetBodyClasses()">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? HeaderActions { get; set; }
+    [Parameter] public string AdditionalClasses { get; set; } = "";
+    [Parameter] public bool NoPadding { get; set; } = false;
+
+    // Granular visual parameters
+    [Parameter] public ShadowSize Shadow { get; set; } = ShadowSize.Default;
+    [Parameter] public bool Overflow { get; set; } = false;
+    [Parameter] public BackgroundColor Background { get; set; } = BackgroundColor.White;
+    [Parameter] public BorderStyle? Border { get; set; } = null;
+    [Parameter] public bool Rounded { get; set; } = true;
+
+    private string GetCardClasses()
+    {
+        var classes = new List<string>();
+
+        // Background
+        classes.Add(Background switch
+        {
+            BackgroundColor.White => "bg-white",
+            BackgroundColor.Blue => "bg-blue-50",
+            BackgroundColor.Green => "bg-green-50",
+            BackgroundColor.Yellow => "bg-yellow-50",
+            BackgroundColor.Gray => "bg-gray-50",
+            BackgroundColor.Tan => "bg-tan-50",
+            BackgroundColor.Red => "bg-red-50",
+            _ => "bg-white"
+        });
+
+        // Shadow
+        classes.Add(Shadow switch
+        {
+            ShadowSize.None => "",
+            ShadowSize.Small => "shadow-sm",
+            ShadowSize.Default => "shadow",
+            ShadowSize.Large => "shadow-lg",
+            ShadowSize.XLarge => "shadow-xl",
+            _ => "shadow"
+        });
+
+        // Overflow
+        if (Overflow)
+        {
+            classes.Add("overflow-hidden");
+        }
+
+        // Rounded
+        if (Rounded)
+        {
+            classes.Add("rounded-lg");
+        }
+
+        // Border
+        if (Border.HasValue)
+        {
+            var borderColor = Border.Value.Color switch
+            {
+                BorderColor.Blue => "border-blue",
+                BorderColor.Green => "border-green",
+                BorderColor.Yellow => "border-yellow",
+                BorderColor.Gray => "border-gray",
+                BorderColor.Tan => "border-tan",
+                BorderColor.Red => "border-red",
+                _ => "border-gray-200"
+            };
+
+            var borderPosition = Border.Value.Position switch
+            {
+                BorderPosition.All => "border",
+                BorderPosition.Left => "border-l-4",
+                BorderPosition.Top => "border-t-4",
+                BorderPosition.Right => "border-r-4",
+                BorderPosition.Bottom => "border-b-4",
+                _ => "border"
+            };
+
+            classes.Add(borderPosition);
+            classes.Add(borderColor);
+        }
+
+        classes.Add(AdditionalClasses);
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrWhiteSpace(c)));
+    }
+
+    private string GetHeaderClasses()
+    {
+        return NoPadding ? "px-4 py-5 sm:p-6" : "px-4 py-5 sm:p-6 pb-0";
+    }
+
+    private string GetBodyClasses()
+    {
+        return NoPadding ? "" : "p-5";
+    }
+
+    public enum ShadowSize
+    {
+        None,
+        Small,
+        Default,
+        Large,
+        XLarge
+    }
+
+    public enum BackgroundColor
+    {
+        White,
+        Blue,
+        Green,
+        Yellow,
+        Gray,
+        Tan,
+        Red
+    }
+
+    public enum BorderColor
+    {
+        Blue,
+        Green,
+        Yellow,
+        Gray,
+        Tan,
+        Red
+    }
+
+    public enum BorderPosition
+    {
+        All,
+        Left,
+        Top,
+        Right,
+        Bottom
+    }
+
+    public struct BorderStyle
+    {
+        public BorderColor Color { get; set; }
+        public BorderPosition Position { get; set; }
+
+        public BorderStyle(BorderColor color, BorderPosition position = BorderPosition.All)
+        {
+            Color = color;
+            Position = position;
+        }
+    }
+}

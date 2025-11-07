@@ -7,7 +7,7 @@ public class DataSourceAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Name { get; set; }
-    public DateTime ConductedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset ConductedAt { get; set; } = DateTimeOffset.Now;
     public string? Notes { get; set; }
 
     // All assessments from this session
@@ -23,7 +23,7 @@ public class DataElementAssessment
     public Guid AssessmentSessionId { get; set; }
     public string DataElementName { get; set; } = string.Empty;
     public Guid DataSourceId { get; set; }
-    public DateTime AssessedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset AssessedAt { get; set; } = DateTimeOffset.Now;
 
     // Assessment results
     public List<DataCharacteristicBase> Characteristics { get; set; } = [];

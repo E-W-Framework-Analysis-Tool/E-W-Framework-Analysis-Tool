@@ -1,0 +1,189 @@
+@page "/dashboard"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Pages.Dashboard
+@inject AnalysisProjectService ProjectSvc
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+    <!-- Project Header -->
+    <ProjectHeader ActiveSourceCount="@ActiveSourceCount" />
+
+    <!-- Dashboard Overview -->
+    <DashboardOverview OverallScore="@overallScore"
+                       TotalDataSources="@TotalDataSources"
+                       EdFiSourceCount="@EdFiSourceCount"
+                       CedsSourceCount="@CedsSourceCount"
+                       ManualSourceCount="@ManualSourceCount"
+                       ActiveSourceCount="@ActiveSourceCount"
+                       DisabledSourceCount="@DisabledSourceCount"
+                       LastAnalysisTime="@GetLastAnalysisTime()" />
+
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <!-- Data Sources Panel -->
+        <DataSourcesList DataSources="@ProjectSvc.DataSources"
+                         DataSourceItems="@GetDataSourceItems()"
+                         OnAddDataSource="@(() => _isModalOpen = true)" />
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Essential Questions Summary -->
+            <EssentialQuestionsSummary QuestionScores="@questionScores" />
+
+            <!-- Data Coverage -->
+            <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
+                                 TotalCharacteristics="@GetTotalCharacteristics()"
+                                 UniqueCharacteristics="@GetUniqueCharacteristics()" />
+        </div>
+    </div>
+</div>
+
+<!-- Add Data Source Modal -->
+<AddDataSourceModal IsOpen="@_isModalOpen"
+                    IsOpenChanged="@((value) => _isModalOpen = value)"
+                    OnDataSourceTypeSelected="@HandleDataSourceTypeSelected" />
+
+@code {
+    // State variables
+    private List<QuestionScore> questionScores = new();
+    private decimal overallScore = 0.74m;
+    private bool _isModalOpen = false;
+
+    // Computed properties
+    private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
+    private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
+    private int EdFiSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.EdFiApi) ?? 0;
+    private int CedsSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.CedsDw) ?? 0;
+    private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
+    private int DisabledSourceCount => ProjectSvc.DataSources?.Count(ds => !ds.Enabled) ?? 0;
+    private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
+
+    protected override void OnInitialized()
+    {
+        ProjectSvc.Changed += OnProjectChanged;
+        InitializeQuestionScores();
+    }
+
+    public void Dispose()
+    {
+        ProjectSvc.Changed -= OnProjectChanged;
+    }
+
+    private void OnProjectChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void InitializeQuestionScores()
+    {
+        if (HasAnyAssessments)
+        {
+            questionScores = new List<QuestionScore>
+            {
+                new QuestionScore { QuestionNumber = 1, ReadinessScore = 0.85m },
+                new QuestionScore { QuestionNumber = 2, ReadinessScore = 0.72m },
+                new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
+            };
+        }
+        else
+        {
+            questionScores = new List<QuestionScore>();
+        }
+    }
+
+    private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
+    {
+        await ProjectSvc.AddDataSourceAsync(dataSourceType);
+    }
+
+    private string GetLastAnalysisTime()
+    {
+        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
+            return "Never";
+
+        var latestAssessment = ProjectSvc.Assessments
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault();
+
+        if (latestAssessment == null) return "Never";
+
+        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
+        return timeSpan.TotalHours < 1
+            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+            : timeSpan.TotalDays < 1
+                ? $"{(int)timeSpan.TotalHours} hours ago"
+                : $"{(int)timeSpan.TotalDays} days ago";
+    }
+
+    private IReadOnlyList<DataSourcesList.DataSourceListItem> GetDataSourceItems()
+    {
+        if (ProjectSvc.DataSources == null) return Array.Empty<DataSourcesList.DataSourceListItem>();
+
+        return ProjectSvc.DataSources
+            .Select(ds => new DataSourcesList.DataSourceListItem(
+                DataSource: ds,
+                IsNewlyAdded: ProjectSvc.NewlyAddedDataSourceId.HasValue && ds.Id == ProjectSvc.NewlyAddedDataSourceId.Value,
+                HasRecentAssessment: ProjectSvc.GetAssessmentsForDataSource(ds.Id).Any(),
+                AssessmentSummary: GetAssessmentSummary(ds)
+            ))
+            .ToList();
+    }
+
+    private string GetAssessmentSummary(DataSource dataSource)
+    {
+        var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
+
+        if (!assessments.Any())
+            return GetNeverRunSummary(dataSource.Type);
+
+        var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
+        var timeAgo = GetTimeAgo(latest.ConductedAt);
+        var elementCount = latest.DataElementAssessments?.Count ?? 0;
+
+        return $"Last run: {timeAgo} | {elementCount} elements assessed";
+    }
+
+    private string GetNeverRunSummary(DataSourceType type) => type switch
+    {
+        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
+        DataSourceType.CedsDw => "Never run • Upload CSV results",
+        DataSourceType.Custom => "Never run • Manual checklist items",
+        _ => "Never run"
+    };
+
+    private string GetTimeAgo(DateTimeOffset dateTime)
+    {
+        var timeSpan = DateTimeOffset.Now - dateTime;
+        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+             : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
+             : $"{(int)timeSpan.TotalDays} days ago";
+    }
+
+    private int GetTotalCharacteristics()
+    {
+        return ProjectSvc.DataSources?
+            .Where(ds => ds.Enabled)
+            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                .OrderByDescending(a => a.ConductedAt)
+                .FirstOrDefault())
+            .Where(a => a != null)
+            .SelectMany(a => a!.DataElementAssessments)
+            .SelectMany(d => d.Characteristics)
+            .Count() ?? 0;
+    }
+
+    private int GetUniqueCharacteristics()
+    {
+        return ProjectSvc.DataSources?
+            .Where(ds => ds.Enabled)
+            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                .OrderByDescending(a => a.ConductedAt)
+                .FirstOrDefault())
+            .Where(a => a != null)
+            .SelectMany(a => a!.DataElementAssessments)
+            .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
+            .Distinct()
+            .Count() ?? 0;
+    }
+}

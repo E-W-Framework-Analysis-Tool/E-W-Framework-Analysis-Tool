@@ -77,7 +77,7 @@ public class DataSourceAssessmentFileParser
                 AssessmentSessionId = assessment.Id,
                 DataElementName = dataElementName,
                 DataSourceId = dataSourceId,
-                AssessedAt = DateTime.UtcNow,
+                AssessedAt = DateTimeOffset.Now,
                 Characteristics = characteristics,
                 Remarks = ExtractRemarks(elementGroup)
             };

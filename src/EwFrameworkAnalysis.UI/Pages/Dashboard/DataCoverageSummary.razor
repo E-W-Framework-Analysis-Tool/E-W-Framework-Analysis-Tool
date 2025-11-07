@@ -1,0 +1,60 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+@inject NavigationManager Nav
+
+<Card Title="Data Coverage" Shadow="Card.ShadowSize.XLarge">
+    <ChildContent>
+        <div class="space-y-4">
+            <div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray">Total Characteristics</span>
+                    <span class="font-medium text-blue">@TotalCharacteristics</span>
+                </div>
+                <div class="text-xs text-gray mt-1">
+                    @UniqueCharacteristics unique across @ActiveSourceCount active source(s)
+                </div>
+            </div>
+
+            <div class="border-t border-tan pt-3">
+                <div class="text-xs font-medium text-gray mb-2">Indicators by Type</div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray">Outcomes & Milestones</span>
+                        <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.OutcomesMilestones) indicators</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray">EW System Conditions</span>
+                        <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.EWSystemConditions) indicators</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray">Adjacent Systems</span>
+                        <span class="font-medium text-blue">@GetIndicatorCount(IndicatorType.AdjacentSystemConditions) indicators</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button @onclick="NavigateToAnalysis" class="text-sm text-blue hover:text-yellow font-medium">
+                View Detailed Analysis <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter] public int ActiveSourceCount { get; set; }
+    [Parameter] public int TotalCharacteristics { get; set; }
+    [Parameter] public int UniqueCharacteristics { get; set; }
+
+    private void NavigateToAnalysis()
+    {
+        Nav.NavigateTo("/analysis");
+    }
+
+    private int GetIndicatorCount(IndicatorType type)
+    {
+        return EwFrameworkIndicators.Indicators.Count(i => i.Value.Type == type);
+    }
+}

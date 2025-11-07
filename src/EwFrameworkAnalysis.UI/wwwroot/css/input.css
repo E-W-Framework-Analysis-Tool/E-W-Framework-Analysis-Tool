@@ -68,3 +68,30 @@
 .font-title {
   font-family: 'Zilla Slab', serif !important;
 }
+
+@layer base {
+    button,
+    [type='button'],
+    [type='submit'],
+    [type='reset'],
+    a[href],
+    label[for],
+    select,
+    .btn,
+    .link,
+    [role='button'],
+    input[type='checkbox'],
+    input[type='radio'] {
+        cursor: pointer;
+    }
+
+        button:disabled,
+        [type='button']:disabled,
+        [type='submit']:disabled,
+        [type='reset']:disabled,
+        .btn:disabled,
+        .btn-disabled {
+            cursor: not-allowed;
+        }
+}
+
