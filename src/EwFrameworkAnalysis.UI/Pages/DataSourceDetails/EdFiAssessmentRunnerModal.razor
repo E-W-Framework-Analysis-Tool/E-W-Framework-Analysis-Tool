@@ -5,6 +5,7 @@
 @using Microsoft.Extensions.Options
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Services
+@using static EwFrameworkAnalysis.UI.Components.BorderedInfoCard
 @inject AnalysisProjectService ProjectSvc
 @inject EdFiAssessmentOrchestrator Orchestrator
 @inject IOptions<DemoEdFiApiOptions> DemoApiOptions
@@ -94,7 +95,7 @@
                     <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                         @foreach (var assessor in _currentProgress.AssessorProgresses)
                         {
-                            <div class="border border-gray-200 rounded-lg p-3 @GetAssessorBorderClass(assessor.Status)">
+                            <BorderedInfoCard Color="@GetAssessorColor(assessor.Status)" AdditionalClasses="p-3">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
@@ -187,9 +188,8 @@
                                     </div>
                                     <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
                                 </div>
-                            </div>
+                            </BorderedInfoCard>
                         }
-
                     </div>
                 </div>
             }
@@ -436,6 +436,14 @@
         AvailabilityJudgment.NotAvailable => "badge-error",
         AvailabilityJudgment.InsufficientData => "badge-ghost",
         _ => "badge-ghost"
+    };
+
+    private CardColor GetAssessorColor(AssessorStatus status) => status switch
+    {
+        AssessorStatus.Running => CardColor.Yellow,
+        AssessorStatus.Completed => CardColor.Green,
+        AssessorStatus.Failed => CardColor.Red,
+        _ => CardColor.Gray
     };
 
     private string GetAssessorBorderClass(AssessorStatus status) => status switch

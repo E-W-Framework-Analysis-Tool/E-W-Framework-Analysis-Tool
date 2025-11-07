@@ -1,0 +1,69 @@
+@* BorderedInfoCard.razor - Reusable card with colored left border *@
+
+<div class="@GetContainerClasses() @AdditionalClasses">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// The content to display inside the card
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// The color theme for the card (determines background and border color)
+    /// </summary>
+    [Parameter]
+    public CardColor Color { get; set; } = CardColor.Blue;
+
+    /// <summary>
+    /// Additional CSS classes for customization (spacing, etc.)
+    /// </summary>
+    [Parameter]
+    public string AdditionalClasses { get; set; } = "";
+
+    private string GetContainerClasses()
+    {
+        var (background, border) = CardColorStyles.GetStyles(Color);
+        return $"p-2 {background} rounded border-l-4 {border}";
+    }
+
+    public enum CardColor
+    {
+        Blue,
+        Green,
+        Yellow,
+        Gray,
+        Tan,
+        Red
+    }
+
+    public static class CardColorStyles
+    {
+        private static readonly Dictionary<CardColor, (string Background, string Border)> StyleMap = new()
+        {
+            [CardColor.Blue] = ("bg-blue-50", "border-blue"),
+            [CardColor.Green] = ("bg-green-50", "border-green"),
+            [CardColor.Yellow] = ("bg-yellow-50", "border-yellow"),
+            [CardColor.Gray] = ("bg-gray-50", "border-gray"),
+            [CardColor.Tan] = ("bg-tan-50", "border-tan")
+        };
+
+        public static (string Background, string Border) GetStyles(CardColor color)
+        {
+            return StyleMap.TryGetValue(color, out var styles) ? styles : StyleMap[CardColor.Gray];
+        }
+
+        public static string GetDotColor(CardColor color) => color switch
+        {
+            CardColor.Blue => "bg-blue",
+            CardColor.Green => "bg-green",
+            CardColor.Yellow => "bg-yellow",
+            CardColor.Gray => "bg-gray",
+            CardColor.Tan => "bg-tan",
+            _ => "bg-gray"
+        };
+    }
+}
+
