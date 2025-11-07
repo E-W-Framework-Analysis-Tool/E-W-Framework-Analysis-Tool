@@ -68,6 +68,13 @@ else
                                          DataSource="@_dataSource"
                                          OnAssessmentComplete="@HandleAssessmentComplete" />
         }
+        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.Custom)
+        {
+            <ManualInventoryAssessmentModal IsOpen="@_showAssessmentRunner"
+                                            IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                            DataSource="@_dataSource"
+                                            OnAssessmentComplete="@HandleAssessmentComplete" />
+        }
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Sidebar -->

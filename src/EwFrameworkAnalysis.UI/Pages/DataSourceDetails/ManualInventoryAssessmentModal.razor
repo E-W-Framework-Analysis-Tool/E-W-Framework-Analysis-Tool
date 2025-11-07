@@ -1,0 +1,477 @@
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Services
+@inject AnalysisProjectService ProjectSvc
+
+@if (IsOpen)
+{
+    <div class="modal modal-open">
+        <div class="modal-box max-w-4xl max-h-5/6 pb-0">
+            <h3 class="font-bold text-lg mb-4">Manual Data Inventory Assessment</h3>
+
+            <div class="space-y-4">
+                <p class="text-sm text-gray-600">
+                    Review your data inventory and mark the availability of each data element.
+                    Categories can be checked to mark all child elements at once.
+                </p>
+
+                @if (_error != null)
+                {
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@_error</span>
+                    </div>
+                }
+
+                <!-- Search/Filter -->
+                <div class="form-control">
+                    <div class="input-group">
+                        <span class="bg-base-200"><i class="fas fa-search"></i></span>
+                        <input type="text"
+                               placeholder="Search data elements..."
+                               class="input input-bordered w-full"
+                               @bind="_searchQuery"
+                               @bind:event="oninput" />
+                        @if (!string.IsNullOrWhiteSpace(_searchQuery))
+                        {
+                            <button class="btn btn-ghost btn-square" @onclick="() => _searchQuery = string.Empty">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-success/10 border border-success rounded-lg p-3">
+                        <div class="text-xs text-gray-600 mb-1">Available</div>
+                        <div class="text-2xl font-bold text-success">@GetAvailabilityCount(AvailabilityJudgment.Available)</div>
+                    </div>
+                    <div class="bg-warning/10 border border-warning rounded-lg p-3">
+                        <div class="text-xs text-gray-600 mb-1">Partially Available</div>
+                        <div class="text-2xl font-bold text-warning">@GetAvailabilityCount(AvailabilityJudgment.PartiallyAvailable)</div>
+                    </div>
+                    <div class="bg-error/10 border border-error rounded-lg p-3">
+                        <div class="text-xs text-gray-600 mb-1">Not Available</div>
+                        <div class="text-2xl font-bold text-error">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</div>
+                    </div>
+                </div>
+
+                <!-- Data Element Categories -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow max-h-96 overflow-y-auto">
+                    @foreach (var category in GetFilteredCategories())
+                    {
+                        <div class="border-b border-gray-200 last:border-b-0">
+                            <!-- Category Header -->
+                            <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
+                                 @onclick="() => ToggleCategoryExpanded(category.Name)">
+                                <i class="fas @(IsCategoryExpanded(category.Name) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
+
+                                <div class="flex-1 flex items-center gap-2">
+                                    <i class="fas @category.Icon text-blue"></i>
+                                    <span class="font-semibold text-blue">@category.Name</span>
+                                    <span class="text-xs text-gray-500">(@category.Elements.Count elements)</span>
+                                </div>
+
+                                <!-- Category-level availability selector -->
+                                <div class="flex gap-1" @onclick:stopPropagation="true">
+                                    @foreach (var judgment in _availabilityOptions)
+                                    {
+                                        <button class="btn btn-xs @GetCategoryButtonClass(category, judgment)"
+                                                @onclick="() => SetCategoryAvailability(category, judgment)"
+                                                title="@judgment.ToString()">
+                                            @GetAvailabilityIcon(judgment)
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Category Elements (Collapsible) -->
+                            @if (IsCategoryExpanded(category.Name))
+                            {
+                                <div class="bg-base-50">
+                                    @foreach (var element in category.Elements)
+                                    {
+                                        <div class="flex items-center gap-2 p-3 pl-10 border-t border-gray-100 hover:bg-base-100">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sm text-gray-800">@element.Name</div>
+                                                @if (!string.IsNullOrWhiteSpace(element.Description))
+                                                {
+                                                    <div class="text-xs text-gray-500 mt-1">@element.Description</div>
+                                                }
+                                            </div>
+
+                                            <!-- Element availability selector -->
+                                            <div class="flex gap-1">
+                                                @foreach (var judgment in _availabilityOptions)
+                                                {
+                                                    <button class="btn btn-xs @GetElementButtonClass(element, judgment)"
+                                                            @onclick="() => SetElementAvailability(element, judgment)"
+                                                            title="@judgment.ToString()">
+                                                        @GetAvailabilityIcon(judgment)
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (!GetFilteredCategories().Any())
+                    {
+                        <div class="p-8 text-center text-gray-500">
+                            <i class="fas fa-search text-3xl mb-2"></i>
+                            <div>No data elements match your search</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2 border-t border-gray-200">
+                <button class="btn btn-ghost" @onclick="Close">Cancel</button>
+                <button class="btn btn-primary" @onclick="SaveAssessment">
+                    <i class="fas fa-save mr-2"></i>Save Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private string? _error;
+    private string _searchQuery = string.Empty;
+    private Dictionary<string, AvailabilityJudgment> _elementAvailability = new();
+    private HashSet<string> _expandedCategories = new();
+
+    private readonly List<AvailabilityJudgment> _availabilityOptions = new()
+    {
+        AvailabilityJudgment.Available,
+        AvailabilityJudgment.PartiallyAvailable,
+        AvailabilityJudgment.NotAvailable
+    };
+
+    private readonly List<DataElementCategory> _categories = new()
+    {
+        new DataElementCategory
+        {
+            Name = "Student Demographics",
+            Icon = "fa-users",
+            Elements = new()
+            {
+                new DataElement { Name = "Student Name", Description = "First, middle, and last name of students" },
+                new DataElement { Name = "Student Identification Number", Description = "Unique identifier for each student" },
+                new DataElement { Name = "Date of Birth", Description = "Student's date of birth" },
+                new DataElement { Name = "Gender", Description = "Student's gender identity" },
+                new DataElement { Name = "Race/Ethnicity", Description = "Student's race and ethnicity information" },
+                new DataElement { Name = "Primary Language", Description = "Primary language spoken by student" },
+                new DataElement { Name = "English Learner Status", Description = "Whether student is classified as English Learner" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Student Contact Information",
+            Icon = "fa-address-book",
+            Elements = new()
+            {
+                new DataElement { Name = "Home Address", Description = "Primary residential address" },
+                new DataElement { Name = "Phone Number", Description = "Primary contact phone number" },
+                new DataElement { Name = "Email Address", Description = "Student or guardian email address" },
+                new DataElement { Name = "Emergency Contact", Description = "Emergency contact information" },
+                new DataElement { Name = "Parent/Guardian Name", Description = "Name of parent or legal guardian" },
+                new DataElement { Name = "Parent/Guardian Phone", Description = "Parent or guardian contact number" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Enrollment",
+            Icon = "fa-school",
+            Elements = new()
+            {
+                new DataElement { Name = "School Enrollment Date", Description = "Date student enrolled in current school" },
+                new DataElement { Name = "Grade Level", Description = "Current grade level" },
+                new DataElement { Name = "Homeroom/Advisory", Description = "Assigned homeroom or advisory" },
+                new DataElement { Name = "Entry Type", Description = "Type of enrollment entry (new, transfer, etc.)" },
+                new DataElement { Name = "Exit Date", Description = "Date student exited school, if applicable" },
+                new DataElement { Name = "Exit Type", Description = "Reason for exit (transfer, graduation, dropout, etc.)" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Attendance",
+            Icon = "fa-calendar-check",
+            Elements = new()
+            {
+                new DataElement { Name = "Daily Attendance", Description = "Daily attendance records (present/absent)" },
+                new DataElement { Name = "Attendance Date", Description = "Date of attendance record" },
+                new DataElement { Name = "Absence Type", Description = "Type of absence (excused, unexcused, etc.)" },
+                new DataElement { Name = "Tardy Records", Description = "Records of student tardiness" },
+                new DataElement { Name = "Early Dismissal", Description = "Records of early dismissals" },
+                new DataElement { Name = "Attendance Percentage", Description = "Calculated attendance rate" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Course Enrollment",
+            Icon = "fa-book",
+            Elements = new()
+            {
+                new DataElement { Name = "Course Code", Description = "Unique identifier for each course" },
+                new DataElement { Name = "Course Name", Description = "Name/title of the course" },
+                new DataElement { Name = "Course Section", Description = "Specific section of the course" },
+                new DataElement { Name = "Teacher Name", Description = "Name of course instructor" },
+                new DataElement { Name = "Course Period", Description = "Period or time block for course" },
+                new DataElement { Name = "Course Credits", Description = "Credit value of the course" },
+                new DataElement { Name = "Start/End Date", Description = "Course start and end dates" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Grades and Assessment",
+            Icon = "fa-chart-line",
+            Elements = new()
+            {
+                new DataElement { Name = "Letter Grade", Description = "Letter grade earned in course" },
+                new DataElement { Name = "Numeric Grade", Description = "Numeric/percentage grade" },
+                new DataElement { Name = "Grade Points", Description = "Grade points for GPA calculation" },
+                new DataElement { Name = "Grading Period", Description = "Marking period or term" },
+                new DataElement { Name = "Standardized Test Scores", Description = "State or national assessment scores" },
+                new DataElement { Name = "Assessment Date", Description = "Date assessment was administered" },
+                new DataElement { Name = "Performance Level", Description = "Performance level or proficiency band" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Special Programs",
+            Icon = "fa-star",
+            Elements = new()
+            {
+                new DataElement { Name = "Special Education Status", Description = "Whether student receives special education services" },
+                new DataElement { Name = "IEP Status", Description = "Individualized Education Program status" },
+                new DataElement { Name = "504 Plan Status", Description = "Section 504 accommodation plan status" },
+                new DataElement { Name = "Gifted and Talented", Description = "Gifted program participation" },
+                new DataElement { Name = "Free/Reduced Lunch", Description = "Free or reduced price lunch eligibility" },
+                new DataElement { Name = "Title I Status", Description = "Title I program participation" },
+                new DataElement { Name = "Migrant Status", Description = "Migrant education program eligibility" }
+            }
+        },
+        new DataElementCategory
+        {
+            Name = "Discipline",
+            Icon = "fa-gavel",
+            Elements = new()
+            {
+                new DataElement { Name = "Incident Date", Description = "Date of disciplinary incident" },
+                new DataElement { Name = "Incident Type", Description = "Type/category of incident" },
+                new DataElement { Name = "Action Taken", Description = "Disciplinary action administered" },
+                new DataElement { Name = "Suspension Days", Description = "Number of days of suspension" },
+                new DataElement { Name = "Incident Location", Description = "Location where incident occurred" },
+                new DataElement { Name = "Weapon Involved", Description = "Whether weapons were involved" }
+            }
+        }
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            LoadPreviousAssessment();
+        }
+    }
+
+    private void LoadPreviousAssessment()
+    {
+        // Load the most recent assessment for this data source to pre-populate values
+        var previousAssessment = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id)
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault();
+
+        _elementAvailability.Clear();
+
+        if (previousAssessment != null)
+        {
+            foreach (var elementAssessment in previousAssessment.DataElementAssessments)
+            {
+                var availability = elementAssessment.Characteristics
+                    .OfType<ReportedAvailability>()
+                    .FirstOrDefault();
+
+                if (availability != null)
+                {
+                    _elementAvailability[elementAssessment.DataElementName] = availability.Value;
+                }
+            }
+        }
+    }
+
+    private List<DataElementCategory> GetFilteredCategories()
+    {
+        if (string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            return _categories;
+        }
+
+        var query = _searchQuery.ToLowerInvariant();
+        return _categories
+            .Select(c => new DataElementCategory
+            {
+                Name = c.Name,
+                Icon = c.Icon,
+                Elements = c.Elements
+                    .Where(e => e.Name.ToLowerInvariant().Contains(query) ||
+                               (e.Description?.ToLowerInvariant().Contains(query) ?? false))
+                    .ToList()
+            })
+            .Where(c => c.Elements.Any() || c.Name.ToLowerInvariant().Contains(query))
+            .ToList();
+    }
+
+    private void ToggleCategoryExpanded(string categoryName)
+    {
+        if (_expandedCategories.Contains(categoryName))
+        {
+            _expandedCategories.Remove(categoryName);
+        }
+        else
+        {
+            _expandedCategories.Add(categoryName);
+        }
+    }
+
+    private bool IsCategoryExpanded(string categoryName)
+    {
+        return _expandedCategories.Contains(categoryName);
+    }
+
+    private void SetCategoryAvailability(DataElementCategory category, AvailabilityJudgment judgment)
+    {
+        foreach (var element in category.Elements)
+        {
+            _elementAvailability[element.Name] = judgment;
+        }
+        StateHasChanged();
+    }
+
+    private void SetElementAvailability(DataElement element, AvailabilityJudgment judgment)
+    {
+        _elementAvailability[element.Name] = judgment;
+        StateHasChanged();
+    }
+
+    private string GetCategoryButtonClass(DataElementCategory category, AvailabilityJudgment judgment)
+    {
+        var allMatch = category.Elements.All(e =>
+            _elementAvailability.TryGetValue(e.Name, out var val) && val == judgment);
+
+        var baseClass = judgment switch
+        {
+            AvailabilityJudgment.Available => "btn-success",
+            AvailabilityJudgment.PartiallyAvailable => "btn-warning",
+            AvailabilityJudgment.NotAvailable => "btn-error",
+            _ => "btn-ghost"
+        };
+
+        return allMatch ? baseClass : "btn-ghost btn-outline";
+    }
+
+    private string GetElementButtonClass(DataElement element, AvailabilityJudgment judgment)
+    {
+        var isSelected = _elementAvailability.TryGetValue(element.Name, out var current) &&
+                        current == judgment;
+
+        return judgment switch
+        {
+            AvailabilityJudgment.Available => isSelected ? "btn-success" : "btn-ghost btn-outline",
+            AvailabilityJudgment.PartiallyAvailable => isSelected ? "btn-warning" : "btn-ghost btn-outline",
+            AvailabilityJudgment.NotAvailable => isSelected ? "btn-error" : "btn-ghost btn-outline",
+            _ => "btn-ghost"
+        };
+    }
+
+    private string GetAvailabilityIcon(AvailabilityJudgment judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => "✓",
+        AvailabilityJudgment.PartiallyAvailable => "◐",
+        AvailabilityJudgment.NotAvailable => "✗",
+        _ => "?"
+    };
+
+    private int GetAvailabilityCount(AvailabilityJudgment judgment)
+    {
+        return _elementAvailability.Values.Count(v => v == judgment);
+    }
+
+    private async Task SaveAssessment()
+    {
+        try
+        {
+            var assessment = new DataSourceAssessment
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Manual Inventory - {DateTimeOffset.Now:MMM d, yyyy h:mm tt}",
+                ConductedAt = DateTimeOffset.Now,
+                DataElementAssessments = new List<DataElementAssessment>()
+            };
+
+            // Create assessments for all elements that have been marked
+            foreach (var category in _categories)
+            {
+                foreach (var element in category.Elements)
+                {
+                    if (_elementAvailability.TryGetValue(element.Name, out var judgment))
+                    {
+                        assessment.DataElementAssessments.Add(new DataElementAssessment
+                        {
+                            DataElementName = element.Name,
+                            Characteristics = new List<DataCharacteristicBase>
+                            {
+                                new ReportedAvailability(judgment)
+                                {
+                                    Remarks = element.Description
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            await ProjectSvc.AddAssessmentAsync(assessment);
+            await OnAssessmentComplete.InvokeAsync(assessment);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to save assessment: {ex.Message}";
+        }
+    }
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+
+        // Reset state
+        _error = null;
+        _searchQuery = string.Empty;
+    }
+
+    private class DataElementCategory
+    {
+        public string Name { get; set; } = "";
+        public string Icon { get; set; } = "";
+        public List<DataElement> Elements { get; set; } = new();
+    }
+
+    private class DataElement
+    {
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+    }
+}
