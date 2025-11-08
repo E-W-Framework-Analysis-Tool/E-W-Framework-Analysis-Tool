@@ -4,7 +4,6 @@
 @using Microsoft.Extensions.Options
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Services
-@using static EwFrameworkAnalysis.UI.Components.BorderedInfoCard
 @using Microsoft.AspNetCore.Components.Forms
 @inject AnalysisProjectService ProjectSvc
 @inject CedsDWAssessmentOrchestrator Orchestrator
@@ -107,7 +106,9 @@
                         <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                             @foreach (var element in _assessmentResult.DataElementAssessments.OrderBy(e => e.DataElementName))
                             {
-                                <BorderedInfoCard Color="CardColor.Green" AdditionalClasses="p-3">
+                                <Card Background="Card.BackgroundColor.Green"
+                                      Border="new Card.BorderStyle(Card.BorderColor.Green, Card.BorderPosition.Left)"
+                                      Shadow="Card.ShadowSize.None">
                                     <div class="space-y-2">
                                         <div class="flex items-center gap-2">
                                             <i class="fas fa-check-circle text-success"></i>
@@ -152,7 +153,7 @@
                                             }
                                         </div>
                                     </div>
-                                </BorderedInfoCard>
+                                </Card>
                             }
                         </div>
                     </div>
