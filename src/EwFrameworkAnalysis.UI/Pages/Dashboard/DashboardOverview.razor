@@ -1,34 +1,33 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
-@inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Overall Score -->
     <StatCard Label="Overall Framework Score"
               Value="@($"{(OverallScore * 100):F0}%")"
-              Variant="Card.CardVariant.ShadowXl"
+              Shadow="Card.ShadowSize.XLarge"
               IconClass="fas fa-chart-line">
         <div class="bg-tan rounded-full h-2">
             <div class="bg-yellow h-2 rounded-full" style="width: @((OverallScore * 100).ToString("F0"))%"></div>
         </div>
     </StatCard>
-
+    
     <!-- Data Sources -->
     <StatCard Label="Data Sources"
               Value="@TotalDataSources.ToString()"
-              Variant="Card.CardVariant.ShadowXl"
+              Shadow="Card.ShadowSize.XLarge"
               IconClass="fas fa-database">
         <div class="text-sm text-gray space-y-1">
             <div>@EdFiSourceCount Ed-Fi, @CedsSourceCount CEDS, @ManualSourceCount Manual</div>
             <div class="text-xs">(@ActiveSourceCount active, @DisabledSourceCount disabled)</div>
         </div>
     </StatCard>
-
+    
     <!-- Last Analysis -->
     <StatCard Label="Last Analysis Run"
-              Value="@GetLastAnalysisTime()"
-              Variant="Card.CardVariant.ShadowXl"
+              Value="@LastAnalysisTime"
+              Shadow="Card.ShadowSize.XLarge"
               IconClass="fas fa-clock">
         <button @onclick="NavigateToAssessments" class="text-sm text-blue hover:text-yellow font-medium">
             View Details <i class="fas fa-arrow-right ml-1"></i>
@@ -37,36 +36,17 @@
 </div>
 
 @code {
-    [Parameter] public decimal OverallScore { get; set; } = 0.74m;
+    [Parameter] public decimal OverallScore { get; set; }
     [Parameter] public int TotalDataSources { get; set; }
     [Parameter] public int EdFiSourceCount { get; set; }
     [Parameter] public int CedsSourceCount { get; set; }
     [Parameter] public int ManualSourceCount { get; set; }
     [Parameter] public int ActiveSourceCount { get; set; }
     [Parameter] public int DisabledSourceCount { get; set; }
-
+    [Parameter] public string LastAnalysisTime { get; set; } = "Never";
+    
     private void NavigateToAssessments()
     {
         Nav.NavigateTo("/assessments");
-    }
-
-    private string GetLastAnalysisTime()
-    {
-        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
-            return "Never";
-
-        var latestAssessment = ProjectSvc.Assessments
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault();
-
-        if (latestAssessment == null) return "Never";
-
-        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
-
-        return timeSpan.TotalHours < 1
-            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-            : timeSpan.TotalDays < 1
-                ? $"{(int)timeSpan.TotalHours} hours ago"
-                : $"{(int)timeSpan.TotalDays} days ago";
     }
 }

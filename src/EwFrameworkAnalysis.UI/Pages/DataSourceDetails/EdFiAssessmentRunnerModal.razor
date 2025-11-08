@@ -60,16 +60,16 @@
             @if (_currentProgress != null)
             {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 ">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
                         <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
-                    </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                    </Card>
+                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Assessors Complete</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
-                    </div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                    </Card>
+                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Status</h3>
                         <div class="space-y-1 text-sm">
                             <div class="flex justify-between">
@@ -85,17 +85,19 @@
                                 <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 </div>
 
-                <div class="bg-white border border-gray-200 rounded-lg shadow mb-4">
+                <Card Shadow="Card.ShadowSize.Default" NoPadding AdditionalClasses="mb-4">
                     <div class="px-4 py-3 border-b border-gray-200">
                         <h3 class="font-semibold text-blue">Assessor Progress</h3>
                     </div>
                     <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                         @foreach (var assessor in _currentProgress.AssessorProgresses)
                         {
-                            <BorderedInfoCard Color="@GetAssessorColor(assessor.Status)" AdditionalClasses="p-3">
+                            <Card Background="@GetAssessorBackground(assessor.Status)"
+                                  Border="new Card.BorderStyle(GetAssessorBorderColor(assessor.Status), Card.BorderPosition.Left)"
+                                  Shadow="Card.ShadowSize.None">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
@@ -188,10 +190,10 @@
                                     </div>
                                     <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
                                 </div>
-                            </BorderedInfoCard>
+                            </Card>
                         }
                     </div>
-                </div>
+                </Card>
             }
 
 
@@ -438,19 +440,19 @@
         _ => "badge-ghost"
     };
 
-    private CardColor GetAssessorColor(AssessorStatus status) => status switch
+    private Card.BackgroundColor GetAssessorBackground(AssessorStatus status) => status switch
     {
-        AssessorStatus.Running => CardColor.Yellow,
-        AssessorStatus.Completed => CardColor.Green,
-        AssessorStatus.Failed => CardColor.Red,
-        _ => CardColor.Gray
+        AssessorStatus.Running => Card.BackgroundColor.Yellow,
+        AssessorStatus.Completed => Card.BackgroundColor.Green,
+        AssessorStatus.Failed => Card.BackgroundColor.Red,
+        _ => Card.BackgroundColor.Gray
     };
 
-    private string GetAssessorBorderClass(AssessorStatus status) => status switch
+    private Card.BorderColor GetAssessorBorderColor(AssessorStatus status) => status switch
     {
-        AssessorStatus.Running => "border-l-4 border-yellow-500",
-        AssessorStatus.Completed => "border-l-4 border-success",
-        AssessorStatus.Failed => "border-l-4 border-red-500",
-        _ => ""
+        AssessorStatus.Running => Card.BorderColor.Yellow,
+        AssessorStatus.Completed => Card.BorderColor.Green,
+        AssessorStatus.Failed => Card.BorderColor.Red,
+        _ => Card.BorderColor.Gray
     };
 }

@@ -1,4 +1,10 @@
-<Card Variant="Variant" AdditionalClasses="@AdditionalClasses" NoPadding="true">
+<Card Shadow="Shadow"
+      Overflow="Overflow"
+      Background="Background"
+      Border="Border"
+      Rounded="Rounded"
+      AdditionalClasses="@AdditionalClasses"
+      NoPadding>
     <ChildContent>
         <div class="p-5">
             <div class="flex items-center">
@@ -29,6 +35,12 @@
     [Parameter, EditorRequired] public string Value { get; set; } = "";
     [Parameter, EditorRequired] public string IconClass { get; set; } = "";
     [Parameter] public RenderFragment? ChildContent { get; set; }
-    [Parameter] public Card.CardVariant Variant { get; set; } = Card.CardVariant.Overflow;
     [Parameter] public string AdditionalClasses { get; set; } = "";
+
+    // Granular visual parameters
+    [Parameter] public Card.ShadowSize Shadow { get; set; } = Card.ShadowSize.XLarge;
+    [Parameter] public bool Overflow { get; set; } = true;
+    [Parameter] public Card.BackgroundColor Background { get; set; } = Card.BackgroundColor.White;
+    [Parameter] public Card.BorderStyle? Border { get; set; } = null;
+    [Parameter] public bool Rounded { get; set; } = true;
 }

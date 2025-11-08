@@ -1,7 +1,7 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
 
-<Card Variant="Card.CardVariant.Overflow" AdditionalClasses="mb-6" NoPadding="true">
+<Card Overflow Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-start justify-between gap-4">
@@ -18,7 +18,7 @@
                                    Placeholder="Enter description (optional)"
                                    EmptyStateText="Add description"
                                    Variant="EditableField.FieldVariant.Text"
-                                   Multiline="true"
+                                   Multiline
                                    Rows="3"
                                    OnSave="@HandleDescriptionSave" />
 
@@ -51,7 +51,7 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center space-x-3 flex-shrink-0">
-                    @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw)
+                    @if (DataSource.Type == DataSourceType.EdFiApi)
                     {
                         <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
                             <i class="fas fa-play"></i>
