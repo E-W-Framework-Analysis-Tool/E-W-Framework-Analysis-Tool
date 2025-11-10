@@ -1,0 +1,82 @@
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Overflow Title="Overall Readiness Assessment" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
+    <ChildContent>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+
+                @* Readiness Comparison *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness Comparison</h2>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Current Readiness</div>
+                            <div class="font-semibold">65%</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-primary bg-gray-200 h-3" value="65" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">With Public Data</div>
+                            <div class="font-semibold">85%</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-accent bg-gray-200 h-3" value="85" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Complete Readiness</div>
+                            <div class="font-semibold">100%</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-secondary bg-gray-200 h-3" value="100" max="100"></progress>
+                        </div>
+                    </div>
+                </div>
+
+                @* Sector Breakdown *@
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between">
+                        <h2 class="flex font-semibold">Sector Breakdown</h2>
+                        <i class="fa-solid fa-question-circle"></i>
+                    </div>
+
+                    <div class="flex w-full space-x-2">
+                        <div class="flex-1 text-gray-500">Early Learning</div>
+                        <div class="w-32">
+                            <progress class="progress progress-accent bg-gray-200 h-2" value="90" max="100"></progress>
+                        </div>
+                        <div class="w-10 text-right">90%</div>
+                    </div>
+
+                    <div class="flex w-full space-x-2">
+                        <div class="flex-1 text-gray-500">Elementary Reading</div>
+                        <div class="w-32">
+                            <progress class="progress progress-accent bg-gray-200 h-2" value="85" max="100"></progress>
+                        </div>
+                        <div class="w-10 text-right">85%</div>
+                    </div>
+
+                    <div class="flex w-full space-x-2">
+                        <div class="flex-1 text-gray-500">Elementary Reading</div>
+                        <div class="w-32">
+                            <progress class="progress progress-primary bg-gray-200 h-2" value="78" max="100"></progress>
+                        </div>
+                        <div class="w-10 text-right">78%</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+
+}

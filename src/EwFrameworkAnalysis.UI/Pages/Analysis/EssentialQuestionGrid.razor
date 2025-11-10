@@ -1,0 +1,196 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Essential Questions" Shadow="Card.ShadowSize.XLarge">
+    <ChildContent>
+        <div class="flex gap-4 pb-4">
+            @* Search *@
+            <label class="input flex-1">
+                <i class="fa-solid fa-magnifying-glass opacity-50"></i>
+                <input type="search" placeholder="Search" @bind="searchQuery" @bind:event="oninput" />
+            </label>
+
+            <select class="select w-52" @bind="selectedSector">
+                <option value="">All Sectors</option>
+                @foreach (var sector in Enum.GetValues<Sector>())
+                {
+                    <option value="@sector">@sector.GetDisplayName()</option>
+                }
+            </select>
+        </div>
+
+        <div class="join join-vertical border-1 border-gray-300 rounded-lg">
+
+            <div class="join-item border-b border-gray-300">
+                <div class="collapse-title font-semibold">
+                    <div class="grid grid-cols-24 font-semibold text-lg">
+                        <div class="flex col-span-1 justify-start items-center">#</div>
+                        <div class="flex col-span-17 justify-start items-center">Question</div>
+                        <div class="flex col-span-4 justify-center items-center text-center"> Indicators Aligned </div>
+                        <div class="flex col-span-2 justify-center items-center  text-center"> Score </div>
+                    </div>
+                </div>
+            </div>
+
+            @foreach (var q in PagedQuestions)
+            {
+                var qs = GetQuestionScoreByNumber(q.QuestionNumber) ?? new QuestionScore();
+
+                <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                    <input type="checkbox" name="question-check-@q.QuestionNumber" />
+                    <div class="collapse-title font-semibold">
+                        <div class="grid grid-cols-24">
+                            <div class="flex col-span-1 justify-start items-center">@q.QuestionNumber</div>
+                            <div class="flex col-span-17 justify-start items-center">@q.Question</div>
+                            <div class="flex col-span-4 justify-center items-center flex-wrap  gap-0.5 mx-4">
+                                @foreach (var indicatorScore in qs.IndicatorScores.OrderByDescending(x => x.ReadinessScore))
+                                {
+                                    <div class="flex w-2 h-2 rounded-full @GetIndicatorColor(indicatorScore.ReadinessScore)"></div>
+                                }
+                            </div>
+                            <div class="flex col-span-2 justify-center items-center text-center"> @qs.ReadinessScore.ToString("0.##%")</div>
+                        </div>
+                    </div>
+                    <div class="collapse-content  text-sm">
+                        <div class="grid grid-cols-24">
+                            <div class="flex col-span-1 justify-start items-center"></div>
+                            <div class="flex flex-col col-span-21 justify-start items-center space-y-2">
+                                <h3 class="flex w-full font-semibold text-lg">Indicators:</h3>
+                                <div class="grid grid-cols-12 w-full gap-4 items-stretch">
+                                    @foreach (var indicatorScore in @qs.IndicatorScores.OrderByDescending(x => x.ReadinessScore))
+                                    {
+                                        <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                                            <div class="card border border-gray-300 rounded-md w-full h-full p-4 gap-4 hover:translate-0.5 hover:shadow transition duration-200">
+                                                <p class="font-semibold">@(indicatorScore.IndicatorCode) (@indicatorScore.ReadinessScore.ToString("0.##%"))</p>
+                                                <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"></progress>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex col-span-2 justify-center items-center"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <div class="flex justify-center mt-6">
+                <div class="join">
+                    <button class="join-item btn shadow-none @(CurrentPage == 1 ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
+                            @onclick="PreviousPage">
+                        «
+                    </button>
+
+                    @for (int page = 1; page <= TotalPages; page++)
+                    {
+                        <!-- capture local copy -->
+                        var p = page;
+                        <button class="join-item btn shadow-none @(CurrentPage == p ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
+                                @onclick="@(() => GoToPage(p))">
+                            @(p)
+                        </button>
+                    }
+
+                    <button class="join-item btn shadow-none @(CurrentPage == TotalPages ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
+                            @onclick="NextPage">
+                        »
+                    </button>
+                </div>
+            </div>
+        }
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter]
+    public List<QuestionScore> QuestionScores { get; set; } = new List<QuestionScore>();
+
+    private List<EssentialQuestion> allQuestions = [];
+    private string searchQuery = string.Empty;
+    private string? selectedSector = string.Empty;
+
+    private int pageSize = 5;
+    private int CurrentPage = 1;
+
+    protected override void OnInitialized()
+    {
+        allQuestions = EwFrameworkEssentialQuestions.Questions;
+    }
+
+    private QuestionScore? GetQuestionScoreByNumber(int questionNumber)
+    {
+        return QuestionScores.FirstOrDefault(x => x.QuestionNumber == questionNumber);
+    }
+
+    private string GetIndicatorColor(decimal score)
+    {
+        // Green (high score) gradient to Red (low score)
+        if (score > 0.66m)
+            return "bg-success/80";
+        else if (score > 0.33m)
+            return "bg-warning/80";
+        else if (score > 0m)
+            return "bg-error/80";
+
+        return "bg-gray-200";
+    }
+
+    private string GetProgressBarColor(decimal score)
+    {
+        // Green (high score) gradient to Red (low score)
+        if (score > 0.66m)
+            return "progress-success";
+        else if (score > 0.33m)
+            return "progress-warning";
+        else if (score > 0m)
+            return "progress-error";
+
+        return "bg-gray-200";
+    }
+
+    private int TotalPages => (int)Math.Ceiling((double)FilteredQuestions.Count() / pageSize);
+
+    private IEnumerable<EssentialQuestion> FilteredQuestions =>
+        allQuestions
+            .Where(q =>
+                (string.IsNullOrWhiteSpace(searchQuery) ||
+                 q.Question.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                 q.RelatedIndicatorNames.Any(name => name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+            )
+            .Where(q =>
+                string.IsNullOrWhiteSpace(selectedSector) ||
+                q.ApplicableSectors.Contains(Enum.Parse<Sector>(selectedSector))
+            );
+
+    private IEnumerable<EssentialQuestion> PagedQuestions =>
+        FilteredQuestions
+            .Skip((CurrentPage - 1) * pageSize)
+            .Take(pageSize);
+
+    private void ClearSearch()
+    {
+        searchQuery = string.Empty;
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages)
+            CurrentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 1)
+            CurrentPage--;
+    }
+
+    private void GoToPage(int page)
+    {
+        CurrentPage = page;
+    }
+}
