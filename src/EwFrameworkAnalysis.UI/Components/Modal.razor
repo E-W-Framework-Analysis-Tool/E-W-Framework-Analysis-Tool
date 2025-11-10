@@ -1,0 +1,56 @@
+@if (IsOpen)
+{
+    <div class="modal modal-open">
+        <div class="modal-box max-h-5/6 min-w-1/2 pb-0">
+            <!-- Header -->
+            <div class="sticky top-0 px-4 py-3 flex justify-between items-center">
+                @if (Header != null)
+                {                    
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-title font-semibold text-blue">@Header</h3>
+                    </div>
+                }
+
+                @if (ShowCloseButton)
+                {
+                    <button class="btn btn-sm btn-circle btn-ghost text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:border-gray-300 -mt-3 -mr-5 " @onclick="Close">
+                        ✕
+                    </button>
+                }
+            </div>
+
+            <!-- Body -->
+            <div class="overflow-y-auto px-4 py-3 flex-1 max-h-[60vh]">
+                @Body
+            </div>
+
+            @if (Footer != null)
+            {
+                <!-- Footer -->
+                <div class="sticky bottom-0 px-4 py-3 flex justify-end">
+                    @Footer
+                </div>
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment? Body { get; set; }
+    [Parameter] public RenderFragment? Footer { get; set; }
+
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public EventCallback CloseRequested { get; set; }
+
+    private async Task Close()
+    {
+        await CloseRequested.InvokeAsync();
+        await IsOpenChanged.InvokeAsync(false);
+    }
+}
