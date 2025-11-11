@@ -42,7 +42,6 @@ public class StudentBirthCityEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalStudents),
                 completeness

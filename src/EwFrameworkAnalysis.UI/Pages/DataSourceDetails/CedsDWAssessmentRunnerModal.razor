@@ -6,7 +6,6 @@
 @using EwFrameworkAnalysis.Common.Services
 @using static EwFrameworkAnalysis.UI.Components.BorderedInfoCard
 @using Microsoft.AspNetCore.Components.Forms
-@inject AnalysisProjectService ProjectSvc
 @inject CedsDWAssessmentOrchestrator Orchestrator
 @inject IOptions<DemoCedsOptions> DemoOptions
 @inject IJSRuntime JSRuntime
@@ -299,7 +298,6 @@
             var parser = new DataSourceAssessmentFileParser();
             _assessmentResult = await parser.ParseAssessmentStreamAsync(
                 stream,
-                DataSource.Id,
                 hasHeaderRow: true
             );
 
@@ -322,7 +320,6 @@
     {
         if (_assessmentResult == null) return;
 
-        await ProjectSvc.AddAssessmentAsync(_assessmentResult);
         await OnAssessmentComplete.InvokeAsync(_assessmentResult);
         await Close();
     }

@@ -176,8 +176,10 @@ else
         _showAssessmentRunner = true;
     }
 
-    private void HandleAssessmentComplete(DataSourceAssessment assessment)
+    private async Task HandleAssessmentComplete(DataSourceAssessment assessment)
     {
+        await ProjectSvc.AddAssessmentAsync(assessment, _dataSource!.Id);
+
         _selectedAssessment = assessment;
         LoadDataSource();
         ShowNotification("Assessment completed and saved");

@@ -62,7 +62,6 @@ public class Grade3MathStateAssessmentsEdFiAssessor : IEdFiAssessor
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
-                DataSourceId = dataSource.Id,
                 Characteristics = [new RecordCount(0)]
             };
         }
@@ -120,7 +119,6 @@ public class Grade3MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalCount),
                 new Distribution(categoryDistribution, "Assessment Category")
@@ -194,7 +192,6 @@ public class Grade3ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
-                DataSourceId = dataSource.Id,
                 Characteristics = [new RecordCount(0)]
             };
         }
@@ -252,7 +249,6 @@ public class Grade3ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalCount),
                 new Distribution(categoryDistribution, "Assessment Category")
@@ -320,7 +316,6 @@ public class Grade8MathStateAssessmentsEdFiAssessor : IEdFiAssessor
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
-                DataSourceId = dataSource.Id,
                 Characteristics = [new RecordCount(0)]
             };
         }
@@ -378,7 +373,6 @@ public class Grade8MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalCount),
                 new Distribution(categoryDistribution, "Assessment Category")
@@ -452,7 +446,6 @@ public class Grade8ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
-                DataSourceId = dataSource.Id,
                 Characteristics = [new RecordCount(0)]
             };
         }
@@ -510,7 +503,6 @@ public class Grade8ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalCount),
                 new Distribution(categoryDistribution, "Assessment Category")

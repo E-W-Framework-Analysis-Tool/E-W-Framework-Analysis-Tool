@@ -1,4 +1,3 @@
-// Services/AnalysisProjectService.cs
 using System.Text.Json;
 using EwFrameworkAnalysis.Common.Models.Project;
 using Microsoft.JSInterop;
@@ -161,8 +160,7 @@ public class AnalysisProjectService
 
     public IEnumerable<DataSourceAssessment> GetAssessmentsForDataSource(Guid dataSourceId)
     {
-        return Assessments.Where(a =>
-            a.DataElementAssessments.Any(dea => dea.DataSourceId == dataSourceId));
+        return Assessments.Where(a => a.DataSourceId == dataSourceId);
     }
 
     public IEnumerable<DataElementAssessment> GetDataElementAssessments(Guid assessmentId)
@@ -171,12 +169,15 @@ public class AnalysisProjectService
         return assessment?.DataElementAssessments ?? Enumerable.Empty<DataElementAssessment>();
     }
 
-    public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment)
+    public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment, Guid dataSourceId)
     {
         if (string.IsNullOrWhiteSpace(assessment.Name))
         {
             assessment.Name = $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
         }
+
+        // Link assessment to data source
+        assessment.DataSourceId = dataSourceId;
 
         Project.DataSourceAssessments.Insert(0, assessment);
         Project.LastModifiedAt = DateTimeOffset.Now;

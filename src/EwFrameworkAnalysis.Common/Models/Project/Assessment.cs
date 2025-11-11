@@ -6,11 +6,9 @@ namespace EwFrameworkAnalysis.Common.Models.Project;
 public class DataSourceAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string? Name { get; set; }
-    public DateTimeOffset ConductedAt { get; set; } = DateTimeOffset.Now;
-    public string? Notes { get; set; }
-
-    // All assessments from this session
+    public Guid DataSourceId { get; set; }
+    public string Name { get; set; } = "";
+    public DateTimeOffset ConductedAt { get; set; }
     public List<DataElementAssessment> DataElementAssessments { get; set; } = [];
 }
 
@@ -22,7 +20,6 @@ public class DataElementAssessment
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid AssessmentSessionId { get; set; }
     public string DataElementName { get; set; } = string.Empty;
-    public Guid DataSourceId { get; set; }
     public DateTimeOffset AssessedAt { get; set; } = DateTimeOffset.Now;
 
     // Assessment results

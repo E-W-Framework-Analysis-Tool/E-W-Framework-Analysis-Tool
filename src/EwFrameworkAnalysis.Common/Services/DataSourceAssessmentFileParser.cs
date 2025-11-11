@@ -20,7 +20,6 @@ public class DataSourceAssessmentFileParser
     /// <returns>A DataSourceAssessment with all parsed results</returns>
     public async Task<DataSourceAssessment> ParseAssessmentStreamAsync(
         Stream stream,
-        Guid dataSourceId,
         bool hasHeaderRow = true,
         DataSourceAssessment? assessmentSession = null)
     {
@@ -76,7 +75,6 @@ public class DataSourceAssessmentFileParser
             {
                 AssessmentSessionId = assessment.Id,
                 DataElementName = dataElementName,
-                DataSourceId = dataSourceId,
                 AssessedAt = DateTimeOffset.Now,
                 Characteristics = characteristics,
                 Remarks = ExtractRemarks(elementGroup)
@@ -93,11 +91,10 @@ public class DataSourceAssessmentFileParser
     /// </summary>
     public DataSourceAssessment ParseAssessmentStream(
         Stream stream,
-        Guid dataSourceId,
         bool hasHeaderRow = true,
         DataSourceAssessment? assessmentSession = null)
     {
-        return ParseAssessmentStreamAsync(stream, dataSourceId, hasHeaderRow, assessmentSession)
+        return ParseAssessmentStreamAsync(stream, hasHeaderRow, assessmentSession)
             .GetAwaiter()
             .GetResult();
     }
@@ -112,7 +109,6 @@ public class DataSourceAssessmentFileParser
     /// <returns>A DataSourceAssessment with all parsed results</returns>
     public DataSourceAssessment ParseAssessmentFile(
         string csvFilePath,
-        Guid dataSourceId,
         bool hasHeaderRow = true,
         DataSourceAssessment? assessmentSession = null)
     {
@@ -123,7 +119,7 @@ public class DataSourceAssessmentFileParser
 
         using var stream = File.OpenRead(csvFilePath);
 
-        var assessment = ParseAssessmentStream(stream, dataSourceId, hasHeaderRow, assessmentSession);
+        var assessment = ParseAssessmentStream(stream, hasHeaderRow, assessmentSession);
 
         // Update name if creating new assessment
         if (assessmentSession == null)

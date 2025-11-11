@@ -2113,6 +2113,9 @@
       outline-offset: 2px;
     }
   }
+  .cursor-help {
+    cursor: help;
+  }
   .cursor-pointer {
     cursor: pointer;
   }
@@ -2715,6 +2718,9 @@
   }
   .text-gray {
     color: var(--color-gray);
+  }
+  .text-gray-400 {
+    color: var(--color-gray-400);
   }
   .text-gray-500 {
     color: var(--color-gray-500);

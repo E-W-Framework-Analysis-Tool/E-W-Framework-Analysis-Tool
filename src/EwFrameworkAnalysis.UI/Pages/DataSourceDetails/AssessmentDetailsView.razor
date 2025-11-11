@@ -49,13 +49,6 @@
                     <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
                 </div>
             </div>
-            @if (!string.IsNullOrWhiteSpace(Assessment.Notes))
-            {
-                <div class="mb-6 p-4 bg-tan bg-opacity-50 rounded-lg">
-                    <div class="text-xs text-gray uppercase tracking-wide mb-1">Notes</div>
-                    <div class="text-sm text-blue">@Assessment.Notes</div>
-                </div>
-            }
             @if (Assessment.DataElementAssessments?.Any() == true)
             {
                 <div class="border-t border-tan pt-4">

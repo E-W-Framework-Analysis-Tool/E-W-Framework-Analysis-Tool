@@ -44,7 +44,6 @@ public class SuspensionsExpulsionsK12EdFiAssessor : IEdFiAssessor
         return new DataElementAssessment()
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(count)
             ]

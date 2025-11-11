@@ -38,7 +38,6 @@ public class PreKEnrollmentsEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [new RecordCount(count)],
             Remarks = AssessmentDescription
         };
