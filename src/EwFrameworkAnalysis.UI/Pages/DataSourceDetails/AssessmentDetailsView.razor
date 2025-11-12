@@ -1,6 +1,7 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
+
 <Card Variant="Card.CardVariant.ShadowXl">
     <ChildContent>
         <div class="flex items-center justify-between mb-4">
@@ -49,59 +50,70 @@
                     <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
                 </div>
             </div>
+
             @if (Assessment.DataElementAssessments?.Any() == true)
             {
                 <div class="border-t border-tan pt-4">
-                    <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
-
-                    <!-- Search and Filters -->
-                    <div class="mb-4 space-y-3">
-                        <!-- Search Box -->
-                        <div class="relative">
-                            <input type="text"
-                                   placeholder="Search data elements..."
-                                   class="input input-bordered w-full pl-10"
-                                   @bind="_searchQuery"
-                                   @bind:event="oninput" />
-                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray opacity-50"></i>
-                        </div>
-
-                        <!-- Results Count and Expand/Collapse -->
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray">
-                                @if (FilteredElements.Count() != Assessment.DataElementAssessments.Count)
-                                {
-                                    <text>Showing @FilteredElements.Count() of @Assessment.DataElementAssessments.Count elements</text>
-                                }
-                                else
-                                {
-                                    <text>@Assessment.DataElementAssessments.Count elements</text>
-                                }
-                            </span>
-                            <button class="btn btn-ghost btn-xs gap-1" @onclick="ToggleAllElements">
-                                <i class="fas @(_allExpanded ? "fa-compress-alt" : "fa-expand-alt")"></i>
-                                @(_allExpanded ? "Collapse All" : "Expand All")
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Data Elements List -->
-                    @if (FilteredElements.Any())
+                    @if (DataSource?.Type == DataSourceType.Custom)
                     {
-                        <div class="space-y-4">
-                            @foreach (var element in FilteredElements)
-                            {
-                                <DataElementCard Element="@element" IsExpanded="_allExpanded" @key="element" />
-                            }
-                        </div>
+                        <!-- Custom Data Source: Use DataElementList Component -->
+                        <h4 class="text-sm font-semibold text-blue mb-3">Data Inventory</h4>
+                        <DataElementList ElementAvailability="_elementAvailability"
+                                         IsEditable="false"
+                                         HideUnreported="true"
+                                         ContainerClass="max-h-[600px] overflow-y-auto" />
                     }
                     else
                     {
-                        <div class="text-center py-8 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
-                            <i class="fas fa-filter text-blue text-2xl mb-2 opacity-50"></i>
-                            <p class="text-sm">No elements match your search or filters</p>
-                            <button class="btn btn-ghost btn-xs mt-2" @onclick="ResetFilters">Clear filters</button>
+                        <!-- Other Data Sources: Use existing DataElementCard display -->
+                        <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
+
+                        <!-- Search and Filters -->
+                        <div class="mb-4 space-y-3">
+                            <!-- Search Box -->
+                            <div class="relative">
+                                <input type="text"
+                                       placeholder="Search data elements..."
+                                       class="input input-bordered w-full pl-10"
+                                       @bind="_searchQuery"
+                                       @bind:event="oninput" />
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray opacity-50"></i>
+                            </div>
+
+                            <!-- Results Count and Expand/Collapse -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray">
+                                    @if (FilteredElements.Count() != Assessment.DataElementAssessments.Count)
+                                    {
+                                        <text>Showing @FilteredElements.Count() of @Assessment.DataElementAssessments.Count elements</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@Assessment.DataElementAssessments.Count elements</text>
+                                    }
+                                </span>
+                                <ExpandCollapseAllToggle IsExpanded="@_allExpanded" IsExpandedChanged="OnAllExpandedChanged" />
+                            </div>
                         </div>
+
+                        <!-- Data Elements List -->
+                        @if (FilteredElements.Any())
+                        {
+                            <div class="space-y-4">
+                                @foreach (var element in FilteredElements)
+                                {
+                                    <DataElementCard Element="@element" IsExpanded="_allExpanded" @key="element" />
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-8 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
+                                <i class="fas fa-filter text-blue text-2xl mb-2 opacity-50"></i>
+                                <p class="text-sm">No elements match your search or filters</p>
+                                <button class="btn btn-ghost btn-xs mt-2" @onclick="ResetFilters">Clear filters</button>
+                            </div>
+                        }
                     }
                 </div>
             }
@@ -132,7 +144,7 @@
              aria-hidden="true">
         </div>
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
-                            transition-all duration-200 ease-out">
+                                transition-all duration-200 ease-out">
             <!-- Header -->
             <div class="px-6 pt-6 pb-2">
                 <div class="flex items-start gap-4">
@@ -159,14 +171,14 @@
                     <button @onclick="CancelDelete"
                             type="button"
                             class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                           bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                           hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                                               bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                               hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
                         Cancel
                     </button>
                     <button @onclick="ConfirmDelete"
                             class="inline-flex items-center justify-center rounded-md
-                                           bg-red-500 px-4 py-2 text-sm font-medium text-white
-                                           hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                               bg-red-500 px-4 py-2 text-sm font-medium text-white
+                                               hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <i class="fas fa-trash mr-2"></i>
                         Delete Assessment
                     </button>
@@ -178,6 +190,7 @@
 
 @code {
     [Parameter] public DataSourceAssessment? Assessment { get; set; }
+    [Parameter] public DataSource? DataSource { get; set; }
     [Parameter] public int Version { get; set; }
     [Parameter] public EventCallback<string> OnRename { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
@@ -185,6 +198,32 @@
     private bool _allExpanded = false;
     private string _searchQuery = string.Empty;
     private bool _showDeleteModal = false;
+    private Dictionary<string, AvailabilityJudgment> _elementAvailability = new();
+
+    protected override void OnParametersSet()
+    {
+        LoadElementAvailability();
+    }
+
+    private void LoadElementAvailability()
+    {
+        _elementAvailability.Clear();
+
+        if (Assessment?.DataElementAssessments != null)
+        {
+            foreach (var elementAssessment in Assessment.DataElementAssessments)
+            {
+                var availability = elementAssessment.Characteristics
+                    .OfType<ReportedAvailability>()
+                    .FirstOrDefault();
+
+                if (availability != null)
+                {
+                    _elementAvailability[elementAssessment.DataElementName] = availability.Value;
+                }
+            }
+        }
+    }
 
     private IEnumerable<DataElementAssessment> FilteredElements
     {
@@ -205,9 +244,9 @@
         }
     }
 
-    private void ToggleAllElements()
+    private void OnAllExpandedChanged(bool expanded)
     {
-        _allExpanded = !_allExpanded;
+        _allExpanded = expanded;
     }
 
     private void ResetFilters()

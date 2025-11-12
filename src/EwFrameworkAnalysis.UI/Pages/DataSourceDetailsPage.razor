@@ -91,6 +91,7 @@ else
             <!-- Right: Assessment Details -->
             <div class="lg:col-span-2">
                 <AssessmentDetailsView Assessment="@_selectedAssessment"
+                                       DataSource="@_dataSource"
                                        Version="@GetAssessmentVersion(_selectedAssessment)"
                                        OnRename="@HandleRenameAssessment"
                                        OnDelete="@HandleDeleteAssessment" />

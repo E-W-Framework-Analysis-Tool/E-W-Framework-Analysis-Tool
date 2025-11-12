@@ -9,7 +9,7 @@
 {
     <div class="modal modal-open">
         <div class="modal-box max-w-6xl h-[80vh] p-0 flex flex-col">
-            <!-- Sticky Header Section -->
+            <!-- HEADER -->
             <div class="flex-shrink-0 p-6 pb-4 bg-base-100 border-b border-gray-200">
                 <h3 class="font-bold text-lg mb-4">Manual Data Inventory Assessment</h3>
 
@@ -42,155 +42,21 @@
                             <span>@_error</span>
                         </div>
                     }
-
-                    <!-- Search Row -->
-                    <label class="input input-bordered flex items-center gap-2 w-full">
-                        <i class="fas fa-search opacity-50"></i>
-                        <input type="search"
-                               placeholder="Search data elements..."
-                               class="grow"
-                               @bind="_searchQuery"
-                               @bind:event="oninput" />
-                    </label>
-
-                    <!-- Filters Row -->
-                    <div class="flex gap-6 items-start">
-                        <!-- Sector Filter -->
-                        <div class="flex-1">
-                            <div class="text-xs font-semibold text-gray-600 mb-2">Filter by Sector</div>
-                            <form class="flex flex-wrap gap-2">
-                                @foreach (var sector in Enum.GetValues<Sector>())
-                                {
-                                    <input class="btn btn-sm @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
-                                           type="checkbox"
-                                           checked="@_selectedSectors.Contains(sector)"
-                                           @onchange="() => ToggleSector(sector)"
-                                           aria-label="@sector.ToString()" />
-                                }
-                                @if (_selectedSectors.Any())
-                                {
-                                    <button class="btn btn-sm btn-square btn-ghost" type="button" @onclick="ClearSectorFilter">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                }
-                            </form>
-                        </div>
-
-                        <!-- Availability Filter -->
-                        <div class="flex-1">
-                            <div class="text-xs font-semibold text-gray-600 mb-2">Filter by Status</div>
-                            <form class="flex flex-wrap gap-2">
-                                <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.Available) ? "btn-success" : "")"
-                                       type="checkbox"
-                                       checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.Available)"
-                                       @onchange="() => ToggleAvailability(AvailabilityJudgment.Available)"
-                                       aria-label="Available" />
-                                <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.PartiallyAvailable) ? "btn-warning" : "")"
-                                       type="checkbox"
-                                       checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.PartiallyAvailable)"
-                                       @onchange="() => ToggleAvailability(AvailabilityJudgment.PartiallyAvailable)"
-                                       aria-label="Partially Available" />
-                                <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.NotAvailable) ? "btn-error" : "")"
-                                       type="checkbox"
-                                       checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.NotAvailable)"
-                                       @onchange="() => ToggleAvailability(AvailabilityJudgment.NotAvailable)"
-                                       aria-label="Not Available" />
-                                <input class="btn btn-sm @(_showUnreported ? "btn-neutral" : "")"
-                                       type="checkbox"
-                                       checked="@_showUnreported"
-                                       @onchange="() => _showUnreported = !_showUnreported"
-                                       aria-label="Not Yet Reported" />
-                                @if (HasAvailabilityFilters())
-                                {
-                                    <button class="btn btn-sm btn-square btn-ghost" type="button" @onclick="ClearAvailabilityFilter">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                }
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-scroll overflow-x-hidden min-h-0">
-                <div class="bg-white border-x border-gray-200">
-                    @foreach (var category in GetFilteredCategories())
-                    {
-                        <div class="border-b border-gray-200 last:border-b-0">
-                            <!-- Category Header -->
-                            <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
-                                 @onclick="() => ToggleCategoryExpanded(category.Name)">
-                                <i class="fas @(IsCategoryExpanded(category.Name) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
-
-                                <div class="flex-1 flex items-center gap-2">
-                                    <i class="fas @category.Icon text-blue"></i>
-                                    <span class="font-semibold text-blue">@category.Name</span>
-                                    <span class="text-xs text-gray-500">
-                                        (@GetCategoryReportedCount(category) of @category.Elements.Count elements reported)
-                                    </span>
-                                </div>
-
-                                <!-- Category-level availability selector -->
-                                <div class="flex gap-1" @onclick:stopPropagation="true">
-                                    @foreach (var judgment in _availabilityOptions)
-                                    {
-                                        <button class="btn btn-xs @GetCategoryButtonClass(category, judgment)"
-                                                @onclick="() => SetCategoryAvailability(category, judgment)"
-                                                title="@judgment.ToString()">
-                                            @GetAvailabilityIcon(judgment)
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-
-                            <!-- Category Elements (Collapsible) -->
-                            @if (IsCategoryExpanded(category.Name))
-                            {
-                                <div class="bg-gray-100">
-                                    @foreach (var element in category.Elements)
-                                    {
-                                        <div class="flex items-center gap-2 p-3 pl-10 border-t border-gray-200 hover:bg-gray-200">
-                                            <div class="flex-1">
-                                                <div class="font-medium text-sm text-gray-800 @(element.AdditionalNotes != null ? "cursor-help" : "")"
-                                                     title="@element.AdditionalNotes">
-                                                    @element.Name
-                                                    @if (!string.IsNullOrWhiteSpace(element.AdditionalNotes))
-                                                    {
-                                                        <i class="fas fa-info-circle text-xs text-gray-400 ml-1"></i>
-                                                    }
-                                                </div>
-                                            </div>
-
-                                            <!-- Element availability selector -->
-                                            <div class="flex gap-1">
-                                                @foreach (var judgment in _availabilityOptions)
-                                                {
-                                                    <button class="btn btn-xs @GetElementButtonClass(element, judgment)"
-                                                            @onclick="() => SetElementAvailability(element, judgment)"
-                                                            title="@judgment.ToString()">
-                                                        @GetAvailabilityIcon(judgment)
-                                                    </button>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-
-                    @if (!GetFilteredCategories().Any())
-                    {
-                        <div class="p-8 text-center text-gray-500">
-                            <i class="fas fa-search text-3xl mb-2"></i>
-                            <div>No data elements match your filters</div>
-                        </div>
-                    }
+            <!-- BODY (scrolling area) -->
+            <div class="flex-1 overflow-hidden bg-white border-t border-gray-200">
+                <div class="h-full overflow-y-auto">
+                    <DataElementList ElementAvailability="@_elementAvailability"
+                                     ElementAvailabilityChanged="OnElementAvailabilityChanged"
+                                     IsEditable="true"
+                                     HideUnreported="false"
+                                     ContainerClass="border-x border-gray-200 bg-white" />
                 </div>
             </div>
 
-            <!-- Sticky Footer Actions -->
+            <!-- FOOTER -->
             <div class="flex-shrink-0 bg-base-100 py-4 px-6 border-t border-gray-200 flex justify-end gap-2">
                 <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
                     <i class="fas fa-times mr-2"></i>Discard Results
@@ -229,62 +95,8 @@
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
     private string? _error;
-    private string _searchQuery = string.Empty;
     private Dictionary<string, AvailabilityJudgment> _elementAvailability = new();
-    private HashSet<string> _expandedCategories = new();
     private bool _showDiscardConfirmation = false;
-
-    // Filter state
-    private HashSet<Sector> _selectedSectors = new();
-    private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
-    private bool _showUnreported = false;
-
-    private readonly List<AvailabilityJudgment> _availabilityOptions = new()
-    {
-        AvailabilityJudgment.Available,
-        AvailabilityJudgment.PartiallyAvailable,
-        AvailabilityJudgment.NotAvailable
-    };
-
-    // Map of category names to FontAwesome icons
-    private readonly Dictionary<string, string> _categoryIcons = new()
-    {
-        ["Academic Assessment and Performance"] = "fa-chart-line",
-        ["Attendance and Engagement"] = "fa-calendar-check",
-        ["Behavior and Discipline"] = "fa-gavel",
-        ["Community and Environmental Conditions"] = "fa-city",
-        ["Course and Curriculum"] = "fa-book",
-        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
-        ["Educator Qualifications and Credentials"] = "fa-certificate",
-        ["Financial Support and Resources"] = "fa-dollar-sign",
-        ["Health and Well-being"] = "fa-heart",
-        ["Instructional Quality and Practice"] = "fa-chalkboard",
-        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
-        ["Program Eligibility and Enrollment"] = "fa-school",
-        ["Program Quality and Standards"] = "fa-award",
-        ["School Climate and Engagement"] = "fa-users",
-        ["Student Demographics"] = "fa-user",
-        ["Student Support Services"] = "fa-hands-helping",
-        ["System Economic Conditions"] = "fa-coins",
-        ["Workforce and Career Outcomes"] = "fa-briefcase"
-    };
-
-    private List<DataElementCategory> _categories = new();
-
-    protected override void OnInitialized()
-    {
-        // Build categories from EwFrameworkDataElements
-        _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(e => e.Category)
-            .Select(g => new DataElementCategory
-            {
-                Name = g.Key,
-                Icon = _categoryIcons.GetValueOrDefault(g.Key, "fa-folder"),
-                Elements = g.ToList()
-            })
-            .OrderBy(c => c.Name)
-            .ToList();
-    }
 
     protected override void OnParametersSet()
     {
@@ -296,7 +108,7 @@
 
     private void LoadPreviousAssessment()
     {
-        // Load the most recent assessment for this data source to pre-populate values
+        // Load the most recent assessment for this data source
         var previousAssessment = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id)
             .OrderByDescending(a => a.ConductedAt)
             .FirstOrDefault();
@@ -319,217 +131,11 @@
         }
     }
 
-    private void ToggleSector(Sector sector)
+    private void OnElementAvailabilityChanged(Dictionary<string, AvailabilityJudgment> updatedAvailability)
     {
-        if (_selectedSectors.Contains(sector))
-        {
-            _selectedSectors.Remove(sector);
-        }
-        else
-        {
-            _selectedSectors.Add(sector);
-        }
-    }
-
-    private void ClearSectorFilter()
-    {
-        _selectedSectors.Clear();
-    }
-
-    private void ToggleAvailability(AvailabilityJudgment availability)
-    {
-        if (_selectedAvailabilities.Contains(availability))
-        {
-            _selectedAvailabilities.Remove(availability);
-        }
-        else
-        {
-            _selectedAvailabilities.Add(availability);
-        }
-    }
-
-    private void ClearAvailabilityFilter()
-    {
-        _selectedAvailabilities.Clear();
-        _showUnreported = false;
-    }
-
-    private bool HasAvailabilityFilters()
-    {
-        return _selectedAvailabilities.Any() || _showUnreported;
-    }
-
-    private int GetAvailabilityFilterCount()
-    {
-        return _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
-    }
-
-    private void ClearAllFilters()
-    {
-        _selectedSectors.Clear();
-        _selectedAvailabilities.Clear();
-        _showUnreported = false;
-    }
-
-    private List<DataElementCategory> GetFilteredCategories()
-    {
-        var categories = _categories.AsEnumerable();
-
-        // Apply search filter
-        if (!string.IsNullOrWhiteSpace(_searchQuery))
-        {
-            var query = _searchQuery.ToLowerInvariant();
-            categories = categories
-                .Select(c => new DataElementCategory
-                {
-                    Name = c.Name,
-                    Icon = c.Icon,
-                    Elements = c.Elements
-                        .Where(e => e.Name.ToLowerInvariant().Contains(query) ||
-                                   (e.AdditionalNotes?.ToLowerInvariant().Contains(query) ?? false))
-                        .ToList()
-                })
-                .Where(c => c.Elements.Any() || c.Name.ToLowerInvariant().Contains(query));
-        }
-
-        // Apply sector filter
-        if (_selectedSectors.Any())
-        {
-            categories = categories
-                .Select(c => new DataElementCategory
-                {
-                    Name = c.Name,
-                    Icon = c.Icon,
-                    Elements = c.Elements
-                        .Where(e => e.RelatedSectors.Any(s => _selectedSectors.Contains(s)))
-                        .ToList()
-                })
-                .Where(c => c.Elements.Any());
-        }
-
-        // Apply availability filter
-        if (_selectedAvailabilities.Any() || _showUnreported)
-        {
-            categories = categories
-                .Select(c => new DataElementCategory
-                {
-                    Name = c.Name,
-                    Icon = c.Icon,
-                    Elements = c.Elements
-                        .Where(e =>
-                        {
-                            var hasAvailability = _elementAvailability.TryGetValue(e.Name, out var availability);
-
-                            if (!hasAvailability)
-                            {
-                                // Only show unreported items if _showUnreported is true
-                                return _showUnreported;
-                            }
-
-                            // Only show reported items if their availability is selected
-                            return _selectedAvailabilities.Contains(availability);
-                        })
-                        .ToList()
-                })
-                .Where(c => c.Elements.Any());
-        }
-
-        return categories.ToList();
-    }
-
-    private void ToggleCategoryExpanded(string categoryName)
-    {
-        if (_expandedCategories.Contains(categoryName))
-        {
-            _expandedCategories.Remove(categoryName);
-        }
-        else
-        {
-            _expandedCategories.Add(categoryName);
-        }
-    }
-
-    private bool IsCategoryExpanded(string categoryName)
-    {
-        return _expandedCategories.Contains(categoryName);
-    }
-
-    private void SetCategoryAvailability(DataElementCategory category, AvailabilityJudgment judgment)
-    {
-        // Check if all elements already have this judgment
-        var allMatch = category.Elements.All(e =>
-            _elementAvailability.TryGetValue(e.Name, out var val) && val == judgment);
-
-        if (allMatch)
-        {
-            // Remove the judgment from all elements
-            foreach (var element in category.Elements)
-            {
-                _elementAvailability.Remove(element.Name);
-            }
-        }
-        else
-        {
-            // Set the judgment for all elements
-            foreach (var element in category.Elements)
-            {
-                _elementAvailability[element.Name] = judgment;
-            }
-        }
+        _elementAvailability = updatedAvailability;
         StateHasChanged();
     }
-
-    private void SetElementAvailability(DataElement element, AvailabilityJudgment judgment)
-    {
-        // If already set to this judgment, remove it; otherwise set it
-        if (_elementAvailability.TryGetValue(element.Name, out var current) && current == judgment)
-        {
-            _elementAvailability.Remove(element.Name);
-        }
-        else
-        {
-            _elementAvailability[element.Name] = judgment;
-        }
-        StateHasChanged();
-    }
-
-    private string GetCategoryButtonClass(DataElementCategory category, AvailabilityJudgment judgment)
-    {
-        var allMatch = category.Elements.All(e =>
-            _elementAvailability.TryGetValue(e.Name, out var val) && val == judgment);
-
-        var baseClass = judgment switch
-        {
-            AvailabilityJudgment.Available => "btn-success",
-            AvailabilityJudgment.PartiallyAvailable => "btn-warning",
-            AvailabilityJudgment.NotAvailable => "btn-error",
-            _ => "btn-ghost"
-        };
-
-        return allMatch ? baseClass : "btn-ghost btn-outline";
-    }
-
-    private string GetElementButtonClass(DataElement element, AvailabilityJudgment judgment)
-    {
-        var isSelected = _elementAvailability.TryGetValue(element.Name, out var current) &&
-                        current == judgment;
-
-        return judgment switch
-        {
-            AvailabilityJudgment.Available => isSelected ? "btn-success" : "btn-ghost btn-outline",
-            AvailabilityJudgment.PartiallyAvailable => isSelected ? "btn-warning" : "btn-ghost btn-outline",
-            AvailabilityJudgment.NotAvailable => isSelected ? "btn-error" : "btn-ghost btn-outline",
-            _ => "btn-ghost"
-        };
-    }
-
-    private string GetAvailabilityIcon(AvailabilityJudgment judgment) => judgment switch
-    {
-        AvailabilityJudgment.Available => "✓",
-        AvailabilityJudgment.PartiallyAvailable => "◐",
-        AvailabilityJudgment.NotAvailable => "✗",
-        _ => "?"
-    };
 
     private int GetAvailabilityCount(AvailabilityJudgment judgment)
     {
@@ -539,11 +145,6 @@
     private void ShowDiscardConfirmation()
     {
         _showDiscardConfirmation = true;
-    }
-
-    private int GetCategoryReportedCount(DataElementCategory category)
-    {
-        return category.Elements.Count(e => _elementAvailability.ContainsKey(e.Name));
     }
 
     private void CancelDiscard()
@@ -569,26 +170,17 @@
                 DataElementAssessments = new List<DataElementAssessment>()
             };
 
-            // Create assessments for all elements that have been marked
-            foreach (var category in _categories)
+            // Create assessments for all marked elements
+            foreach (var kvp in _elementAvailability)
             {
-                foreach (var element in category.Elements)
+                assessment.DataElementAssessments.Add(new DataElementAssessment
                 {
-                    if (_elementAvailability.TryGetValue(element.Name, out var judgment))
+                    DataElementName = kvp.Key,
+                    Characteristics = new List<DataCharacteristicBase>
                     {
-                        assessment.DataElementAssessments.Add(new DataElementAssessment
-                        {
-                            DataElementName = element.Name,
-                            Characteristics = new List<DataCharacteristicBase>
-                            {
-                                new ReportedAvailability(judgment)
-                                {
-                                    Remarks = element.AdditionalNotes
-                                }
-                            }
-                        });
+                        new ReportedAvailability(kvp.Value)
                     }
-                }
+                });
             }
 
             await OnAssessmentComplete.InvokeAsync(assessment);
@@ -607,18 +199,6 @@
 
         // Reset state
         _error = null;
-        _searchQuery = string.Empty;
         _elementAvailability.Clear();
-        _expandedCategories.Clear();
-        _selectedSectors.Clear();
-        _selectedAvailabilities.Clear();
-        _showUnreported = false;
-    }
-
-    private class DataElementCategory
-    {
-        public string Name { get; set; } = "";
-        public string Icon { get; set; } = "";
-        public List<DataElement> Elements { get; set; } = new();
     }
 }
