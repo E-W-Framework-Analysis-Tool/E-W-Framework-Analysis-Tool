@@ -1,0 +1,115 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Modal IsOpen="@IsOpen" CloseRequested="HandleClose">
+    <Header>@_indicatorScore?.IndicatorCode</Header>
+    <Body>
+
+        @if (_indicatorScore != null)
+        {
+            var indicator = getIndicator(_indicatorScore.IndicatorCode);
+
+            <div class="space-y-3">
+
+                <h5 class="font-semibold text-blue">@indicator?.Definition</h5>
+
+                <p class="text-sm text-gray">Domain: @indicator?.Domain.GetDisplayName()</p>
+                <p class="text-sm text-gray">Indicator Type: @indicator?.Type.GetDisplayName()</p>
+
+                @if (indicator != null)
+                {
+                    <h5 class="font-semibold text-sm text-blue pt-2">Data Elements:</h5>
+                    <div class="flex flex-col gap-2">
+                        @foreach (var dataElementName in indicator.DataElementNames.Order())
+                        {
+                            <p class="text-sm text-gray">
+                                <i class="@GetDataElementIsAvailableIcon(dataElementName)"></i>
+                                @dataElementName
+                            </p>
+                        }
+                    </div>
+                }
+
+                <h5 class="font-semibold text-blue pt-2">Data Readiness Score:</h5>
+
+                <progress class="progress @GetProgressBarColor(_indicatorScore.ReadinessScore)" value="@(_indicatorScore.ReadinessScore * 100)" max="100"></progress>
+                <p class="font-semibold text-center">@_indicatorScore.ReadinessScore.ToString("0.##%")</p>
+
+                <div class="collapse border border-gray-300 rounded-lg collapse-arrow">
+                    <input type="checkbox" />
+                    <div class="collapse-title font-semibold">Additional Details</div>
+                    <div class="collapse-content text-sm space-y-3">
+                        <h5 class="font-semibold text-sm text-blue">Recommended Metrics</h5>
+                        <p class="text-sm text-gray">@indicator?.RecommendedMetrics</p>
+
+                        @if (indicator != null)
+                        {
+                            <h5 class="font-semibold text-sm text-blue">Sectors</h5>
+                            <div class="flex gap-2">
+                                @foreach (var sector in indicator.Sectors)
+                                {
+                                    <div class="badge badge-secondary ">@sector.GetDisplayName()</div>
+                                }
+                            </div>
+
+                            <h5 class="font-semibold text-sm text-blue">Data Needed</h5>
+                            <div class="flex gap-2">
+                                @foreach (var dataNeeded in indicator.DataNeeded)
+                                {
+                                    <div class="badge badge-secondary ">@dataNeeded.GetDisplayName()</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </Body>
+
+    <Footer>
+        <button class="btn btn-ghost hover:bg-gray-200 hover:border-gray-300" @onclick="HandleClose">Close</button>
+    </Footer>
+</Modal>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public IndicatorScore? _indicatorScore { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private Indicator? getIndicator(string indicatorName)
+    {
+        if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
+            return null;
+
+        return indicator;
+    }
+
+    private string GetDataElementIsAvailableIcon(string DataElementName)
+    {
+        var score = _indicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(DataElementName));
+        return score != null && score.IsAvailable ? "fas fa-check-circle text-success" : "fas fa-times-circle text-error";
+    }
+
+    private string GetProgressBarColor(decimal score)
+    {
+        // Green (high score) gradient to Red (low score)
+        if (score > 0.66m)
+            return "progress-success";
+        else if (score > 0.33m)
+            return "progress-warning";
+        else if (score > 0m)
+            return "progress-error";
+
+        return "bg-gray-200";
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+        await IsOpenChanged.InvokeAsync(false);
+    }
+}
