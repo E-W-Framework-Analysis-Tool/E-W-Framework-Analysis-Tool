@@ -2574,6 +2574,9 @@
   .pt-32 {
     padding-top: calc(var(--spacing) * 32);
   }
+  .pr-2 {
+    padding-right: calc(var(--spacing) * 2);
+  }
   .pb-0 {
     padding-bottom: calc(var(--spacing) * 0);
   }
@@ -2677,6 +2680,9 @@
   .tracking-wide {
     --tw-tracking: var(--tracking-wide);
     letter-spacing: var(--tracking-wide);
+  }
+  .break-words {
+    overflow-wrap: break-word;
   }
   .whitespace-nowrap {
     white-space: nowrap;
