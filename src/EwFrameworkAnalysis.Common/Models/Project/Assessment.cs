@@ -6,9 +6,12 @@ namespace EwFrameworkAnalysis.Common.Models.Project;
 public class DataSourceAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    public string? Name { get; set; }
     public Guid DataSourceId { get; set; }
-    public string Name { get; set; } = "";
-    public DateTimeOffset ConductedAt { get; set; }
+    public DateTimeOffset ConductedAt { get; set; } = DateTimeOffset.Now;
+    public string? Notes { get; set; }
+
+    // All assessments from this session
     public List<DataElementAssessment> DataElementAssessments { get; set; } = [];
 }
 

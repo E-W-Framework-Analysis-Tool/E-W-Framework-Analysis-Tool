@@ -1,7 +1,6 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-@using static EwFrameworkAnalysis.UI.Components.BorderedInfoCard
 
 <CollapsibleSection IsExpanded="@IsExpanded" AdditionalClasses="shadow-md hover:shadow-lg transition-shadow duration-200">
     <TitleContent>
@@ -29,25 +28,28 @@
                 {
                     @if (characteristic is RecordCount rc)
                     {
-                        <BorderedInfoCard Color="CardColor.Blue">
+                        <Card Background="Card.BackgroundColor.Blue"
+                              Border="new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left)">
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700 font-medium">Record Count</span>
                                 <span class="text-lg font-bold text-gray-900">@rc.Value.ToString("N0")</span>
                             </div>
-                        </BorderedInfoCard>
+                        </Card>
                     }
                     else if (characteristic is ReportedAvailability ra)
                     {
-                        <BorderedInfoCard Color="CardColor.Green">
+                        <Card Background="Card.BackgroundColor.Green"
+                              Border="new Card.BorderStyle(Card.BorderColor.Green, Card.BorderPosition.Left)">
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700 font-medium">Availability</span>
                                 <span class="badge @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
                             </div>
-                        </BorderedInfoCard>
+                        </Card>
                     }
                     else if (characteristic is Completeness c)
                     {
-                        <BorderedInfoCard Color="CardColor.Yellow" AdditionalClasses="p-3">
+                        <Card Background="Card.BackgroundColor.Yellow"
+                              Border="new Card.BorderStyle(Card.BorderColor.Yellow, Card.BorderPosition.Left)">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-sm font-medium text-gray-700">@c.AttributeName Completeness</span>
                                 <span class="text-sm font-bold text-gray-900">@c.Percentage.ToString("F1")%</span>
@@ -56,18 +58,20 @@
                                 <div class="bg-yellow h-2 rounded-full transition-all" style="width: @(c.Percentage.ToString("F1"))%"></div>
                             </div>
                             <div class="text-xs text-gray-600 mt-1">@c.PopulatedRecords.ToString("N0") / @c.TotalRecords.ToString("N0") records</div>
-                        </BorderedInfoCard>
+                        </Card>
                     }
                     else if (characteristic is IntegerRange ir)
                     {
-                        <BorderedInfoCard Color="CardColor.Tan">
+                        <Card Background="Card.BackgroundColor.Tan"
+                              Border="new Card.BorderStyle(Card.BorderColor.Tan, Card.BorderPosition.Left)">
                             <span class="text-sm font-medium text-gray-700">@ir.Label:</span>
                             <span class="text-sm font-bold text-gray-900 ml-2">@ir.Minimum - @ir.Maximum</span>
-                        </BorderedInfoCard>
+                        </Card>
                     }
                     else if (characteristic is Distribution dist)
                     {
-                        <BorderedInfoCard Color="CardColor.Gray" AdditionalClasses="p-3">
+                        <Card Background="Card.BackgroundColor.Gray"
+                              Border="new Card.BorderStyle(Card.BorderColor.Gray, Card.BorderPosition.Left)">
                             <div class="text-sm font-medium text-gray-700 mb-2">@dist.Label Distribution (@dist.TotalCount.ToString("N0") total)</div>
                             <div class="space-y-2">
                                 @foreach (var kvp in dist.Counts.OrderByDescending(k => k.Value).Take(10))
@@ -88,7 +92,7 @@
                             {
                                 <div class="text-xs text-gray-600 mt-2">Showing top 10 of @dist.Counts.Count items</div>
                             }
-                        </BorderedInfoCard>
+                        </Card>
                     }
                 }
             </div>
@@ -105,13 +109,13 @@
     [Parameter, EditorRequired] public DataElementAssessment Element { get; set; } = null!;
     [Parameter] public bool IsExpanded { get; set; }
 
-    private static readonly Dictionary<Type, CardColor> CharacteristicColorMap = new()
+    private static readonly Dictionary<Type, Card.BorderColor> CharacteristicColorMap = new()
     {
-        [typeof(RecordCount)] = CardColor.Blue,
-        [typeof(ReportedAvailability)] = CardColor.Green,
-        [typeof(Completeness)] = CardColor.Yellow,
-        [typeof(IntegerRange)] = CardColor.Tan,
-        [typeof(Distribution)] = CardColor.Gray
+        [typeof(RecordCount)] = Card.BorderColor.Blue,
+        [typeof(ReportedAvailability)] = Card.BorderColor.Green,
+        [typeof(Completeness)] = Card.BorderColor.Yellow,
+        [typeof(IntegerRange)] = Card.BorderColor.Tan,
+        [typeof(Distribution)] = Card.BorderColor.Gray
     };
 
     private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
@@ -125,7 +129,16 @@
 
     private string GetCharacteristicDotColor(DataCharacteristicBase characteristic)
     {
-        var color = CharacteristicColorMap.GetValueOrDefault(characteristic.GetType(), CardColor.Gray);
-        return CardColorStyles.GetDotColor(color);
+        var borderColor = CharacteristicColorMap.GetValueOrDefault(characteristic.GetType(), Card.BorderColor.Gray);
+        return borderColor switch
+        {
+            Card.BorderColor.Blue => "bg-blue",
+            Card.BorderColor.Green => "bg-green",
+            Card.BorderColor.Yellow => "bg-yellow",
+            Card.BorderColor.Gray => "bg-gray",
+            Card.BorderColor.Tan => "bg-tan",
+            Card.BorderColor.Red => "bg-red",
+            _ => "bg-gray"
+        };
     }
 }

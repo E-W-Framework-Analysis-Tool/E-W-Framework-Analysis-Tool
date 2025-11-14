@@ -1,0 +1,38 @@
+@page "/analysis"
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Pages.Analysis
+@inject AnalysisProjectService ProjectSvc
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+    <!-- Header -->
+    <AnalysisHeader />
+
+    <!-- Overall and Readiness Assessment -->
+    <OverallReadinessAssessment />
+
+    <!-- Essential Questions Grid -->
+    <EssentialQuestionGrid QuestionScores="QuestionScores" />
+</div>
+
+@code {
+    private List<DataSource> ActiveDatasources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
+
+    private List<DataSourceAssessment> Assessments =>
+        ProjectSvc.Assessments
+            .Where(x => x.DataElementAssessments.Any(y => ActiveDatasources.Any(ad => ad.Id == y.Id))).ToList();
+
+    private List<QuestionScore> QuestionScores = new List<QuestionScore>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ProjectSvc.InitializeAsync();
+        CalculateScores();
+    }
+
+    private void CalculateScores()
+    {
+        QuestionScores = ProjectSvc.CalculateScoresForActiveData(Assessments);
+    }
+}

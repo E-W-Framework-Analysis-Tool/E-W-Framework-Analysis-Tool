@@ -1,5 +1,7 @@
 using System.Text.Json;
+using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
+using EwFrameworkAnalysis.Common.Models.Scoring;
 using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI;
@@ -299,6 +301,84 @@ public class AnalysisProjectService
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
         };
+    }
+
+    #endregion
+
+    #region Essential Questions Scoring
+
+    public List<QuestionScore> CalculateScoresForActiveData(List<DataSourceAssessment> assessments)
+    {
+        var questions = EwFrameworkEssentialQuestions.Questions;
+        var indicators = EwFrameworkIndicators.Indicators;
+
+        // Flatten assessed data elements
+        var assessedDataElements = assessments
+            .SelectMany(a => a.DataElementAssessments)
+            .ToList();
+
+        var questionScores = new List<QuestionScore>();
+        foreach (var question in questions)
+        {
+            var questionScore = new QuestionScore
+            {
+                QuestionNumber = question.QuestionNumber
+            };
+
+            foreach (var indicatorName in question.RelatedIndicatorNames)
+            {
+                if (!indicators.TryGetValue(indicatorName, out var indicator))
+                    continue;
+
+                var indicatorScore = new IndicatorScore
+                {
+                    IndicatorCode = indicatorName
+                };
+
+                foreach (var dataElementName in indicator.DataElementNames)
+                {
+                    // Try to find this element in the assessments
+                    var matchedAssessment = assessedDataElements
+                        .FirstOrDefault(ae =>
+                            ae.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase) ||
+                            ae.DataElementName.Contains(dataElementName, StringComparison.OrdinalIgnoreCase) ||
+                            dataElementName.Contains(ae.DataElementName, StringComparison.OrdinalIgnoreCase));
+
+                    var dataElementScore = new DataElementScore
+                    {
+                        DataElementName = dataElementName,
+                        IsAvailable = matchedAssessment != null,
+                        Source = matchedAssessment?.AssessmentSessionId.ToString(),
+                        AvailabilityScore = matchedAssessment != null ? 1.0m : 0.0m,
+                        QualityScore = 1, // (optional — requires instructions on how to calculate this value)
+                        Notes = matchedAssessment != null ? "Data found in assessment" : "No matching assessment data"
+                    };
+
+                    indicatorScore.DataElementScores.Add(dataElementScore);
+                }
+
+                // Simple readiness metric: % of data elements available
+                if (indicatorScore.DataElementScores.Count > 0)
+                {
+                    var availableCount = indicatorScore.DataElementScores.Count(x => x.IsAvailable);
+                    indicatorScore.ReadinessScore =
+                        Math.Round((decimal)availableCount / indicatorScore.DataElementScores.Count, 2);
+                }
+
+                questionScore.IndicatorScores.Add(indicatorScore);
+            }
+
+            // Compute overall question readiness as the average of indicator scores
+            if (questionScore.IndicatorScores.Count > 0)
+            {
+                questionScore.ReadinessScore =
+                    Math.Round(questionScore.IndicatorScores.Average(i => i.ReadinessScore), 2);
+            }
+
+            questionScores.Add(questionScore);
+        }
+
+        return questionScores;
     }
 
     #endregion
