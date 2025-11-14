@@ -2540,6 +2540,11 @@
     color: var(--color-success-content);
     --alert-color: var(--color-success);
   }
+  .alert-warning {
+    border-color: var(--color-warning);
+    color: var(--color-warning-content);
+    --alert-color: var(--color-warning);
+  }
   .border-base-300 {
     border-color: var(--color-base-300);
   }

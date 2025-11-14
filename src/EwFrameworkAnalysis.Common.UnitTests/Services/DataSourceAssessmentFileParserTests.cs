@@ -28,7 +28,7 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -36,6 +36,10 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
 
         // Assert
         Assert.NotNull(assessment);
+        Assert.NotNull(stats);
+        Assert.True(stats.HasHeaderRow);
+        Assert.Equal(2, stats.TotalRowsRead);
+        Assert.Equal(2, stats.DataElementsProcessed);
         Assert.Equal(2, assessment.DataElementAssessments.Count);
 
         var grades12Assessment = assessment.DataElementAssessments
@@ -71,14 +75,15 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
-            hasHeaderRow: false
+            _testDataSourceId
         );
 
         // Assert
         Assert.NotNull(assessment);
+        Assert.NotNull(stats);
+        Assert.False(stats.HasHeaderRow);
         Assert.Equal(2, assessment.DataElementAssessments.Count);
 
         var k12Assessment = assessment.DataElementAssessments
@@ -105,7 +110,7 @@ Student Age Range,IntegerRange,21,Maximum,";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -113,6 +118,7 @@ Student Age Range,IntegerRange,21,Maximum,";
 
         // Assert
         Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(1, stats.CharacteristicsProcessed);
 
         var element = assessment.DataElementAssessments.First();
         Assert.Equal("Student Age Range", element.DataElementName);
@@ -138,7 +144,7 @@ Student Contact Information,Completeness,1000,TotalRecords,";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -146,6 +152,7 @@ Student Contact Information,Completeness,1000,TotalRecords,";
 
         // Assert
         Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(1, stats.CharacteristicsProcessed);
 
         var element = assessment.DataElementAssessments.First();
         Assert.Equal("Student Contact Information", element.DataElementName);
@@ -175,7 +182,7 @@ Discipline Action Types,Distribution,95,Expulsion without Services,";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -183,6 +190,7 @@ Discipline Action Types,Distribution,95,Expulsion without Services,";
 
         // Assert
         Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(1, stats.CharacteristicsProcessed);
 
         var element = assessment.DataElementAssessments.First();
         Assert.Equal("Discipline Action Types", element.DataElementName);
@@ -215,7 +223,7 @@ Gifted and Talented Programs,ReportedAvailability,PartiallyAvailable,,Only avail
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -223,6 +231,7 @@ Gifted and Talented Programs,ReportedAvailability,PartiallyAvailable,,Only avail
 
         // Assert
         Assert.Equal(2, assessment.DataElementAssessments.Count);
+        Assert.Equal(2, stats.CharacteristicsProcessed);
 
         var specEdAssessment = assessment.DataElementAssessments
             .FirstOrDefault(a => a.DataElementName == "Special Education Services");
@@ -257,7 +266,7 @@ Suspensions (K-12),Completeness,1020,TotalRecords,";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -265,6 +274,7 @@ Suspensions (K-12),Completeness,1020,TotalRecords,";
 
         // Assert
         Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(2, stats.CharacteristicsProcessed);
 
         var element = assessment.DataElementAssessments.First();
         Assert.Equal(2, element.Characteristics.Count);
@@ -303,7 +313,7 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
         // Act
-        var assessment = _parser.ParseAssessmentStream(
+        var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
             _testDataSourceId,
             hasHeaderRow: true
@@ -311,6 +321,8 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
 
         // Assert
         Assert.Equal(4, assessment.DataElementAssessments.Count);
+        Assert.Equal(5, stats.CharacteristicsProcessed);
+        Assert.Equal(0, stats.CharacteristicsSkipped);
 
         // Verify RecordCount
         var demographics = assessment.DataElementAssessments
@@ -339,6 +351,126 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
         Assert.Equal(AvailabilityJudgment.Available, availability.Value);
 
         _output.WriteLine($"Successfully parsed complex assessment with {assessment.DataElementAssessments.Count} elements");
+    }
+
+    [Fact]
+    public void ParseAssessmentStream_WithNullValues_ShouldSkipCharacteristicsGracefully()
+    {
+        // Arrange - Data with NULL values that should be skipped
+        var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
+Student Age,RecordCount,100,,Valid record count
+Student Age,Completeness,NULL,PopulatedRecords,BirthDate
+Student Age,Completeness,NULL,TotalRecords,
+Student Age,IntegerRange,NULL,Minimum,Age Range
+Student Age,IntegerRange,NULL,Maximum,
+Suspensions,RecordCount,0,,Zero records is valid";
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
+
+        // Act
+        var (assessment, stats) = _parser.ParseAssessmentStream(
+            stream,
+            _testDataSourceId,
+            hasHeaderRow: true
+        );
+
+        // Assert - Only elements with valid characteristics should be included
+        Assert.Equal(2, assessment.DataElementAssessments.Count);
+        Assert.Equal(2, stats.DataElementsProcessed);
+        Assert.Equal(0, stats.DataElementsSkipped); // Student Age has RecordCount, so not skipped
+        Assert.Equal(2, stats.CharacteristicsProcessed); // Only the 2 RecordCounts
+        Assert.Equal(2, stats.CharacteristicsSkipped); // Completeness and IntegerRange
+
+        // Student Age should have only RecordCount
+        var studentAge = assessment.DataElementAssessments
+            .FirstOrDefault(a => a.DataElementName == "Student Age");
+        Assert.NotNull(studentAge);
+        Assert.Single(studentAge.Characteristics);
+        Assert.IsType<RecordCount>(studentAge.Characteristics[0]);
+
+        // Verify stats has skip reasons
+        Assert.True(stats.HasWarnings);
+        Assert.Contains(stats.SkippedReasons, r => r.Contains("Student Age") && r.Contains("Completeness"));
+        Assert.Contains(stats.SkippedReasons, r => r.Contains("Student Age") && r.Contains("IntegerRange"));
+
+        _output.WriteLine($"Stats: {stats.CharacteristicsProcessed} processed, {stats.CharacteristicsSkipped} skipped");
+        _output.WriteLine("Skip reasons:");
+        foreach (var reason in stats.SkippedReasons)
+        {
+            _output.WriteLine($"  - {reason}");
+        }
+    }
+
+    [Fact]
+    public void ParseAssessmentStream_WithDataElementHavingNoValidCharacteristics_ShouldSkipElement()
+    {
+        // Arrange - Data element where all characteristics have NULL values
+        var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
+Student Age,Completeness,NULL,PopulatedRecords,BirthDate
+Student Age,Completeness,NULL,TotalRecords,
+Student Age,IntegerRange,NULL,Minimum,Age Range
+Student Age,IntegerRange,NULL,Maximum,
+Valid Element,RecordCount,100,,This one is fine";
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
+
+        // Act
+        var (assessment, stats) = _parser.ParseAssessmentStream(
+            stream,
+            _testDataSourceId,
+            hasHeaderRow: true
+        );
+
+        // Assert - Only the valid element should be included
+        Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(1, stats.DataElementsProcessed);
+        Assert.Equal(1, stats.DataElementsSkipped);
+        Assert.Single(stats.SkippedDataElements);
+        Assert.Contains("Student Age", stats.SkippedDataElements);
+
+        var validElement = assessment.DataElementAssessments.First();
+        Assert.Equal("Valid Element", validElement.DataElementName);
+
+        _output.WriteLine($"Correctly skipped data element with no valid characteristics");
+        _output.WriteLine($"Skipped elements: {string.Join(", ", stats.SkippedDataElements)}");
+    }
+
+    [Fact]
+    public void ParseAssessmentStream_WithPartialDistribution_ShouldIncludeValidItems()
+    {
+        // Arrange - Distribution with some NULL values
+        var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
+Discipline Types,Distribution,450,In-School Suspension,Distribution of actions
+Discipline Types,Distribution,NULL,Out-of-School Suspension,
+Discipline Types,Distribution,125,Expulsion,";
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
+
+        // Act
+        var (assessment, stats) = _parser.ParseAssessmentStream(
+            stream,
+            _testDataSourceId,
+            hasHeaderRow: true
+        );
+
+        // Assert - Distribution should be included with only valid items
+        Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(1, stats.CharacteristicsProcessed);
+        Assert.Equal(0, stats.CharacteristicsSkipped); // Partial skip doesn't count as full skip
+
+        var distribution = assessment.DataElementAssessments.First()
+            .Characteristics.OfType<Distribution>().First();
+        Assert.Equal(2, distribution.Counts.Count); // Only 2 valid items
+        Assert.Equal(450, distribution.Counts["In-School Suspension"]);
+        Assert.Equal(125, distribution.Counts["Expulsion"]);
+        Assert.False(distribution.Counts.ContainsKey("Out-of-School Suspension"));
+
+        // Should have a skip reason for the partial distribution
+        Assert.Contains(stats.SkippedReasons,
+            r => r.Contains("Discipline Types") && r.Contains("Distribution") && r.Contains("1 item(s) skipped"));
+
+        _output.WriteLine($"Distribution has {distribution.Counts.Count} valid items");
+        _output.WriteLine($"Skip reasons: {string.Join("; ", stats.SkippedReasons)}");
     }
 
     [Fact]
@@ -429,5 +561,56 @@ Special Education Services,ReportedAvailability,InvalidValue,,";
 
         Assert.Contains("Invalid ReportedAvailability value", exception.Message);
         _output.WriteLine($"Correctly threw exception: {exception.Message}");
+    }
+
+    [Fact]
+    public void ParseAssessmentStream_StatsTracking_ShouldReportAccurately()
+    {
+        // Arrange - Mix of valid and invalid data
+        var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
+Element1,RecordCount,100,,
+Element2,RecordCount,NULL,,
+Element2,Completeness,50,PopulatedRecords,
+Element2,Completeness,100,TotalRecords,
+Element3,IntegerRange,NULL,Minimum,
+Element3,IntegerRange,NULL,Maximum,
+Element4,ReportedAvailability,Available,,";
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
+
+        // Act
+        var (assessment, stats) = _parser.ParseAssessmentStream(
+            stream,
+            _testDataSourceId,
+            hasHeaderRow: true
+        );
+
+        // Assert stats accuracy
+        Assert.Equal(7, stats.TotalRowsRead);
+        Assert.Equal(4, stats.TotalDataElements);
+        Assert.Equal(3, stats.DataElementsProcessed); // Element1, Element2, Element4
+        Assert.Equal(1, stats.DataElementsSkipped); // Element3 (no valid characteristics)
+        Assert.Equal(3, stats.CharacteristicsProcessed); // Element1 RecordCount, Element2 Completeness, Element4 Availability
+        Assert.Equal(2, stats.CharacteristicsSkipped); // Element2 RecordCount (NULL), Element3 IntegerRange (NULL)
+        Assert.True(stats.HasWarnings);
+        Assert.Single(stats.SkippedDataElements);
+        Assert.Contains("Element3", stats.SkippedDataElements);
+
+        // Verify the actual assessment contents
+        Assert.Equal(3, assessment.DataElementAssessments.Count);
+        Assert.Contains(assessment.DataElementAssessments, e => e.DataElementName == "Element1");
+        Assert.Contains(assessment.DataElementAssessments, e => e.DataElementName == "Element2");
+        Assert.Contains(assessment.DataElementAssessments, e => e.DataElementName == "Element4");
+        Assert.DoesNotContain(assessment.DataElementAssessments, e => e.DataElementName == "Element3");
+
+        // Verify Element2 has only Completeness (RecordCount was skipped)
+        var element2 = assessment.DataElementAssessments.First(e => e.DataElementName == "Element2");
+        Assert.Single(element2.Characteristics);
+        Assert.IsType<Completeness>(element2.Characteristics[0]);
+
+        _output.WriteLine($"Total rows: {stats.TotalRowsRead}");
+        _output.WriteLine($"Data elements: {stats.TotalDataElements} found, {stats.DataElementsProcessed} processed, {stats.DataElementsSkipped} skipped");
+        _output.WriteLine($"Characteristics: {stats.CharacteristicsProcessed} processed, {stats.CharacteristicsSkipped} skipped");
+        _output.WriteLine($"Skipped elements: {string.Join(", ", stats.SkippedDataElements)}");
     }
 }

@@ -99,6 +99,84 @@
                         </div>
                     </div>
 
+                    @if (_parsingStats?.HasWarnings == true)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold">Some Data Was Skipped</h3>
+                                <div class="text-sm">
+                                    @if (_parsingStats.DataElementsSkipped > 0)
+                                    {
+                                        <p>@_parsingStats.DataElementsSkipped data element(s) had no valid characteristics and were excluded.</p>
+                                    }
+                                    @if (_parsingStats.CharacteristicsSkipped > 0)
+                                    {
+                                        <p>@_parsingStats.CharacteristicsSkipped characteristic(s) were skipped due to missing or invalid values.</p>
+                                    }
+                                    <button class="link link-primary text-xs mt-1" @onclick="() => _showSkipDetails = !_showSkipDetails">
+                                        @(_showSkipDetails ? "Hide" : "Show") details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (_showSkipDetails && _parsingStats != null)
+                        {
+                            <div class="bg-base-200 rounded-lg p-4 space-y-2">
+                                <h4 class="font-semibold text-sm">Parsing Details</h4>
+                                <div class="text-xs space-y-1">
+                                    <div class="flex justify-between">
+                                        <span>Total rows read:</span>
+                                        <span class="font-mono">@_parsingStats.TotalRowsRead</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Header row detected:</span>
+                                        <span class="font-mono">@(_parsingStats.HasHeaderRow ? "Yes" : "No")</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Data elements found:</span>
+                                        <span class="font-mono">@_parsingStats.TotalDataElements</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Data elements processed:</span>
+                                        <span class="font-mono">@_parsingStats.DataElementsProcessed</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Characteristics processed:</span>
+                                        <span class="font-mono">@_parsingStats.CharacteristicsProcessed</span>
+                                    </div>
+                                </div>
+
+                                @if (_parsingStats.SkippedDataElements.Count > 0)
+                                {
+                                    <div class="mt-3">
+                                        <h5 class="font-semibold text-xs mb-1">Skipped Data Elements:</h5>
+                                        <ul class="text-xs space-y-1 list-disc list-inside">
+                                            @foreach (var element in _parsingStats.SkippedDataElements)
+                                            {
+                                                <li>@element</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                @if (_parsingStats.SkippedReasons.Count > 0)
+                                {
+                                    <div class="mt-3">
+                                        <h5 class="font-semibold text-xs mb-1">Skip Reasons:</h5>
+                                        <ul class="text-xs space-y-1 list-disc list-inside max-h-48 overflow-y-auto">
+                                            @foreach (var reason in _parsingStats.SkippedReasons)
+                                            {
+                                                <li>@reason</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+
                     <div class="bg-white border border-gray-200 rounded-lg shadow">
                         <div class="px-4 py-3 border-b border-gray-200">
                             <h3 class="font-semibold text-blue">Assessment Results Preview</h3>
@@ -228,9 +306,11 @@
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
     private DataSourceAssessment? _assessmentResult;
+    private AssessmentParsingStats? _parsingStats;
     private string? _error;
     private bool _isProcessing = false;
     private bool _showDiscardModal = false;
+    private bool _showSkipDetails = false;
     private int _assessorCount = 0;
     private IBrowserFile? _selectedFile;
     private InputFile? _fileInput;
@@ -298,12 +378,13 @@
             using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
 
             var parser = new DataSourceAssessmentFileParser();
-            _assessmentResult = await parser.ParseAssessmentStreamAsync(
+            var (assessment, stats) = await parser.ParseAssessmentStreamAsync(
                 stream,
-                DataSource.Id,
-                hasHeaderRow: true
+                DataSource.Id
             );
 
+            _assessmentResult = assessment;
+            _parsingStats = stats;
             _assessmentResult.Name = $"Assessment from {_selectedFile.Name}";
             _assessmentResult.ConductedAt = DateTimeOffset.Now;
         }
@@ -311,6 +392,7 @@
         {
             _error = $"Failed to process file: {ex.Message}";
             _assessmentResult = null;
+            _parsingStats = null;
         }
         finally
         {
@@ -342,6 +424,7 @@
     {
         _showDiscardModal = false;
         _assessmentResult = null;
+        _parsingStats = null;
         await Close();
     }
 
@@ -352,9 +435,11 @@
 
         // Reset state
         _assessmentResult = null;
+        _parsingStats = null;
         _error = null;
         _isProcessing = false;
         _selectedFile = null;
+        _showSkipDetails = false;
     }
 
     private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
@@ -368,7 +453,6 @@
 
     private string GenerateSampleResultsCsv()
     {
-        // Simple sample data based on the test file
         return @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
 Suspensions and Expulsions (Grades 1 and 2),RecordCount,5,,
 Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the following grades: 10,11,12""
