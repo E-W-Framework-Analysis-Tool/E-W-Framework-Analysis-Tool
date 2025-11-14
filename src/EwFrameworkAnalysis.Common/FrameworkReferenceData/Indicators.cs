@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using EwFrameworkAnalysis.Common.Models.Framework;
 
 namespace EwFrameworkAnalysis.Common.FrameworkReferenceData;
@@ -1135,27 +1136,54 @@ public class Indicator
 
 public enum DataCategory
 {
+    [Display(Name = "Administrative Data", Description = "")]
     AdministrativeData,
+
+    [Display(Name = "Assessments", Description = "")]
     Assessments,
+
+    [Display(Name = "Classroom Observations", Description = "")]
     ClassroomObservations,
+
+    [Display(Name = "Curriculum Materials", Description = "")]
     CurriculumMaterials,
+
+    [Display(Name = "Educator Administrative Data", Description = "")]
     EducatorAdministrativeData,
+
+    [Display(Name = "Rubrics", Description = "")]
     Rubrics,
+
+    [Display(Name = "Student Transcripts", Description = "")]
     StudentTranscripts,
+
+    [Display(Name = "Surveys", Description = "")]
     Surveys
 }
 
 public enum IndicatorType
 {
+    [Display(Name = "Outcomes Milestones", Description = "")]
     OutcomesMilestones,
+
+    [Display(Name = "EW System Conditions", Description = "")]
     EWSystemConditions,
+
+    [Display(Name = "Adjacent System Conditions", Description = "")]
     AdjacentSystemConditions
 }
 
 public enum IndicatorDomain
 {
+    [Display(Name = "Academic Progress Completion", Description = "")]
     AcademicProgressCompletion,
+
+    [Display(Name = "Career Readiness Economic Success", Description = "")]
     CareerReadinessEconomicSuccess,
+
+    [Display(Name = "Social Emotional Physical Wellbeing", Description = "")]
     SocialEmotionalPhysicalWellbeing,
+
+    [Display(Name = "Cross-Domain", Description = "")]
     CrossDomain
 }
