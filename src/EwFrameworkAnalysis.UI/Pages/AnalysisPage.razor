@@ -17,11 +17,9 @@
 </div>
 
 @code {
-    private List<DataSource> ActiveDatasources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
+    private List<DataSource> ActiveDataSources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
 
-    private List<DataSourceAssessment> Assessments =>
-        ProjectSvc.Assessments
-            .Where(x => x.DataElementAssessments.Any(y => ActiveDatasources.Any(ad => ad.Id == y.Id))).ToList();
+    private List<DataSourceAssessment> Assessments => ActiveDataSources.SelectMany(x => x.Assessments).ToList();
 
     private List<QuestionScore> QuestionScores = new List<QuestionScore>();
 

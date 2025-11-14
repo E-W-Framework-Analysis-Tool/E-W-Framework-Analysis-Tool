@@ -73,7 +73,6 @@ public class DataSourceAssessmentFileParser
             // Create DataElementAssessment
             var elementAssessment = new DataElementAssessment
             {
-                AssessmentSessionId = assessment.Id,
                 DataElementName = dataElementName,
                 AssessedAt = DateTimeOffset.Now,
                 Characteristics = characteristics,

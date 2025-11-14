@@ -27,7 +27,6 @@ public class EdFiAssessorTests : BaseApiTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Suspensions and Expulsions (K-12)", result.DataElementName);
-        Assert.Equal(Fixture.TestDataSource!.Id, result.DataSourceId);
 
         var recordCount = result.Characteristics.OfType<RecordCount>().FirstOrDefault();
         Assert.NotNull(recordCount);
@@ -53,7 +52,6 @@ public class EdFiAssessorTests : BaseApiTest
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Pre-K Enrollments", result.DataElementName);
-        Assert.Equal(Fixture.TestDataSource!.Id, result.DataSourceId);
 
         var recordCount = result.Characteristics.OfType<RecordCount>().FirstOrDefault();
         Assert.NotNull(recordCount);

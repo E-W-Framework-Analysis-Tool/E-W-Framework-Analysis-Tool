@@ -30,7 +30,6 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -41,7 +40,6 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
         var grades12Assessment = assessment.DataElementAssessments
             .FirstOrDefault(a => a.DataElementName == "Suspensions and Expulsions (Grades 1 and 2)");
         Assert.NotNull(grades12Assessment);
-        Assert.Equal(_testDataSourceId, grades12Assessment.DataSourceId);
 
         var recordCount = grades12Assessment.Characteristics.OfType<RecordCount>().FirstOrDefault();
         Assert.NotNull(recordCount);
@@ -73,7 +71,6 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: false
         );
 
@@ -107,7 +104,6 @@ Student Age Range,IntegerRange,21,Maximum,";
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -140,7 +136,6 @@ Student Contact Information,Completeness,1000,TotalRecords,";
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -177,7 +172,6 @@ Discipline Action Types,Distribution,95,Expulsion without Services,";
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -217,7 +211,6 @@ Gifted and Talented Programs,ReportedAvailability,PartiallyAvailable,,Only avail
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -259,7 +252,6 @@ Suspensions (K-12),Completeness,1020,TotalRecords,";
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -305,7 +297,6 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
         // Act
         var assessment = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -352,7 +343,7 @@ Student Age Range,IntegerRange,5,Minimum,Age of enrolled students";
 
         // Act & Assert
         var exception = Assert.Throws<FormatException>(() =>
-            _parser.ParseAssessmentStream(stream, _testDataSourceId, hasHeaderRow: true)
+            _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
         Assert.Contains("IntegerRange requires exactly 2 rows", exception.Message);
@@ -370,7 +361,7 @@ Student Contact Information,Completeness,850,PopulatedRecords,ElectronicMailAddr
 
         // Act & Assert
         var exception = Assert.Throws<FormatException>(() =>
-            _parser.ParseAssessmentStream(stream, _testDataSourceId, hasHeaderRow: true)
+            _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
         Assert.Contains("Completeness requires exactly 2 rows", exception.Message);
@@ -388,7 +379,7 @@ Discipline Types,Distribution,450,,Distribution of discipline actions";
 
         // Act & Assert
         var exception = Assert.Throws<FormatException>(() =>
-            _parser.ParseAssessmentStream(stream, _testDataSourceId, hasHeaderRow: true)
+            _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
         Assert.Contains("Distribution rows must have a SubItemLabel", exception.Message);
@@ -406,7 +397,7 @@ Suspensions,RecordCount,NOT_A_NUMBER,,";
 
         // Act & Assert
         var exception = Assert.Throws<FormatException>(() =>
-            _parser.ParseAssessmentStream(stream, _testDataSourceId, hasHeaderRow: true)
+            _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
         Assert.Contains("Invalid RecordCount value", exception.Message);
@@ -424,7 +415,7 @@ Special Education Services,ReportedAvailability,InvalidValue,,";
 
         // Act & Assert
         var exception = Assert.Throws<FormatException>(() =>
-            _parser.ParseAssessmentStream(stream, _testDataSourceId, hasHeaderRow: true)
+            _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
         Assert.Contains("Invalid ReportedAvailability value", exception.Message);

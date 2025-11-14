@@ -137,7 +137,6 @@ public class EdFiAssessmentOrchestrator
                     try
                     {
                         var result = await assessor.AssessAsync(httpClient, dataSource, context);
-                        result.AssessmentSessionId = assessment.Id;
                         results.Add(result);
 
                         // Update status to completed

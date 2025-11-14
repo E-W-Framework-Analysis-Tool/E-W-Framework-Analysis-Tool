@@ -7,7 +7,6 @@ public class DataSourceAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string? Name { get; set; }
-    public Guid DataSourceId { get; set; }
     public DateTimeOffset ConductedAt { get; set; } = DateTimeOffset.Now;
     public string? Notes { get; set; }
 
@@ -21,7 +20,6 @@ public class DataSourceAssessment
 public class DataElementAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid AssessmentSessionId { get; set; }
     public string DataElementName { get; set; } = string.Empty;
     public DateTimeOffset AssessedAt { get; set; } = DateTimeOffset.Now;
 
