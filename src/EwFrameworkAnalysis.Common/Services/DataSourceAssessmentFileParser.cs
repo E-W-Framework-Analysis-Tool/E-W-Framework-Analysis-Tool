@@ -30,7 +30,6 @@ public class DataSourceAssessmentFileParser
     /// <returns>A tuple containing the DataSourceAssessment and parsing statistics</returns>
     public async Task<(DataSourceAssessment Assessment, AssessmentParsingStats Stats)> ParseAssessmentStreamAsync(
         Stream stream,
-        Guid dataSourceId,
         bool? hasHeaderRow = null,
         DataSourceAssessment? assessmentSession = null)
     {
@@ -112,9 +111,7 @@ public class DataSourceAssessmentFileParser
             {
                 var elementAssessment = new DataElementAssessment
                 {
-                    AssessmentSessionId = assessment.Id,
                     DataElementName = dataElementName,
-                    DataSourceId = dataSourceId,
                     AssessedAt = DateTimeOffset.Now,
                     Characteristics = characteristics,
                     Remarks = ExtractRemarks(elementGroup)
@@ -218,11 +215,10 @@ public class DataSourceAssessmentFileParser
     /// </summary>
     public (DataSourceAssessment Assessment, AssessmentParsingStats Stats) ParseAssessmentStream(
         Stream stream,
-        Guid dataSourceId,
         bool? hasHeaderRow = null,
         DataSourceAssessment? assessmentSession = null)
     {
-        return ParseAssessmentStreamAsync(stream, dataSourceId, hasHeaderRow, assessmentSession)
+        return ParseAssessmentStreamAsync(stream, hasHeaderRow, assessmentSession)
             .GetAwaiter()
             .GetResult();
     }
@@ -237,7 +233,6 @@ public class DataSourceAssessmentFileParser
     /// <returns>A tuple containing the DataSourceAssessment and parsing statistics</returns>
     public (DataSourceAssessment Assessment, AssessmentParsingStats Stats) ParseAssessmentFile(
         string csvFilePath,
-        Guid dataSourceId,
         bool? hasHeaderRow = null,
         DataSourceAssessment? assessmentSession = null)
     {
@@ -248,7 +243,7 @@ public class DataSourceAssessmentFileParser
 
         using var stream = File.OpenRead(csvFilePath);
 
-        var (assessment, stats) = ParseAssessmentStream(stream, dataSourceId, hasHeaderRow, assessmentSession);
+        var (assessment, stats) = ParseAssessmentStream(stream, hasHeaderRow, assessmentSession);
 
         // Update name if creating new assessment
         if (assessmentSession == null)

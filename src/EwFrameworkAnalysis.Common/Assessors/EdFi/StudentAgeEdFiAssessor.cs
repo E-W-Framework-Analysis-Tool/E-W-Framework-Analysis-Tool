@@ -65,7 +65,6 @@ public class StudentAgeEdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = characteristics
         };
     }

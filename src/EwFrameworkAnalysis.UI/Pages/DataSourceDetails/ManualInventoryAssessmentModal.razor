@@ -1,0 +1,204 @@
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@inject AnalysisProjectService ProjectSvc
+
+@if (IsOpen)
+{
+    <div class="modal modal-open">
+        <div class="modal-box max-w-6xl h-[80vh] p-0 flex flex-col">
+            <!-- HEADER -->
+            <div class="flex-shrink-0 p-6 pb-4 bg-base-100 border-b border-gray-200">
+                <h3 class="font-bold text-lg mb-4">Manual Data Inventory Assessment</h3>
+
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-600">
+                        Review your data inventory and mark the availability of each data element.
+                        Categories can be checked to mark all child elements at once.
+                    </p>
+
+                    <!-- Summary Stats -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-success/10 border border-success rounded-lg p-3">
+                            <div class="text-xs text-gray-600 mb-1">Available</div>
+                            <div class="text-2xl font-bold text-success">@GetAvailabilityCount(AvailabilityJudgment.Available)</div>
+                        </div>
+                        <div class="bg-warning/10 border border-warning rounded-lg p-3">
+                            <div class="text-xs text-gray-600 mb-1">Partially Available</div>
+                            <div class="text-2xl font-bold text-warning">@GetAvailabilityCount(AvailabilityJudgment.PartiallyAvailable)</div>
+                        </div>
+                        <div class="bg-error/10 border border-error rounded-lg p-3">
+                            <div class="text-xs text-gray-600 mb-1">Not Available</div>
+                            <div class="text-2xl font-bold text-error">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</div>
+                        </div>
+                    </div>
+
+                    @if (_error != null)
+                    {
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>@_error</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- BODY (scrolling area) -->
+            <div class="flex-1 overflow-hidden bg-white border-t border-gray-200">
+                <div class="h-full overflow-y-auto">
+                    <DataElementList ElementAvailability="@_elementAvailability"
+                                     ElementAvailabilityChanged="OnElementAvailabilityChanged"
+                                     IsEditable="true"
+                                     HideUnreported="false"
+                                     ContainerClass="border-x border-gray-200 bg-white" />
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="flex-shrink-0 bg-base-100 py-4 px-6 border-t border-gray-200 flex justify-end gap-2">
+                <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
+                    <i class="fas fa-times mr-2"></i>Discard Results
+                </button>
+                <button class="btn btn-primary" @onclick="SaveResults">
+                    <i class="fas fa-save mr-2"></i>Save Results
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Discard Confirmation Modal -->
+@if (_showDiscardConfirmation)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg text-blue">Discard Assessment?</h3>
+            <p class="py-4 text-gray">
+                Are you sure you want to discard this assessment? All marked availability judgments will be lost.
+            </p>
+            <div class="modal-action">
+                <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
+                <button class="btn btn-error" @onclick="ConfirmDiscard">
+                    <i class="fas fa-trash mr-2"></i>Discard
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private string? _error;
+    private Dictionary<string, AvailabilityJudgment> _elementAvailability = new();
+    private bool _showDiscardConfirmation = false;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            LoadPreviousAssessment();
+        }
+    }
+
+    private void LoadPreviousAssessment()
+    {
+        // Load the most recent assessment for this data source
+        var previousAssessment = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id)
+            .OrderByDescending(a => a.ConductedAt)
+            .FirstOrDefault();
+
+        _elementAvailability.Clear();
+
+        if (previousAssessment != null)
+        {
+            foreach (var elementAssessment in previousAssessment.DataElementAssessments)
+            {
+                var availability = elementAssessment.Characteristics
+                    .OfType<ReportedAvailability>()
+                    .FirstOrDefault();
+
+                if (availability != null)
+                {
+                    _elementAvailability[elementAssessment.DataElementName] = availability.Value;
+                }
+            }
+        }
+    }
+
+    private void OnElementAvailabilityChanged(Dictionary<string, AvailabilityJudgment> updatedAvailability)
+    {
+        _elementAvailability = updatedAvailability;
+        StateHasChanged();
+    }
+
+    private int GetAvailabilityCount(AvailabilityJudgment judgment)
+    {
+        return _elementAvailability.Values.Count(v => v == judgment);
+    }
+
+    private void ShowDiscardConfirmation()
+    {
+        _showDiscardConfirmation = true;
+    }
+
+    private void CancelDiscard()
+    {
+        _showDiscardConfirmation = false;
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscardConfirmation = false;
+        await Close();
+    }
+
+    private async Task SaveResults()
+    {
+        try
+        {
+            var assessment = new DataSourceAssessment
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Manual Inventory - {DateTimeOffset.Now:MMM d, yyyy h:mm tt}",
+                ConductedAt = DateTimeOffset.Now,
+                DataElementAssessments = new List<DataElementAssessment>()
+            };
+
+            // Create assessments for all marked elements
+            foreach (var kvp in _elementAvailability)
+            {
+                assessment.DataElementAssessments.Add(new DataElementAssessment
+                {
+                    DataElementName = kvp.Key,
+                    Characteristics = new List<DataCharacteristicBase>
+                    {
+                        new ReportedAvailability(kvp.Value)
+                    }
+                });
+            }
+
+            await OnAssessmentComplete.InvokeAsync(assessment);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to create assessment: {ex.Message}";
+        }
+    }
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+
+        // Reset state
+        _error = null;
+        _elementAvailability.Clear();
+    }
+}

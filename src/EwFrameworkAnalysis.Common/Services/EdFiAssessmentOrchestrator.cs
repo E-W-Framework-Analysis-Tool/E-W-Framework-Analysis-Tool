@@ -69,7 +69,6 @@ public class EdFiAssessmentOrchestrator
         HttpClient httpClient,
         DataSource dataSource,
         string? assessmentName = null,
-        string? notes = null,
         IProgress<AssessmentProgress>? progress = null,
         bool continueOnError = true,
         CancellationToken ct = default)
@@ -82,7 +81,6 @@ public class EdFiAssessmentOrchestrator
         var assessment = new DataSourceAssessment
         {
             Name = assessmentName ?? $"Ed-Fi Assessment - {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}",
-            Notes = notes,
             ConductedAt = DateTime.UtcNow
         };
 
@@ -139,7 +137,6 @@ public class EdFiAssessmentOrchestrator
                     try
                     {
                         var result = await assessor.AssessAsync(httpClient, dataSource, context);
-                        result.AssessmentSessionId = assessment.Id;
                         results.Add(result);
 
                         // Update status to completed
@@ -157,10 +154,7 @@ public class EdFiAssessmentOrchestrator
         }
         catch (TaskCanceledException)
         {
-            // Add cancellation info to notes
-            assessment.Notes = string.IsNullOrWhiteSpace(assessment.Notes)
-                ? "Assessment was cancelled"
-                : $"{assessment.Notes}\n\nAssessment was cancelled";
+            // Should add logging
             throw;
         }
 

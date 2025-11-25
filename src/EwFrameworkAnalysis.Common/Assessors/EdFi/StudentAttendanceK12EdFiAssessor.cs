@@ -124,7 +124,6 @@ public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            DataSourceId = dataSource.Id,
             Characteristics = [
                 new RecordCount(totalEvents),
                 new Distribution(presenceDistribution, "Presence Status"),

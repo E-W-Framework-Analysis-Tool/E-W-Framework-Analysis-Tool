@@ -51,7 +51,7 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center space-x-3 flex-shrink-0">
-                    @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw)
+                    @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw || DataSource.Type == DataSourceType.Custom)
                     {
                         <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
                             <i class="fas fa-play"></i>

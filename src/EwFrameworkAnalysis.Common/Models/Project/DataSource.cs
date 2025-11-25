@@ -12,6 +12,8 @@ public class DataSource
     public string? Description { get; set; }
     public bool Enabled { get; set; } = true;
     public DataSourceType Type { get; set; } // Which type of system this is
+
+    public List<DataSourceAssessment> Assessments { get; set; } = [];
 }
 
 public enum DataSourceType

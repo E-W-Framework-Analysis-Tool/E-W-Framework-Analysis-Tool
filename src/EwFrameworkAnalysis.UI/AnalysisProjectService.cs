@@ -1,4 +1,3 @@
-// Services/AnalysisProjectService.cs
 using System.Text.Json;
 using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
@@ -14,7 +13,7 @@ public class AnalysisProjectService
 
     public AnalysisProject Project { get; private set; } = new();
     public IReadOnlyList<DataSource> DataSources => Project.DataSources;
-    public IReadOnlyList<DataSourceAssessment> Assessments => Project.DataSourceAssessments;
+    public IReadOnlyList<DataSourceAssessment> Assessments => DataSources.SelectMany(x => x.Assessments).ToList();
 
     // Track newly added items for UI highlighting
     public Guid? NewlyAddedDataSourceId { get; private set; }
@@ -43,14 +42,12 @@ public class AnalysisProjectService
             }
             else
             {
-                // No saved project, start fresh
                 Project = new AnalysisProject();
             }
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            // Deserialization failed, start with empty project
             Project = new AnalysisProject();
         }
 
@@ -158,29 +155,41 @@ public class AnalysisProjectService
 
     #region Assessment Management
 
-    public DataSourceAssessment? GetAssessment(Guid id) =>
-        Assessments.FirstOrDefault(a => a.Id == id);
+    public DataSourceAssessment? GetAssessment(Guid assessmentId)
+    {
+        foreach (var dataSource in DataSources)
+        {
+            var assessment = dataSource.Assessments.FirstOrDefault(a => a.Id == assessmentId);
+            if (assessment != null)
+                return assessment;
+        }
+        return null;
+    }
 
     public IEnumerable<DataSourceAssessment> GetAssessmentsForDataSource(Guid dataSourceId)
     {
-        return Assessments.Where(a =>
-            a.DataElementAssessments.Any(dea => dea.DataSourceId == dataSourceId));
+        var dataSource = GetDataSource(dataSourceId);
+        return dataSource?.Assessments ?? [];
     }
 
     public IEnumerable<DataElementAssessment> GetDataElementAssessments(Guid assessmentId)
     {
         var assessment = GetAssessment(assessmentId);
-        return assessment?.DataElementAssessments ?? Enumerable.Empty<DataElementAssessment>();
+        return assessment?.DataElementAssessments ?? [];
     }
 
-    public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment)
+    public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment, Guid dataSourceId)
     {
+        var dataSource = GetDataSource(dataSourceId);
+        if (dataSource is null)
+            throw new InvalidOperationException($"Data source {dataSourceId} not found");
+
         if (string.IsNullOrWhiteSpace(assessment.Name))
         {
             assessment.Name = $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
         }
 
-        Project.DataSourceAssessments.Insert(0, assessment);
+        dataSource.Assessments.Insert(0, assessment);
         Project.LastModifiedAt = DateTimeOffset.Now;
 
         NewlyAddedAssessmentId = assessment.Id;
@@ -200,26 +209,42 @@ public class AnalysisProjectService
 
     public async Task UpdateAssessmentAsync(DataSourceAssessment updated)
     {
-        var idx = Project.DataSourceAssessments.FindIndex(a => a.Id == updated.Id);
-        if (idx >= 0)
+        foreach (var dataSource in DataSources)
         {
-            Project.DataSourceAssessments[idx] = updated;
-            Project.LastModifiedAt = DateTimeOffset.Now;
-            await SaveAsync();
-            Notify();
+            var idx = dataSource.Assessments.FindIndex(a => a.Id == updated.Id);
+            if (idx >= 0)
+            {
+                dataSource.Assessments[idx] = updated;
+                Project.LastModifiedAt = DateTimeOffset.Now;
+                await SaveAsync();
+                Notify();
+                return;
+            }
         }
     }
 
-    public async Task DeleteAssessmentAsync(Guid id)
+    public async Task DeleteAssessmentAsync(Guid assessmentId)
     {
-        var index = Project.DataSourceAssessments.FindIndex(a => a.Id == id);
-        if (index >= 0)
+        foreach (var dataSource in DataSources)
         {
-            Project.DataSourceAssessments.RemoveAt(index);
-            Project.LastModifiedAt = DateTimeOffset.Now;
-            await SaveAsync();
-            Notify();
+            var idx = dataSource.Assessments.FindIndex(a => a.Id == assessmentId);
+            if (idx >= 0)
+            {
+                dataSource.Assessments.RemoveAt(idx);
+                Project.LastModifiedAt = DateTimeOffset.Now;
+                await SaveAsync();
+                Notify();
+                return;
+            }
         }
+    }
+
+    /// <summary>
+    /// Get all assessments across all data sources (flattened)
+    /// </summary>
+    public IEnumerable<DataSourceAssessment> GetAllAssessments()
+    {
+        return DataSources.SelectMany(ds => ds.Assessments);
     }
 
     #endregion
@@ -237,8 +262,7 @@ public class AnalysisProjectService
             Title = "New Analysis Project",
             CreatedAt = DateTimeOffset.Now,
             LastModifiedAt = DateTimeOffset.Now,
-            DataSources = [],
-            DataSourceAssessments = []
+            DataSources = []
         };
         await SaveAsync();
         Notify();
@@ -289,7 +313,8 @@ public class AnalysisProjectService
             Name = type.GetDisplayName(),
             Description = type.GetDisplayDescription(),
             Type = type,
-            Enabled = true
+            Enabled = true,
+            Assessments = []
         };
     }
 
@@ -311,9 +336,9 @@ public class AnalysisProjectService
         var questions = EwFrameworkEssentialQuestions.Questions;
         var indicators = EwFrameworkIndicators.Indicators;
 
-        // Flatten assessed data elements
-        var assessedDataElements = assessments
-            .SelectMany(a => a.DataElementAssessments)
+        // Flatten assessed data elements with their parent assessment for tracking
+        var assessedDataElementsWithSource = assessments
+            .SelectMany(a => a.DataElementAssessments.Select(de => new { Assessment = a, DataElement = de }))
             .ToList();
 
         var questionScores = new List<QuestionScore>();
@@ -336,21 +361,20 @@ public class AnalysisProjectService
 
                 foreach (var dataElementName in indicator.DataElementNames)
                 {
-                    // Try to find this element in the assessments
-                    var matchedAssessment = assessedDataElements
-                        .FirstOrDefault(ae =>
-                            ae.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase) ||
-                            ae.DataElementName.Contains(dataElementName, StringComparison.OrdinalIgnoreCase) ||
-                            dataElementName.Contains(ae.DataElementName, StringComparison.OrdinalIgnoreCase));
+                    var matched = assessedDataElementsWithSource
+                        .FirstOrDefault(x =>
+                            x.DataElement.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase) ||
+                            x.DataElement.DataElementName.Contains(dataElementName, StringComparison.OrdinalIgnoreCase) ||
+                            dataElementName.Contains(x.DataElement.DataElementName, StringComparison.OrdinalIgnoreCase));
 
                     var dataElementScore = new DataElementScore
                     {
                         DataElementName = dataElementName,
-                        IsAvailable = matchedAssessment != null,
-                        Source = matchedAssessment?.AssessmentSessionId.ToString(),
-                        AvailabilityScore = matchedAssessment != null ? 1.0m : 0.0m,
-                        QualityScore = 1, // (optional — requires instructions on how to calculate this value)
-                        Notes = matchedAssessment != null ? "Data found in assessment" : "No matching assessment data"
+                        IsAvailable = matched != null,
+                        Source = matched?.Assessment.Id.ToString(),
+                        AvailabilityScore = matched != null ? 1.0m : 0.0m,
+                        QualityScore = 1,
+                        Notes = matched != null ? "Data found in assessment" : "No matching assessment data"
                     };
 
                     indicatorScore.DataElementScores.Add(dataElementScore);
@@ -382,3 +406,4 @@ public class AnalysisProjectService
 
     #endregion
 }
+

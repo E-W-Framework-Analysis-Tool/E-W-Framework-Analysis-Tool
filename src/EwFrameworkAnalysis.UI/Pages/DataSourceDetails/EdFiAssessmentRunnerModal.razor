@@ -5,7 +5,6 @@
 @using Microsoft.Extensions.Options
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Services
-@inject AnalysisProjectService ProjectSvc
 @inject EdFiAssessmentOrchestrator Orchestrator
 @inject IOptions<DemoEdFiApiOptions> DemoApiOptions
 
@@ -217,22 +216,47 @@
             <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
                 @if (_isRunning)
                 {
-                    <button class="btn btn-error" @onclick="CancelAssessment"><i class="fas fa-stop mr-2"></i>Cancel Assessment</button>
+                    <button class="btn btn-error" @onclick="CancelAssessment">
+                        <i class="fas fa-stop mr-2"></i>Cancel Assessment
+                    </button>
                 }
                 else if (_assessmentResult != null)
                 {
-                    <button class="btn btn-ghost" @onclick="ResetAssessmentRunner">Run Another</button>
-                    <button class="btn btn-secondary" @onclick="CloseAssessmentRunner">Done</button>
+                    <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
+                        <i class="fas fa-times mr-2"></i>Discard Results
+                    </button>
+                    <button class="btn btn-primary" @onclick="SaveResults">
+                        <i class="fas fa-save mr-2"></i>Save Results
+                    </button>
                 }
                 else
                 {
-                    <button class="btn btn-ghost" @onclick="CloseAssessmentRunner">Cancel</button>
-                    <button class="btn btn-secondary" @onclick="StartAssessment"><i class="fas fa-play mr-2"></i>Start Assessment</button>
+                    <button class="btn btn-ghost" @onclick="Close">Cancel</button>
+                    <button class="btn btn-secondary" @onclick="StartAssessment">
+                        <i class="fas fa-play mr-2"></i>Start Assessment
+                    </button>
                 }
             </div>
-
         </div>
     </div>
+    <!-- Discard Confirmation Modal -->
+    @if (_showDiscardConfirmation)
+    {
+        <div class="modal modal-open">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg text-blue">Discard Assessment?</h3>
+                <p class="py-4 text-gray">
+                    Are you sure you want to discard this assessment? All collected data will be lost.
+                </p>
+                <div class="modal-action">
+                    <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
+                    <button class="btn btn-error" @onclick="ConfirmDiscard">
+                        <i class="fas fa-trash mr-2"></i>Discard
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
@@ -243,6 +267,7 @@
 
     private bool _showAssessmentRunner = false;
     private bool _isRunning = false;
+    private bool _showDiscardConfirmation = false;
 
     private string _clientId = "";
     private string _clientSecret = "";
@@ -258,11 +283,6 @@
     private CancellationTokenSource? _cancellationTokenSource;
     private Timer? _renderTimer;
     private volatile bool _pendingRender;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await ProjectSvc.InitializeAsync();
-    }
 
     private void UseDemoCredentials()
     {
@@ -302,17 +322,10 @@
                 httpClient,
                 DataSource!,
                 $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
-                "",
                 progress,
                 true,
                 _cancellationTokenSource.Token
             );
-
-            if (_assessmentResult != null)
-            {
-                await ProjectSvc.AddAssessmentAsync(_assessmentResult);
-                await OnAssessmentComplete.InvokeAsync(_assessmentResult);
-            }
 
             httpClient.Dispose();
         }
@@ -400,16 +413,29 @@
         await Close();
     }
 
-    private async void CloseAssessmentRunner()
+    private void ShowDiscardConfirmation()
     {
-        _showAssessmentRunner = false;
+        _showDiscardConfirmation = true;
+    }
+
+    private void CancelDiscard()
+    {
+        _showDiscardConfirmation = false;
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscardConfirmation = false;
+        ResetAssessmentRunner();
+        await Close();
+    }
+
+    private async Task SaveResults()
+    {
         if (_assessmentResult != null)
         {
-            // LoadDataSource();
-            // // Auto-select the newly completed assessment
-            // _selectedAssessment = _assessmentResult;
+            await OnAssessmentComplete.InvokeAsync(_assessmentResult);
         }
-        ResetAssessmentRunner();
         await Close();
     }
 

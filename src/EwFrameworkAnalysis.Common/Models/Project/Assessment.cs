@@ -20,9 +20,7 @@ public class DataSourceAssessment
 public class DataElementAssessment
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid AssessmentSessionId { get; set; }
     public string DataElementName { get; set; } = string.Empty;
-    public Guid DataSourceId { get; set; }
     public DateTimeOffset AssessedAt { get; set; } = DateTimeOffset.Now;
 
     // Assessment results

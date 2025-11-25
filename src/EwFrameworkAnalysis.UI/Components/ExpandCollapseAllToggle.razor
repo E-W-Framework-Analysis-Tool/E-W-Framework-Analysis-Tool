@@ -1,0 +1,18 @@
+<button class="btn btn-ghost btn-xs gap-1" @onclick="Toggle">
+    <i class="fas @(IsExpanded ? "fa-compress-alt" : "fa-expand-alt")"></i>
+    @(IsExpanded? CollapseLabel : ExpandLabel)
+</button>
+
+@code {
+    [Parameter] public bool IsExpanded { get; set; }
+    [Parameter] public EventCallback<bool> IsExpandedChanged { get; set; }
+
+    [Parameter] public string ExpandLabel { get; set; } = "Expand All";
+    [Parameter] public string CollapseLabel { get; set; } = "Collapse All";
+
+    private async Task Toggle()
+    {
+        IsExpanded = !IsExpanded;
+        await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+}

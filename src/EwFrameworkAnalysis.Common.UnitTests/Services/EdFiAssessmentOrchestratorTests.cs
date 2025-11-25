@@ -130,7 +130,6 @@ public class EdFiAssessmentOrchestratorTests
             .Returns(new DataElementAssessment
             {
                 DataElementName = "Test Assessor",
-                DataSourceId = _testDataSource.Id,
                 Characteristics = []
             });
 
@@ -243,7 +242,6 @@ public class EdFiAssessmentOrchestratorTests
                 return new DataElementAssessment
                 {
                     DataElementName = "Slow Assessor",
-                    DataSourceId = _testDataSource.Id,
                     Characteristics = []
                 };
             });
@@ -294,7 +292,6 @@ public class EdFiAssessmentOrchestratorTests
         // Assert
         Assert.NotNull(result);
         Assert.Single(result.DataElementAssessments);
-        Assert.Equal(result.Id, result.DataElementAssessments[0].AssessmentSessionId);
     }
 
     private IEdFiAssessor CreateFakeAssessor(string name, int recordCount)
@@ -309,7 +306,6 @@ public class EdFiAssessmentOrchestratorTests
             .Returns(new DataElementAssessment
             {
                 DataElementName = name,
-                DataSourceId = _testDataSource.Id,
                 Characteristics = [new RecordCount(recordCount)]
             });
 

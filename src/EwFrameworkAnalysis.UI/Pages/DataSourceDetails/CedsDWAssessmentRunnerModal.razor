@@ -379,8 +379,7 @@
 
             var parser = new DataSourceAssessmentFileParser();
             var (assessment, stats) = await parser.ParseAssessmentStreamAsync(
-                stream,
-                DataSource.Id
+                stream
             );
 
             _assessmentResult = assessment;
@@ -405,7 +404,6 @@
     {
         if (_assessmentResult == null) return;
 
-        await ProjectSvc.AddAssessmentAsync(_assessmentResult);
         await OnAssessmentComplete.InvokeAsync(_assessmentResult);
         await Close();
     }
