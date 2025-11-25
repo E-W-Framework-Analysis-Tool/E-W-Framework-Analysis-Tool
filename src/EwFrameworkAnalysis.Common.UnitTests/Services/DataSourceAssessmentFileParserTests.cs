@@ -74,8 +74,7 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
 
         // Act
         var (assessment, stats) = _parser.ParseAssessmentStream(
-            stream,
-            _testDataSourceId
+            stream
         );
 
         // Assert
@@ -362,7 +361,6 @@ Suspensions,RecordCount,0,,Zero records is valid";
         // Act
         var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -409,7 +407,6 @@ Valid Element,RecordCount,100,,This one is fine";
         // Act
         var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -441,7 +438,6 @@ Discipline Types,Distribution,125,Expulsion,";
         // Act
         var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
@@ -573,7 +569,6 @@ Element4,ReportedAvailability,Available,,";
         // Act
         var (assessment, stats) = _parser.ParseAssessmentStream(
             stream,
-            _testDataSourceId,
             hasHeaderRow: true
         );
 
