@@ -144,11 +144,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
       - name: Determine version
         shell: pwsh
         run: |
@@ -179,10 +174,18 @@ jobs:
           EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
           EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
-      - name: Deploy to Azure Static Web Apps (Dev)
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+
+      - name: Deploy to Azure Storage (Dev)
         shell: pwsh
         run: |
-          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
+          ./eng/deploy-to-azure-storage.ps1 `
+            -StorageAccountName "${{ vars.AZURE_STORAGE_ACCOUNT_NAME_DEV }}" `
+            -ResourceGroupName "${{ vars.AZURE_RESOURCE_GROUP_DEV }}" `
+            -AppLocation "publish/wwwroot"
 
   deploy-test:
     name: Deploy to Test Environment
@@ -194,11 +197,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
 
       - name: Extract version from tag
         shell: pwsh
@@ -231,10 +229,18 @@ jobs:
           EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
           EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
-      - name: Deploy to Azure Static Web Apps (Test)
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_TEST }}
+
+      - name: Deploy to Azure Storage (Test)
         shell: pwsh
         run: |
-          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
+          ./eng/deploy-to-azure-storage.ps1 `
+            -StorageAccountName "${{ vars.AZURE_STORAGE_ACCOUNT_NAME_TEST }}" `
+            -ResourceGroupName "${{ vars.AZURE_RESOURCE_GROUP_TEST }}" `
+            -AppLocation "publish/wwwroot"
 
   deploy-prod:
     name: Deploy to Production Environment
@@ -246,11 +252,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
 
       - name: Extract version from tag
         shell: pwsh
@@ -283,7 +284,15 @@ jobs:
           EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
           EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
 
-      - name: Deploy to Azure Static Web Apps (Production)
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+
+      - name: Deploy to Azure Storage (Production)
         shell: pwsh
         run: |
-          ./eng/deploy-to-azure-swa.ps1 -DeployToken "${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}" -AppLocation "publish/wwwroot"
+          ./eng/deploy-to-azure-storage.ps1 `
+            -StorageAccountName "${{ vars.AZURE_STORAGE_ACCOUNT_NAME_PROD }}" `
+            -ResourceGroupName "${{ vars.AZURE_RESOURCE_GROUP_PROD }}" `
+            -AppLocation "publish/wwwroot"
