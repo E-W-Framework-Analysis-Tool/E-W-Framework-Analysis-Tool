@@ -76,29 +76,29 @@ Write-Host "Found $($files.Count) files to upload"
 # Using --content-cache-control for proper caching headers
 Write-Host "`nUploading files..."
 
-$uploadArgs = @(
-    "storage", "blob", "upload-batch",
-    "--account-name", $StorageAccountName,
-    "--auth-mode", "login",
-    "--destination", "`$web",
-    "--source", $AppLocation,
-    "--overwrite",
-    "--no-progress"
-)
-
-# Set appropriate cache headers for different file types
-# Blazor files with hash in name can be cached aggressively
-# index.html and other entry points should not be cached
-$uploadArgs += @(
-    "--pattern", "*",
-    "--content-cache-control", "public, max-age=31536000, immutable"
-)
-
+# Note: We need to call az directly with proper escaping, not use splatting
+# because PowerShell array splatting doesn't work well with external commands
 if ($ShowVerbose) {
-    $uploadArgs += "--verbose"
+    az storage blob upload-batch `
+        --account-name $StorageAccountName `
+        --auth-mode login `
+        --destination "`$web" `
+        --source $AppLocation `
+        --overwrite `
+        --pattern "*" `
+        --content-cache-control "public, max-age=31536000, immutable" `
+        --verbose
+} else {
+    az storage blob upload-batch `
+        --account-name $StorageAccountName `
+        --auth-mode login `
+        --destination "`$web" `
+        --source $AppLocation `
+        --overwrite `
+        --pattern "*" `
+        --content-cache-control "public, max-age=31536000, immutable" `
+        --no-progress
 }
-
-az @uploadArgs
 
 if ($LASTEXITCODE -ne 0) {
     Fail "File upload failed with exit code $LASTEXITCODE"

@@ -52,6 +52,8 @@ az ad sp create-for-rbac \
 
 Each command outputs JSON credentials. **Save the entire JSON output** for the next step.
 
+> ASSIGN READER ROLE TO SERVICE PRINCIPAL FOR RESOURCE GROUP OR FOR STORAGE ACCOUNT.
+
 ### 2. Configure GitHub Secrets
 
 Navigate to **Settings** → **Secrets and variables** → **Actions** in your GitHub repository.
