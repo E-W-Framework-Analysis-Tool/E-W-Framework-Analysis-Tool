@@ -66,7 +66,6 @@ public class TeacherExperienceEdFiAssessor : IEdFiAssessor
         );
 
 
-
         context.Log($"Found {totalTeachers:N0} teachers");
         context.ReportProgress(100, "Complete");
 
