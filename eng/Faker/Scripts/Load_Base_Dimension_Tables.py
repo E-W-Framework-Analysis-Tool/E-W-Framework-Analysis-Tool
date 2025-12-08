@@ -7,6 +7,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from Config.config import *
 
 def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
+        engine = None 
+
         try:
             SEED = 1
             random.seed(SEED)
@@ -56,7 +58,6 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 })
 
             
-
             LEATypeCode ={
                     "RegularNotInSupervisoryUnion":"Regular public school district that is NOT a component of a supervisory union",
                     "RegularInSupervisoryUnion":"Regular public school district that is a component of a supervisory union",
@@ -118,7 +119,7 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                     "CharterLeaStatus": random.choice([0,1]),
                     "ReconstitutedStatus": random.choice([0,1]),
                     "McKinneyVentoSubgrantRecipient": random.choice([0,1]),
-                    "NameOfInstitution": f"{fake.city()} Education Institution",
+                    ##"NameOfInstitution": f"{fake.city()} Education Institution",
                     "RecordStartDateTime": fake.date_this_decade(),
                     "RecordEndDateTime": None
                 })
@@ -208,12 +209,12 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
             ##assign roles 
             roles = [
                 # "ELChild",
-                "K12Student"
+                "K12Student",
                 # "PsStudent",
                 # "AeStudent",
                 # "WorkforceProgramParticipant",
                 # "ELStaff",
-                # "K12Staff",
+                 "K12Staff",
                 # "PsStaff"
             ]
 
@@ -223,8 +224,8 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 role = random.choice(roles)
                 
                 # Random start/end dates
-                start_date = fake.date_between(start_date="-10y", end_date="today")
-                end_date = None if random.random() > 0.8 else fake.date_between(start_date=start_date, end_date="today")
+                start_date = fake.date_between(start_date="-10y", end_date="-1y")
+                end_date = None if random.random() > 0.8 else fake.date_between(start_date=start_date, end_date="-1y")
                 
                 dim_people.append({
                     "FirstName": fake.first_name(),
@@ -232,8 +233,8 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                     "LastOrSurname": fake.last_name(),
                     "BirthDate": fake.date_of_birth(minimum_age=5, maximum_age=21),  
                     "ELChildChildIdentifierState": None,
-                    "K12StudentStudentIdentifierState": fake.uuid4()[:10],
-                    "K12StudentStudentIdentifierDistrict": fake.random_number(digits=8, fix_len=True),
+                    "K12StudentStudentIdentifierState": None,
+                    "K12StudentStudentIdentifierDistrict": None,
                     "K12StudentStudentIdentifierNationalMigrant": None,
                     "PsStudentStudentIdentifierState": None,
                     "AeStudentStudentIdentifierState": None,
@@ -244,12 +245,12 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                     "PsStaffStaffMemberIdentifierState": None,
                     "PersonIdentifierDriversLicense": None,
                     "IsActiveELChild": 0,
-                    "IsActiveK12Student": 1,
+                    "IsActiveK12Student": random.choice([0,1]),
                     "IsActivePsStudent": 0,
                     "IsActiveAeStudent": 0,
                     "IsActiveWorkforceProgramParticipant": 0,
                     "IsActiveELStaff": 0,
-                    "IsActiveK12Staff": 0,
+                    "IsActiveK12Staff": random.choice([0,1]),
                     "IsActivePsStaff": 0,
                     "RecordStartDateTime": start_date,
                     "RecordEndDateTime": end_date,
@@ -265,43 +266,85 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 })
                 
                 # # Assign identifiers/status depending on role commenting for now
-                # if role == "ELChild":
-                #     person_data["IsActiveELChild"] = 1
-                #     person_data["ELChildChildIdentifierState"] = fake.uuid4()[:10]
-                # elif role == "K12Student":
-                #     person_data["IsActiveK12Student"] = 1
-                #     person_data["K12StudentStudentIdentifierState"] = fake.uuid4()[:10]
-                #     person_data["K12StudentStudentIdentifierDistrict"] = fake.random_number(digits=8, fix_len=True)
-                #     person_data["K12StudentStudentIdentifierNationalMigrant"] = fake.uuid4()[:10]
-                # elif role == "PsStudent":
-                #     person_data["IsActivePsStudent"] = 1
-                #     person_data["PsStudentStudentIdentifierState"] = fake.uuid4()[:10]
-                # elif role == "AeStudent":
-                #     person_data["IsActiveAeStudent"] = 1
-                #     person_data["AeStudentStudentIdentifierState"] = fake.uuid4()[:10]
-                # elif role == "WorkforceProgramParticipant":
-                #     person_data["IsActiveWorkforceProgramParticipant"] = 1
-                #     person_data["WorkforceProgramParticipantPersonIdentifierState"] = fake.uuid4()[:10]
-                # elif role == "ELStaff":
-                #     person_data["IsActiveELStaff"] = 1
-                #     person_data["ELStaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
-                #     person_data["PositionTitle"] = random.choice(["Teacher", "Assistant", "Specialist"])
-                # elif role == "K12Staff":
-                #     person_data["IsActiveK12Staff"] = 1
-                #     person_data["K12StaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
-                #     person_data["K12StaffStaffMemberIdentifierDistrict"] = fake.random_number(digits=7, fix_len=True)
-                #     person_data["PositionTitle"] = random.choice(["Teacher", "Administrator", "Counselor"])
-                # elif role == "PsStaff":
-                #     person_data["IsActivePsStaff"] = 1
-                #     person_data["PsStaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
-                #     person_data["PositionTitle"] = random.choice(["Professor", "Lecturer", "Coordinator"])
-                
-                # # Assign driver license only for staff
-                # if role.endswith("Staff"):
-                #     person_data["PersonIdentifierDriversLicense"] = fake.bothify(text="??######")
-                
-                # dim_people.append(person_data)
+                if role == "ELChild":
+                    dim_people[-1]["IsActiveELChild"] = 1
+                    dim_people[-1]["ELChildChildIdentifierState"] = fake.uuid4()[:10]
+                elif role == "K12Student":
+                    dim_people[-1]["IsActiveK12Student"] = 1
+                    dim_people[-1]["K12StudentStudentIdentifierState"] = fake.uuid4()[:10]
+                    dim_people[-1]["K12StudentStudentIdentifierDistrict"] = fake.random_number(digits=8, fix_len=True)
+                    dim_people[-1]["K12StudentStudentIdentifierNationalMigrant"] = fake.uuid4()[:10]
+                elif role == "PsStudent":
+                    dim_people[-1]["IsActivePsStudent"] = 1
+                    dim_people[-1]["PsStudentStudentIdentifierState"] = fake.uuid4()[:10]
+                elif role == "AeStudent":
+                    dim_people[-1]["IsActiveAeStudent"] = 1
+                    dim_people[-1]["AeStudentStudentIdentifierState"] = fake.uuid4()[:10]
+                elif role == "WorkforceProgramParticipant":
+                    dim_people[-1]["IsActiveWorkforceProgramParticipant"] = 1
+                    dim_people[-1]["WorkforceProgramParticipantPersonIdentifierState"] = fake.uuid4()[:10]
+                elif role == "ELStaff":
+                    dim_people[-1]["IsActiveELStaff"] = 1
+                    dim_people[-1]["ELStaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
+                    dim_people[-1]["PositionTitle"] = random.choice(["Teacher", "Assistant", "Specialist"])
+                elif role == "K12Staff":
+                    dim_people[-1]["IsActiveK12Staff"] = 1
+                    dim_people[-1]["K12StaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
+                    dim_people[-1]["K12StaffStaffMemberIdentifierDistrict"] = fake.random_number(digits=7, fix_len=True)
+                    dim_people[-1]["PositionTitle"] = random.choice(["Teacher", "Administrator", "Counselor"])
+                 
+                elif role == "PsStaff":
+                    dim_people[-1]["IsActivePsStaff"] = 1
+                    dim_people[-1]["PsStaffStaffMemberIdentifierState"] = fake.uuid4()[:10]
+                    dim_people[-1]["PositionTitle"] = random.choice(["Professor", "Lecturer", "Coordinator"])
 
+                # Assign driver license only for staff
+                if role.endswith("Staff"):
+                    dim_people[-1]["PersonIdentifierDriversLicense"] = fake.bothify(text="??######")
+                
+           
+            dim_people_current = []
+            for  person in dim_people:
+                dim_people_current.append({
+                    "FirstName": person['FirstName'],
+                    "MiddleName": person['MiddleName'],
+                    "LastOrSurname": person['LastOrSurname'],
+                    "ELChildChildIdentifierState": None,
+                    "K12StudentStudentIdentifierState": person['K12StudentStudentIdentifierState'],
+                    "K12StudentStudentIdentifierDistrict": person['K12StudentStudentIdentifierDistrict'],
+                    "K12StudentStudentIdentifierNationalMigrant": None,
+                    "PsStudentStudentIdentifierState": None,
+                    "AeStudentStudentIdentifierState": None,
+                    "WorkforceProgramParticipantPersonIdentifierState": None,
+                    "ELStaffStaffMemberIdentifierState": None,
+                    "K12StaffStaffMemberIdentifierState": person['K12StaffStaffMemberIdentifierState'],
+                    "K12StaffStaffMemberIdentifierDistrict": person['K12StaffStaffMemberIdentifierDistrict'],
+                    "PsStaffStaffMemberIdentifierState": None,
+                    "PersonIdentifierDriversLicense":  person['PersonIdentifierDriversLicense'],
+                    "PersonIdentifierSSN": None,
+                    "PersonIdentifierState":None,
+                    "StudentIdentifierState": None,
+                    "IsActiveELChild": 0,
+                    "IsActiveK12Student": person['IsActiveK12Student'],
+                    "IsActivePsStudent": 0,
+                    "IsActiveAeStudent": 0,
+                    "IsActiveWorkforceProgramParticipant": 0,
+                    "IsActiveELStaff": 0,
+                    "IsActiveK12Staff": person['IsActiveK12Staff'],
+                    "IsActivePsStaff": 0,
+                    "ElectronicMailAddressHome": random.choice([person['ElectronicMailAddressHome'],fake.email()]),
+                    "ElectronicMailAddressOrganizational": random.choice([person['ElectronicMailAddressOrganizational'],fake.company_email()]),
+                    "ElectronicMailAddressWork": random.choice([person['ElectronicMailAddressWork'],fake.email()]),
+                    "TelephoneNumberFax": random.choice([person['TelephoneNumberFax'],fake.phone_number()]),
+                    "TelephoneNumberHome": random.choice([person['TelephoneNumberHome'],fake.phone_number()]),
+                    "TelephoneNumberMobile": random.choice([person['TelephoneNumberMobile'],fake.phone_number()]),
+                    "TelephoneNumberWork": random.choice([person['TelephoneNumberWork'],fake.phone_number()]),
+                    "PersonalTitleOrPrefix": random.choice([None, "Mr.", "Ms.", "Mrs.", "Dr."]),
+                    "PositionTitle": person['PositionTitle'],
+                    "GenerationCodeOrSuffix": random.choice([None, "Jr.", "Sr.", "III"]),
+                    "HighestLevelOfEducationCompletedCode":  None,
+                    "HighestLevelOfEducationCompletedDescription": None
+                })
 
             
 
@@ -337,6 +380,7 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
             df_leas = pd.DataFrame(dim_leas)
             df_schools = pd.DataFrame(dim_schools)
             df_people = pd.DataFrame(dim_people)
+            dim_people_current = pd.DataFrame(dim_people_current)
             df_assessments = pd.DataFrame(assessments)
 
             # URL-encode the connection string parameters
@@ -361,6 +405,7 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 "DELETE FROM RDS.DimLeas;DBCC CHECKIDENT ('RDS.DimLeas', RESEED, 0);" \
                 "DELETE FROM RDS.DimK12Schools;DBCC CHECKIDENT ('RDS.DimK12Schools', RESEED, 0);" \
                 "DELETE FROM RDS.DimPeople;DBCC CHECKIDENT ('RDS.DimPeople', RESEED, 0);" \
+                "DELETE FROM RDS.DimPeople_current;DBCC CHECKIDENT ('RDS.DimPeople_current', RESEED, 0);" \
                 "DELETE FROM RDS.DimAssessments;DBCC CHECKIDENT ('RDS.DimAssessments', RESEED, 0);"\
                 "IF NOT EXISTS (SELECT 1 FROM RDS.DimDataCollections WHERE DimDataCollectionId = -1) BEGIN SET IDENTITY_INSERT RDS.DimDataCollections ON " \
                 "INSERT INTO RDS.DimDataCollections  (DimDataCollectionId, DataCollectionName) VALUES (-1, 'None') SET IDENTITY_INSERT RDS.DimDataCollections off END;"\
@@ -368,10 +413,10 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 "INSERT INTO RDS.DimEducationOrganizationNetworks (DimEducationOrganizationNetworkId, OrganizationIdentifierSea,OrganizationTypeCode,OrganizationTypeDescription,"\
 			    "OrganizationName,RecordStartDateTime) VALUES (-1, 'None','None','None','None',-1) SET IDENTITY_INSERT RDS.DimEducationOrganizationNetworks off END;"\
                 "IF NOT EXISTS (SELECT 1 FROM RDS.DimIeus WHERE DimIeuId = -1) BEGIN SET IDENTITY_INSERT RDS.DimIeus ON " \
+                "INSERT INTO RDS.DimIeus (DimIeuId,OutOfStateIndicator,RecordStartDateTime) VALUES (-1,-1,-1) SET IDENTITY_INSERT RDS.DimIeus off END;" \
                 "IF NOT EXISTS (SELECT 1 FROM RDS.DimCompetencyDefinitions WHERE DimCompetencyDefinitionId = -1) " \
                 "BEGIN SET IDENTITY_INSERT RDS.DimCompetencyDefinitions ON INSERT INTO RDS.DimCompetencyDefinitions" \
                 " (DimCompetencyDefinitionId,CompetencyDefinitionValidStartDate) VALUES (-1,-1) SET IDENTITY_INSERT RDS.DimCompetencyDefinitions off END;" \
-                "INSERT INTO RDS.DimIeus (DimIeuId,OutOfStateIndicator,RecordStartDateTime) VALUES (-1,-1,-1) SET IDENTITY_INSERT RDS.DimIeus off END;" \
                 "IF NOT EXISTS (SELECT 1 FROM RDS.DimAssessmentPerformanceLevels WHERE DimAssessmentPerformanceLevelId = -1) " \
                 "BEGIN SET IDENTITY_INSERT RDS.DimAssessmentPerformanceLevels ON INSERT INTO RDS.DimAssessmentPerformanceLevels"\
                 " (DimAssessmentPerformanceLevelId,AssessmentPerformanceLevelIdentifier,AssessmentPerformanceLevelLabel,AssessmentPerformanceLevelScoreMetric," \
@@ -388,12 +433,17 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
                 "VALUES (-1,'','','','','','','','','','','','','','','','','') SET IDENTITY_INSERT RDS.DimAssessmentSubtests off END;" \
                 "IF NOT EXISTS (SELECT 1 FROM RDS.DimAssessmentAdministrations WHERE DimAssessmentAdministrationId = -1) " \
                 "BEGIN SET IDENTITY_INSERT RDS.DimAssessmentAdministrations ON INSERT INTO RDS.DimAssessmentAdministrations (DimAssessmentAdministrationId) " \
-                "VALUES (-1) SET IDENTITY_INSERT RDS.DimAssessmentAdministrations off END;"))
+                "VALUES (-1) SET IDENTITY_INSERT RDS.DimAssessmentAdministrations off END; " \
+                "IF NOT EXISTS (SELECT 1 FROM RDS.DimAssessmentParticipationSessions WHERE DimAssessmentParticipationSessionId = -1) " \
+                "BEGIN SET IDENTITY_INSERT RDS.DimAssessmentParticipationSessions ON INSERT INTO RDS.DimAssessmentParticipationSessions " \
+				"(DimAssessmentParticipationSessionId,AssessmentSessionSpecialCircumstanceTypeCode,AssessmentSessionSpecialCircumstanceTypeDescription) " \
+                "VALUES (-1,'MISSING','MISSING') SET IDENTITY_INSERT RDS.DimAssessmentParticipationSessions off END;"))
             
             df_seas.to_sql("DimSeas", engine, if_exists="append", index=False, schema="RDS")
             df_leas.to_sql("DimLeas", engine, if_exists="append", index=False, schema="RDS")
             df_schools.to_sql("DimK12Schools", engine, if_exists="append", index=False, schema="RDS")
             df_people.to_sql("DimPeople", engine, if_exists="append", index=False, schema="RDS")
+            dim_people_current.to_sql("DimPeople_Current", engine, if_exists="append", index=False, schema="RDS")
             df_assessments.to_sql("DimAssessments", engine, if_exists="append", index=False, schema="RDS")
             return True
 
@@ -402,5 +452,6 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
 
         finally:
             # Dispose engine to close all connections
-            engine.dispose()
-            print("SQL connection closed.")
+            if engine:
+                engine.dispose()
+                print("SQL connection closed.")

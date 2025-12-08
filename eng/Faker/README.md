@@ -39,19 +39,18 @@ Contains SQL queries used to create derived characteristics and assess data read
 4. Create TestResults Table (DDL script under Tests folder)
 5. Python (recommended version: 3.10 or higher).
 6. Install dependencies using:
-
     pip install -r requirements.txt
 
 
 **How to Run Scripts to Load and Test Sample Data in CEDS DWH**
-```bash
-1. Load Sample Data into the CEDS Data Warehouse
+1. Load Sample Historical Data into the CEDS Data Warehouse
+python -m Scripts.Load_Fact_History_Tables
 
+2. Load Sample Data into the CEDS Data Warehouse
 python -m Scripts.Load_Fact_Tables
 
-2. Run QA Tests on the Loaded Data
-
+3. Run QA Tests on the Loaded Data
 python -m Tests.Test
 
-3. Verify Test Results in SQL Server
+4. Verify Test Results in SQL Server
     Select * from RDS.TestResults;
