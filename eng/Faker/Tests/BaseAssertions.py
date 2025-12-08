@@ -21,13 +21,9 @@ def BaseAssertion():
     Log_Datetime = datetime.now()
 
     try:
-        # --- DB Connection ---
-        server, database = config()
-        params = urllib.parse.quote_plus(
-            f"Driver={{ODBC Driver 17 for SQL Server}};"
-            f"Server={server};Database={database};Trusted_Connection=yes;"
-        )
-        engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+        # Create engine
+        engine = create_sql_alchemy_engine() 
+        
         with engine.begin() as conn:
             dim_people = pd.read_sql_query("SELECT * FROM RDS.DimPeople;", conn)
             dim_seas = pd.read_sql_query("SELECT * FROM RDS.DimSeas;", conn)

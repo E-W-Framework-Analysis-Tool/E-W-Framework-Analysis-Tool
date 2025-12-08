@@ -21,13 +21,8 @@ def Assertion(table_name, column_names):
     Log_Datetime = datetime.now()
 
     try:
-        # --- DB Connection ---
-        server, database = config()
-        params = urllib.parse.quote_plus(
-            f"Driver={{ODBC Driver 17 for SQL Server}};"
-            f"Server={server};Database={database};Trusted_Connection=yes;"
-        )
-        engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+        # Create engine
+        engine = create_sql_alchemy_engine() 
 
         # --- Load tables ---
         with engine.begin() as conn:

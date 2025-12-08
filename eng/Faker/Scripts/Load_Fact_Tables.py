@@ -11,12 +11,9 @@ from Config.config import *
 def main():
     engine = None 
     try :
-        base_load = load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100)
-
-        # Load into SQL Server
-        server,database = config()   
-
-        if base_load == True and (server is not None or database is not None):
+        base_load = load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100) 
+        
+        if base_load == True:
             print("Base Table Data successfully loaded into SQL Server!")
 
             SEED = 2
@@ -29,15 +26,9 @@ def main():
             fact_discipline = []
             num_facts = 1000
 
-            # URL-encode the connection string parameters
-            params = urllib.parse.quote_plus(
-                f"Driver={{ODBC Driver 17 for SQL Server}};"
-                f"Server={server};"
-                f"Database={database};"
-                f"Trusted_Connection=yes;"
-            )
             # Create engine
-            engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+            engine = create_sql_alchemy_engine() 
+
             # Delete existing rows 
             with engine.begin() as conn:  # auto-commit transaction
                     dim_school_years = pd.read_sql_query("Select DimSchoolYearId, SchoolYear from RDS.DimSchoolYears;", conn) 

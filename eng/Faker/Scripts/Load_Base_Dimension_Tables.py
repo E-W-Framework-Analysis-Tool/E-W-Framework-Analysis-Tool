@@ -15,8 +15,6 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
             fake = Faker()
             fake.seed_instance(SEED)
 
-            # Get server and database info
-            server, database = config()
             # Number of rows
             num_seas = num_seas
             num_leas = num_leas
@@ -383,16 +381,8 @@ def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
             dim_people_current = pd.DataFrame(dim_people_current)
             df_assessments = pd.DataFrame(assessments)
 
-            # URL-encode the connection string parameters
-            params = urllib.parse.quote_plus(
-                f"Driver={{ODBC Driver 17 for SQL Server}};"
-                f"Server={server};"
-                f"Database={database};"
-                f"Trusted_Connection=yes;"
-            )
-
             # Create engine
-            engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+            engine = create_sql_alchemy_engine() 
 
             # Delete existing rows 
             with engine.begin() as conn:  # auto-commit transaction
