@@ -6,7 +6,7 @@ import urllib
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from Scripts.Load_Base_Dimension_Tables import *
-from Config.config import *
+from Config.config import create_sql_alchemy_engine
 
 def main():
     engine = None 

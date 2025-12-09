@@ -4,7 +4,7 @@ import pandas as pd
 import urllib
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
-from Config.config import *
+from Config.config import create_sql_alchemy_engine
 
 def load_base_tables(num_seas=1,num_leas=5,num_schools=20, num_people=100):
         engine = None 
