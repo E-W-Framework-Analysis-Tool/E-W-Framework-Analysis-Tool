@@ -34,7 +34,7 @@ public class TeacherCredentialsEdFiAssessor : IEdFiAssessor
             "ed-fi/staffs",
             staff =>
             {
-                totalTeachers++;                
+                totalTeachers++;
 
                 if (_levelOfEducation.Contains(staff.HighestCompletedLevelOfEducationDescriptor ?? ""))
                 {
