@@ -25,6 +25,8 @@ Tool.
 
 ### 1. Create Azure Service Principals
 
+If you do not already have service principals created that can be used to deploy to the target Azure environment, you will need to configure them. The Terraform code associated with the environment setup creates this and provides these secrets as an output. Use the following commands if you have not run that or if the SPs do not otherwise exist already. 
+
 Run these commands for each environment, replacing `<subscription-id>` with your Azure subscription ID:
 
 ```bash
