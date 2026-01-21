@@ -91,7 +91,11 @@
     private string GetDataElementIsAvailableIcon(string DataElementName)
     {
         var score = _indicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(DataElementName));
-        return score != null && score.IsAvailable ? "fas fa-check-circle text-success" : "fas fa-times-circle text-error";
+        if (score != null && score.IsAvailable)
+        {
+            return score.AvailabilityScore == 1 ? "fas fa-check-circle text-success" : "fas fa-triangle-exclamation text-warning";
+        }
+        return "fas fa-times-circle text-error";
     }
 
     private string GetProgressBarColor(decimal score)

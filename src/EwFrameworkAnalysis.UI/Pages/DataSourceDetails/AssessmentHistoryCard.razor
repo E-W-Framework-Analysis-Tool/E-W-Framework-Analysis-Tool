@@ -25,10 +25,18 @@
                                         <div class="text-sm font-semibold text-blue break-words flex-1 min-w-0">
                                             @(a.Name ?? "Unnamed Assessment")
                                         </div>
+
                                         @if (isViewing)
                                         {
-                                            <div class="flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue bg-opacity-20 text-white whitespace-nowrap">
-                                                viewing
+                                            <div class="badge badge-sm bg-blue text-white">
+                                                Viewing
+                                            </div>
+                                        }
+
+                                        @if (a.Active ?? false)
+                                        {
+                                            <div class="badge badge-sm badge-success">
+                                                Active
                                             </div>
                                         }
                                     </div>

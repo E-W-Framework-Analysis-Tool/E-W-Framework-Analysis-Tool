@@ -11,6 +11,11 @@
                 {
                     <span class="badge badge-secondary">Version @Version</span>
                 }
+
+                @if (Assessment?.Active ?? false)
+                {
+                    <span class="badge badge-success">Active</span>
+                }
             </div>
 
             @if (Assessment is not null)
@@ -21,6 +26,10 @@
                     </button>
                     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-lg w-52 border border-gray-200">
                         <li>
+                            <button @onclick="HandleSetActive" class="text-error*">
+                                <i class="fas fa-circle-check"></i>
+                                Set as Active
+                            </button>
                             <button @onclick="ShowDeleteConfirmation" class="text-error">
                                 <i class="fas fa-trash"></i>
                                 Delete Assessment
@@ -192,6 +201,7 @@
     [Parameter] public DataSourceAssessment? Assessment { get; set; }
     [Parameter] public DataSource? DataSource { get; set; }
     [Parameter] public int Version { get; set; }
+    [Parameter] public EventCallback OnSetActive { get; set; }
     [Parameter] public EventCallback<string> OnRename { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
 
@@ -252,6 +262,11 @@
     private void ResetFilters()
     {
         _searchQuery = string.Empty;
+    }
+
+    private async Task HandleSetActive()
+    {
+        await OnSetActive.InvokeAsync();
     }
 
     private async Task HandleNameSave(string? name)

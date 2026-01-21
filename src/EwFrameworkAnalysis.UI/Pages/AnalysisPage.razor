@@ -19,7 +19,22 @@
 @code {
     private List<DataSource> ActiveDataSources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
 
-    private List<DataSourceAssessment> Assessments => ActiveDataSources.SelectMany(x => x.Assessments).ToList();
+    private List<DataSourceAssessmentWithSource> Assessments => ActiveDataSources.SelectMany(ds => ds.Assessments.Select(a => new
+    DataSourceAssessmentWithSource
+    {
+        // base properties
+        Id = a.Id,
+        Name = a.Name,
+        ConductedAt = a.ConductedAt,
+        Notes = a.Notes,
+        DataElementAssessments = a.DataElementAssessments,
+        Active = a.Active,
+
+        // datasource metadata
+        DataSourceId = ds.Id,
+        DataSourceType = ds.Type
+    }))
+    .ToList();
 
     private List<QuestionScore> QuestionScores = new List<QuestionScore>();
 

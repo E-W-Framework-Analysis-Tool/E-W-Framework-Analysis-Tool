@@ -8,7 +8,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class TeacherExperienceEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Teacher experience";
+    public string DataElementName => "Years of teaching experience";
 
     public string AssessmentDescription =>
         "Count of staff where yearsOfPriorTeachingExperience is defined";

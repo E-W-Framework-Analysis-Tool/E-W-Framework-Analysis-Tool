@@ -1,15 +1,18 @@
 using System.Text.Json;
+using System.Xml.Linq;
 using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Models.Scoring;
+using EwFrameworkAnalysis.Common.Scoring;
 using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI;
 
 public class AnalysisProjectService
-{
+{    
     private readonly IJSRuntime _jsRuntime;
     private const string STORAGE_KEY = "ewframework_analysis_project";
+    private readonly DataElementScoringRuleRegistry _ruleRegistry;
 
     public AnalysisProject Project { get; private set; } = new();
     public IReadOnlyList<DataSource> DataSources => Project.DataSources;
@@ -21,9 +24,10 @@ public class AnalysisProjectService
 
     public event Action? Changed;
 
-    public AnalysisProjectService(IJSRuntime jsRuntime)
+    public AnalysisProjectService(IJSRuntime jsRuntime, DataElementScoringRuleRegistry ruleRegistry)
     {
         _jsRuntime = jsRuntime;
+        _ruleRegistry = ruleRegistry;
     }
 
     /// <summary>
@@ -239,6 +243,24 @@ public class AnalysisProjectService
         }
     }
 
+    public async Task SetActiveAssessmentAsync(DataSourceAssessment activeAssessment)
+    {
+        var dataSource = DataSources
+            .FirstOrDefault(ds => ds.Assessments.Any(a => a.Id == activeAssessment.Id));
+
+        if (dataSource is null)
+            return;
+
+        foreach (var assessment in dataSource.Assessments)
+        {
+            assessment.Active = assessment.Id == activeAssessment.Id;
+        }
+
+        Project.LastModifiedAt = DateTimeOffset.Now;
+        await SaveAsync();
+        Notify();
+    }
+
     /// <summary>
     /// Get all assessments across all data sources (flattened)
     /// </summary>
@@ -331,13 +353,13 @@ public class AnalysisProjectService
 
     #region Essential Questions Scoring
 
-    public List<QuestionScore> CalculateScoresForActiveData(List<DataSourceAssessment> assessments)
+    public List<QuestionScore> CalculateScoresForActiveData(List<DataSourceAssessmentWithSource> assessments)
     {
         var questions = EwFrameworkEssentialQuestions.Questions;
         var indicators = EwFrameworkIndicators.Indicators;
 
         // Flatten assessed data elements with their parent assessment for tracking
-        var assessedDataElementsWithSource = assessments
+        var assessedDataElementsWithSource = assessments.Where(x => x.Active ?? false)
             .SelectMany(a => a.DataElementAssessments.Select(de => new { Assessment = a, DataElement = de }))
             .ToList();
 
@@ -361,23 +383,33 @@ public class AnalysisProjectService
 
                 foreach (var dataElementName in indicator.DataElementNames)
                 {
-                    var matched = assessedDataElementsWithSource
-                        .FirstOrDefault(x =>
-                            x.DataElement.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase) ||
-                            x.DataElement.DataElementName.Contains(dataElementName, StringComparison.OrdinalIgnoreCase) ||
-                            dataElementName.Contains(x.DataElement.DataElementName, StringComparison.OrdinalIgnoreCase));
 
-                    var dataElementScore = new DataElementScore
+                    var matches = assessedDataElementsWithSource
+                        .Where(x => x.DataElement.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase))
+                        .Select(x => new DataElementAssessmentContext
+                        {
+                            AssessmentId = x.Assessment.Id,
+                            AssessmentName = x.Assessment.Name,
+                            DataSourceType = x.Assessment.DataSourceType,
+                            Assessment = x.DataElement
+                        })
+                        .ToList();
+
+                    EwFrameworkDataElements.Elements.TryGetValue(dataElementName, out var dataElement);
+
+                    var scoringRequest = new DataElementScoringRequest
                     {
                         DataElementName = dataElementName,
-                        IsAvailable = matched != null,
-                        Source = matched?.Assessment.Id.ToString(),
-                        AvailabilityScore = matched != null ? 1.0m : 0.0m,
-                        QualityScore = 1,
-                        Notes = matched != null ? "Data found in assessment" : "No matching assessment data"
+                        IndicatorName = indicatorName,
+                        ScoringRuleName = dataElement?.ScoringRuleName ?? "ReportedAndCount",
+                        Matches = matches
                     };
 
+                    var rule = _ruleRegistry.Resolve(scoringRequest.ScoringRuleName);
+                    var dataElementScore = rule.Score(scoringRequest);
+
                     indicatorScore.DataElementScores.Add(dataElementScore);
+
                 }
 
                 // Simple readiness metric: % of data elements available

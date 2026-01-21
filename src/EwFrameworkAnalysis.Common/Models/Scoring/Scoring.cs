@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Models.Scoring;
 
 /// <summary>
@@ -33,4 +35,50 @@ public class DataElementScore
     public bool IsAvailable { get; set; }
     public string? Source { get; set; }
     public string? Notes { get; set; }
+
+    // Metadata
+    public string ScoringRuleName { get; set; } = string.Empty;
+    public string SelectedSource { get; set; } = string.Empty;
+
+    // AUDIT
+    public List<DataElementSourceScore> SourceScores { get; set; } = [];
+}
+
+public class DataElementSourceScore
+{
+    public Guid AssessmentId { get; set; }
+    public string SourceType { get; set; } = string.Empty;
+
+    public decimal AvailabilityScore { get; set; }
+    public decimal QualityScore { get; set; }
+    public bool IsAvailable { get; set; }
+
+    public string Notes { get; set; } = string.Empty;
+}
+
+
+public class DataElementScoringRequest
+{
+    public string DataElementName { get; init; } = string.Empty;
+    public string IndicatorName { get; init; } = string.Empty;
+    public string ScoringRuleName { get; init; } = string.Empty;
+
+    // All matches across sources (manual, Ed-Fi, CEDS, etc.)
+    public List<DataElementAssessmentContext> Matches { get; init; } = [];
+}
+
+public class DataElementAssessmentContext
+{
+    public Guid AssessmentId { get; init; }
+    public string? AssessmentName { get; init; }
+    public DataSourceType DataSourceType { get; init; }
+    public DataElementAssessment Assessment { get; init; } = null!;
+}
+
+
+public interface IDataElementScoringRule
+{
+    string RuleName { get; }
+
+    DataElementScore Score(DataElementScoringRequest request);
 }

@@ -317,18 +317,21 @@ public class DataElement
     public List<Sector> RelatedSectors { get; }
     public string? AdditionalNotes { get; }
     public List<string> RelatedIndicatorNames { get; }
+    public string? ScoringRuleName { get; }
 
     public DataElement(
         string name,
         string category,
         List<Sector> relatedSectors,
         string? additionalNotes,
-        List<string> relatedIndicatorNames)
+        List<string> relatedIndicatorNames,
+        string? scoringRuleName = null)
     {
         Name = name;
         Category = category;
         RelatedSectors = relatedSectors;
         AdditionalNotes = additionalNotes;
         RelatedIndicatorNames = relatedIndicatorNames;
+        ScoringRuleName = scoringRuleName;
     }
 }
