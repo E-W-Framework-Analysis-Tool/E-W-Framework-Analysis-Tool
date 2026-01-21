@@ -1,0 +1,261 @@
+DataElementName,OriginalDataElementName,ClusterOnlyCategory,SuggestedCategory,Sector,Notes,Indicators,IsDisaggregate
+ACT completion,ACT completion,Postsecondary Transitions,Assessments,K-12,SAT and ACT participation and performance,FALSE
+ACT score,ACT score,Postsecondary Transitions,Assessments,K-12,SAT and ACT participation and performance,FALSE
+Advising and counseling service utilization,Advising and counseling service utilization,Postsecondary Transitions,Student Support Services,"K-12, Postsecondary",Access to college and career advising,FALSE
+Age,Age (or birth date),School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce","Numerical age as of point in time, or birth date","Enrollment in quality public pre-K; Mental and emotional well-being",FALSE
+Age group,"Age group (for example, adult learners)",Postsecondary Success,Demographics,"Postsecondary, Workforce","Generalized category of age, e.g. adult or minor",,TRUE
+AP course designation,AP course designation,Postsecondary Transitions,Academic Coursework,K-12,Access to early college coursework,FALSE
+"AP, IB, or Dual Credit course credits",AP course passage; AP credit earned (or AP test scores); AP test completion; Dual credit course passage; Dual credit earned; Dual credit test completion; IB course passage; IB credit earned (or IB test scores); IB test completion,Postsecondary Transitions,Academic Coursework,"K-12, Postsecondary",Access to early college coursework; Early college coursework completion,FALSE
+Apprenticeship program enrollment date,Apprenticeship program enrollment date,Workforce Transitions,Career & Technical Education (CTE),Workforce,Successful career transition after high school,FALSE
+Average cost of attendance,Average cost of attendance,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Unmet financial need,FALSE
+Average expected family contribution (EFC),Average expected family contribution (EFC),Postsecondary Success,Financial Aid & Affordability,Postsecondary,Unmet financial need,FALSE
+"Average financial aid amount (including grants, scholarships, and tuition waivers)",Average value of grants; Average value of scholarships; Average value of tuition waivers; Financial aid amount,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Financial aid; Unmet financial need,FALSE
+Average pay in county or MSA,Average pay in county or MSA,Workforce Success,Community Context,Workforce,Access to jobs paying a living wage,FALSE
+Bachelor's degree completion date,Bachelor's degree completion date,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Enrollment in graduate education,FALSE
+Basic skills level,Basic skills level,Workforce Transitions,Assessments,Workforce,,,TRUE
+Benefits availability,Benefits availability,Workforce Success,Employment & Earnings,Workforce,Job quality,FALSE
+Campus climate surveys (K-12),Results on school climate survey (K-12),School Climate,School Climate,K-12,School safety,FALSE
+Campus climate surveys (Postsecondary),Results on campus climate survey (Postsecondary),Postsecondary Success,School Climate,Postsecondary,School safety,FALSE
+CHIP eligibility status,CHIP eligibility status,School Climate,Health & Wellness,"Early Learning, K-12",Health insurance coverage,FALSE
+CHIP enrollment,CHIP enrollment,School Climate,Health & Wellness,"Early Learning, K-12",Health insurance coverage,FALSE
+City or county population,City or county population,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Exposure to neighborhood crime; Neighborhood juvenile arrests,FALSE
+Civic engagement surveys (K-12),Civic engagement survey results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Civic engagement,FALSE
+Civic engagement surveys (Postsecondary),Civic engagement survey results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Civic engagement,FALSE
+Civic engagement surveys (Workforce),Civic engagement survey results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Civic engagement,FALSE
+Cohort graduation year,Cohort graduation year,Postsecondary Transitions,Attendance & Enrollment,K-12,High school graduation,FALSE
+Cohort year,Cohort year,Postsecondary Transitions,Attendance & Enrollment,"K-12, Postsecondary",High school graduation,FALSE
+College selectivity level,College selectivity level,Postsecondary Transitions,Postsecondary Outcomes,Postsecondary,College match,FALSE
+College value-added,College value-added,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Institutions' contributions to student outcomes,FALSE
+Communication skills performance assessments (K-12),Communication skills performance assessment results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Communication skills,FALSE
+Communication skills performance assessments (Postsecondary),Communication skills performance assessment results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Communication skills,FALSE
+Communication skills performance assessments (Workforce),Communication skills performance assessment results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Communication skills,FALSE
+Commute time,Commute time,Workforce Transitions,Transportation,"K-12, Postsecondary, Workforce",Access to transportation,FALSE
+Course department,Course department,Postsecondary Transitions,Academic Coursework,"K-12, Postsecondary",Access to college preparatory coursework,FALSE
+Course identifier or title,"Course ID  - CIP code; Course ID or course title; Course ID or course title of follow-up courses (Algebra II, Pre-calculus, Geometry, etc)",Postsecondary Transitions,Academic Coursework,"K-12, Postsecondary",Access to college preparatory coursework; Access to early college coursework; College preparatory coursework completion; CTE pathway concentration; First-year program of study concentration; Gateway course completion; Successful completion of Algebra 1 by 9th grade; Teacher credentials,FALSE
+Course offering by grade level,"Level(s) at which course is offered (e.g., 9/10/11/12; Fr/So/Jr/Sr)",Postsecondary Transitions,Academic Coursework,K-12,Access to college preparatory coursework,FALSE
+Course outcome,Course failure (Grade 9); Course passage or completion; Course passage or completion (Grade 9),Postsecondary Transitions,Academic Performance,"K-12, Postsecondary","For example, completion, failure, passage",9th grade on track; College preparatory coursework completion; Successful completion of Algebra 1 by 9th grade,FALSE
+Course performance (English and Math),Course performance in English (Grade 6); Course performance in English (Grade 8); Course performance in Math (Grade 6); Course performance in Math (Grade 8),Postsecondary Transitions,Academic Performance,K-12,6th grade on track; 8th grade on track,FALSE
+Credential or certification type,Credential or certification type,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Teacher credentials,FALSE
+Credential-seeking status,Credential-seeking status,Postsecondary Success,Attendance & Enrollment,"Postsecondary, Workforce",,,TRUE
+Credits earned in first year,Credits earned in first year,Postsecondary Success,Academic Performance,Postsecondary,Credit accumulation,FALSE
+CTE course completion,CTE course completion,Workforce Transitions,Career & Technical Education (CTE),"K-12, Postsecondary",CTE pathway concentration,FALSE
+CTE course ID or course title,CTE course ID or course title,Workforce Transitions,Career & Technical Education (CTE),"K-12, Postsecondary",CTE pathway concentration,FALSE
+CTE pathway or career cluster associated with CTE course,CTE pathway or career cluster associated with CTE course,Workforce Transitions,Career & Technical Education (CTE),"K-12, Postsecondary",CTE pathway concentration,FALSE
+CTE program,CTE program,Workforce Transitions,Career & Technical Education (CTE),"K-12, Postsecondary, Workforce",Access to in-demand CTE pathways,FALSE
+Cultural competency assessments (K-12),Cultural competency assessment results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Cultural competency,FALSE
+Cultural competency assessments (Postsecondary),Cultural competency assessment results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Cultural competency,FALSE
+Cultural competency assessments (Workforce),Cultural competency assessment results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Cultural competency,FALSE
+Date of services provided,Date of services provided,Postsecondary Transitions,Student Support Services,"Early Learning, K-12, Postsecondary",Access to early intervention screening; Enrollment in quality public pre-K,FALSE
+Developmental screening results,Developmental screening results,Kindergarten Readiness,Early Learning,Early Learning,Mental and emotional well-being,FALSE
+Digital skills assessments (K-12),Digital skills assessment results (K-12),Postsecondary Transitions,Assessments,K-12,Digital skills,FALSE
+Digital skills assessments (Postsecondary),Digital skills assessment results (Postsecondary),Postsecondary Success,Assessments,Postsecondary,Digital skills,FALSE
+Digital skills assessments (Workforce),Digital skills assessment results (Workforce),Workforce Success,Assessments,Workforce,Digital skills,FALSE
+Diploma or credential award date,Diploma or credential award date,Postsecondary Success,Postsecondary Outcomes,"K-12, Postsecondary",High school graduation,FALSE
+Direct child assessments (cognition),Results on direct child assessment (cognition); Results on direct child assessment (cognition) (PK),Kindergarten Readiness,Early Learning,Early Learning,Kindergarten readiness: cognition,FALSE
+Direct child assessments (language and literacy),Results on direct child assessment (language and literacy); Results on direct child assessment (language and literacy) (PK),Kindergarten Readiness,Early Learning,Early Learning,Kindergarten readiness: language and literacy,FALSE
+Direct child assessments of executive function,Results on direct child assessments of executive function; Results on direct child assessments of executive function (PK),Kindergarten Readiness,Early Learning,Early Learning,Kindergarten readiness: approaches to learning,FALSE
+Direct child assessments of physical development,Results on direct child assessments of physical development (PK),Kindergarten Readiness,Early Learning,Early Learning,"Kindergarten readiness: perceptual, motor, and physical development",FALSE
+Disability status,Disability status,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Dislocated worker status,Dislocated worker status,Workforce Transitions,Employment & Earnings,Workforce,,,TRUE
+Dual credit course designation,Dual credit course designation,Postsecondary Transitions,Academic Coursework,"K-12, Postsecondary",Access to early college coursework,FALSE
+EAP or mental health services provided,EAP or mental health services provided,Workforce Success,Health & Wellness,Workforce,"Access to health, mental health, and social supports",FALSE
+Early intervention screening results,Early intervention screening results,Kindergarten Readiness,Early Learning,Early Learning,Access to early intervention screening; Enrollment in quality public pre-K,FALSE
+Early intervention screening services referral status,Early intervention screening outcomes (connection to services),Kindergarten Readiness,Early Learning,Early Learning,Access to early intervention screening; Enrollment in quality public pre-K,FALSE
+Earnings,Earnings; Earnings amount; Post-credential earnings,Workforce Success,Employment & Earnings,Workforce,Credential value; Earnings; Economic mobility; Minimum economic return; Successful career transition after high school,FALSE
+Eligibility for federal rental assistance,Eligibility for federal rental assistance,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",Access to affordable housing,FALSE
+Employee income level,Employee income level,Workforce Success,Employment & Earnings,Workforce,School and workplace socioeconomic diversity,FALSE
+Employee race/ethnicity,Employee race/ethnicity,Workforce Success,Demographics,Workforce,School and workplace racial and ethnic diversity,FALSE
+Employment date,Employment date,Workforce Transitions,Employment & Earnings,Workforce,Successful career transition after high school,FALSE
+Employment status,Employment status,Workforce Transitions,Employment & Earnings,Workforce,Employment in a quality job; Employment rate,FALSE
+English learner classification date,English learner classification date; English learner reclassification date,School Climate,Demographics,"Early Learning, K-12, Postsecondary",English learner progress,FALSE
+English learner status,English learner; English learner status,School Climate,Demographics,"Early Learning, K-12, Postsecondary",English learner progress,TRUE
+Enlistment in the military,Enlistment in the military,Workforce Transitions,Employment & Earnings,Workforce,Successful career transition after high school,FALSE
+Enrollment date,Enrollment date,School Climate,Attendance & Enrollment,"Early Learning, K-12, Postsecondary",High school graduation,FALSE
+Enrollment in noncredit CTE date,Enrollment in noncredit CTE date,Workforce Transitions,Career & Technical Education (CTE),Postsecondary,Successful career transition after high school,FALSE
+Enrollment in public pre-K,Enrollment in public pre-K,Kindergarten Readiness,Attendance & Enrollment,Early Learning,Enrollment in quality public pre-K,FALSE
+Enrollment in workforce training program,Enrollment in workforce training program,Workforce Transitions,Career & Technical Education (CTE),Workforce,Participation in work-based learning,FALSE
+Enrollment status (current and prior years),Enrollment status (current and prior years),Postsecondary Success,Attendance & Enrollment,"K-12, Postsecondary",Postsecondary persistence; Transfer (if applicable),FALSE
+Expenditures per student (K-12),Expenditures per K-12 pupil,School Climate,Finance & Resources,K-12,Expenditures per student,FALSE
+Expenditures per student (PK),Expenditures per Pre-K pupil,Kindergarten Readiness,Finance & Resources,Early Learning,Expenditures per student,FALSE
+Expenditures per student (Postsecondary),Expenditures per student (postsecondary),Postsecondary Success,Finance & Resources,Postsecondary,Expenditures per student,FALSE
+FAFSA completion date,FAFSA completion date,Postsecondary Transitions,Financial Aid & Affordability,K-12,FAFSA completion,FALSE
+Family eligibility for child care subsidies,Family eligibility for child care subsidies,Kindergarten Readiness,Demographics,"Early Learning, K-12",Access to child care subsidies; Enrollment in quality public pre-K,FALSE
+Family engagement surveys (K-12),Results on family engagement surveys (K-12),School Climate,School Climate,K-12,School-family engagement,FALSE
+Family engagement surveys (PK),Results on family engagement surveys (Pre-K),Kindergarten Readiness,School Climate,Early Learning,School-family engagement,FALSE
+First-generation college student,First-generation college student,Postsecondary Transitions,Demographics,Postsecondary,,,TRUE
+First-time 9th grade student status,First-time 9th grade student status,Postsecondary Transitions,Attendance & Enrollment,K-12,Successful completion of Algebra 1 by 9th grade,FALSE
+Funding dedicated to workforce development programs,Funding dedicated to workforce development programs,Workforce Transitions,Finance & Resources,Workforce,Expenditures on workforce development programs,FALSE
+Gateway course completion,Gateway course completion,Postsecondary Transitions,Academic Performance,Postsecondary,Gateway course completion,FALSE
+Gender,Gender,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Geographical indicator,"Geographical indicator (e.g., census tract, city, county)",School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",For example, census tract, city, or county,Neighborhood racial diversity,FALSE
+Gifted and talented participation,Gifted and talented participation,Postsecondary Transitions,Academic Coursework,K-12,Equitable placement in rigorous coursework,FALSE
+Grade point average (K-12),GPA (Grade 8); Grade point average (Grade 6-8); Grade point average (Grades 9-12),Postsecondary Transitions,Academic Performance,K-12,8th grade on track; Grade point average (MS+HS),FALSE
+Grade point average (Postsecondary),Grade point average,Postsecondary Transitions,Academic Performance,Postsecondary,Grade point average (MS+HS),FALSE
+Graduate credential attainment date,Graduate credential attainment date,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Postsecondary certificate or degree completion,FALSE
+Graduate program enrollment date,Graduate program enrollment date,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Enrollment in graduate education; Postsecondary certificate or degree completion,FALSE
+Growth mindset surveys (K-12),Growth mindset survey results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Growth mindset,FALSE
+Growth mindset surveys (Postsecondary),Growth mindset survey results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Growth mindset,FALSE
+Growth mindset surveys (Workforce),Growth mindset survey results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Growth mindset,FALSE
+Health services offered,Health services offered,School Climate,Health & Wellness,"Early Learning, K-12, Postsecondary","Access to health, mental health, and social supports",FALSE
+Health-Related Quality of Life Scale scores,Scores on Health-Related Quality of Life Scale,School Climate,Health & Wellness,"K-12, Postsecondary, Workforce",Physical development and well-being,FALSE
+High school diploma type,High school diploma type,Postsecondary Transitions,Academic Performance,K-12,High school graduation,FALSE
+High school graduation date,High school graduation date,Postsecondary Transitions,Academic Performance,K-12,Economic mobility; Economic security; Minimum economic return; Postsecondary enrollment after high school graduation; Successful career transition after high school,FALSE
+High school graduation indicator,High school graduation indicator,Postsecondary Transitions,Academic Performance,K-12,College preparatory coursework completion; Selection of a well-matched postsecondary institution; Senior summer on track,FALSE
+Higher-order thinking skills performance assessments (K-12),Higher-order thinking skills performance assessment results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Higher-order thinking skills,FALSE
+Higher-order thinking skills performance assessments (Postsecondary),Higher-order thinking skills performance assessment results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Higher-order thinking skills,FALSE
+Higher-order thinking skills performance assessments (Workforce),Higher-order thinking skills performance assessment results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Higher-order thinking skills,FALSE
+Highest level of education completed,Highest level of education completed,Teaching Effectiveness,Demographics,"Early Learning, K-12, Postsecondary, Workforce",Teacher credentials,FALSE
+Home language,Home language,School Climate,Demographics,"Early Learning, K-12",,,TRUE
+IB course designation,IB course designation,Postsecondary Transitions,Academic Coursework,K-12,Access to early college coursework,FALSE
+IECMHC services offered,IECMHC services offered,Kindergarten Readiness,Health & Wellness,Early Learning,"Access to health, mental health, and social supports",FALSE
+In-demand status,In-demand status,Workforce Success,Employment & Earnings,Workforce,Access to in-demand CTE pathways,FALSE
+Income level,Income level,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Indicator of access to desktop or laptop at home,Indicator of access to desktop or laptop at home,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",Access to technology,FALSE
+Indicator of access to reliable broadband internet,Indicator of access to reliable broadband internet,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",Access to technology,FALSE
+Indicator of whether services were provided,Indicator of whether services were provided,School Climate,Student Support Services,"Early Learning, K-12",Access to early intervention screening; Enrollment in quality public pre-K,FALSE
+Individual or family military status,Individual or family military status,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Individual with current or past child welfare involvement,Individual with current or past child welfare involvement,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Individuals experiencing homelessness,Individuals experiencing homelessness,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+Industry-recognized credential attainment,Industry-recognized credential attainment,Workforce Success,Career & Technical Education (CTE),"K-12, Postsecondary, Workforce",Industry-recognized credential,FALSE
+Institution graduation rate,"Institution graduation rate; PS institution graduation rate, by race/ethnicity and Pell grant receipt",Postsecondary Success,Postsecondary Outcomes,Postsecondary,Institution graduation rate; Selection of a well-matched postsecondary institution,FALSE
+Institutional expenditure per student,Institutional expenditure per student,Postsecondary Success,Finance & Resources,Postsecondary,Institution funding,FALSE
+Instructor observations,Instructor observation results,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Classroom observations of instructional practice,FALSE
+Insured status,Insured status,School Climate,Health & Wellness,"Early Learning, K-12, Postsecondary, Workforce",Health insurance coverage,FALSE
+Job quality index,Results on job quality index,Workforce Success,Employment & Earnings,Workforce,Employment in a quality job,FALSE
+Job title or position type,"Job title or position type (school leader or administrator); Job title or position type (teacher or educator, prior and current year); Position type (school leader or administrator); Staff type or role description; Position type (lead pre-K teacher status)",Teaching Effectiveness,Staff & Educators,"Early Learning, K-12","Access to college and career advising; Access to health, mental health, and social supports; Educator retention; Teacher credentials",FALSE
+Justice involvement,Justice involvement,School Climate,Demographics,"K-12, Postsecondary, Workforce",,,TRUE
+K-12 school type,K-12 school type,School Climate,Finance & Resources,K-12,,,TRUE
+Kindergarten enrollment date,Kindergarten enrollment date,Kindergarten Readiness,Attendance & Enrollment,"Early Learning, K-12",Access to full-day pre-K; Enrollment in quality public pre-K,FALSE
+Kindergarten program days per week,Kindergarten program days per week,Kindergarten Readiness,Early Learning,Early Learning,Access to full-day kindergarten; Early grades on track,FALSE
+Kindergarten program hours per day,Kindergarten program hours per day,Kindergarten Readiness,Early Learning,Early Learning,Access to full-day kindergarten; Early grades on track,FALSE
+Kindergarten readiness assessments (cognition),Results on kindergarten readiness assessment (cognition); Results on kindergarten readiness assessment (cognition) (PK),Kindergarten Readiness,Early Learning,"Early Learning, K-12",Kindergarten readiness: cognition,FALSE
+Leader effectiveness assessments,Results on leader effectiveness assessment,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Effective program and school leadership,FALSE
+Learning and development plan offered,Learning and development plan offered,Workforce Success,Employment & Earnings,Workforce,Access to ongoing career skills development,FALSE
+LGBT status,LGBT status,School Climate,Demographics,"K-12, Postsecondary, Workforce",,,TRUE
+Location-adjusted cost of living in county or MSA,Location-adjusted cost of living in county or MSA,Workforce Success,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Access to jobs paying a living wage,FALSE
+Low Transportation Cost Index,"Low Transportation Cost Index, from the U.S. Department of Housing and Urban Development",Workforce Transitions,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Access to transportation,FALSE
+Math proficiency (Grades 1 and 2),Math proficiency (or math assessment score) (Grade 1 & 2); Math proficiency (or math assessment score) (Grades 1 & 2),Postsecondary Transitions,Assessments,K-12,Early grades on track,FALSE
+Median student debt,Median student debt,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Cumulative student debt,FALSE
+Medicaid eligibility status,Medicaid eligibility status,School Climate,Health & Wellness,"Early Learning, K-12",Health insurance coverage,FALSE
+Medicaid enrollment,Medicaid enrollment,School Climate,Health & Wellness,"Early Learning, K-12",Health insurance coverage,FALSE
+Mental and emotional well-being assessments,Results on mental and emotional well-being assessments,Social-Emotional Learning,Health & Wellness,"Early Learning, K-12, Postsecondary, Workforce",Mental and emotional well-being,FALSE
+Mental health services offered,Mental health services offered,School Climate,Health & Wellness,"Early Learning, K-12, Postsecondary","Access to health, mental health, and social supports",FALSE
+Net worth,Net worth,Workforce Success,Employment & Earnings,"Postsecondary, Workforce",Economic security,FALSE
+Number of ACEs,Number of ACEs,Social-Emotional Learning,Health & Wellness,"Early Learning, K-12",Childhood experience; Childhood experiences,FALSE
+Number of affordable housing units in city or county,Number of affordable housing units in city or county,Workforce Transitions,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Access to affordable housing,FALSE
+Number of city or county residents experiencing poverty,Number of city or county residents experiencing poverty,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Neighborhood economic diversity,FALSE
+Number of city or county residents living in a high poverty neighborhood,Number of city or county residents living in a high poverty neighborhood,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Neighborhood economic diversity,FALSE
+Number of credits attempted,Number of credits attempted,Postsecondary Success,Academic Performance,Postsecondary,First-year credit accumulation,FALSE
+Number of credits earned,Number of credits earned,Postsecondary Success,Academic Performance,Postsecondary,First-year credit accumulation; First-year program of study concentration; Gateway course completion,FALSE
+Number of days suspended (K-12),Number of days suspended,School Climate,Discipline & Behavior,K-12,Equitable discipline practices,FALSE
+Number of days suspended (PK),Number of days suspended (PK),School Climate,Discipline & Behavior,Early Learning,Equitable discipline practices,FALSE
+Number of households with low income in city or county,Number of households with low income in city or county,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Access to affordable housing,FALSE
+Number of households with very low income in city or county,Number of households with very low income in city or county,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Access to affordable housing,FALSE
+Number of juvenile arrests in city or county,Number of juvenile arrests in city or county,School Climate,Community Context,"Early Learning, K-12",Neighborhood juvenile arrests,FALSE
+Number of property felonies in city or county,Number of property felonies in city or county,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Exposure to neighborhood crime,FALSE
+Number of violent felonies in city or county,Number of violent felonies in city or county,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Exposure to neighborhood crime,FALSE
+Occupation category,Occupation category,Workforce Success,Employment & Earnings,Workforce,,,TRUE
+Office referrals (K-12),Office referrals,School Climate,Discipline & Behavior,K-12,Equitable discipline practices,FALSE
+Office referrals (PK),Office referrals (PK),School Climate,Discipline & Behavior,Early Learning,Equitable discipline practices,FALSE
+On-the-job training offered,On-the-job training offered,Workforce Success,Employment & Earnings,Workforce,Access to ongoing career skills development,FALSE
+Overall teacher observation score,Overall teacher observation score,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Classroom observations of instructional practice,FALSE
+Parental education level,Parental education level,Postsecondary Transitions,Demographics,"Early Learning, K-12, Postsecondary",,,TRUE
+Participation in work-based learning,Participation in work-based learning,Workforce Transitions,Career & Technical Education (CTE),"K-12, Postsecondary, Workforce",Participation in work-based learning,FALSE
+Pell grant receipt,"PS institution graduation rate, by race/ethnicity and Pell grant receipt",Postsecondary Success,Financial Aid & Affordability,Postsecondary,Selection of a well-matched postsecondary institution,FALSE
+Percentage of teachers regularly using standards-aligned; culturally responsive curricula,"Percentage of teachers regularly using standards-aligned, culturally responsive curricula",Teaching Effectiveness,Staff & Educators,"Early Learning, K-12","Access to quality, culturally responsive curricula",FALSE
+Physical health surveys (K-12),Physical health survey results (K-12),School Climate,Health & Wellness,K-12,Physical development and well-being,FALSE
+Physical health surveys (Postsecondary),Physical health survey results (Postsecondary),Postsecondary Success,Health & Wellness,Postsecondary,Physical development and well-being,FALSE
+Physical health surveys (Workforce),Physical health survey results (Workforce),Workforce Success,Health & Wellness,Workforce,Physical development and well-being,FALSE
+Post-baccalaureate program enrollment date,Post-baccalaureate program enrollment date,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Enrollment in graduate education,FALSE
+Postsecondary applications submitted,Postsecondary applications submitted,Postsecondary Transitions,Postsecondary Outcomes,"K-12, Postsecondary",College applications,FALSE
+Postsecondary credential attainment date,Postsecondary credential attainment date,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Postsecondary certificate or degree completion; Postsecondary persistence,FALSE
+Postsecondary credential earned,Postsecondary credential earned,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Postsecondary credential completion,FALSE
+Postsecondary degree program length,Postsecondary degree program length,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Postsecondary certificate or degree completion; Postsecondary persistence; Transfer (if applicable),FALSE
+Postsecondary enrollment date,Postsecondary enrollment date; Postsecondary enrollment date OR first-year indicator,Postsecondary Transitions,Attendance & Enrollment,Postsecondary,First-year credit accumulation; First-year program of study concentration; Gateway course completion; Postsecondary certificate or degree completion; Postsecondary enrollment after high school graduation; Selection of a well-matched postsecondary institution; Senior summer on track,FALSE
+Postsecondary enrollment status (Full time/part time),Postsecondary enrollment status (Full time/part time),Postsecondary Success,Attendance & Enrollment,Postsecondary,First-year credit accumulation,FALSE
+Postsecondary institution classification,Postsecondary institution classification,Postsecondary Success,Postsecondary Outcomes,Postsecondary,,,TRUE
+Postsecondary Institution ID,Postsecondary Institution ID,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Selection of a well-matched postsecondary institution,FALSE
+Postsecondary institution ID (current and prior years),Postsecondary institution ID (current and prior years),Postsecondary Success,Postsecondary Outcomes,Postsecondary,Transfer (if applicable),FALSE
+Postsecondary major,Postsecondary major,Postsecondary Success,Academic Coursework,Postsecondary,,,TRUE
+Pre-K eligbility status,Pre-K eligbility status,Kindergarten Readiness,Early Learning,"Early Learning, K-12",Enrollment in quality public pre-K,FALSE
+Pre-K program days per week,Pre-K program days per week,Kindergarten Readiness,Early Learning,Early Learning,Access to full-day pre-K; Enrollment in quality public pre-K,FALSE
+Pre-K program hours per day,Pre-K program hours per day,Kindergarten Readiness,Early Learning,Early Learning,Access to full-day pre-K; Enrollment in quality public pre-K,FALSE
+Pre-K program QRIS rating,Pre-K program QRIS rating,Kindergarten Readiness,Early Learning,Early Learning,Access to quality public pre-K; Enrollment in quality public pre-K,FALSE
+Reading proficiency (Grades 1 and 2),Reading proficiency (or reading assessment score) (Grade 1 & 2); Reading proficiency (or reading assessment score) (Grades 1 & 2),Postsecondary Transitions,Assessments,K-12,Early grades on track,FALSE
+Receipt of child care subsidies,Receipt of child care subsidies,Kindergarten Readiness,Financial Aid & Affordability,"Early Learning, K-12",Access to child care subsidies; Enrollment in quality public pre-K,FALSE
+Receipt of federal rental assistance,Receipt of federal rental assistance,School Climate,Financial Aid & Affordability,"Early Learning, K-12, Postsecondary, Workforce",Access to affordable housing,FALSE
+Repayment phase start date,Repayment phase start date,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Student loan repayment,FALSE
+Repayment status,Repayment status,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Student loan repayment,FALSE
+Reported intent to enroll in postsecondary education,Reported intent to enroll in postsecondary education,Postsecondary Transitions,Postsecondary Outcomes,K-12,Senior summer on track,FALSE
+Reported kindergarten readiness (behavioral skills),Results on teacher-reported kindergarten readiness assessment (self-regulation; approaches to learning; executive function); Results on teacher-reported kindergarten readiness assessment (self-regulation; approaches to learning; executive function) (PK),Kindergarten Readiness,Early Learning,"Early Learning, K-12",Kindergarten readiness: approaches to learning,FALSE
+Reported kindergarten readiness (language and literacy),Results on teacher-reported kindergarten readiness assessment (language and literacy); Results on teacher-reported kindergarten readiness assessment (language and literacy) (PK),Kindergarten Readiness,Early Learning,"Early Learning, K-12",Kindergarten readiness: language and literacy,FALSE
+Reported kindergarten readiness (physical development),Results on teacher-reported kindergarten readiness assessment (physical development); Results on teacher-reported kindergarten readiness assessment (physical development) (PK),Kindergarten Readiness,Early Learning,"Early Learning, K-12","Kindergarten readiness: perceptual, motor, and physical development",FALSE
+Reported kindergarten readiness (social-emotional skills),Results on teacher-reported kindergarten readiness assessment (social-emotional development); Results on teacher-reported kindergarten readiness assessment (social-emotional development) (PK),Kindergarten Readiness,Early Learning,"Early Learning, K-12",Kindergarten readiness: social-emotional development,FALSE
+Restraint and seclusion for discipline (K-12),Disciplinary use of restraint and seclusion; Disciplinary use of restraint and seclusion (K12),School Climate,Discipline & Behavior,K-12,Positive behavior,FALSE
+Restraint and seclusion for discipline (PK),Disciplinary use of restraint and seclusion (PK),School Climate,Discipline & Behavior,Early Learning,Positive behavior,FALSE
+Restraint and seclusion for safety (K-12),Restraint; Seclusion,School Climate,Discipline & Behavior,K-12,Equitable discipline practices,FALSE
+Restraint and seclusion for safety (PK),Restraint (PK); Seclusion (PK),School Climate,Discipline & Behavior,Early Learning,Equitable discipline practices,FALSE
+SAT completion,SAT completion,Postsecondary Transitions,Assessments,K-12,SAT and ACT participation and performance,FALSE
+SAT score,SAT score,Postsecondary Transitions,Assessments,K-12,SAT and ACT participation and performance,FALSE
+School assignment (prior and current year),School assignment or school ID (prior and current year); School or program ID (prior and current year),Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Educator retention,FALSE
+School value-added,School value-added,School Climate,Academic Performance,"K-12, Postsecondary",Institutions' contributions to student outcomes,FALSE
+Self-efficacy surveys (K-12),Self-efficacy survey results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Self-efficacy,FALSE
+Self-efficacy surveys (Postsecondary),Self-efficacy survey results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Self-efficacy,FALSE
+Self-efficacy surveys (Workforce),Self-efficacy survey results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Self-efficacy,FALSE
+Self-management surveys (K-12),Results on self-management survey (K-12); Social awareness survey results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Self-management; Social awareness,FALSE
+Self-management surveys (Postsecondary),Self-management survey results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Self-management,FALSE
+Self-management surveys (Workforce),Self-management survey results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Self-management,FALSE
+Sense of belonging surveys,Results on workplace sense of belonging survey,Workforce Success,Social-Emotional Learning (SEL),Workforce,Inclusive environments,FALSE
+Sense of belonging surveys (K-12),Results on K-12 sense of belonging survey,Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Inclusive environments,FALSE
+Sense of belonging surveys (PK),Results on Pre-K sense of belonging questionnaire,Kindergarten Readiness,Social-Emotional Learning (SEL),Early Learning,Inclusive environments,FALSE
+Sense of belonging surveys (Postsecondary),Results on campus sense of belonging survey,Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Inclusive environments,FALSE
+SGP for standardized assessments,"SGP for standardized assessments (subject specific for reading/literacy, math, and science)",Postsecondary Transitions,Assessments,K-12,Teachers' contributions to student learning growth,FALSE
+SNAP eligibility,SNAP eligibility,School Climate,Financial Aid & Affordability,"Early Learning, K-12, Postsecondary, Workforce",Food Security,FALSE
+SNAP participation,SNAP participation,School Climate,Financial Aid & Affordability,"Early Learning, K-12, Postsecondary, Workforce",Food Security,FALSE
+Social awareness teacher ratings,Results on social awareness teacher rating,Social-Emotional Learning,Social-Emotional Learning (SEL),"Early Learning, K-12",Social awareness,FALSE
+Social capital surveys (K-12),Social capital survey results (K-12),Social-Emotional Learning,Social-Emotional Learning (SEL),K-12,Social capital,FALSE
+Social capital surveys (Postsecondary),Social capital survey results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Social capital,FALSE
+Social capital surveys (Workforce),Social capital survey results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Social capital,FALSE
+Social proficiency performance assessments (Postsecondary),Social proficiency performance assessment results (Postsecondary),Postsecondary Success,Social-Emotional Learning (SEL),Postsecondary,Social awareness,FALSE
+Social proficiency performance assessments (Workforce),Social proficiency performance assessment results (Workforce),Workforce Success,Social-Emotional Learning (SEL),Workforce,Social awareness,FALSE
+Social services offered,Social services offered,School Climate,Student Support Services,"Early Learning, K-12, Postsecondary","Access to health, mental health, and social supports",FALSE
+Sociocultural observational assessments,Results on sociocultural observational assessment,Social-Emotional Learning,Social-Emotional Learning (SEL),"Early Learning, K-12, Postsecondary, Workforce",Inclusive environments,FALSE
+Staff FTE status,Staff FTE status,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12, Postsecondary","Access to college and career advising; Access to health, mental health, and social supports; Teacher credentials",FALSE
+Staff race/ethnicity,Staff race/ethnicity,Teaching Effectiveness,Demographics,"Early Learning, K-12, Postsecondary",Representational racial and ethnic diversity of educators,FALSE
+State standardized test (Math proficiency),Math proficiency on state standardized test (Grade 3); Math proficiency on state standardized test (Grade 8); Math proficiency on state standardized test (Grades 9-12),Postsecondary Transitions,Assessments,K-12,Math and reading proficiency in grade 3; Math and reading proficiency in grade 8; Math and reading proficiency in high school,FALSE
+State standardized test (Reading proficiency),Reading proficiency on state standardized test (Grade 3); Reading proficiency on state standardized test (Grade 8); Reading proficiency on state standardized test (Grades 9-12),Postsecondary Transitions,Assessments,K-12,Math and reading proficiency in grade 3; Math and reading proficiency in grade 8; Math and reading proficiency in high school,FALSE
+Student attendance rate (K-12),Student attendance rate (Grade 1 & 2); Student attendance rate (Grade 6); Student attendance rate (Grade 8); Student attendance rate (Grade 9); Student attendance rate (Grades 1 & 2),School Climate,Attendance & Enrollment,K-12,6th grade on track; 8th grade on track; 9th grade on track; Early grades on track,FALSE
+Student attendance rate (PK),Attendance intensity; Student attendance rate,School Climate,Attendance & Enrollment,Early Learning,Consistent attendance,TRUE
+Student course enrollment record,"AP enrollment; Algebra 1 enrollment; CTE course enrollment; Dual credit enrollment; Early college course enrollment (AP, IB, and dual enrollment); Higher-level math enrollment; IB enrollment",Postsecondary Transitions,Academic Coursework,"K-12, Postsecondary",Access to early college coursework; CTE pathway concentration; Early college coursework completion; Equitable placement in rigorous coursework; Industry-recognized credential,FALSE
+Student from migrant family household,Student from migrant family household,School Climate,Demographics,"Early Learning, K-12, Postsecondary",,,TRUE
+Student FTE status,Student FTE status,School Climate,Attendance & Enrollment,"K-12, Postsecondary",Expenditures per student,FALSE
+Student grade level,7th grade student status; 8th grade student status,Postsecondary Transitions,Attendance & Enrollment,K-12,Successful completion of Algebra 1 by 9th grade,FALSE
+Student grade level (K-12),Student grade level (Grade 6); Student grade level (Grade 8); Student grade level (Grades 1 & 2); Student grade level or year,Postsecondary Transitions,Attendance & Enrollment,K-12,6th grade on track; Early grades on track; Math and reading proficiency in grade 8; Participation in work-based learning,FALSE
+Student grade level (PK),Student grade level,School Climate,Attendance & Enrollment,Early Learning,6th grade on track; 8th grade on track; 9th grade on track; College applications; CTE pathway concentration; Early grades on track; FAFSA completion; Grade point average (MS+HS); Industry-recognized credential; Math and reading proficiency in grade 3; Math and reading proficiency in grade 8; Math and reading proficiency in high school; Participation in work-based learning; SAT and ACT participation and performance; Successful completion of Algebra 1 by 9th grade,FALSE
+Student or family socioeconomic status,Student or family socioeconomic status,School Climate,Demographics,"Early Learning, K-12, Postsecondary, Workforce",School and workplace socioeconomic diversity,FALSE
+Student parenting status,Student parenting status,School Climate,Demographics,"K-12, Postsecondary",,,TRUE
+Student race/ethnicity,Race/ethnicity; Student race/ethnicity,School Climate,Demographics,"Early Learning, K-12, Postsecondary",Neighborhood racial diversity; Representational racial and ethnic diversity of educators; School and workplace racial and ethnic diversity,FALSE
+Student socioeconomic status,Student socioeconomic status,School Climate,Demographics,"Early Learning, K-12, Postsecondary",School and workplace socioeconomic diversity,FALSE
+Subscale observation scores,Subscale observation scores,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Classroom observations of instructional practice,FALSE
+Suspensions and expulsions (K-12),Expulsion; Expulsions; Expulsions (Grade 6); Expulsions (Grade 8); Expulsions (K12); In school suspension; In school suspension (Grade 1 & 2); In school suspension (K12); In school suspension (Grades 1 & 2); Out of school suspension; Out of school suspension (K12); Out of school suspension (Grades 1 & 2); Suspension (Grade 6); Suspension (Grade 8); Suspension (Grade 9); Suspensions,School Climate,Discipline & Behavior,K-12,6th grade on track; 8th grade on track; 9th grade on track; Early grades on track; Equitable discipline practices; Positive behavior,FALSE
+Suspensions and expulsions (PK),Expulsion (PK); Expulsions (PK); In school suspension (PK); Out of school suspension (PK); Suspensions (PK),School Climate,Discipline & Behavior,Early Learning,Equitable discipline practices; Positive behavior,FALSE
+Teacher effectiveness student surveys (K-12),Results on teacher effectiveness student survey,Teaching Effectiveness,Staff & Educators,K-12,Student perceptions of teaching,FALSE
+Teacher effectiveness student surveys (Postsecondary),Results on instructor effectiveness student survey,Teaching Effectiveness,Staff & Educators,Postsecondary,Student perceptions of teaching,FALSE
+Teacher qualification or certification type,Teacher qualification or certification type,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Teacher credentials,FALSE
+Teacher reports of executive function,Results on teacher reports of executive function; Results on teacher reports of executive function (PK),Kindergarten Readiness,Early Learning,Early Learning,Kindergarten readiness: approaches to learning,FALSE
+Teacher reports of social-emotional development,Results on teacher reports of social-emotional development; Results on teacher reports of social-emotional development (PK),Kindergarten Readiness,Early Learning,Early Learning,Kindergarten readiness: social-emotional development,FALSE
+Teacher-child interaction measure (K-12),Results on teacher-child interaction measure,Teaching Effectiveness,Staff & Educators,K-12,Classroom observations of instructional practice,FALSE
+Teacher-child interaction measure (PK),Results on teacher-child interaction measure (PK),Teaching Effectiveness,Staff & Educators,Early Learning,Classroom observations of instructional practice,FALSE
+Teaching assignment,Course instructor (or teacher's course assignments); Teaching assignment (subject and/or grade level taught),Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Teacher credentials,FALSE
+Total educational funding,Total educational funding,School Climate,Finance & Resources,"Early Learning, K-12, Postsecondary",Expenditures on workforce development programs,FALSE
+Total net price of education plus interest,Total net price of education plus interest,Postsecondary Success,Financial Aid & Affordability,Postsecondary,Minimum economic return,FALSE
+Transfer enrollment status,Transfer enrollment status,Postsecondary Success,Postsecondary Outcomes,Postsecondary,,,TRUE
+Transfer indicator or transfer student status,Transfer indicator or transfer student status,Postsecondary Success,Postsecondary Outcomes,Postsecondary,Transfer (if applicable),FALSE
+Universal screening results,Universal screening results,School Climate,Health & Wellness,"Early Learning, K-12",Mental and emotional well-being,FALSE
+Urbanicity,Urbanicity,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",,,TRUE
+USDA Food Access Research Atlas Access Level Flag,USDA Food Access Research Atlas Access Level Flag,School Climate,Community Context,"Early Learning, K-12, Postsecondary, Workforce",Food Security,FALSE
+USDA Food Security Survey ratings,Rating on USDA Food Security Survey module,School Climate,Health & Wellness,"Early Learning, K-12, Postsecondary, Workforce",Food Security,FALSE
+VAM for subject specific assessment,VAM for subject specific assessment,Teaching Effectiveness,Staff & Educators,K-12,Teachers' contributions to student learning growth,FALSE
+Workforce development program participation,Workforce development program participation,Workforce Transitions,Career & Technical Education (CTE),Workforce,Industry-recognized credential,FALSE
+Years in current position,Years in current position,Teaching Effectiveness,Staff & Educators,"Early Learning, K-12",Educator retention,FALSE
+Years of teaching experience,"Percentage of K-12 teachers with < 1 year, 1–5 years, and 5+ years of experience; Years of teaching experience",Teaching Effectiveness,Staff & Educators,K-12,Teacher experience,FALSE

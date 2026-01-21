@@ -1,0 +1,2470 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp"},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!csharp
+
+#r "nuget: CsvHelper, 30.0.1"
+
+#!markdown
+
+# Load from CSVs
+
+#!csharp
+
+using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.Configuration.Attributes;
+
+// Define strongly typed classes for each CSV
+
+public class DataElementNormalization
+{
+    [Name("Original Data Element Name")]
+    public string OriginalDataElementName { get; set; }
+    
+    [Name("Data Category")]
+    public string DataCategory { get; set; }
+
+    [Name("Updated Category")]
+    public string UpdatedCategory { get; set; }
+    
+    [Name("Normalized Data Element")]
+    public string NormalizedDataElement { get; set; }
+    
+    [Name("Potential Further Normalization")]
+    public string PotentialFurtherNormalization { get; set; }
+    
+    [Name("Grade or Sector Variant")]
+    public string GradeOrSectorVariant { get; set; }
+    
+    [Name("Roll up to Sector?")]
+    public string RollUpToSector { get; set; }
+    
+    [Name("Additional Notes (Optional)")]
+    public string AdditionalNotesOptional { get; set; }
+    
+    [Name("(final logical name (no sector))")]
+    public string FinalLogicalNameNoSector { get; set; }
+    
+    [Name("Proposed final")]
+    public string ProposedFinal { get; set; }
+}
+
+public class MainDataElement
+{
+    [Name("Essential Question")]
+    public string EssentialQuestion { get; set; }
+    
+    [Name("Domain")]
+    public string Domain { get; set; }
+    
+    [Name("Type")]
+    public string Type { get; set; }
+    
+    [Name("Sector")]
+    public string Sector { get; set; }
+    
+    [Name("Indicator")]
+    public string Indicator { get; set; }
+    
+    [Name("Metric")]
+    public string Metric { get; set; }
+    
+    [Name("Data Element")]
+    public string DataElement { get; set; }
+    
+    [Name("Ed-Fi Availability")]
+    public string EdFiAvailability { get; set; }
+    
+    [Name("Ed-Fi Data Element Path")]
+    public string EdFiDataElementPath { get; set; }
+    
+    [Name("CEDS Availability")]
+    public string CEDSAvailability { get; set; }
+    
+    [Name("CEDS Data Element Path V11")]
+    public string CEDSDataElementPathV11 { get; set; }
+    
+    [Name("CEDS Data Element Path V13")]
+    public string CEDSDataElementPathV13 { get; set; }
+    
+    [Name("Other Data Sources")]
+    public string OtherDataSources { get; set; }
+    
+    [Name("Data Capture Method")]
+    public string DataCaptureMethod { get; set; }
+    
+    [Name("Data Status")]
+    public string DataStatus { get; set; }
+    
+    [Name("Notes")]
+    public string Notes { get; set; }
+    
+    [Name("Classification")]
+    public string Classification { get; set; }
+    
+    [Name("CEDS Queries V11")]
+    public string CEDSQueriesV11 { get; set; }
+    
+    [Name("CEDS Queries V13")]
+    public string CEDSQueriesV13 { get; set; }
+    
+    [Name("Column 2")]
+    public string Column2 { get; set; }
+    
+    [Name("Column 21")]
+    public string Column21 { get; set; }
+    
+    [Name("Column 4")]
+    public string Column4 { get; set; }
+    
+    [Name("Column 5")]
+    public string Column5 { get; set; }
+    
+    [Name("Column 6")]
+    public string Column6 { get; set; }
+    
+    [Name("Column 7")]
+    public string Column7 { get; set; }
+    
+    [Name("Column 8")]
+    public string Column8 { get; set; }
+}
+
+public class EcsStateCrosswalk
+{
+    [Name("Order Key")]
+    public string OrderKey { get; set; }
+    
+    [Name("State")]
+    public string State { get; set; }
+    
+    [Name("Essential Question")]
+    public string EssentialQuestion { get; set; }
+    
+    [Name("Question Order Key")]
+    public string QuestionOrderKey { get; set; }
+    
+    [Name("Type")]
+    public string Type { get; set; }
+    
+    [Name("Domain")]
+    public string Domain { get; set; }
+    
+    [Name("Sector")]
+    public string Sector { get; set; }
+    
+    [Name("E-W Indicator")]
+    public string EWIndicator { get; set; }
+    
+    [Name("Metric Type")]
+    public string MetricType { get; set; }
+    
+    [Name("Metric or data element")]
+    public string MetricOrDataElement { get; set; }
+    
+    [Name("Collected Code")]
+    public string CollectedCode { get; set; }
+    
+    [Name("Collected Value")]
+    public string CollectedValue { get; set; }
+    
+    [Name("Collected Index Value")]
+    public string CollectedIndexValue { get; set; }
+    
+    [Name("As Is or Inferred")]
+    public string AsIsOrInferred { get; set; }
+    
+    [Name("Element name")]
+    public string ElementName { get; set; }
+    
+    [Name("Element definition")]
+    public string ElementDefinition { get; set; }
+    
+    [Name("Source")]
+    public string Source { get; set; }
+    
+    [Name("Source Link")]
+    public string SourceLink { get; set; }
+    
+    [Name("Notes")]
+    public string Notes { get; set; }
+    
+    [Name("Notes link")]
+    public string NotesLink { get; set; }
+    
+    [Name("Reported Code")]
+    public string ReportedCode { get; set; }
+    
+    [Name("Reported Index Value")]
+    public string ReportedIndexValue { get; set; }
+    
+    [Name("Reported Name")]
+    public string ReportedName { get; set; }
+    
+    [Name("Reported Link")]
+    public string ReportedLink { get; set; }
+    
+    [Name("Description")]
+    public string Description { get; set; }
+    
+    [Name("Geographic breakdowns")]
+    public string GeographicBreakdowns { get; set; }
+    
+    [Name("Disaggregated?")]
+    public string Disaggregated { get; set; }
+    
+    [Name("Reported Notes")]
+    public string ReportedNotes { get; set; }
+    
+    [Name("Reported Notes Link")]
+    public string ReportedNotesLink { get; set; }
+    
+    [Name("Existing 50-state resources")]
+    public string Existing50StateResources { get; set; }
+    
+    [Name("Internal notes")]
+    public string InternalNotes { get; set; }
+    
+    [Name("Original or Duplicate")]
+    public string OriginalOrDuplicate { get; set; }
+    
+    [Name("Urban Institute Source")]
+    public string UrbanInstituteSource { get; set; }
+    
+    [Name("Urban Institute Source Link")]
+    public string UrbanInstituteSourceLink { get; set; }
+    
+    [Name("Unique Order Key")]
+    public string UniqueOrderKey { get; set; }
+    
+    [Name("Metric Classification")]
+    public string MetricClassification { get; set; }
+    
+    [Name("Parent Metric Key")]
+    public string ParentMetricKey { get; set; }
+    
+    [Name("Inherited Classification")]
+    public string InheritedClassification { get; set; }
+    
+    [Name("Filter Group")]
+    public string FilterGroup { get; set; }
+    
+    [Name("Sort Order")]
+    public string SortOrder { get; set; }
+    
+    [Name("State Sort Order")]
+    public string StateSortOrder { get; set; }
+    
+    [Name("Classification Sort Order")]
+    public string ClassificationSortOrder { get; set; }
+}
+
+// Define class for Recategorizations
+public class RecategorizedDataElement
+{
+    [Name("DataElementName")]
+    public string DataElementName { get; set; }
+    
+    [Name("OriginalDataElementName")]
+    public string OriginalDataElementName { get; set; }
+    
+    [Name("ClusterOnlyCategory")]
+    public string ClusterOnlyCategory { get; set; }
+    
+    [Name("SuggestedCategory")]
+    public string SuggestedCategory { get; set; }
+    
+    [Name("Sector")]
+    public string Sector { get; set; }
+    
+    [Name("Notes")]
+    public string Notes { get; set; }
+    
+    [Name("Indicators")]
+    public string Indicators { get; set; }
+    
+    [Name("IsDisaggregate")]
+    public string IsDisaggregate { get; set; }
+}
+
+// Helper method to load CSV files
+List<T> LoadCsv<T>(string filePath)
+{
+    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+    {
+        HeaderValidated = null,
+        MissingFieldFound = null,
+        TrimOptions = TrimOptions.Trim
+    };
+    
+    using var reader = new StreamReader(filePath);
+    using var csv = new CsvReader(reader, config);
+    return csv.GetRecords<T>().ToList();
+}
+
+// Load the CSV files
+var dataElementsNormalization = LoadCsv<DataElementNormalization>("DataElementsNormalization.csv");
+var mainDataElements = LoadCsv<MainDataElement>("Main-DataElements.csv");
+var ecsStateCrosswalk = LoadCsv<EcsStateCrosswalk>("EcsStateCrosswalk.csv");
+var recategorizedElements = LoadCsv<RecategorizedDataElement>("Recategorizations.csv");
+
+// Display counts to verify loading
+Console.WriteLine($"Loaded {dataElementsNormalization.Count} records from DataElementsNormalization.csv");
+Console.WriteLine($"Loaded {mainDataElements.Count} records from Main-DataElements.csv");
+Console.WriteLine($"Loaded {ecsStateCrosswalk.Count} records from EcsStateCrosswalk.csv");
+Console.WriteLine($"Loaded {recategorizedElements.Count} records from Recategorizations.csv");
+
+#!csharp
+
+public enum Sector
+{
+    PreK,
+    K12,
+    Postsecondary,
+    Workforce
+}
+
+public class DataElement
+{
+    public string Name { get; }
+    public string EWFrameworkClusterCategory { get; }
+    public string DataElementCategory { get; }
+    public List<Sector> RelatedSectors { get; }
+    public string? AdditionalNotes { get; }
+    public List<string> RelatedIndicatorNames { get; }
+    public string? EcsDataElementNameReference { get; }
+    
+    public DataElement(
+        string name,
+        string clusterOnlyCategory,
+        string dataElementCategory,
+        List<Sector> relatedSectors,
+        string? additionalNotes,
+        List<string> relatedIndicatorNames,
+        string? ecsDataElementNameReference)
+    {
+        Name = name;
+        EWFrameworkClusterCategory = clusterOnlyCategory;
+        DataElementCategory = dataElementCategory;
+        RelatedSectors = relatedSectors;
+        AdditionalNotes = additionalNotes;
+        RelatedIndicatorNames = relatedIndicatorNames;
+        EcsDataElementNameReference = ecsDataElementNameReference;
+    }
+}
+
+// Helper to parse sector enum
+List<Sector> ParseSectors(string? sectorString)
+{
+    if (string.IsNullOrWhiteSpace(sectorString))
+        return new List<Sector>();
+    
+    var sectors = new List<Sector>();
+    var parts = sectorString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    
+    foreach (var part in parts)
+    {
+        if (Enum.TryParse<Sector>(part.Replace("-", "").Replace(" ", ""), true, out var sector))
+        {
+            sectors.Add(sector);
+        }
+    }
+    
+    return sectors;
+}
+
+// Join and transform the data
+var dataElements = new Dictionary<string, DataElement>();
+
+foreach (var normalized in dataElementsNormalization)
+{
+    if (string.IsNullOrWhiteSpace(normalized.ProposedFinal))
+        continue;
+    
+    var name = normalized.ProposedFinal.Trim();
+    
+    // Find matching recategorized element
+    var recategorized = recategorizedElements
+        .FirstOrDefault(r => r.DataElementName?.Trim().Equals(name, StringComparison.OrdinalIgnoreCase) == true);
+    
+    // Get cluster category and data element category
+    var clusterCategory = recategorized?.ClusterOnlyCategory?.Trim() ?? "";
+    var dataElementCategory = recategorized?.SuggestedCategory?.Trim() ?? "";
+    
+    // Parse sectors
+    var sectors = ParseSectors(recategorized?.Sector);
+    
+    // Get additional notes
+    var additionalNotes = string.IsNullOrWhiteSpace(normalized.AdditionalNotesOptional) 
+        ? null 
+        : normalized.AdditionalNotesOptional.Trim();
+    
+    // Get related indicators by joining on OriginalDataElementName
+    var relatedIndicators = new List<string>();
+    if (recategorized != null && !string.IsNullOrWhiteSpace(recategorized.OriginalDataElementName))
+    {
+        var originalName = recategorized.OriginalDataElementName.Trim();
+        relatedIndicators = mainDataElements
+            .Where(m => m.DataElement?.Trim().Equals(originalName, StringComparison.OrdinalIgnoreCase) == true)
+            .Where(m => !string.IsNullOrWhiteSpace(m.Indicator))
+            .Select(m => m.Indicator.Trim())
+            .Distinct()
+            .ToList();
+    }
+    
+    // ECS reference (using OriginalDataElementName as reference)
+    var ecsReference = recategorized?.OriginalDataElementName?.Trim();
+    if (string.IsNullOrWhiteSpace(ecsReference))
+        ecsReference = null;
+    
+    // Create the DataElement
+    var dataElement = new DataElement(
+        name,
+        clusterCategory,
+        dataElementCategory,
+        sectors,
+        additionalNotes,
+        relatedIndicators,
+        ecsReference
+    );
+    
+    // Add to dictionary (skip duplicates)
+    if (!dataElements.ContainsKey(name))
+    {
+        dataElements.Add(name, dataElement);
+    }
+}
+
+// Export as C# code
+var sb = new StringBuilder();
+sb.AppendLine("public static class EwFrameworkDataElements");
+sb.AppendLine("{");
+sb.AppendLine("    public static readonly Dictionary<string, DataElement> Elements = new()");
+sb.AppendLine("    {");
+
+foreach (var kvp in dataElements.OrderBy(de => de.Key))
+{
+    var de = kvp.Value;
+    var key = EscapeString(de.Name);
+    var name = EscapeString(de.Name);
+    var cluster = EscapeString(de.EWFrameworkClusterCategory);
+    var category = EscapeString(de.DataElementCategory);
+    
+    var sectorsStr = de.RelatedSectors.Count > 0 
+        ? $"new List<Sector> {{ {string.Join(", ", de.RelatedSectors.Select(s => $"Sector.{s}"))} }}"
+        : "new List<Sector>()";
+    
+    var notesStr = de.AdditionalNotes != null 
+        ? $"\"{EscapeString(de.AdditionalNotes)}\"" 
+        : "null";
+    
+    var indicatorsStr = de.RelatedIndicatorNames.Count > 0
+        ? $"new List<string> {{ {string.Join(", ", de.RelatedIndicatorNames.Select(i => $"\"{EscapeString(i)}\""))} }}"
+        : "new List<string>()";
+    
+    var ecsRefStr = de.EcsDataElementNameReference != null
+        ? $"\"{EscapeString(de.EcsDataElementNameReference)}\""
+        : "null";
+    
+    sb.AppendLine($"        [\"{key}\"] = new DataElement(\"{name}\", \"{cluster}\", \"{category}\", {sectorsStr}, {notesStr}, {indicatorsStr}, {ecsRefStr}),");
+}
+
+sb.AppendLine("    };");
+sb.AppendLine("}");
+
+// Write to file
+File.WriteAllText("EwFrameworkDataElements.cs", sb.ToString());
+Console.WriteLine("\nExported to EwFrameworkDataElements.cs");
+
+// Helper to escape strings for C# code
+string EscapeString(string input)
+{
+    return input.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+}
+
+#!markdown
+
+# Join final data elements to indicators
+
+#!csharp
+
+// Define the output class
+public class NormalizedDataElement
+{
+    public string DataElementName { get; set; }
+    public string OriginalDataElementName { get; set; }
+    public string Category1 { get; set; }
+    public string Category2 { get; set; }
+    public string Sector { get; set; }
+    public string Notes { get; set; }
+    public List<string> Indicators { get; set; }
+    public bool IsDisaggregate { get; set; }
+}
+
+// Create the normalized output by joining and grouping
+var normalizedDataElements = (
+    from norm in dataElementsNormalization
+    join main in mainDataElements 
+        on norm.OriginalDataElementName equals main.DataElement into mainGroup
+    from main in mainGroup.DefaultIfEmpty() // Left join to include all normalization records
+    group new { norm, main } by new 
+    { 
+        ProposedFinal = norm.ProposedFinal,
+        OriginalDataElementName = norm.OriginalDataElementName,
+        DataCategory = norm.DataCategory,
+        UpdatedCategory = norm.UpdatedCategory,
+        RollUpToSector = norm.RollUpToSector,
+        AdditionalNotesOptional = norm.AdditionalNotesOptional
+    } into g
+    select new NormalizedDataElement
+    {
+        DataElementName = g.Key.ProposedFinal,
+        OriginalDataElementName = g.Key.OriginalDataElementName,
+        Category1 = g.Key.DataCategory,
+        Category2 = g.Key.UpdatedCategory,
+        Sector = g.Key.RollUpToSector,
+        Notes = g.Key.AdditionalNotesOptional,
+        Indicators = g.Where(x => x.main != null && !string.IsNullOrWhiteSpace(x.main.Indicator))
+                      .Select(x => x.main.Indicator)
+                      .Distinct()
+                      .OrderBy(x => x)
+                      .ToList(),
+        IsDisaggregate = g.Any(x => x.main != null && 
+                                    string.Equals(x.main.Type, "Disaggregate", StringComparison.OrdinalIgnoreCase))
+    }
+).ToList();
+
+// Further deduplicate by DataElementName (ProposedFinal)
+var deduplicatedNormalizedDataElements = normalizedDataElements
+    .GroupBy(x => x.DataElementName)
+    .Select(g => new NormalizedDataElement
+    {
+        DataElementName = g.Key,
+        OriginalDataElementName = string.Join("; ", g.Select(x => x.OriginalDataElementName).Distinct()),
+        Category1 = g.First().Category1, // Take first non-null or use a merge strategy
+        Category2 = g.First().Category2,
+        Sector = g.First().Sector,
+        Notes = string.Join("; ", g.Select(x => x.Notes).Where(n => !string.IsNullOrWhiteSpace(n)).Distinct()),
+        Indicators = g.SelectMany(x => x.Indicators).Distinct().OrderBy(x => x).ToList(),
+        IsDisaggregate = g.Any(x => x.IsDisaggregate)
+    })
+    .OrderBy(x => x.DataElementName)
+    .ToList();
+
+Console.WriteLine($"Created {deduplicatedNormalizedDataElements.Count} deduplicated normalized data elements");
+
+deduplicatedNormalizedDataElements
+
+#!csharp
+
+// Define the output class for state inventory
+public class StateEcsInventory
+{
+    public string State { get; set; }
+    public string DataElementName { get; set; }
+    public string ReportedAvailability { get; set; }
+    public string InferredAvailability { get; set; }
+}
+
+// Create the state inventory by joining and mapping
+var stateInventoryElements = (
+    from recat in recategorizedElements
+    join ecs in ecsStateCrosswalk 
+        on recat.OriginalDataElementName equals ecs.MetricOrDataElement
+    select new StateEcsInventory
+    {
+        State = ecs.State,
+        DataElementName = recat.DataElementName,
+        ReportedAvailability = ecs.ReportedCode,
+        InferredAvailability = ecs.CollectedCode
+    }
+).ToList();
+
+ecsStateCrosswalk.Count(); // 69666
+stateInventoryElements.Count(); // 24808
+
+#!markdown
+
+## Quick validations
+
+#!csharp
+
+// Show statistics
+var withIndicators = deduplicatedNormalizedDataElements.Count(x => x.Indicators.Any());
+var disaggregateCount = deduplicatedNormalizedDataElements.Count(x => x.IsDisaggregate);
+var withoutIndicators = deduplicatedNormalizedDataElements.Count(x => !x.Indicators.Any());
+
+Console.WriteLine("\n=== STATISTICS ===");
+Console.WriteLine($"Total deduplicated data elements: {deduplicatedNormalizedDataElements.Count}");
+Console.WriteLine($"With indicators: {withIndicators}");
+Console.WriteLine($"Without indicators: {withoutIndicators}");
+Console.WriteLine($"Marked as disaggregate: {disaggregateCount}");
+
+#!csharp
+
+// Distribution of Category2 values
+var category2Distribution = deduplicatedNormalizedDataElements
+    .GroupBy(x => string.IsNullOrWhiteSpace(x.Category2) ? "(blank)" : x.Category2)
+    .Select(g => new 
+    { 
+        Category = g.Key, 
+        Count = g.Count() 
+    })
+    .OrderByDescending(x => x.Count)
+    .ToList();
+
+Console.WriteLine("=== CATEGORY2 DISTRIBUTION ===");
+Console.WriteLine($"Total unique Category2 values: {category2Distribution.Count}");
+Console.WriteLine();
+
+foreach (var item in category2Distribution)
+{
+    Console.WriteLine($"{item.Category}: {item.Count}");
+}
+
+#!markdown
+
+# Saving results to CSV
+
+#!csharp
+
+// Create output class for CSV
+public class DataElementOutput
+{
+    public string DataElementName { get; set; }
+    public string OriginalDataElementName { get; set; }
+    public string Category { get; set; }
+    public string Sector { get; set; }
+    public string Notes { get; set; }
+    public string Indicators { get; set; }
+    public string IsDisaggregate { get; set; }
+}
+
+// Transform to output format
+var outputData = deduplicatedNormalizedDataElements
+    .Select(x => new DataElementOutput
+    {
+        DataElementName = x.DataElementName,
+        OriginalDataElementName = x.OriginalDataElementName,
+        Category = x.Category2,
+        Sector = x.Sector,
+        Notes = x.Notes,
+        Indicators = string.Join("; ", x.Indicators),
+        IsDisaggregate = x.IsDisaggregate.ToString()
+    })
+    .ToList();
+
+// Write to CSV
+var outputPath = "OUTPUT_DataElements.csv";
+var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+{
+    TrimOptions = TrimOptions.Trim
+};
+
+using (var writer = new StreamWriter(outputPath))
+using (var csv = new CsvWriter(writer, config))
+{
+    csv.WriteRecords(outputData);
+}
+
+Console.WriteLine($"Successfully wrote {outputData.Count} records to {outputPath}");
+Console.WriteLine($"File location: {Path.GetFullPath(outputPath)}");
+
+#!csharp
+
+// Define class for Recategorizations
+public class RecategorizedDataElement
+{
+    [Name("DataElementName")]
+    public string DataElementName { get; set; }
+    
+    [Name("OriginalDataElementName")]
+    public string OriginalDataElementName { get; set; }
+    
+    [Name("ClusterOnlyCategory")]
+    public string ClusterOnlyCategory { get; set; }
+    
+    [Name("SuggestedCategory")]
+    public string SuggestedCategory { get; set; }
+    
+    [Name("Sector")]
+    public string Sector { get; set; }
+    
+    [Name("Notes")]
+    public string Notes { get; set; }
+    
+    [Name("Indicators")]
+    public string Indicators { get; set; }
+    
+    [Name("IsDisaggregate")]
+    public string IsDisaggregate { get; set; }
+}
+
+// Load the recategorizations file
+var recategorizedElements = LoadCsv<RecategorizedDataElement>("Recategorizations.csv");
+Console.WriteLine($"Loaded {recategorizedElements.Count} records from Recategorizations.csv");
+
+#!markdown
+
+# ECS stuff
+
+#!csharp
+
+// Define the output class for state inventory
+public class StateEcsInventory
+{
+    public string State { get; set; }
+    public string DataElementName { get; set; }
+    public string ReportedAvailability { get; set; }
+    public string InferredAvailability { get; set; }
+}
+
+// Create the state inventory by joining and mapping
+var stateInventoryElements = (
+    from recat in recategorizedElements
+    join ecs in ecsStateCrosswalk 
+        on recat.OriginalDataElementName equals ecs.MetricOrDataElement
+    select new StateEcsInventory
+    {
+        State = ecs.State,
+        DataElementName = recat.DataElementName,
+        ReportedAvailability = ecs.ReportedCode,
+        InferredAvailability = ecs.CollectedCode
+    }
+).ToList();
+
+ecsStateCrosswalk.Count(); // 69666
+stateInventoryElements.Count(); // 24808
+
+#!csharp
+
+var stateInventory = stateInventoryElements.GroupBy(x => x.State);
+
+// Show distribution with inline mapping
+Console.WriteLine("=== REPORTED AVAILABILITY BREAKDOWN ===");
+var reportedDist = stateInventoryElements
+    .GroupBy(x => string.IsNullOrWhiteSpace(x.ReportedAvailability) ? "Unreported" : 
+                  x.ReportedAvailability.Equals("Found", StringComparison.OrdinalIgnoreCase) ? "Found" :
+                  x.ReportedAvailability.Equals("Partial", StringComparison.OrdinalIgnoreCase) ? "Partial" :
+                  x.ReportedAvailability.Equals("Not Found", StringComparison.OrdinalIgnoreCase) ? "Not Found" : 
+                  x.ReportedAvailability)
+    .Select(g => new { Status = g.Key, Count = g.Count() })
+    .OrderByDescending(x => x.Count)
+    .ToList();
+
+foreach (var item in reportedDist)
+{
+    var percentage = (item.Count * 100.0 / stateInventoryElements.Count).ToString("F1");
+    Console.WriteLine($"{item.Status}: {item.Count} ({percentage}%)");
+}
+stateInventoryElements.Count()
+
+#!csharp
+
+Console.WriteLine("\n=== INFERRED AVAILABILITY BREAKDOWN ===");
+var inferredDist = stateInventoryElements
+    .GroupBy(x => string.IsNullOrWhiteSpace(x.InferredAvailability) ? "Unreported" : 
+                  x.InferredAvailability.Equals("Found", StringComparison.OrdinalIgnoreCase) ? "Found" :
+                  x.InferredAvailability.Equals("Partial", StringComparison.OrdinalIgnoreCase) ? "Partial" :
+                  x.InferredAvailability.Equals("Not Found", StringComparison.OrdinalIgnoreCase) ? "Not Found" : 
+                  x.InferredAvailability)
+    .Select(g => new { Status = g.Key, Count = g.Count() })
+    .OrderByDescending(x => x.Count)
+    .ToList();
+
+foreach (var item in inferredDist)
+{
+    var percentage = (item.Count * 100.0 / stateInventoryElements.Count).ToString("F1");
+    Console.WriteLine($"{item.Status}: {item.Count} ({percentage}%)");
+}
+
+Console.WriteLine($"\nTotal records: {stateInventoryElements.Count}");
+
+// Breakdown by state
+Console.WriteLine("\n=== BREAKDOWN BY STATE ===");
+var stateBreakdown = stateInventoryElements
+    .GroupBy(x => x.State)
+    .OrderBy(g => g.Key)
+    .ToList();
+
+foreach (var stateGroup in stateBreakdown)
+{
+    Console.WriteLine($"\n{stateGroup.Key}:");
+    
+    var stateReported = stateGroup
+        .GroupBy(x => string.IsNullOrWhiteSpace(x.ReportedAvailability) ? "unreported" : 
+                      x.ReportedAvailability.Equals("Found", StringComparison.OrdinalIgnoreCase) ? "Found" :
+                      x.ReportedAvailability.Equals("Partial", StringComparison.OrdinalIgnoreCase) ? "Partial" :
+                      x.ReportedAvailability.Equals("Not Found", StringComparison.OrdinalIgnoreCase) ? "Not Found" : 
+                      x.ReportedAvailability)
+        .Select(g => new { Status = g.Key, Count = g.Count() })
+        .OrderByDescending(x => x.Count);
+    
+    Console.WriteLine("  Reported:");
+    foreach (var item in stateReported)
+    {
+        Console.WriteLine($"    {item.Status}: {item.Count}");
+    }
+    
+    var stateInferred = stateGroup
+        .GroupBy(x => string.IsNullOrWhiteSpace(x.InferredAvailability) ? "unreported" : 
+                      x.InferredAvailability.Equals("Found", StringComparison.OrdinalIgnoreCase) ? "Found" :
+                      x.InferredAvailability.Equals("Partial", StringComparison.OrdinalIgnoreCase) ? "Partial" :
+                      x.InferredAvailability.Equals("Not Found", StringComparison.OrdinalIgnoreCase) ? "Not Found" : 
+                      x.InferredAvailability)
+        .Select(g => new { Status = g.Key, Count = g.Count() })
+        .OrderByDescending(x => x.Count);
+    
+    Console.WriteLine("  Inferred:");
+    foreach (var item in stateInferred)
+    {
+        Console.WriteLine($"    {item.Status}: {item.Count}");
+    }
+}
+
+#!csharp
+
+// Find records in ECS that don't match Recategorizations
+var unmatchedEcs = ecsStateCrosswalk
+    .Where(ecs => !recategorizedElements.Any(recat => recat.OriginalDataElementName == ecs.MetricOrDataElement))
+    .Select(ecs => ecs.MetricOrDataElement)
+    .Where(x => !string.IsNullOrWhiteSpace(x))
+    .Distinct()
+    .OrderBy(x => x)
+    .ToList();
+
+Console.WriteLine($"=== ECS RECORDS NOT MATCHING RECATEGORIZATIONS ===");
+Console.WriteLine($"Total unmatched unique values in ECS: {unmatchedEcs.Count}");
+Console.WriteLine("\nFirst 20 unmatched values from ECS:");
+foreach (var item in unmatchedEcs.Take(20))
+{
+    Console.WriteLine($"  '{item}'");
+}
+
+// Find records in Recategorizations that don't match ECS
+var unmatchedRecat = recategorizedElements
+    .Where(recat => !ecsStateCrosswalk.Any(ecs => ecs.MetricOrDataElement == recat.OriginalDataElementName))
+    .Select(recat => recat.OriginalDataElementName)
+    .Distinct()
+    .OrderBy(x => x)
+    .ToList();
+
+Console.WriteLine($"\n=== RECATEGORIZATION RECORDS NOT MATCHING ECS ===");
+Console.WriteLine($"Total unmatched in Recategorizations: {unmatchedRecat.Count}");
+Console.WriteLine("\nAll unmatched values from Recategorizations:");
+foreach (var item in unmatchedRecat)
+{
+    Console.WriteLine($"  '{item}'");
+}
+
+// Try fuzzy matching to find near-misses
+Console.WriteLine("\n=== POTENTIAL NEAR-MISSES (FUZZY MATCHING) ===");
+var ecsValues = ecsStateCrosswalk
+    .Select(x => x.MetricOrDataElement)
+    .Where(x => !string.IsNullOrWhiteSpace(x))
+    .Distinct()
+    .ToList();
+
+foreach (var recatValue in unmatchedRecat.Take(10))
+{
+    var candidates = ecsValues
+        .Where(ecsVal => 
+            ecsVal.Contains(recatValue, StringComparison.OrdinalIgnoreCase) ||
+            recatValue.Contains(ecsVal, StringComparison.OrdinalIgnoreCase) ||
+            LevenshteinDistance(recatValue.ToLower(), ecsVal.ToLower()) <= 3)
+        .Take(3)
+        .ToList();
+    
+    if (candidates.Any())
+    {
+        Console.WriteLine($"\nRecategorization: '{recatValue}'");
+        Console.WriteLine("  Possible matches in ECS:");
+        foreach (var candidate in candidates)
+        {
+            Console.WriteLine($"    - '{candidate}'");
+        }
+    }
+}
+
+// Helper function for fuzzy matching
+int LevenshteinDistance(string s, string t)
+{
+    int n = s.Length;
+    int m = t.Length;
+    int[,] d = new int[n + 1, m + 1];
+
+    if (n == 0) return m;
+    if (m == 0) return n;
+
+    for (int i = 0; i <= n; i++) d[i, 0] = i;
+    for (int j = 0; j <= m; j++) d[0, j] = j;
+
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+            d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
+        }
+    }
+    return d[n, m];
+}
+
+#!markdown
+
+# Update Dictionaries in C#
+
+#!csharp
+
+public enum Sector
+{
+    PK,
+    K12,
+    PS,
+    WF
+}
+
+public static class EwFrameworkDataElements
+{
+    public static readonly Dictionary<string, DataElement> Elements = new()
+    {
+        ["ACT completion"] = new DataElement("ACT completion", "Postsecondary Transitions", "Assessments", [Sector.K12], null, ["SAT and ACT participation and performance"], "ACT completion"),
+        ["ACT score"] = new DataElement("ACT score", "Postsecondary Transitions", "Assessments", [Sector.K12], null, ["SAT and ACT participation and performance"], "ACT score"),
+        ["Advising and counseling service utilization"] = new DataElement("Advising and counseling service utilization", "Postsecondary Transitions", "Student Support Services", [Sector.K12, Sector.PS], null, ["Access to college and career advising"], "Advising and counseling service utilization"),
+        ["Age"] = new DataElement("Age", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], "Numerical age as of point in time, or birth date", ["Enrollment in quality public pre-K", "Mental and emotional well-being"], "Age (or birth date)"),
+        ["Age group"] = new DataElement("Age group", "Postsecondary Success", "Demographics", [Sector.PS, Sector.WF], "Generalized category of age, e.g. adult or minor", [], "Age group (for example, adult learners)"),
+        ["AP course designation"] = new DataElement("AP course designation", "Postsecondary Transitions", "Academic Coursework", [Sector.K12], null, ["Access to early college coursework"], "AP course designation"),
+        ["AP, IB, or Dual Credit course credits"] = new DataElement("AP, IB, or Dual Credit course credits", "Postsecondary Transitions", "Academic Coursework", [Sector.K12, Sector.PS], null, [], "AP course passage; AP credit earned (or AP test scores); AP test completion; Dual credit course passage; Dual credit earned; Dual credit test completion; IB course passage; IB credit earned (or IB test scores); IB test completion"),
+        ["Apprenticeship program enrollment date"] = new DataElement("Apprenticeship program enrollment date", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.WF], null, ["Successful career transition after high school"], "Apprenticeship program enrollment date"),
+        ["Average cost of attendance"] = new DataElement("Average cost of attendance", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Unmet financial need"], "Average cost of attendance"),
+        ["Average expected family contribution (EFC)"] = new DataElement("Average expected family contribution (EFC)", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Unmet financial need"], "Average expected family contribution (EFC)"),
+        ["Average financial aid amount (including grants, scholarships, and tuition waivers)"] = new DataElement("Average financial aid amount (including grants, scholarships, and tuition waivers)", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, [], "Average value of grants; Average value of scholarships; Average value of tuition waivers; Financial aid amount"),
+        ["Average pay in county or MSA"] = new DataElement("Average pay in county or MSA", "Workforce Success", "Community Context", [Sector.WF], null, ["Access to jobs paying a living wage"], "Average pay in county or MSA"),
+        ["Bachelor's degree completion date"] = new DataElement("Bachelor's degree completion date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Enrollment in graduate education"], "Bachelor's degree completion date"),
+        ["Basic skills level"] = new DataElement("Basic skills level", "Workforce Transitions", "Assessments", [Sector.WF], null, [], "Basic skills level"),
+        ["Benefits availability"] = new DataElement("Benefits availability", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["Job quality"], "Benefits availability"),
+        ["Campus climate surveys (K-12)"] = new DataElement("Campus climate surveys (K-12)", "School Climate", "School Climate", [Sector.K12], null, ["School safety"], "Results on school climate survey (K-12)"),
+        ["Campus climate surveys (Postsecondary)"] = new DataElement("Campus climate surveys (Postsecondary)", "Postsecondary Success", "School Climate", [Sector.PS], null, ["School safety"], "Results on campus climate survey (Postsecondary)"),
+        ["CHIP eligibility status"] = new DataElement("CHIP eligibility status", "School Climate", "Health & Wellness", [Sector.K12], null, ["Health insurance coverage"], "CHIP eligibility status"),
+        ["CHIP enrollment"] = new DataElement("CHIP enrollment", "School Climate", "Health & Wellness", [Sector.K12], null, ["Health insurance coverage"], "CHIP enrollment"),
+        ["City or county population"] = new DataElement("City or county population", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Exposure to neighborhood crime", "Neighborhood juvenile arrests"], "City or county population"),
+        ["Civic engagement surveys (K-12)"] = new DataElement("Civic engagement surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Civic engagement"], "Civic engagement survey results (K-12)"),
+        ["Civic engagement surveys (Postsecondary)"] = new DataElement("Civic engagement surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Civic engagement"], "Civic engagement survey results (Postsecondary)"),
+        ["Civic engagement surveys (Workforce)"] = new DataElement("Civic engagement surveys (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Civic engagement"], "Civic engagement survey results (Workforce)"),
+        ["Cohort graduation year"] = new DataElement("Cohort graduation year", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.K12], null, ["High school graduation"], "Cohort graduation year"),
+        ["Cohort year"] = new DataElement("Cohort year", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.K12, Sector.PS], null, ["High school graduation"], "Cohort year"),
+        ["College selectivity level"] = new DataElement("College selectivity level", "Postsecondary Transitions", "Postsecondary Outcomes", [Sector.PS], null, ["College match"], "College selectivity level"),
+        ["College value-added"] = new DataElement("College value-added", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Institutions' contributions to student outcomes"], "College value-added"),
+        ["Communication skills performance assessments (K-12)"] = new DataElement("Communication skills performance assessments (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Communication skills"], "Communication skills performance assessment results (K-12)"),
+        ["Communication skills performance assessments (Postsecondary)"] = new DataElement("Communication skills performance assessments (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Communication skills"], "Communication skills performance assessment results (Postsecondary)"),
+        ["Communication skills performance assessments (Workforce)"] = new DataElement("Communication skills performance assessments (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Communication skills"], "Communication skills performance assessment results (Workforce)"),
+        ["Commute time"] = new DataElement("Commute time", "Workforce Transitions", "Transportation", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to transportation"], "Commute time"),
+        ["Course department"] = new DataElement("Course department", "Postsecondary Transitions", "Academic Coursework", [Sector.K12, Sector.PS], null, ["Access to college preparatory coursework"], "Course department"),
+        ["Course identifier or title"] = new DataElement("Course identifier or title", "Postsecondary Transitions", "Academic Coursework", [Sector.K12, Sector.PS], null, [], "Course ID  - CIP code; Course ID or course title; Course ID or course title of follow-up courses (Algebra II, Pre-calculus, Geometry, etc)"),
+        ["Course offering by grade level"] = new DataElement("Course offering by grade level", "Postsecondary Transitions", "Academic Coursework", [Sector.K12], null, ["Access to college preparatory coursework"], "Level(s) at which course is offered (e.g., 9/10/11/12; Fr/So/Jr/Sr)"),
+        ["Course outcome"] = new DataElement("Course outcome", "Postsecondary Transitions", "Academic Performance", [Sector.K12, Sector.PS], "For example, completion, failure, passage", [], "Course failure (Grade 9); Course passage or completion; Course passage or completion (Grade 9)"),
+        ["Course performance (English and Math)"] = new DataElement("Course performance (English and Math)", "Postsecondary Transitions", "Academic Performance", [Sector.K12], null, [], "Course performance in English (Grade 6); Course performance in English (Grade 8); Course performance in Math (Grade 6); Course performance in Math (Grade 8)"),
+        ["Credential or certification type"] = new DataElement("Credential or certification type", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Teacher credentials"], "Credential or certification type"),
+        ["Credential-seeking status"] = new DataElement("Credential-seeking status", "Postsecondary Success", "Attendance & Enrollment", [Sector.PS, Sector.WF], null, [], "Credential-seeking status"),
+        ["Credits earned in first year"] = new DataElement("Credits earned in first year", "Postsecondary Success", "Academic Performance", [Sector.PS], null, ["Credit accumulation"], "Credits earned in first year"),
+        ["CTE course completion"] = new DataElement("CTE course completion", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS], null, ["CTE pathway concentration"], "CTE course completion"),
+        ["CTE course ID or course title"] = new DataElement("CTE course ID or course title", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS], null, ["CTE pathway concentration"], "CTE course ID or course title"),
+        ["CTE pathway or career cluster associated with CTE course"] = new DataElement("CTE pathway or career cluster associated with CTE course", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS], null, ["CTE pathway concentration"], "CTE pathway or career cluster associated with CTE course"),
+        ["CTE program"] = new DataElement("CTE program", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to in-demand CTE pathways"], "CTE program"),
+        ["Cultural competency assessments (K-12)"] = new DataElement("Cultural competency assessments (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Cultural competency"], "Cultural competency assessment results (K-12)"),
+        ["Cultural competency assessments (Postsecondary)"] = new DataElement("Cultural competency assessments (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Cultural competency"], "Cultural competency assessment results (Postsecondary)"),
+        ["Cultural competency assessments (Workforce)"] = new DataElement("Cultural competency assessments (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Cultural competency"], "Cultural competency assessment results (Workforce)"),
+        ["Date of services provided"] = new DataElement("Date of services provided", "Postsecondary Transitions", "Student Support Services", [Sector.K12, Sector.PS], null, ["Enrollment in quality public pre-K", "Access to early intervention screening"], "Date of services provided"),
+        ["Developmental screening results"] = new DataElement("Developmental screening results", "Kindergarten Readiness", "Early Learning", [], null, ["Mental and emotional well-being"], "Developmental screening results"),
+        ["Digital skills assessments (K-12)"] = new DataElement("Digital skills assessments (K-12)", "Postsecondary Transitions", "Assessments", [Sector.K12], null, ["Digital skills"], "Digital skills assessment results (K-12)"),
+        ["Digital skills assessments (Postsecondary)"] = new DataElement("Digital skills assessments (Postsecondary)", "Postsecondary Success", "Assessments", [Sector.PS], null, ["Digital skills"], "Digital skills assessment results (Postsecondary)"),
+        ["Digital skills assessments (Workforce)"] = new DataElement("Digital skills assessments (Workforce)", "Workforce Success", "Assessments", [Sector.WF], null, ["Digital skills"], "Digital skills assessment results (Workforce)"),
+        ["Diploma or credential award date"] = new DataElement("Diploma or credential award date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.K12, Sector.PS], null, ["High school graduation"], "Diploma or credential award date"),
+        ["Direct child assessments (cognition)"] = new DataElement("Direct child assessments (cognition)", "Kindergarten Readiness", "Early Learning", [], null, [], "Results on direct child assessment (cognition); Results on direct child assessment (cognition) (PK)"),
+        ["Direct child assessments (language and literacy)"] = new DataElement("Direct child assessments (language and literacy)", "Kindergarten Readiness", "Early Learning", [], null, [], "Results on direct child assessment (language and literacy); Results on direct child assessment (language and literacy) (PK)"),
+        ["Direct child assessments of executive function"] = new DataElement("Direct child assessments of executive function", "Kindergarten Readiness", "Early Learning", [], null, [], "Results on direct child assessments of executive function; Results on direct child assessments of executive function (PK)"),
+        ["Direct child assessments of physical development"] = new DataElement("Direct child assessments of physical development", "Kindergarten Readiness", "Early Learning", [], null, ["Kindergarten readiness: perceptual, motor, and physical development"], "Results on direct child assessments of physical development (PK)"),
+        ["Disability status"] = new DataElement("Disability status", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Disability status"),
+        ["Dislocated worker status"] = new DataElement("Dislocated worker status", "Workforce Transitions", "Employment & Earnings", [Sector.WF], null, [], "Dislocated worker status"),
+        ["Dual credit course designation"] = new DataElement("Dual credit course designation", "Postsecondary Transitions", "Academic Coursework", [Sector.K12, Sector.PS], null, ["Access to early college coursework"], "Dual credit course designation"),
+        ["EAP or mental health services provided"] = new DataElement("EAP or mental health services provided", "Workforce Success", "Health & Wellness", [Sector.WF], null, ["Access to health, mental health, and social supports"], "EAP or mental health services provided"),
+        ["Early intervention screening results"] = new DataElement("Early intervention screening results", "Kindergarten Readiness", "Early Learning", [], null, ["Enrollment in quality public pre-K", "Access to early intervention screening"], "Early intervention screening results"),
+        ["Early intervention screening services referral status"] = new DataElement("Early intervention screening services referral status", "Kindergarten Readiness", "Early Learning", [], null, ["Enrollment in quality public pre-K", "Access to early intervention screening"], "Early intervention screening outcomes (connection to services)"),
+        ["Earnings"] = new DataElement("Earnings", "Workforce Success", "Employment & Earnings", [Sector.WF], null, [], "Earnings; Earnings amount; Post-credential earnings"),
+        ["Eligibility for federal rental assistance"] = new DataElement("Eligibility for federal rental assistance", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to affordable housing"], "Eligibility for federal rental assistance"),
+        ["Employee income level"] = new DataElement("Employee income level", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["School and workplace socioeconomic diversity"], "Employee income level"),
+        ["Employee race/ethnicity"] = new DataElement("Employee race/ethnicity", "Workforce Success", "Demographics", [Sector.WF], null, ["School and workplace racial and ethnic diversity"], "Employee race/ethnicity"),
+        ["Employment date"] = new DataElement("Employment date", "Workforce Transitions", "Employment & Earnings", [Sector.WF], null, ["Successful career transition after high school"], "Employment date"),
+        ["Employment status"] = new DataElement("Employment status", "Workforce Transitions", "Employment & Earnings", [Sector.WF], null, ["Employment rate", "Employment in a quality job"], "Employment status"),
+        ["English learner classification date"] = new DataElement("English learner classification date", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, [], "English learner classification date; English learner reclassification date"),
+        ["English learner status"] = new DataElement("English learner status", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, [], "English learner; English learner status"),
+        ["Enlistment in the military"] = new DataElement("Enlistment in the military", "Workforce Transitions", "Employment & Earnings", [Sector.WF], null, ["Successful career transition after high school"], "Enlistment in the military"),
+        ["Enrollment date"] = new DataElement("Enrollment date", "School Climate", "Attendance & Enrollment", [Sector.K12, Sector.PS], null, ["High school graduation"], "Enrollment date"),
+        ["Enrollment in noncredit CTE date"] = new DataElement("Enrollment in noncredit CTE date", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.PS], null, ["Successful career transition after high school"], "Enrollment in noncredit CTE date"),
+        ["Enrollment in public pre-K"] = new DataElement("Enrollment in public pre-K", "Kindergarten Readiness", "Attendance & Enrollment", [], null, ["Enrollment in quality public pre-K"], "Enrollment in public pre-K"),
+        ["Enrollment in workforce training program"] = new DataElement("Enrollment in workforce training program", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.WF], null, ["Participation in work-based learning"], "Enrollment in workforce training program"),
+        ["Enrollment status (current and prior years)"] = new DataElement("Enrollment status (current and prior years)", "Postsecondary Success", "Attendance & Enrollment", [Sector.K12, Sector.PS], null, ["Transfer (if applicable)", "Postsecondary persistence"], "Enrollment status (current and prior years)"),
+        ["Expenditures per student (K-12)"] = new DataElement("Expenditures per student (K-12)", "School Climate", "Finance & Resources", [Sector.K12], null, ["Expenditures per student"], "Expenditures per K-12 pupil"),
+        ["Expenditures per student (PK)"] = new DataElement("Expenditures per student (PK)", "Kindergarten Readiness", "Finance & Resources", [], null, ["Expenditures per student"], "Expenditures per Pre-K pupil"),
+        ["Expenditures per student (Postsecondary)"] = new DataElement("Expenditures per student (Postsecondary)", "Postsecondary Success", "Finance & Resources", [Sector.PS], null, ["Expenditures per student"], "Expenditures per student (postsecondary)"),
+        ["FAFSA completion date"] = new DataElement("FAFSA completion date", "Postsecondary Transitions", "Financial Aid & Affordability", [Sector.K12], null, ["FAFSA completion"], "FAFSA completion date"),
+        ["Family eligibility for child care subsidies"] = new DataElement("Family eligibility for child care subsidies", "Kindergarten Readiness", "Demographics", [Sector.K12], null, ["Enrollment in quality public pre-K", "Access to child care subsidies"], "Family eligibility for child care subsidies"),
+        ["Family engagement surveys (K-12)"] = new DataElement("Family engagement surveys (K-12)", "School Climate", "School Climate", [Sector.K12], null, ["School-family engagement"], "Results on family engagement surveys (K-12)"),
+        ["Family engagement surveys (PK)"] = new DataElement("Family engagement surveys (PK)", "Kindergarten Readiness", "School Climate", [], null, ["School-family engagement"], "Results on family engagement surveys (Pre-K)"),
+        ["First-generation college student"] = new DataElement("First-generation college student", "Postsecondary Transitions", "Demographics", [Sector.PS], null, [], "First-generation college student"),
+        ["First-time 9th grade student status"] = new DataElement("First-time 9th grade student status", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.K12], null, ["Successful completion of Algebra 1 by 9th grade"], "First-time 9th grade student status"),
+        ["Funding dedicated to workforce development programs"] = new DataElement("Funding dedicated to workforce development programs", "Workforce Transitions", "Finance & Resources", [Sector.WF], null, ["Expenditures on workforce development programs"], "Funding dedicated to workforce development programs"),
+        ["Gateway course completion"] = new DataElement("Gateway course completion", "Postsecondary Transitions", "Academic Performance", [Sector.PS], null, ["Gateway course completion"], "Gateway course completion"),
+        ["Gender"] = new DataElement("Gender", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Gender"),
+        ["Geographical indicator"] = new DataElement("Geographical indicator", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], "For example, census tract, city, or county", ["Neighborhood racial diversity"], "Geographical indicator (e.g., census tract, city, county)"),
+        ["Gifted and talented participation"] = new DataElement("Gifted and talented participation", "Postsecondary Transitions", "Academic Coursework", [Sector.K12], null, ["Equitable placement in rigorous coursework"], "Gifted and talented participation"),
+        ["Grade point average (K-12)"] = new DataElement("Grade point average (K-12)", "Postsecondary Transitions", "Academic Performance", [Sector.K12], null, [], "GPA (Grade 8); Grade point average (Grade 6-8); Grade point average (Grades 9-12)"),
+        ["Grade point average (Postsecondary)"] = new DataElement("Grade point average (Postsecondary)", "Postsecondary Transitions", "Academic Performance", [Sector.PS], null, ["Grade point average (MS+HS)"], "Grade point average"),
+        ["Graduate credential attainment date"] = new DataElement("Graduate credential attainment date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Postsecondary certificate or degree completion"], "Graduate credential attainment date"),
+        ["Graduate program enrollment date"] = new DataElement("Graduate program enrollment date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Enrollment in graduate education", "Postsecondary certificate or degree completion"], "Graduate program enrollment date"),
+        ["Growth mindset surveys (K-12)"] = new DataElement("Growth mindset surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Growth mindset"], "Growth mindset survey results (K-12)"),
+        ["Growth mindset surveys (Postsecondary)"] = new DataElement("Growth mindset surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Growth mindset"], "Growth mindset survey results (Postsecondary)"),
+        ["Growth mindset surveys (Workforce)"] = new DataElement("Growth mindset surveys (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Growth mindset"], "Growth mindset survey results (Workforce)"),
+        ["Health services offered"] = new DataElement("Health services offered", "School Climate", "Health & Wellness", [Sector.K12, Sector.PS], null, ["Access to health, mental health, and social supports"], "Health services offered"),
+        ["Health-Related Quality of Life Scale scores"] = new DataElement("Health-Related Quality of Life Scale scores", "School Climate", "Health & Wellness", [Sector.K12, Sector.PS, Sector.WF], null, ["Physical development and well-being"], "Scores on Health-Related Quality of Life Scale"),
+        ["High school diploma type"] = new DataElement("High school diploma type", "Postsecondary Transitions", "Academic Performance", [Sector.K12], null, ["High school graduation"], "High school diploma type"),
+        ["High school graduation date"] = new DataElement("High school graduation date", "Postsecondary Transitions", "Academic Performance", [Sector.K12], null, ["Postsecondary enrollment after high school graduation", "Successful career transition after high school", "Minimum economic return", "Economic mobility", "Economic security"], "High school graduation date"),
+        ["High school graduation indicator"] = new DataElement("High school graduation indicator", "Postsecondary Transitions", "Academic Performance", [Sector.K12], null, ["College preparatory coursework completion", "Senior summer on track", "Selection of a well-matched postsecondary institution"], "High school graduation indicator"),
+        ["Higher-order thinking skills performance assessments (K-12)"] = new DataElement("Higher-order thinking skills performance assessments (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Higher-order thinking skills"], "Higher-order thinking skills performance assessment results (K-12)"),
+        ["Higher-order thinking skills performance assessments (Postsecondary)"] = new DataElement("Higher-order thinking skills performance assessments (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Higher-order thinking skills"], "Higher-order thinking skills performance assessment results (Postsecondary)"),
+        ["Higher-order thinking skills performance assessments (Workforce)"] = new DataElement("Higher-order thinking skills performance assessments (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Higher-order thinking skills"], "Higher-order thinking skills performance assessment results (Workforce)"),
+        ["Highest level of education completed"] = new DataElement("Highest level of education completed", "Teaching Effectiveness", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, ["Teacher credentials"], "Highest level of education completed"),
+        ["Home language"] = new DataElement("Home language", "School Climate", "Demographics", [Sector.K12], null, [], "Home language"),
+        ["IB course designation"] = new DataElement("IB course designation", "Postsecondary Transitions", "Academic Coursework", [Sector.K12], null, ["Access to early college coursework"], "IB course designation"),
+        ["IECMHC services offered"] = new DataElement("IECMHC services offered", "Kindergarten Readiness", "Health & Wellness", [], null, ["Access to health, mental health, and social supports"], "IECMHC services offered"),
+        ["In-demand status"] = new DataElement("In-demand status", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["Access to in-demand CTE pathways"], "In-demand status"),
+        ["Income level"] = new DataElement("Income level", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Income level"),
+        ["Indicator of access to desktop or laptop at home"] = new DataElement("Indicator of access to desktop or laptop at home", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to technology"], "Indicator of access to desktop or laptop at home"),
+        ["Indicator of access to reliable broadband internet"] = new DataElement("Indicator of access to reliable broadband internet", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to technology"], "Indicator of access to reliable broadband internet"),
+        ["Indicator of whether services were provided"] = new DataElement("Indicator of whether services were provided", "School Climate", "Student Support Services", [Sector.K12], null, ["Enrollment in quality public pre-K", "Access to early intervention screening"], "Indicator of whether services were provided"),
+        ["Individual or family military status"] = new DataElement("Individual or family military status", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Individual or family military status"),
+        ["Individual with current or past child welfare involvement"] = new DataElement("Individual with current or past child welfare involvement", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Individual with current or past child welfare involvement"),
+        ["Individuals experiencing homelessness"] = new DataElement("Individuals experiencing homelessness", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Individuals experiencing homelessness"),
+        ["Industry-recognized credential attainment"] = new DataElement("Industry-recognized credential attainment", "Workforce Success", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS, Sector.WF], null, ["Industry-recognized credential"], "Industry-recognized credential attainment"),
+        ["Institution graduation rate"] = new DataElement("Institution graduation rate", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, [], "Institution graduation rate; PS institution graduation rate, by race/ethnicity and Pell grant receipt"),
+        ["Institutional expenditure per student"] = new DataElement("Institutional expenditure per student", "Postsecondary Success", "Finance & Resources", [Sector.PS], null, ["Institution funding"], "Institutional expenditure per student"),
+        ["Instructor observations"] = new DataElement("Instructor observations", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Classroom observations of instructional practice"], "Instructor observation results"),
+        ["Insured status"] = new DataElement("Insured status", "School Climate", "Health & Wellness", [Sector.K12, Sector.PS, Sector.WF], null, ["Health insurance coverage"], "Insured status"),
+        ["Job quality index"] = new DataElement("Job quality index", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["Employment in a quality job"], "Results on job quality index"),
+        ["Job title or position type"] = new DataElement("Job title or position type", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, [], "Job title or position type (school leader or administrator); Job title or position type (teacher or educator, prior and current year); Position type (school leader or administrator); Staff type or role description; Position type (lead pre-K teacher status)"),
+        ["Justice involvement"] = new DataElement("Justice involvement", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "Justice involvement"),
+        ["K-12 school type"] = new DataElement("K-12 school type", "School Climate", "Finance & Resources", [Sector.K12], null, [], "K-12 school type"),
+        ["Kindergarten enrollment date"] = new DataElement("Kindergarten enrollment date", "Kindergarten Readiness", "Attendance & Enrollment", [Sector.K12], null, ["Enrollment in quality public pre-K", "Access to full-day pre-K"], "Kindergarten enrollment date"),
+        ["Kindergarten program days per week"] = new DataElement("Kindergarten program days per week", "Kindergarten Readiness", "Early Learning", [], null, ["Early grades on track", "Access to full-day kindergarten"], "Kindergarten program days per week"),
+        ["Kindergarten program hours per day"] = new DataElement("Kindergarten program hours per day", "Kindergarten Readiness", "Early Learning", [], null, ["Early grades on track", "Access to full-day kindergarten"], "Kindergarten program hours per day"),
+        ["Kindergarten readiness assessments (cognition)"] = new DataElement("Kindergarten readiness assessments (cognition)", "Kindergarten Readiness", "Early Learning", [Sector.K12], null, [], "Results on kindergarten readiness assessment (cognition); Results on kindergarten readiness assessment (cognition) (PK)"),
+        ["Leader effectiveness assessments"] = new DataElement("Leader effectiveness assessments", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Effective program and school leadership"], "Results on leader effectiveness assessment"),
+        ["Learning and development plan offered"] = new DataElement("Learning and development plan offered", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["Access to ongoing career skills development"], "Learning and development plan offered"),
+        ["LGBT status"] = new DataElement("LGBT status", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, [], "LGBT status"),
+        ["Location-adjusted cost of living in county or MSA"] = new DataElement("Location-adjusted cost of living in county or MSA", "Workforce Success", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to jobs paying a living wage"], "Location-adjusted cost of living in county or MSA"),
+        ["Low Transportation Cost Index"] = new DataElement("Low Transportation Cost Index", "Workforce Transitions", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to transportation"], "Low Transportation Cost Index, from the U.S. Department of Housing and Urban Development"),
+        ["Math proficiency (Grades 1 and 2)"] = new DataElement("Math proficiency (Grades 1 and 2)", "Postsecondary Transitions", "Assessments", [Sector.K12], null, [], "Math proficiency (or math assessment score) (Grade 1 & 2); Math proficiency (or math assessment score) (Grades 1 & 2)"),
+        ["Median student debt"] = new DataElement("Median student debt", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Cumulative student debt"], "Median student debt"),
+        ["Medicaid eligibility status"] = new DataElement("Medicaid eligibility status", "School Climate", "Health & Wellness", [Sector.K12], null, ["Health insurance coverage"], "Medicaid eligibility status"),
+        ["Medicaid enrollment"] = new DataElement("Medicaid enrollment", "School Climate", "Health & Wellness", [Sector.K12], null, ["Health insurance coverage"], "Medicaid enrollment"),
+        ["Mental and emotional well-being assessments"] = new DataElement("Mental and emotional well-being assessments", "Social-Emotional Learning", "Health & Wellness", [Sector.K12, Sector.PS, Sector.WF], null, ["Mental and emotional well-being"], "Results on mental and emotional well-being assessments"),
+        ["Mental health services offered"] = new DataElement("Mental health services offered", "School Climate", "Health & Wellness", [Sector.K12, Sector.PS], null, ["Access to health, mental health, and social supports"], "Mental health services offered"),
+        ["Net worth"] = new DataElement("Net worth", "Workforce Success", "Employment & Earnings", [Sector.PS, Sector.WF], null, ["Economic security"], "Net worth"),
+        ["Number of ACEs"] = new DataElement("Number of ACEs", "Social-Emotional Learning", "Health & Wellness", [Sector.K12], null, ["Childhood experience", "Childhood experiences"], "Number of ACEs"),
+        ["Number of affordable housing units in city or county"] = new DataElement("Number of affordable housing units in city or county", "Workforce Transitions", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to affordable housing"], "Number of affordable housing units in city or county"),
+        ["Number of city or county residents experiencing poverty"] = new DataElement("Number of city or county residents experiencing poverty", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Neighborhood economic diversity"], "Number of city or county residents experiencing poverty"),
+        ["Number of city or county residents living in a high poverty neighborhood"] = new DataElement("Number of city or county residents living in a high poverty neighborhood", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Neighborhood economic diversity"], "Number of city or county residents living in a high poverty neighborhood"),
+        ["Number of credits attempted"] = new DataElement("Number of credits attempted", "Postsecondary Success", "Academic Performance", [Sector.PS], null, ["First-year credit accumulation"], "Number of credits attempted"),
+        ["Number of credits earned"] = new DataElement("Number of credits earned", "Postsecondary Success", "Academic Performance", [Sector.PS], null, ["Gateway course completion", "First-year credit accumulation", "First-year program of study concentration"], "Number of credits earned"),
+        ["Number of days suspended (K-12)"] = new DataElement("Number of days suspended (K-12)", "School Climate", "Discipline & Behavior", [Sector.K12], null, ["Equitable discipline practices"], "Number of days suspended"),
+        ["Number of days suspended (PK)"] = new DataElement("Number of days suspended (PK)", "School Climate", "Discipline & Behavior", [], null, ["Equitable discipline practices"], "Number of days suspended (PK)"),
+        ["Number of households with low income in city or county"] = new DataElement("Number of households with low income in city or county", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to affordable housing"], "Number of households with low income in city or county"),
+        ["Number of households with very low income in city or county"] = new DataElement("Number of households with very low income in city or county", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to affordable housing"], "Number of households with very low income in city or county"),
+        ["Number of juvenile arrests in city or county"] = new DataElement("Number of juvenile arrests in city or county", "School Climate", "Community Context", [Sector.K12], null, ["Neighborhood juvenile arrests"], "Number of juvenile arrests in city or county"),
+        ["Number of property felonies in city or county"] = new DataElement("Number of property felonies in city or county", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Exposure to neighborhood crime"], "Number of property felonies in city or county"),
+        ["Number of violent felonies in city or county"] = new DataElement("Number of violent felonies in city or county", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Exposure to neighborhood crime"], "Number of violent felonies in city or county"),
+        ["Occupation category"] = new DataElement("Occupation category", "Workforce Success", "Employment & Earnings", [Sector.WF], null, [], "Occupation category"),
+        ["Office referrals (K-12)"] = new DataElement("Office referrals (K-12)", "School Climate", "Discipline & Behavior", [Sector.K12], null, ["Equitable discipline practices"], "Office referrals"),
+        ["Office referrals (PK)"] = new DataElement("Office referrals (PK)", "School Climate", "Discipline & Behavior", [], null, ["Equitable discipline practices"], "Office referrals (PK)"),
+        ["On-the-job training offered"] = new DataElement("On-the-job training offered", "Workforce Success", "Employment & Earnings", [Sector.WF], null, ["Access to ongoing career skills development"], "On-the-job training offered"),
+        ["Overall teacher observation score"] = new DataElement("Overall teacher observation score", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Classroom observations of instructional practice"], "Overall teacher observation score"),
+        ["Parental education level"] = new DataElement("Parental education level", "Postsecondary Transitions", "Demographics", [Sector.K12, Sector.PS], null, [], "Parental education level"),
+        ["Participation in work-based learning"] = new DataElement("Participation in work-based learning", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.K12, Sector.PS, Sector.WF], null, ["Participation in work-based learning"], "Participation in work-based learning"),
+        ["Pell grant receipt"] = new DataElement("Pell grant receipt", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Selection of a well-matched postsecondary institution"], "PS institution graduation rate, by race/ethnicity and Pell grant receipt"),
+        ["Percentage of teachers regularly using standards-aligned; culturally responsive curricula"] = new DataElement("Percentage of teachers regularly using standards-aligned; culturally responsive curricula", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Access to quality, culturally responsive curricula"], "Percentage of teachers regularly using standards-aligned, culturally responsive curricula"),
+        ["Physical health surveys (K-12)"] = new DataElement("Physical health surveys (K-12)", "School Climate", "Health & Wellness", [Sector.K12], null, ["Physical development and well-being"], "Physical health survey results (K-12)"),
+        ["Physical health surveys (Postsecondary)"] = new DataElement("Physical health surveys (Postsecondary)", "Postsecondary Success", "Health & Wellness", [Sector.PS], null, ["Physical development and well-being"], "Physical health survey results (Postsecondary)"),
+        ["Physical health surveys (Workforce)"] = new DataElement("Physical health surveys (Workforce)", "Workforce Success", "Health & Wellness", [Sector.WF], null, ["Physical development and well-being"], "Physical health survey results (Workforce)"),
+        ["Post-baccalaureate program enrollment date"] = new DataElement("Post-baccalaureate program enrollment date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Enrollment in graduate education"], "Post-baccalaureate program enrollment date"),
+        ["Postsecondary applications submitted"] = new DataElement("Postsecondary applications submitted", "Postsecondary Transitions", "Postsecondary Outcomes", [Sector.K12, Sector.PS], null, ["College applications"], "Postsecondary applications submitted"),
+        ["Postsecondary credential attainment date"] = new DataElement("Postsecondary credential attainment date", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Postsecondary persistence", "Postsecondary certificate or degree completion"], "Postsecondary credential attainment date"),
+        ["Postsecondary credential earned"] = new DataElement("Postsecondary credential earned", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Postsecondary credential completion"], "Postsecondary credential earned"),
+        ["Postsecondary degree program length"] = new DataElement("Postsecondary degree program length", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Transfer (if applicable)", "Postsecondary persistence", "Postsecondary certificate or degree completion"], "Postsecondary degree program length"),
+        ["Postsecondary enrollment date"] = new DataElement("Postsecondary enrollment date", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.PS], null, [], "Postsecondary enrollment date; Postsecondary enrollment date OR first-year indicator"),
+        ["Postsecondary enrollment status (Full time/part time)"] = new DataElement("Postsecondary enrollment status (Full time/part time)", "Postsecondary Success", "Attendance & Enrollment", [Sector.PS], null, ["First-year credit accumulation"], "Postsecondary enrollment status (Full time/part time)"),
+        ["Postsecondary institution classification"] = new DataElement("Postsecondary institution classification", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, [], "Postsecondary institution classification"),
+        ["Postsecondary Institution ID"] = new DataElement("Postsecondary Institution ID", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Selection of a well-matched postsecondary institution"], "Postsecondary Institution ID"),
+        ["Postsecondary institution ID (current and prior years)"] = new DataElement("Postsecondary institution ID (current and prior years)", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Transfer (if applicable)"], "Postsecondary institution ID (current and prior years)"),
+        ["Postsecondary major"] = new DataElement("Postsecondary major", "Postsecondary Success", "Academic Coursework", [Sector.PS], null, [], "Postsecondary major"),
+        ["Pre-K eligbility status"] = new DataElement("Pre-K eligbility status", "Kindergarten Readiness", "Early Learning", [Sector.K12], null, ["Enrollment in quality public pre-K"], "Pre-K eligbility status"),
+        ["Pre-K program days per week"] = new DataElement("Pre-K program days per week", "Kindergarten Readiness", "Early Learning", [], null, ["Enrollment in quality public pre-K", "Access to full-day pre-K"], "Pre-K program days per week"),
+        ["Pre-K program hours per day"] = new DataElement("Pre-K program hours per day", "Kindergarten Readiness", "Early Learning", [], null, ["Enrollment in quality public pre-K", "Access to full-day pre-K"], "Pre-K program hours per day"),
+        ["Pre-K program QRIS rating"] = new DataElement("Pre-K program QRIS rating", "Kindergarten Readiness", "Early Learning", [], null, ["Enrollment in quality public pre-K", "Access to quality public pre-K"], "Pre-K program QRIS rating"),
+        ["Reading proficiency (Grades 1 and 2)"] = new DataElement("Reading proficiency (Grades 1 and 2)", "Postsecondary Transitions", "Assessments", [Sector.K12], null, [], "Reading proficiency (or reading assessment score) (Grade 1 & 2); Reading proficiency (or reading assessment score) (Grades 1 & 2)"),
+        ["Receipt of child care subsidies"] = new DataElement("Receipt of child care subsidies", "Kindergarten Readiness", "Financial Aid & Affordability", [Sector.K12], null, ["Enrollment in quality public pre-K", "Access to child care subsidies"], "Receipt of child care subsidies"),
+        ["Receipt of federal rental assistance"] = new DataElement("Receipt of federal rental assistance", "School Climate", "Financial Aid & Affordability", [Sector.K12, Sector.PS, Sector.WF], null, ["Access to affordable housing"], "Receipt of federal rental assistance"),
+        ["Repayment phase start date"] = new DataElement("Repayment phase start date", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Student loan repayment"], "Repayment phase start date"),
+        ["Repayment status"] = new DataElement("Repayment status", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Student loan repayment"], "Repayment status"),
+        ["Reported intent to enroll in postsecondary education"] = new DataElement("Reported intent to enroll in postsecondary education", "Postsecondary Transitions", "Postsecondary Outcomes", [Sector.K12], null, ["Senior summer on track"], "Reported intent to enroll in postsecondary education"),
+        ["Reported kindergarten readiness (behavioral skills)"] = new DataElement("Reported kindergarten readiness (behavioral skills)", "Kindergarten Readiness", "Early Learning", [Sector.K12], "Teacher-reported kindergarten readiness assessments (self-regulation; approaches to learning; executive function)", [], "Results on teacher-reported kindergarten readiness assessment (self-regulation; approaches to learning; executive function); Results on teacher-reported kindergarten readiness assessment (self-regulation; approaches to learning; executive function) (PK)"),
+        ["Reported kindergarten readiness (language and literacy)"] = new DataElement("Reported kindergarten readiness (language and literacy)", "Kindergarten Readiness", "Early Learning", [Sector.K12], "Teacher-reported kindergarten readiness assessments (language and literacy)", [], "Results on teacher-reported kindergarten readiness assessment (language and literacy); Results on teacher-reported kindergarten readiness assessment (language and literacy) (PK)"),
+        ["Reported kindergarten readiness (physical development)"] = new DataElement("Reported kindergarten readiness (physical development)", "Kindergarten Readiness", "Early Learning", [Sector.K12], "Teacher-reported kindergarten readiness assessments (physical development)", [], "Results on teacher-reported kindergarten readiness assessment (physical development); Results on teacher-reported kindergarten readiness assessment (physical development) (PK)"),
+        ["Reported kindergarten readiness (social-emotional skills)"] = new DataElement("Reported kindergarten readiness (social-emotional skills)", "Kindergarten Readiness", "Early Learning", [Sector.K12], "Teacher-reported kindergarten readiness assessments (social-emotional development)", [], "Results on teacher-reported kindergarten readiness assessment (social-emotional development); Results on teacher-reported kindergarten readiness assessment (social-emotional development) (PK)"),
+        ["Restraint and seclusion for discipline (K-12)"] = new DataElement("Restraint and seclusion for discipline (K-12)", "School Climate", "Discipline & Behavior", [Sector.K12], null, [], "Disciplinary use of restraint and seclusion; Disciplinary use of restraint and seclusion (K12)"),
+        ["Restraint and seclusion for discipline (PK)"] = new DataElement("Restraint and seclusion for discipline (PK)", "School Climate", "Discipline & Behavior", [], null, ["Positive behavior"], "Disciplinary use of restraint and seclusion (PK)"),
+        ["Restraint and seclusion for safety (K-12)"] = new DataElement("Restraint and seclusion for safety (K-12)", "School Climate", "Discipline & Behavior", [Sector.K12], null, [], "Restraint; Seclusion"),
+        ["Restraint and seclusion for safety (PK)"] = new DataElement("Restraint and seclusion for safety (PK)", "School Climate", "Discipline & Behavior", [], null, [], "Restraint (PK); Seclusion (PK)"),
+        ["SAT completion"] = new DataElement("SAT completion", "Postsecondary Transitions", "Assessments", [Sector.K12], null, ["SAT and ACT participation and performance"], "SAT completion"),
+        ["SAT score"] = new DataElement("SAT score", "Postsecondary Transitions", "Assessments", [Sector.K12], null, ["SAT and ACT participation and performance"], "SAT score"),
+        ["School assignment (prior and current year)"] = new DataElement("School assignment (prior and current year)", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, [], "School assignment or school ID (prior and current year); School or program ID (prior and current year)"),
+        ["School value-added"] = new DataElement("School value-added", "School Climate", "Academic Performance", [Sector.K12, Sector.PS], null, ["Institutions' contributions to student outcomes"], "School value-added"),
+        ["Self-efficacy surveys (K-12)"] = new DataElement("Self-efficacy surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Self-efficacy"], "Self-efficacy survey results (K-12)"),
+        ["Self-efficacy surveys (Postsecondary)"] = new DataElement("Self-efficacy surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Self-efficacy"], "Self-efficacy survey results (Postsecondary)"),
+        ["Self-efficacy surveys (Workforce)"] = new DataElement("Self-efficacy surveys (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Self-efficacy"], "Self-efficacy survey results (Workforce)"),
+        ["Self-management surveys (K-12)"] = new DataElement("Self-management surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, [], "Results on self-management survey (K-12); Social awareness survey results (K-12)"),
+        ["Self-management surveys (Postsecondary)"] = new DataElement("Self-management surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Self-management"], "Self-management survey results (Postsecondary)"),
+        ["Self-management surveys (Workforce)"] = new DataElement("Self-management surveys (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Self-management"], "Self-management survey results (Workforce)"),
+        ["Sense of belonging surveys"] = new DataElement("Sense of belonging surveys", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Inclusive environments"], "Results on workplace sense of belonging survey"),
+        ["Sense of belonging surveys (K-12)"] = new DataElement("Sense of belonging surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Inclusive environments"], "Results on K-12 sense of belonging survey"),
+        ["Sense of belonging surveys (PK)"] = new DataElement("Sense of belonging surveys (PK)", "Kindergarten Readiness", "Social-Emotional Learning (SEL)", [], null, ["Inclusive environments"], "Results on Pre-K sense of belonging questionnaire"),
+        ["Sense of belonging surveys (Postsecondary)"] = new DataElement("Sense of belonging surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Inclusive environments"], "Results on campus sense of belonging survey"),
+        ["SGP for standardized assessments"] = new DataElement("SGP for standardized assessments", "Postsecondary Transitions", "Assessments", [Sector.K12], "Subject specific for reading/literacy; math; and science", ["Teachers' contributions to student learning growth"], "SGP for standardized assessments (subject specific for reading/literacy, math, and science)"),
+        ["SNAP eligibility"] = new DataElement("SNAP eligibility", "School Climate", "Financial Aid & Affordability", [Sector.K12, Sector.PS, Sector.WF], null, ["Food Security"], "SNAP eligibility"),
+        ["SNAP participation"] = new DataElement("SNAP participation", "School Climate", "Financial Aid & Affordability", [Sector.K12, Sector.PS, Sector.WF], null, ["Food Security"], "SNAP participation"),
+        ["Social awareness teacher ratings"] = new DataElement("Social awareness teacher ratings", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Social awareness"], "Results on social awareness teacher rating"),
+        ["Social capital surveys (K-12)"] = new DataElement("Social capital surveys (K-12)", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12], null, ["Social capital"], "Social capital survey results (K-12)"),
+        ["Social capital surveys (Postsecondary)"] = new DataElement("Social capital surveys (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Social capital"], "Social capital survey results (Postsecondary)"),
+        ["Social capital surveys (Workforce)"] = new DataElement("Social capital surveys (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Social capital"], "Social capital survey results (Workforce)"),
+        ["Social proficiency performance assessments (Postsecondary)"] = new DataElement("Social proficiency performance assessments (Postsecondary)", "Postsecondary Success", "Social-Emotional Learning (SEL)", [Sector.PS], null, ["Social awareness"], "Social proficiency performance assessment results (Postsecondary)"),
+        ["Social proficiency performance assessments (Workforce)"] = new DataElement("Social proficiency performance assessments (Workforce)", "Workforce Success", "Social-Emotional Learning (SEL)", [Sector.WF], null, ["Social awareness"], "Social proficiency performance assessment results (Workforce)"),
+        ["Social services offered"] = new DataElement("Social services offered", "School Climate", "Student Support Services", [Sector.K12, Sector.PS], null, ["Access to health, mental health, and social supports"], "Social services offered"),
+        ["Sociocultural observational assessments"] = new DataElement("Sociocultural observational assessments", "Social-Emotional Learning", "Social-Emotional Learning (SEL)", [Sector.K12, Sector.PS, Sector.WF], null, ["Inclusive environments"], "Results on sociocultural observational assessment"),
+        ["Staff FTE status"] = new DataElement("Staff FTE status", "Teaching Effectiveness", "Staff & Educators", [Sector.K12, Sector.PS], null, ["Teacher credentials", "Access to health, mental health, and social supports", "Access to college and career advising"], "Staff FTE status"),
+        ["Staff race/ethnicity"] = new DataElement("Staff race/ethnicity", "Teaching Effectiveness", "Demographics", [Sector.K12, Sector.PS], null, ["Representational racial and ethnic diversity of educators"], "Staff race/ethnicity"),
+        ["State standardized test (Math proficiency)"] = new DataElement("State standardized test (Math proficiency)", "Postsecondary Transitions", "Assessments", [Sector.K12], null, [], "Math proficiency on state standardized test (Grade 3); Math proficiency on state standardized test (Grade 8); Math proficiency on state standardized test (Grades 9-12)"),
+        ["State standardized test (Reading proficiency)"] = new DataElement("State standardized test (Reading proficiency)", "Postsecondary Transitions", "Assessments", [Sector.K12], null, [], "Reading proficiency on state standardized test (Grade 3); Reading proficiency on state standardized test (Grade 8); Reading proficiency on state standardized test (Grades 9-12)"),
+        ["Student attendance rate (K-12)"] = new DataElement("Student attendance rate (K-12)", "School Climate", "Attendance & Enrollment", [Sector.K12], null, [], "Student attendance rate (Grade 1 & 2); Student attendance rate (Grade 6); Student attendance rate (Grade 8); Student attendance rate (Grade 9); Student attendance rate (Grades 1 & 2)"),
+        ["Student attendance rate (PK)"] = new DataElement("Student attendance rate (PK)", "School Climate", "Attendance & Enrollment", [], null, [], "Attendance intensity; Student attendance rate"),
+        ["Student course enrollment record"] = new DataElement("Student course enrollment record", "Postsecondary Transitions", "Academic Coursework", [Sector.K12, Sector.PS], null, [], "AP enrollment; Algebra 1 enrollment; CTE course enrollment; Dual credit enrollment; Early college course enrollment (AP, IB, and dual enrollment); Higher-level math enrollment; IB enrollment"),
+        ["Student from migrant family household"] = new DataElement("Student from migrant family household", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, [], "Student from migrant family household"),
+        ["Student FTE status"] = new DataElement("Student FTE status", "School Climate", "Attendance & Enrollment", [Sector.K12, Sector.PS], null, ["Expenditures per student"], "Student FTE status"),
+        ["Student grade level"] = new DataElement("Student grade level", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.K12], null, [], "7th grade student status; 8th grade student status"),
+        ["Student grade level (K-12)"] = new DataElement("Student grade level (K-12)", "Postsecondary Transitions", "Attendance & Enrollment", [Sector.K12], null, [], "Student grade level (Grade 6); Student grade level (Grade 8); Student grade level (Grades 1 & 2); Student grade level or year"),
+        ["Student grade level (PK)"] = new DataElement("Student grade level (PK)", "School Climate", "Attendance & Enrollment", [], null, ["Early grades on track", "6th grade on track", "9th grade on track", "Math and reading proficiency in grade 3", "8th grade on track", "Math and reading proficiency in high school", "Math and reading proficiency in grade 8", "Grade point average (MS+HS)", "Successful completion of Algebra 1 by 9th grade", "SAT and ACT participation and performance", "FAFSA completion", "College applications", "CTE pathway concentration", "Participation in work-based learning", "Industry-recognized credential"], "Student grade level"),
+        ["Student or family socioeconomic status"] = new DataElement("Student or family socioeconomic status", "School Climate", "Demographics", [Sector.K12, Sector.PS, Sector.WF], null, ["School and workplace socioeconomic diversity"], "Student or family socioeconomic status"),
+        ["Student parenting status"] = new DataElement("Student parenting status", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, [], "Student parenting status"),
+        ["Student race/ethnicity"] = new DataElement("Student race/ethnicity", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, [], "Race/ethnicity; Student race/ethnicity"),
+        ["Student socioeconomic status"] = new DataElement("Student socioeconomic status", "School Climate", "Demographics", [Sector.K12, Sector.PS], null, ["School and workplace socioeconomic diversity"], "Student socioeconomic status"),
+        ["Subscale observation scores"] = new DataElement("Subscale observation scores", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Classroom observations of instructional practice"], "Subscale observation scores"),
+        ["Suspensions and expulsions (K-12)"] = new DataElement("Suspensions and expulsions (K-12)", "School Climate", "Discipline & Behavior", [Sector.K12], null, [], "Expulsion; Expulsions; Expulsions (Grade 6); Expulsions (Grade 8); Expulsions (K12); In school suspension; In school suspension (Grade 1 & 2); In school suspension (K12); In school suspension (Grades 1 & 2); Out of school suspension; Out of school suspension (K12); Out of school suspension (Grades 1 & 2); Suspension (Grade 6); Suspension (Grade 8); Suspension (Grade 9); Suspensions"),
+        ["Suspensions and expulsions (PK)"] = new DataElement("Suspensions and expulsions (PK)", "School Climate", "Discipline & Behavior", [], null, [], "Expulsion (PK); Expulsions (PK); In school suspension (PK); Out of school suspension (PK); Suspensions (PK)"),
+        ["Teacher effectiveness student surveys (K-12)"] = new DataElement("Teacher effectiveness student surveys (K-12)", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Student perceptions of teaching"], "Results on teacher effectiveness student survey"),
+        ["Teacher effectiveness student surveys (Postsecondary)"] = new DataElement("Teacher effectiveness student surveys (Postsecondary)", "Teaching Effectiveness", "Staff & Educators", [Sector.PS], null, ["Student perceptions of teaching"], "Results on instructor effectiveness student survey"),
+        ["Teacher qualification or certification type"] = new DataElement("Teacher qualification or certification type", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Teacher credentials"], "Teacher qualification or certification type"),
+        ["Teacher reports of executive function"] = new DataElement("Teacher reports of executive function", "Kindergarten Readiness", "Early Learning", [], null, [], "Results on teacher reports of executive function; Results on teacher reports of executive function (PK)"),
+        ["Teacher reports of social-emotional development"] = new DataElement("Teacher reports of social-emotional development", "Kindergarten Readiness", "Early Learning", [], null, [], "Results on teacher reports of social-emotional development; Results on teacher reports of social-emotional development (PK)"),
+        ["Teacher-child interaction measure (K-12)"] = new DataElement("Teacher-child interaction measure (K-12)", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Classroom observations of instructional practice"], "Results on teacher-child interaction measure"),
+        ["Teacher-child interaction measure (PK)"] = new DataElement("Teacher-child interaction measure (PK)", "Teaching Effectiveness", "Staff & Educators", [], null, ["Classroom observations of instructional practice"], "Results on teacher-child interaction measure (PK)"),
+        ["Teaching assignment"] = new DataElement("Teaching assignment", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, [], "Course instructor (or teacher's course assignments); Teaching assignment (subject and/or grade level taught)"),
+        ["Total educational funding"] = new DataElement("Total educational funding", "School Climate", "Finance & Resources", [Sector.K12, Sector.PS], null, ["Expenditures on workforce development programs"], "Total educational funding"),
+        ["Total net price of education plus interest"] = new DataElement("Total net price of education plus interest", "Postsecondary Success", "Financial Aid & Affordability", [Sector.PS], null, ["Minimum economic return"], "Total net price of education plus interest"),
+        ["Transfer enrollment status"] = new DataElement("Transfer enrollment status", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, [], "Transfer enrollment status"),
+        ["Transfer indicator or transfer student status"] = new DataElement("Transfer indicator or transfer student status", "Postsecondary Success", "Postsecondary Outcomes", [Sector.PS], null, ["Transfer (if applicable)"], "Transfer indicator or transfer student status"),
+        ["Universal screening results"] = new DataElement("Universal screening results", "School Climate", "Health & Wellness", [Sector.K12], null, ["Mental and emotional well-being"], "Universal screening results"),
+        ["Urbanicity"] = new DataElement("Urbanicity", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, [], "Urbanicity"),
+        ["USDA Food Access Research Atlas Access Level Flag"] = new DataElement("USDA Food Access Research Atlas Access Level Flag", "School Climate", "Community Context", [Sector.K12, Sector.PS, Sector.WF], null, ["Food Security"], "USDA Food Access Research Atlas Access Level Flag"),
+        ["USDA Food Security Survey ratings"] = new DataElement("USDA Food Security Survey ratings", "School Climate", "Health & Wellness", [Sector.K12, Sector.PS, Sector.WF], null, ["Food Security"], "Rating on USDA Food Security Survey module"),
+        ["VAM for subject specific assessment"] = new DataElement("VAM for subject specific assessment", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Teachers' contributions to student learning growth"], "VAM for subject specific assessment"),
+        ["Workforce development program participation"] = new DataElement("Workforce development program participation", "Workforce Transitions", "Career & Technical Education (CTE)", [Sector.WF], null, ["Industry-recognized credential"], "Workforce development program participation"),
+        ["Years in current position"] = new DataElement("Years in current position", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, ["Educator retention"], "Years in current position"),
+        ["Years of teaching experience"] = new DataElement("Years of teaching experience", "Teaching Effectiveness", "Staff & Educators", [Sector.K12], null, [], "Percentage of K-12 teachers with < 1 year, 1–5 years, and 5+ years of experience; Years of teaching experience"),
+    };
+}
+
+public class DataElement
+{
+    public string Name { get; }
+    public string EWFrameworkClusterCategory { get; }
+    public string DataElementCategory { get; }
+    public List<Sector> RelatedSectors { get; }
+    public string? AdditionalNotes { get; }
+    public List<string> RelatedIndicatorNames { get; }
+    public string? EcsDataElementNameReference { get; }
+
+    public DataElement(
+        string name,
+        string clusterOnlyCategory,
+        string dataElementCategory,
+        List<Sector> relatedSectors,
+        string? additionalNotes,
+        List<string> relatedIndicatorNames,
+        string? ecsDataElementNameReference)
+    {
+        Name = name;
+        EWFrameworkClusterCategory = clusterOnlyCategory;
+        DataElementCategory = dataElementCategory;
+        RelatedSectors = relatedSectors;
+        AdditionalNotes = additionalNotes;
+        RelatedIndicatorNames = relatedIndicatorNames;
+        EcsDataElementNameReference = ecsDataElementNameReference;
+    }
+}
+
+
+public static class EwFrameworkIndicators
+{
+    public static readonly Dictionary<string, Indicator> Indicators = new()
+    {
+        // Outcomes & Milestones - Academic Progress & Completion
+        ["Enrollment in quality public pre-K"] = new()
+        {
+            Name = "Enrollment in quality public pre-K",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Eligible children are enrolled in a publicly funded pre-K program, which can be administered through mixed delivery systems that include Head Start, pre-K classrooms in public schools, and licensed family-based child care programs and community-based organizations.",
+            RecommendedMetrics = "Percentage of eligible 3- and 4-year-olds enrolled in public pre-K",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Enrollment dates (pre-K)", "Person age", "Program funding source (pre-K)", "Population demographics by age and EL eligibility"]
+        },
+        ["Kindergarten readiness: language and literacy"] = new()
+        {
+            Name = "Kindergarten readiness: language and literacy",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Children develop and demonstrate foundational language and literacy skills.",
+            RecommendedMetrics = "Percentage of children meeting benchmarks on a teacher-reported kindergarten readiness assessment, such as:\n- Desired Results Developmental Profile (DRDP) Language and Literacy Development domain\n- Ready 4 Kindergarten Early Learning Assessment (R4K ELA) Language and Literacy domain\n- Teaching Strategies GOLD (TS GOLD) Language and Literacy subscales\nOr, percentage of children meeting benchmarks on direct child assessments administered by trained assessors, such as:\n- Woodcock-Johnson IV Tests of Early Cognition and Academic Development (ECAD) Letter-Word and Writing subtests\n- Individual Growth and Development Indicators (IGDIs) Early Literacy assessment",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Kindergarten readiness: cognition"] = new()
+        {
+            Name = "Kindergarten readiness: cognition",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Children develop and demonstrate foundational math and scientific reasoning skills.",
+            RecommendedMetrics = "Percentage of children meeting benchmarks on teacher-reported kindergarten readiness assessment, such as:\n- DRDP Cognition domain\n- R4K ELA Mathematics and Science domains\n- TS GOLD Cognitive and Mathematics subscales\nOr, percentage of children meeting benchmarks on direct child assessments, such as:\n- Woodcock-Johnson IV Tests of ECAD Number Sense subtest\n- IGDIs Early Numeracy assessment\n- Research Based Early Mathematics Assessment (REMA)",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Early grades on track"] = new()
+        {
+            Name = "Early grades on track",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students in grades 1 and 2 are on track to achieve academic proficiency in grade 3.",
+            RecommendedMetrics = "Percentage of students in grades 1 and 2 meeting grade-level math and reading benchmarks, with an attendance rate of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
+            DataNeeded = [DataCategory.Assessments, DataCategory.AdministrativeData],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Attendance", "Enrollment grade level", "Standardized assessments: math (grades 1-2)", "Standardized assessments: reading (grades 1-2)", "Suspension", "Expulsion"]
+        },
+        ["Consistent attendance"] = new()
+        {
+            Name = "Consistent attendance",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students are present for more than 90 percent of enrolled days.",
+            RecommendedMetrics = "Percentage of students who are present for more than 90 percent of their enrolled days, excluding students enrolled for fewer than 90 days",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS],
+            DataElementNames = ["Attendance", "Enrollment dates (K-12)", "Enrollment grade level"]
+        },
+        ["Positive behavior"] = new()
+        {
+            Name = "Positive behavior",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students are not suspended or expelled from school and do not experience other types of exclusionary discipline, such as restraint and seclusion.",
+            RecommendedMetrics = "Pre-K, K-12: Percentage of children who do not experience any of the following: in-school suspensions, out-of-school suspensions, disciplinary use of restraint and seclusion, or expulsions",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Disciplinary event type", "Suspension", "Expulsion"]
+        },
+        ["Math and reading proficiency in grade 3"] = new()
+        {
+            Name = "Math and reading proficiency in grade 3",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students demonstrate proficiency in math and ELA according to high-quality state standards.",
+            RecommendedMetrics = "Percentage of students in grade 3 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests.",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Standardized assessments: math (grade 3)", "Standardized assessments: reading (grade 3)"]
+        },
+        ["6th grade on track"] = new()
+        {
+            Name = "6th grade on track",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Grade 6 students are on track to graduate high school on time.",
+            RecommendedMetrics = "Percentage of students in grade 6 with passing grades in English language arts and math, attendance of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion"]
+        },
+        ["8th grade on track"] = new()
+        {
+            Name = "8th grade on track",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Grade 8 students are prepared to transition to high school and are on track to graduate on time.",
+            RecommendedMetrics = "Percentage of students in grade 8 with a GPA of 2.5 or higher, no Ds or Fs in English language arts or math, attendance of 96 percent or higher, and no in- or out-of-school suspensions or expulsions.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Grade point average (K-12)", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion"]
+        },
+        ["Math and reading proficiency in grade 8"] = new()
+        {
+            Name = "Math and reading proficiency in grade 8",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students demonstrate proficiency in math and reading/English language arts according to high-quality state standards.",
+            RecommendedMetrics = "Percentage of students in grade 8 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Standardized assessments: math (grade 8)", "Standardized assessments: reading (grade 8)"]
+        },
+        ["Successful completion of Algebra I by 9th grade"] = new()
+        {
+            Name = "Successful completion of Algebra I by 9th grade",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students successfully complete Algebra I or an equivalent course before or during grade 9.",
+            RecommendedMetrics = "Percentage of first-time grade 9 students who complete Algebra I or an equivalent course by the end of their 9th-grade year",
+            DataNeeded = [DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Grade level attempt", "Course subject", "Course completion"]
+        },
+        ["9th grade on track"] = new()
+        {
+            Name = "9th grade on track",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Grade 9 students are on track to graduate high school in four years, enroll in postsecondary education, and succeed in their first year of postsecondary education.",
+            RecommendedMetrics = "Percentage of students in grade 9 with a GPA of 3.0 or higher, no Ds or Fs in English language arts or math, attendance of 96 percent or higher, and no in- or out-of-school suspensions or expulsions.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Grade point average (K-12)", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion"]
+        },
+        ["Grade point average"] = new()
+        {
+            Name = "Grade point average",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Middle school students earn course grades that demonstrate high school readiness; high school students earn course grades necessary to gain admission to college; and college students earn grades high enough to graduate and obtain jobs.",
+            RecommendedMetrics = "Percentage of students in grades 6-8 with a GPA of 3.0 or higher\nPercentage of students in grades 9-12 with a GPA of 3.0 or higher\nPercent of college students with a GPA of 3.0 or higher",
+            DataNeeded = [DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Enrollment grade level", "Grade point average (K-12)", "Grade point average (postsecondary)"]
+        },
+        ["Math and reading proficiency in high school"] = new()
+        {
+            Name = "Math and reading proficiency in high school",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students demonstrate proficiency in math and reading/English language arts according to high-quality state standards.",
+            RecommendedMetrics = "Percentage of tested students who meet grade-level standards in reading/English language arts and math as measured by state standardized tests",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Standardized assessments: math (grades 1-2)", "Standardized assessments: math (grade 3)", "Standardized assessments: math (grade 8)", "Standardized assessments: reading (grades 1-2)", "Standardized assessments: reading (grade 3)", "Standardized assessments: reading (grade 8)", "Standardized assessments: ELA"]
+        },
+        ["College preparatory coursework completion"] = new()
+        {
+            Name = "College preparatory coursework completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school students meet typical coursework requirements for admission in a four-year college.",
+            RecommendedMetrics = "Percentage of high school graduates who successfully complete the coursework required for admission at a four-year college or university, which includes:\n- Four years of English classes\n- Four years of math classes (including at least four of the following: pre-algebra, algebra, geometry, Algebra II or trigonometry, precalculus, calculus, statistics, quantitative reasoning, and data science)\n- Three years of laboratory science (including biology, chemistry, and physics)\n- Two years of social sciences\n- Two years of foreign language\n- One year of visual or performing arts",
+            DataNeeded = [DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Course completion", "Course subject", "High school graduation"]
+        },
+        ["Early college coursework completion"] = new()
+        {
+            Name = "Early college coursework completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school students successfully complete early college coursework (Advanced Placement [AP], International Baccalaureate [IB], or dual credit).",
+            RecommendedMetrics = "Percentage of high school students who enroll in and pass at least one early college course (AP, IB, or dual credit)\nPercentage of students enrolled in early college coursework who earn credit-bearing scores on end-of-course tests (for example, a score of 3 or higher on AP tests or 5 or higher on IB tests) or earn postsecondary credit within their dual enrollment courses",
+            DataNeeded = [DataCategory.StudentTranscripts, DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["College credits earned"]
+        },
+        ["SAT and ACT participation and performance"] = new()
+        {
+            Name = "SAT and ACT participation and performance",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school students take and earn a \"college-ready\" score on the ACT or SAT before graduating high school.",
+            RecommendedMetrics = "Percentage of grade 11-12 students who take the SAT/ACT\nPercentage of grade 11-12 students who earn a \"college-ready\" score, based on the benchmarks set by the SAT and ACT",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12],
+            DataElementNames = ["College entrance assessment", "Enrollment grade level"]
+        },
+        ["FAFSA completion"] = new()
+        {
+            Name = "FAFSA completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Grade 12 students eligible for federal financial aid complete the Free Application for Federal Student Aid (FAFSA) by June 30.",
+            RecommendedMetrics = "Percentage of grade 12 students who complete the FAFSA by June 30",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Enrollment grade level", "Financial aid applications"]
+        },
+        ["College applications"] = new()
+        {
+            Name = "College applications",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Grade 12 students submit a well-balanced portfolio of at least three college applications.",
+            RecommendedMetrics = "Percentage of grade 12 students who submitted at least three college applications",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "College applications submitted"]
+        },
+        ["High school graduation"] = new()
+        {
+            Name = "High school graduation",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students graduate from high school with a regular diploma within four, five, and six years of entering high school.",
+            RecommendedMetrics = "Adjusted cohort graduation rate (the percentage of first-time 9th graders who graduate with a regular diploma within four, five, and six years of entering high school, regardless of whether they transferred schools)",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Enrollment grade level", "Enrollment dates (K-12)", "High school graduation"]
+        },
+        ["Selection of a well-matched postsecondary institution"] = new()
+        {
+            Name = "Selection of a well-matched postsecondary institution",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school graduates select the best \"match\" college among the institutions to which they were admitted, based on the institutional graduation rate of similar students.",
+            RecommendedMetrics = "Percentage of high school seniors who select a college within 10 percentage points of the best matched postsecondary institution to which they were admitted, based on the institution's graduation rate for similar students by race, ethnicity, or income status (as measured by Pell Grant receipt).",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Enrollment dates (K-12)", "Enrollment dates (postsecondary)", "College admittance"]
+        },
+        ["Senior summer on track"] = new()
+        {
+            Name = "Senior summer on track",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school graduates intending to enroll in postsecondary education in the fall after high school graduation complete the registration, financial, and logistic deadlines over the summer necessary to successfully enroll in the fall.",
+            RecommendedMetrics = "Percentage of high school graduates reporting intentions to enroll in postsecondary education in the fall who successfully enroll in a postsecondary institution by October 31 following their high school graduation",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["High school graduation", "Enrollment dates (postsecondary)", "Post-graduation plans"]
+        },
+        ["Postsecondary enrollment directly after high school graduation"] = new()
+        {
+            Name = "Postsecondary enrollment directly after high school graduation",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "High school graduates enroll in a postsecondary institution by October 31 following their high school graduation.",
+            RecommendedMetrics = "Percentage of high school graduates who enroll in a postsecondary institution by October 31 following their high school graduation",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["High school graduation", "Enrollment dates (postsecondary)"]
+        },
+        ["First-year credit accumulation"] = new()
+        {
+            Name = "First-year credit accumulation",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students attempt and complete sufficient credits during their first undergraduate year to be on track for on-time degree completion.",
+            RecommendedMetrics = "Percentage of students attempting and completing sufficient credits toward on-time completion in their first year: 30 credits for full-time and 15 credits for part-time students",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.PS],
+            DataElementNames = ["College credits earned", "Enrollment dates (postsecondary)", "Enrollment type (postsecondary)"]
+        },
+        ["First-year program of study concentration"] = new()
+        {
+            Name = "First-year program of study concentration",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Postsecondary students demonstrate selection of a program of study by completing nine credits or three courses in a meta-major during their first year.",
+            RecommendedMetrics = "Percentage of students completing at least nine credits (or three courses) within a meta-major during their first year in postsecondary education",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.PS],
+            DataElementNames = ["College credits earned", "Enrollment dates (postsecondary)", "Course subject", "Degree course requirements"]
+        },
+        ["Gateway course completion"] = new()
+        {
+            Name = "Gateway course completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Completion of college-level introductory math and English courses, as defined by each postsecondary institution, during the first year of college.",
+            RecommendedMetrics = "Percentage of first-year college students who complete college-level introductory math and English courses within their first year of college",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.PS],
+            DataElementNames = ["College credits earned", "Enrollment dates (postsecondary)", "Course subject"]
+        },
+        ["Postsecondary persistence"] = new()
+        {
+            Name = "Postsecondary persistence",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students continue enrolling in college in subsequent years, including transfers to other colleges.",
+            RecommendedMetrics = "Percentage of students in a cohort who continue enrolling in college (including transfers to other colleges) or complete a credential the following year, captured for up to 150 percent of program length. Other time frames, such as 100 and 200 percent of program length, should also be reported for this measure.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = ["Enrollment dates (postsecondary)", "Postsecondary credential earned", "Transfer (postsecondary)", "Postsecondary program length"]
+        },
+        ["Transfer (if applicable)"] = new()
+        {
+            Name = "Transfer (if applicable)",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Postsecondary students transfer to a longer program (from certificate to associate's degree, or from associate's to bachelor's degree).",
+            RecommendedMetrics = "Percentage of students in a certificate or associate's degree program who transfer to a longer degree program within 150 percent of the original program's intended length. Other time frames, such as 100 percent and 200 percent of program length, are also useful to track.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = ["Enrollment dates (postsecondary)", "Transfer (postsecondary)", "Postsecondary program length"]
+        },
+        ["Postsecondary certificate or degree completion"] = new()
+        {
+            Name = "Postsecondary certificate or degree completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students complete a certificate, associate's, or bachelor's degree within a specified time frame after entering college.",
+            RecommendedMetrics = "Percentage of students completing a certificate, associate's, or bachelor's degree within 150 percent of the program's intended length. Other time frames, such as 100 percent and 200 percent of program length, should also be reported for this measure.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = ["Enrollment dates (postsecondary)", "Postsecondary program length", "Postsecondary credential earned"]
+        },
+        ["Enrollment in graduate education"] = new()
+        {
+            Name = "Enrollment in graduate education",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students enroll in a graduate education program after completing an undergraduate degree.",
+            RecommendedMetrics = "Percentage of bachelor's degree recipients enrolling in post-baccalaureate or graduate programs within one to five years of completion. Other time frames, such as within 10 years of completion, should also be reported for this measure.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = ["Enrollment dates (postsecondary)", "Enrollment type (postsecondary)", "Postsecondary credential earned", "Postsecondary program length"]
+        },
+        ["Graduate degree completion"] = new()
+        {
+            Name = "Graduate degree completion",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students complete a graduate degree (master's degree or higher) within a specified time frame after entering graduate school.",
+            RecommendedMetrics = "Percentage of graduate students completing a graduate degree within 150 percent of their current program's length. Other time frames, such as 100 percent and 200 percent of program length, should also be reported for this measure.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = ["Enrollment dates (postsecondary)", "Enrollment type (postsecondary)", "Postsecondary credential earned", "Postsecondary program length"]
+        },
+
+        // Outcomes & Milestones - Social Emotional Physical Wellbeing
+        ["Kindergarten readiness: social-emotional development"] = new()
+        {
+            Name = "Kindergarten readiness: social-emotional development",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Children develop and demonstrate the skills to form positive relationships with adults and peers, emotional functioning, and a sense of identity and belonging.",
+            RecommendedMetrics = "Percentage of students meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Social and Emotional Development domain, R4K ELA Social Foundations domain, TS GOLD Social-Emotional subscale, or percentage of students meeting benchmarks on teacher reports, such as the Child Behavior Rating Scale (CBRS) and Devereaux Early Childhood Assessment Preschool Program (DECA-P2)",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Kindergarten readiness: approaches to learning"] = new()
+        {
+            Name = "Kindergarten readiness: approaches to learning",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Children develop and demonstrate emotional and behavioral self-regulation, cognitive self-regulation (executive functioning), initiative and curiosity, and creativity.",
+            RecommendedMetrics = "Percentage of students meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Approaches to Learning - Self-Regulation domain and TS GOLD Cognitive subscale, or percentage of students meeting benchmarks on teacher reports of children's executive function, such as the CBRS, or percentage of students meeting benchmarks on a direct child assessment, such as the Heads Toes Knees Shoulders (HTKS) task administered by teachers and the Minnesota Executive Function Scale (MEFS), self-administered on a tablet",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Kindergarten readiness: perceptual, motor, and physical development"] = new()
+        {
+            Name = "Kindergarten readiness: perceptual, motor, and physical development",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Children develop and demonstrate gross and fine motor skills, and an understanding of health, safety, and nutrition.",
+            RecommendedMetrics = "Percentage of children meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Physical Development - Health domain, R4K ELA Physical Well-Being and Motor Development domain, TS GOLD Physical subscale, or percentage of students meeting benchmarks on direct child assessment administered by teachers, healthcare professionals, or other qualified adults, such as the Peabody Developmental Motor Scale",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Self-management"] = new()
+        {
+            Name = "Self-management",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Students are able to regulate their emotions, thoughts, and behaviors effectively in different situations.",
+            RecommendedMetrics = "Percentage of students reporting a high level of self-management on surveys such as the CORE Districts SEL Survey self-management scale (grades 5-12) or Shift and Persist scale for children, Percentage of individuals reporting a high level of self-management on surveys such as the Shift and Persist scale for teens and adults",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Growth mindset"] = new()
+        {
+            Name = "Growth mindset",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Students believe that their abilities can grow with effort.",
+            RecommendedMetrics = "Percentage of students reporting a high level of growth mindset on surveys such as the CORE Districts SEL Survey Growth Mindset Scale (grades 5-12) or the Growth Mindset Scale developed by Carol Dweck, Percentage of students reporting a high level of growth mindset on surveys such as the Growth Mindset Scale developed by Carol Dweck",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Self-efficacy"] = new()
+        {
+            Name = "Self-efficacy",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Students believe in their ability to achieve an outcome or reach a goal.",
+            RecommendedMetrics = "Percentage of students reporting a high level of self-efficacy on surveys such as the CORE Districts SEL Survey self-efficacy scale, Percentage of individuals reporting a high level of self-efficacy on surveys such as the New General Self-Efficacy Scale or Ascend survey's Self-Efficacy Scale",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Social awareness"] = new()
+        {
+            Name = "Social awareness",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Students are able understand others' perspectives; understand social and ethical norms for behavior; and recognize family, school, and community resources and supports.",
+            RecommendedMetrics = "Percentage of students reporting a high level of social awareness on surveys such as the CORE Districts SEL Survey social awareness scale, or percentage of students meeting benchmarks on teacher ratings of social skills drawn from Elliott and Gresham's Social Skills Rating Scale, Percentage of individuals demonstrating social proficiency on a performance assessment, such as the National Work Readiness Credential Essential Soft Skills assessment",
+            DataNeeded = [DataCategory.Surveys, DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Cultural competency"] = new()
+        {
+            Name = "Cultural competency",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals are able to understand the perspectives of and empathize with others from diverse backgrounds and cultures.",
+            RecommendedMetrics = "Percentage of students demonstrating proficiency on an assessment of cultural competency, such as the HEIghten Outcomes Assessment for Intercultural Competency & Diversity or The Intercultural Development Inventory®, Percentage of individuals demonstrating proficiency on an assessment of cultural competency, such as The Intercultural Development Inventory®",
+            DataNeeded = [DataCategory.Surveys, DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Cultural competency assessment"]
+        },
+        ["Civic engagement"] = new()
+        {
+            Name = "Civic engagement",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals exhibit the knowledge, skills, values, motivation, and activities that promote quality of life within a community and society at large through political and nonpolitical processes.",
+            RecommendedMetrics = "Percentage of students reporting a high level of civic engagement on surveys such as the Youth Civic and Character Measures Toolkit Survey and Youth Civic Engagement Indicators Project Survey, Percentage of individuals reporting a high level of civic engagement on surveys such as the Index of Civic and Political Engagement",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Social capital"] = new()
+        {
+            Name = "Social capital",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals have access to and are able to mobilize relationships that help them further their goals.",
+            RecommendedMetrics = "Percentage of students or individuals reporting a high level of social capital on surveys such as the Social Capital Assessment + Learning for Equity (SCALE) Social Capital, Network Diversity, and Network Strength scales; Percentage of individuals reporting a high level of social capital on surveys such as the Social Capital Community Benchmark Survey",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Self-assessment survey"]
+        },
+        ["Mental and emotional well-being"] = new()
+        {
+            Name = "Mental and emotional well-being",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals possess mental and emotional well-being.",
+            RecommendedMetrics = "Percentage of children with identified health or developmental concerns as identified by a developmental screening tool. For a list of screening tools that may be appropriate for children younger than age 5, see the following guide from the Head Start Early Childhood Learning and Knowledge Center: \"Birth to 5: Watch Me Thrive! A Compendium of Screening Measures for Young Children.\"; Percentage of youth with mental or emotional health needs as identified by a universal screening tool. For a list of mental health screening tools that may be appropriate for school-based use, see the following guide from the National Center on Safe Supportive Learning Environments: \"Mental Health Screening Tools for Grades K-12.\"; Psychological well-being scale.",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Developmental assessments"]
+        },
+        ["Physical development and well-being"] = new()
+        {
+            Name = "Physical development and well-being",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals exhibit positive physical development and health.",
+            RecommendedMetrics = "Pre-K: See kindergarten readiness: perceptual, motor, and physical development indicator; K-12: Percentage of students meeting benchmarks on self-rated surveys of physical health, such as the California Healthy Kids Survey Physical Health & Nutrition module; Postsecondary and workforce: Percentage of adults who rate their own health as good, very good, or excellent on the Self-Rated Health scale, or percentage of individuals meeting benchmarks on the Health-Related Quality of Life Scale",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Developmental assessments", "Self-assessment survey"]
+        },
+
+        // Outcomes & Milestones - Career Readiness & Economic Success
+        ["Successful career transition after high school"] = new()
+        {
+            Name = "Successful career transition after high school",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "High school graduates transition to training, military service, or employment in the fall after graduating high school (if they do not matriculate to postsecondary education).",
+            RecommendedMetrics = "Percentage of high school graduates enlisted in the military, enrolled in an apprenticeship program, enrolled in noncredit career and technical education (CTE) courses, or employed and earning at least the median annual full-time earnings for high school graduates ($35,000 year) before October 31 following graduation.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Self-assessment survey", "Military enlistment", "Apprenticeship enrollment", "Career and Technical Education (CTE) enrollment", "Employment and earnings", "High school graduation"]
+        },
+        ["CTE pathway concentration"] = new()
+        {
+            Name = "CTE pathway concentration",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Students participating in CTE concentrate in a single chosen pathway or program of study.",
+            RecommendedMetrics = "Percentage of 12th-grade students enrolled in CTE who complete three or more CTE courses in a single pathway; Percentage of CTE students who earn at least 12 credits within a CTE program or complete such a program if it encompasses fewer than 12 credits in total",
+            DataNeeded = [DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Career and Technical Education (CTE) enrollment", "CTE program requirements"]
+        },
+        ["Industry-recognized credential"] = new()
+        {
+            Name = "Industry-recognized credential",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals complete at least one industry-recognized credential, as defined by each state.",
+            RecommendedMetrics = "Percentage of 12th-grade students enrolled in CTE who earn at least one industry-recognized credential; Percentage of students enrolled in a CTE program who earn at least one industry-recognized credential; Percentage of program participants who have completed at least one industry-recognized credential",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Enrollment grade level", "Career and Technical Education (CTE) enrollment", "CTE credential earned"]
+        },
+        ["Participation in work-based learning"] = new()
+        {
+            Name = "Participation in work-based learning",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Credential seekers participate in an internship, work study, cooperative education, apprenticeship program, or other work-based learning opportunities.",
+            RecommendedMetrics = "Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of workforce training program participants who participate in a work-based learning opportunity before program completion",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Enrollment dates (K-12)", "Enrollment dates (postsecondary)", "Career and Technical Education (CTE) enrollment", "Work-based learning opportunity participation"]
+        },
+        ["Digital skills"] = new()
+        {
+            Name = "Digital skills",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Students and workers can use digital technology tools effectively to access, manage, evaluate, and communicate information.",
+            RecommendedMetrics = "Percentage of individuals demonstrating proficiency on a performance assessment that measures digital skills required for workforce success, such as the Problem Solving in Technology-Rich Environments assessment within the Education & Skills Online assessment suite, which can be used by researchers and institutions to gather individual-level results based on Organisation for Economic Co-operation and Development (OECD) Survey of Adult Skills (Programme for the International Assessment of Adult Competencies [PIAAC]) domains",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Digital skills assessment"]
+        },
+        ["Communication skills"] = new()
+        {
+            Name = "Communication skills",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals have the oral, written, nonverbal, and listening skills required for success in school and at work.",
+            RecommendedMetrics = "Percentage of students demonstrating proficiency on assessments such as the College and Career Readiness Assessment (CCRA+), an assessment for grades 6-12 that measures critical thinking, problem solving, and written communications; Percentage of students demonstrating proficiency on assessments such as the Collegiate Learning Assessment (CLA+) or Success Skills Assessment (SSA+) for postsecondary students that measure critical thinking, problem solving, and written communications, or the HEIghten Outcomes Assessment for Written Communication; Percentage of individuals demonstrating proficiency on a performance assessment, such as the National Work Readiness Credential Essential Soft Skills assessment",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Career readiness assessment"]
+        },
+        ["Higher-order thinking skills"] = new()
+        {
+            Name = "Higher-order thinking skills",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals have the problem solving, critical thinking, and decision-making skills needed in the workplace.",
+            RecommendedMetrics = "Percentage of students demonstrating proficiency on assessments such as the College and Career Readiness Assessment (CLA+), an assessment for grades 6-12 that measures critical thinking, problem solving, and written communications; Percentage of students demonstrating proficiency on assessments such as the CLA+ or Success Skills Assessment (SSA+), assessments for postsecondary students that measure critical thinking, problem solving, and written communications, or the HEIghten Outcomes Assessment for Critical Thinking; Percentage of individuals demonstrating proficiency on assessments such as the Watson Glaser Critical Thinking Appraisal, a scenario-based assessment used by employers to evaluate candidates or identify areas of opportunity for growth",
+            DataNeeded = [DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Career readiness assessment"]
+        },
+        ["Minimum economic return"] = new()
+        {
+            Name = "Minimum economic return",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals earn enough after completing their education to recover the costs of their investment.",
+            RecommendedMetrics = "Percentage of individuals that earn at least as much as the median high school graduate in their state plus enough to recoup their total net price plus interest within 10 years of completing their highest degree or leaving education (high school or postsecondary)",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Highest education level completion date", "Net price of education", "Median earnings for HS graduates by state", "Student loan details"]
+        },
+        ["Student loan repayment"] = new()
+        {
+            Name = "Student loan repayment",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals pay student loans on time and make progress toward paying down their debt.",
+            RecommendedMetrics = "Percentage of student borrowers in the following repayment categories, as defined on the College Scorecard—making progress, paid in full, and deferment—1, 2, 3, 5, and 10 years into the repayment phase of the loans. \"Making progress\" is defined as making regular payments such that the total of outstanding loan balances is less than the total of the original loan balances. \"Paid in full\" is defined as the outstanding loan balance being $0 and the loan not having been discharged through bankruptcy or other means. \"Deferment\" is defined as a postponement of the loan obligations, which is common for students re-enrolling in school. Borrowers who do not meet these milestones may fall in other categories, such as delinquency, default, and not making progress, that indicate they are unable to make timely progress toward their student debt.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS, Sector.WF],
+            DataElementNames = ["Student loan details"]
+        },
+        ["Employment in a quality job"] = new()
+        {
+            Name = "Employment in a quality job",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals are employed in a position that offers a living wage, benefits, stable and predictable schedules, clear and fair advancement to higher pay, safe conditions, and job security.",
+            RecommendedMetrics = "Percentage of individuals employed in a quality job, as defined by scores on an indexed measure, such as the Good Jobs Scorecard, which assesses pay and benefits, scheduling, potential career paths, safety, and security",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Employment and earnings", "Job quality index"]
+        },
+        ["Economic mobility"] = new()
+        {
+            Name = "Economic mobility",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals reach the level of earnings needed to enter the fourth income quintile or above, regardless of field of study.",
+            RecommendedMetrics = "Percentage of individuals who reach the level of earnings needed to enter the fourth (60th to 80th percentile) income quintile in their state or above 1, 3, 5, 10, and 15 years after completing their highest degree or leaving education (high school or postsecondary)",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Employment and earnings", "High school graduation", "Highest education level completion date"]
+        },
+        ["Economic security"] = new()
+        {
+            Name = "Economic security",
+            Type = IndicatorType.OutcomesMilestones,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Individuals reach median levels of wealth (net worth).",
+            RecommendedMetrics = "Percentage of individuals who reach median levels of wealth 10, 15, 20, and 30 years after completing their highest degree or leaving education (high school or postsecondary)",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Highest education level completion date", "Net wealth", "Median net wealth by state"]
+        },
+
+        // EW System Conditions - Academic Progress & Completion
+        ["Access to quality public pre-K"] = new()
+        {
+            Name = "Access to quality public pre-K",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Children have access to a high-quality public pre-K program.",
+            RecommendedMetrics = "Percentage of public pre-K programs that meet Quality Rating and Improvement Systems (QRIS) state benchmarks of quality",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.ClassroomObservations],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Pre-K program quality benchmarks"]
+        },
+        ["Access to full-day pre-K"] = new()
+        {
+            Name = "Access to full-day pre-K",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Children have access to full-day, publicly funded pre-K programs.",
+            RecommendedMetrics = "Percentage of public pre-K programs that are six hours per day for five days per week",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK],
+            DataElementNames = ["Early Learning program designation"]
+        },
+        ["Access to child care subsidies"] = new()
+        {
+            Name = "Access to child care subsidies",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Eligible families have access to child care by using subsidies to pay for care.",
+            RecommendedMetrics = "Percentage of eligible families receiving assistance to pay for child care through subsidies",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = ["Child care subsidy eligibility", "Child care subsidy utilization"]
+        },
+        ["School-family engagement"] = new()
+        {
+            Name = "School-family engagement",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "There are effective partnerships between schools and families, such that parents have access to school systems and are meaningfully included in school processes and student learning.",
+            RecommendedMetrics = "Percentage of families and percentage of teachers or caregivers reporting positive relationship quality with one another, using a tool such as the Family and Provider/Teacher Relationship Quality (FPTRQ) parent survey; Mean scores on family surveys, such as the Panorama Family-School Relationships Survey or CORE Districts School Culture & Climate Survey parent assessment of school-community engagement",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Parent surveys"]
+        },
+        ["Equitable discipline practices"] = new()
+        {
+            Name = "Equitable discipline practices",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Schools treat students similarly and appropriately for disciplinary infractions.",
+            RecommendedMetrics = "Differences in the rates at which students from key demographic subgroups ever experience different forms of school discipline (office referrals, suspensions, expulsions, restraint, and exclusion) relative to those students' representation in their school population as a whole; Disproportionalities along the lines of key demographic characteristics in the level of school discipline experienced (for example, number of days suspended).",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Suspension", "Expulsion", "Disciplinary event type"]
+        },
+        ["Access to full-day kindergarten"] = new()
+        {
+            Name = "Access to full-day kindergarten",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Children have access to full-day kindergarten programs taught by the same certificated staff member in a day.",
+            RecommendedMetrics = "Percentage of schools and districts offering kindergarten programs that are six hours per day for five days per week",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Kindergarten program designation"]
+        },
+        ["English learner progress"] = new()
+        {
+            Name = "English learner progress",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Emerging multilingual students achieve English proficiency within five years of being classified as English learners.",
+            RecommendedMetrics = "Percentage of English learner students who are reclassified in five years or less, based on local reclassification criteria",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12],
+            DataElementNames = ["English learning status dates"]
+        },
+        ["Teacher credentials"] = new()
+        {
+            Name = "Teacher credentials",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students have access to teachers who have earned credentials demonstrating their knowledge and preparation for teaching.",
+            RecommendedMetrics = "• Pre-K: Percentage of lead teachers with at least a bachelor's degree\n• Pre-K: Percentage of lead teachers with specialized training in pre-K\n• K-12: Percentage of courses taught by full-time equivalent (FTE) teachers (that is, teachers other than substitutes or those with emergency or provisional licenses)\n• K-12: Percentage of courses taught by teachers certified to teach the given subject or grade level",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Teacher credentials"]
+        },
+        ["Teacher experience"] = new()
+        {
+            Name = "Teacher experience",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students have equitable access to experienced teachers.",
+            RecommendedMetrics = "• Pre-K: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience\n• K-12: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Teacher experience"]
+        },
+        ["Educator retention"] = new()
+        {
+            Name = "Educator retention",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Teachers and school leaders return to the same school in consecutive years.",
+            RecommendedMetrics = "• Teacher retention: Percentage of teachers who return to teaching in the same school from year to year\n• School leader tenure: Percentage of school leaders who have served in their current positions for < 2 years, 2-3 years, and 4+ years",
+            DataNeeded = [DataCategory.EducatorAdministrativeData],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Teacher employment dates", "Principal employment dates"]
+        },
+        ["Classroom observations of instructional practice"] = new()
+        {
+            Name = "Classroom observations of instructional practice",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Teachers demonstrate high-quality instructional practices and interactions with students.",
+            RecommendedMetrics = "• Pre-K: Scores on measures of teacher-child interactions, such as CLASS, the Early Childhood Environment Rating Scale (ECERS) Interactions subscale, or the Assessing Classroom Sociocultural Equity Scale (ACSES) (which assesses equitable classroom interactions)\n• K-12: Teachers' overall and subscale scores on an observation rubric associated with an educator observation system; examples of common frameworks include the Danielson's Framework for Teaching and the Marzano Causal Teacher Evaluation Model\n• Postsecondary: There are currently no widely used standardized rubrics for peer observations of college teaching, though multiple researchers and universities have produced guidance surrounding the peer observation process",
+            DataNeeded = [DataCategory.ClassroomObservations],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS],
+            DataElementNames = ["Classroom observation"]
+        },
+        ["Student perceptions of teaching"] = new()
+        {
+            Name = "Student perceptions of teaching",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students report having a supportive, engaging teacher who sets clear, fair, and high expectations, and helps them learn.",
+            RecommendedMetrics = "• K-12: Students' perceptions of their teacher's effectiveness, using a survey instrument such as the Pedagogical Effectiveness subscale of the Panorama Student Survey, the Tripod Student Survey, or the Ambitious Instruction and Supportive Environment domains of the 5Essentials Survey\n• Postsecondary: Students' perceptions of whether college instructors implement effective teaching practices, using a survey instrument such as the National Survey of Student Engagement",
+            DataNeeded = [DataCategory.ClassroomObservations, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Classroom observation", "Student teaching surveys"]
+        },
+        ["Teachers' contributions to student learning growth"] = new()
+        {
+            Name = "Teachers' contributions to student learning growth",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Teachers contribute to students' learning growth.",
+            RecommendedMetrics = "• K-12 and postsecondary: Percentage of instructors demonstrating above average contributions to student learning, as measured by student growth on state standardized tests or other outcomes (for example, using value-added models or student growth percentiles)",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Assessments],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Student roster", "Standardized assessments: ELA", "Standardized assessments: math (grades 1-2)", "Standardized assessments: math (grade 3)", "Standardized assessments: math (grade 8)", "Standardized assessments: reading (grades 1-2)", "Standardized assessments: reading (grade 3)", "Standardized assessments: reading (grade 8)"]
+        },
+        ["Effective program and school leadership"] = new()
+        {
+            Name = "Effective program and school leadership",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Schools are led by effective principals and school leaders.",
+            RecommendedMetrics = "• Percentage of school leaders rated as effective, using an evaluation system that includes multiple measures, such as the Administrator Evaluation component of the Tennessee Educator Acceleration Model (TEAM)",
+            DataNeeded = [DataCategory.Assessments, DataCategory.Surveys, DataCategory.ClassroomObservations, DataCategory.Rubrics],
+            Sectors = [Sector.PK, Sector.K12],
+            DataElementNames = ["Staff surveys", "Standardized assessments: ELA", "Standardized assessments: math (grades 1-2)", "Standardized assessments: math (grade 3)", "Standardized assessments: math (grade 8)", "Standardized assessments: reading (grades 1-2)", "Standardized assessments: reading (grade 3)", "Standardized assessments: reading (grade 8)", "Classroom observation", "Student teaching surveys"]
+        },
+        ["Institutions' contributions to student outcomes"] = new()
+        {
+            Name = "Institutions' contributions to student outcomes",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Schools and colleges contribute to students' short- and long-term outcomes.",
+            RecommendedMetrics = "• K-12: Schools' contributions to student outcomes, including achievement, attendance, social-emotional learning, college enrollment, and earnings, using value-added models\n• Postsecondary: Colleges' contributions to student outcomes, including graduation rates, earnings, and student loan repayment, using value-added models",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Assessments, DataCategory.StudentTranscripts, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Standardized assessments: ELA", "Standardized assessments: math (grades 1-2)", "Standardized assessments: math (grade 3)", "Standardized assessments: math (grade 8)", "Standardized assessments: reading (grades 1-2)", "Standardized assessments: reading (grade 3)", "Standardized assessments: reading (grade 8)", "Self-assessment survey", "Digital skills assessment", "Career readiness assessment", "College entrance assessment", "Student teaching surveys", "Attendance", "Course completion", "Employment and earnings"]
+        },
+        ["Access to college preparatory coursework"] = new()
+        {
+            Name = "Access to college preparatory coursework",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students have access to the full set of courses needed to meet the requirements for admission at a majority of colleges.",
+            RecommendedMetrics = "• Percentage of high schools offering each of the following sets of college preparatory courses:\n- Four years of English\n- Four years of math (including at least four of the following: pre-algebra, algebra, geometry, Algebra II or trigonometry, precalculus, calculus, statistics, quantitative reasoning, and data science)\n- Three years of laboratory science (including biology, chemistry, physics)\n- Two years of social science\n- Two years of foreign language\n- One year of visual or performing arts\n\n• Percentage of middle schools offering Algebra I",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Course availability", "Course subject"]
+        },
+        ["Access to early college coursework"] = new()
+        {
+            Name = "Access to early college coursework",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students have access to AP, IB, and dual enrollment courses.",
+            RecommendedMetrics = "• Number of AP, IB, and dual enrollment courses offered, overall and by subject\n• Percentage of students in an early college course who take the relevant end-of-course test needed to earn credit (for example, AP or IB test), overall and by subject",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = ["Course availability", "Course subject", "Course college credits offered"]
+        },
+        ["Equitable placement in rigorous coursework"] = new()
+        {
+            Name = "Equitable placement in rigorous coursework",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Students from various demographic subgroups are proportionally represented in rigorous courses and programs.",
+            RecommendedMetrics = "Differences in the participation rates for students from key demographic subgroups in rigorous courses and programs relative to those students' representation in their school population as a whole, including opportunities, such as the following:\n• Gifted and talented programs\n• Algebra I in middle school\n• Higher-level math courses in high school (that is, Algebra II, calculus)\n• Early college courses (AP, IB, and dual enrollment)",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
+            Sectors = [Sector.K12],
+            DataElementNames = ["Course completion", "Course availability", "Course subject", "Course college credits offered"]
+        },
+        ["Access to quality, culturally responsive curricula"] = new()
+        {
+            Name = "Access to quality, culturally responsive curricula",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "Schools and instructors use a standards-aligned core course curriculum that meets quality standards (as defined by EdReports) and is culturally relevant, centering the lived experiences and heritage of students' ethnic or racial backgrounds.",
+            RecommendedMetrics = "No specific measures or tools identified",
+            DataNeeded = [DataCategory.CurriculumMaterials],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS],
+            DataElementNames = []
+        },
+        ["Expenditures per student"] = new()
+        {
+            Name = "Expenditures per student",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.AcademicProgressCompletion,
+            Definition = "The amount of education and related expenditures per student.",
+            RecommendedMetrics = "- Pre-K: State expenditures per child enrolled\n- K-12: Per pupil expenditures\n- K-12: Equity Factor, a measure that indicates variance in per-pupil funding within a state (see this brief by New America for more information)\n- Postsecondary: Total instruction and student service expenditures per FTE student based on 12-month enrollment",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS],
+            DataElementNames = []
+        },
+
+        // EW System Conditions - Social Emotional Physical Wellbeing
+        ["Access to early intervention screening"] = new()
+        {
+            Name = "Access to early intervention screening",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Children receive early intervention screening for any developmental, sensory, and behavioral concerns to determine whether services are needed.",
+            RecommendedMetrics = "Percentage of children with identified concerns who are connected to services; Percentage of children needing selected special education services in kindergarten who were not identified and connected to services before kindergarten",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.PK],
+            DataElementNames = []
+        },
+        ["School safety"] = new()
+        {
+            Name = "School safety",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Students feel physically, mentally, and emotionally safe at school or campus (that is, safe from both physical threats and violence, as well as bullying and cyberbullying).",
+            RecommendedMetrics = "Percentage of students reporting high levels of physical, mental, and emotional safety in school climate surveys, such as the U.S. Department of Education ED School Climate Surveys (EDSCLS), the Sense of Safety subscale within the CORE Districts school culture and climate survey, or the School Safety subscale within the Panorama Student Survey. Percentage of students reporting physical safety and freedom from harassment and discrimination in campus surveys, such as the National Survey of Student Engagement.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = []
+        },
+        ["Inclusive environments"] = new()
+        {
+            Name = "Inclusive environments",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals feel they belong and feel connected to their peers in their schools, postsecondary institutions, and workplaces.",
+            RecommendedMetrics = "Percentage of children reporting positive feelings toward their school, as measured by questionnaires such as the Collaborative for Academic, Social, and Emotional Learning's (CASEL) How I Feel About My School questionnaire, or percentage of classrooms demonstrating equitable sociocultural interactions, as measured by observational assessments, such as ACSES. Percentage of students reporting belonging in school, as measured by surveys such as the Sense of Belonging subscale of the CORE Districts school culture and climate survey or the Classroom Belonging subscale of the Panorama Student Survey. Percentage of students reporting belonging on campus, as measured by surveys such as the Higher Education Research Institute (HERI) Diverse Learning Environments Survey or the National Institute for Transformation and Equity (NITE) Culturally Engaging Campus Environments Survey. Percentage of employees reporting belonging at work, as measured by surveys such as the Association of American Medical Colleges (AAMC) Diversity Engagement Survey.",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Representational racial and ethnic diversity of educators"] = new()
+        {
+            Name = "Representational racial and ethnic diversity of educators",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Educators reflect the racial and ethnic diversity of the student body.",
+            RecommendedMetrics = "- Pre-K: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%)\n- K-12: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%)\n- Postsecondary: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%)\n- Additional possible measure: Same-race student-teacher ratio by race and ethnicity",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS],
+            DataElementNames = []
+        },
+        ["School and workplace racial and ethnic diversity"] = new()
+        {
+            Name = "School and workplace racial and ethnic diversity",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals are exposed to racial and ethnic diversity within their schools, postsecondary institutions, and workplaces.",
+            RecommendedMetrics = "Student body composition by race and ethnicity (%); Employee composition by race and ethnicity (%).",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["School and workplace socioeconomic diversity"] = new()
+        {
+            Name = "School and workplace socioeconomic diversity",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals are exposed to socioeconomic diversity within their schools, postsecondary institutions, and workplaces.",
+            RecommendedMetrics = "Student body composition by income; Employee composition by income.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to health, mental health, and social supports"] = new()
+        {
+            Name = "Access to health, mental health, and social supports",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.SocialEmotionalPhysicalWellbeing,
+            Definition = "Individuals have access to health, mental health, and social services provided by educational institutions and employers.",
+            RecommendedMetrics = "Percentage of programs offering health, mental health, and social services, or staff or consultants providing infant and early childhood mental health consultation (IECMHC) services; Ratio of number of students to number of health, mental health, and social services FTE staff (for example, school nurses, psychologists, and social workers); Percentage of employers offering an employee assistance program or mental health access through health care plans or other services, as measured by employer surveys.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+
+        // EW System Conditions - Career Readiness & Economic Success
+        ["Access to college and career advising"] = new()
+        {
+            Name = "Access to college and career advising",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "College and career counseling services are available in high schools and college campuses.",
+            RecommendedMetrics = "Ratio of number of students to number of FTE counselors; Percentage of students using academic advising and career counseling services.",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.K12, Sector.PS],
+            DataElementNames = []
+        },
+        ["Access to in-demand CTE pathways"] = new()
+        {
+            Name = "Access to in-demand CTE pathways",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "CTE pathway offerings are aligned to in-demand occupations, as defined by regional labor market data.",
+            RecommendedMetrics = "Number and percentage of CTE program offerings considered \"in demand.\"",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Unmet financial need"] = new()
+        {
+            Name = "Unmet financial need",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "The cost of college attendance students must pay out of pocket or finance through loans.",
+            RecommendedMetrics = "Average net price (cost of attendance minus grants, scholarships, or tuition waivers from all sources) minus average expected family contribution (EFC), as calculated by FAFSA.",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS],
+            DataElementNames = []
+        },
+        ["Cumulative student debt"] = new()
+        {
+            Name = "Cumulative student debt",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "The total amount of student loans individuals take out while enrolled in college.",
+            RecommendedMetrics = "Median student debt",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Expenditures on workforce development programs"] = new()
+        {
+            Name = "Expenditures on workforce development programs",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "The amount of government funding dedicated to workforce development programs, including apprenticeships and job training programs, in a state.",
+            RecommendedMetrics = "The amount of funding dedicated to workforce development programs as a percentage of total educational funding in a state",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to jobs paying a living wage"] = new()
+        {
+            Name = "Access to jobs paying a living wage",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Jobs that pay enough to meet basic family needs are available in a community.",
+            RecommendedMetrics = "Percentage of jobs in a county or metropolitan statistical area (MSA) for which the ratio of average pay to the location-adjusted cost of living is greater than one",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to ongoing career skills development"] = new()
+        {
+            Name = "Access to ongoing career skills development",
+            Type = IndicatorType.EWSystemConditions,
+            Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
+            Definition = "Workers are employed in jobs that provide on-the-job training or a professional learning and development path.",
+            RecommendedMetrics = "Percentage of employees who have access to on-the-job training or a professional learning and development plan directly from their employer",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.WF],
+            DataElementNames = []
+        },
+
+        // Adjacent System Conditions - Cross Domain
+        ["Childhood experiences"] = new()
+        {
+            Name = "Childhood experiences",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "Individuals have not experienced repeated traumatic events within home environments.",
+            RecommendedMetrics = "Percentage of individuals with fewer than three ACEs",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Health insurance coverage"] = new()
+        {
+            Name = "Health insurance coverage",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "Individuals have health insurance coverage for preventative and emergency care.",
+            RecommendedMetrics = "- Percentage of individuals with health insurance\n- Percentage of eligible individuals (children or adults) enrolled in Medicaid or CHIP",
+            DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Food security"] = new()
+        {
+            Name = "Food security",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "Individuals have access to enough affordable, nutritious food.",
+            RecommendedMetrics = "- Percentage of individuals with high or marginal food security, as measured by the U.S. Department of Agriculture's (USDA) Food Security Survey Module\n- Percentage of eligible individuals participating in SNAP\n- Percentage of individuals living in a census tract with low access to healthy food, as defined by the USDA's Food Access Research Atlas",
+            DataNeeded = [DataCategory.Surveys, DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to affordable housing"] = new()
+        {
+            Name = "Access to affordable housing",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "There is sufficient availability of affordable housing for the number of families with low incomes in an area (city or county).",
+            RecommendedMetrics = "- Ratio of (1) the number of affordable housing units to (2) the number of households with low and very low incomes in an area (city or county). Housing units are defined as affordable if the monthly costs do not exceed 30 percent of a household's income. Households with low incomes are defined as those earning below 80 percent of area median income (AMI), and very low-income households are defined as those earning below 50 percent of AMI\n- Percentage of eligible households receiving federal rental assistance",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to technology"] = new()
+        {
+            Name = "Access to technology",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "Individuals have access to a reliable Internet connection and a personal desktop or laptop computer.",
+            RecommendedMetrics = "Percentage of individuals who have both (1) access to at least one desktop or laptop computer owned by someone in the home and (2) reliable broadband Internet",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Access to transportation"] = new()
+        {
+            Name = "Access to transportation",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "Individuals have access to low-cost and timely transportation to commute to school or work.",
+            RecommendedMetrics = "- Average commute time to work, school, or college\n- The Low Transportation Cost Index, from the U.S. Department of Housing and Urban Development",
+            DataNeeded = [DataCategory.Surveys, DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Exposure to neighborhood crime"] = new()
+        {
+            Name = "Exposure to neighborhood crime",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "The rate of violent and property crimes in a city or county.",
+            RecommendedMetrics = "Rate of violent felonies and property felonies by city or county (number of incidents per 100,000 residents)",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Neighborhood economic diversity"] = new()
+        {
+            Name = "Neighborhood economic diversity",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "The concentration of poverty within a city or county.",
+            RecommendedMetrics = "Percentage of city or county residents experiencing poverty who live in a high-poverty neighborhood (defined as a neighborhood in which more than 40 percent of residents experience poverty)",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Neighborhood racial diversity"] = new()
+        {
+            Name = "Neighborhood racial diversity",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "The share of an individual's neighbors who are people of other races and ethnicities.",
+            RecommendedMetrics = "Percentage of an individual's neighbors who are members of other racial or ethnic groups, calculated as a Neighborhood Exposure Index",
+            DataNeeded = [DataCategory.Surveys],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        },
+        ["Neighborhood juvenile arrests"] = new()
+        {
+            Name = "Neighborhood juvenile arrests",
+            Type = IndicatorType.AdjacentSystemConditions,
+            Domain = IndicatorDomain.CrossDomain,
+            Definition = "The rate of juveniles arrested in a city or county.",
+            RecommendedMetrics = "Rate of juvenile arrests by city or county (number of arrests per 100,000 residents)",
+            DataNeeded = [DataCategory.AdministrativeData],
+            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+            DataElementNames = []
+        }
+    };
+
+}
+
+public class Indicator
+{
+    public required string Name { get; set; }
+    public required IndicatorType Type { get; set; }
+    public required IndicatorDomain Domain { get; set; }
+    public required string Definition { get; set; }
+    public required string RecommendedMetrics { get; set; }
+    public List<DataCategory> DataNeeded
+    {
+        get; set;
+    } = [];
+    public List<Sector> Sectors
+    {
+        get; set;
+    } = [];
+    public List<string> DataElementNames
+    {
+        get; set;
+    } = [];
+}
+
+public enum DataCategory
+{
+    AdministrativeData,
+    Assessments,
+    ClassroomObservations,
+    CurriculumMaterials,
+    EducatorAdministrativeData,
+    Rubrics,
+    StudentTranscripts,
+    Surveys
+}
+
+public enum IndicatorType
+{
+    OutcomesMilestones,
+    EWSystemConditions,
+    AdjacentSystemConditions
+}
+
+public enum IndicatorDomain
+{
+    AcademicProgressCompletion,
+    CareerReadinessEconomicSuccess,
+    SocialEmotionalPhysicalWellbeing,
+    CrossDomain
+}
+
+var elementToIndicators = new Dictionary<string, List<string>>();
+
+foreach (var element in EwFrameworkDataElements.Elements.Values)
+{
+    foreach (var indicatorName in element.RelatedIndicatorNames)
+    {
+        if (!elementToIndicators.ContainsKey(indicatorName))
+        {
+            elementToIndicators[indicatorName] = new List<string>();
+        }
+        elementToIndicators[indicatorName].Add(element.Name);
+    }
+}
+
+// Step 3: Update each indicator's DataElementNames based on the reverse mapping
+foreach (var kvp in EwFrameworkIndicators.Indicators)
+{
+    var indicatorName = kvp.Key;
+    var indicator = kvp.Value;
+    
+    if (elementToIndicators.ContainsKey(indicatorName))
+    {
+        indicator.DataElementNames = elementToIndicators[indicatorName].OrderBy(x => x).ToList();
+        Console.WriteLine($"Updated '{indicatorName}': {indicator.DataElementNames.Count} elements");
+    }
+    else
+    {
+        Console.WriteLine($"WARNING: No data elements found for indicator '{indicatorName}'");
+    }
+}
+
+// Step 4: Generate the updated dictionary code in compact single-line format
+var outputPath = "UpdatedIndicators.cs";
+using (var writer = new StreamWriter(outputPath))
+{
+    writer.WriteLine("public static readonly Dictionary<string, Indicator> Indicators = new()");
+    writer.WriteLine("{");
+
+    foreach (var kvp in EwFrameworkIndicators.Indicators)
+    {
+        var name = kvp.Key;
+        var ind = kvp.Value;
+        
+        // Escape quotes and newlines in strings
+        string EscapeString(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+        
+        // Format lists
+        string FormatDataCategories(List<DataCategory> cats) => 
+            $"[{string.Join(", ", cats.Select(c => $"DataCategory.{c}"))}]";
+        
+        string FormatSectors(List<Sector> sectors) => 
+            $"[{string.Join(", ", sectors.Select(s => $"Sector.{s}"))}]";
+        
+        string FormatDataElementNames(List<string> names) => 
+            names.Count == 0 ? "[]" : $"[\"{string.Join("\", \"", names.Select(EscapeString))}\"]";
+        
+        writer.WriteLine($"    [\"{EscapeString(name)}\"] = new() {{ Name = \"{EscapeString(ind.Name)}\", Type = IndicatorType.{ind.Type}, Domain = IndicatorDomain.{ind.Domain}, Definition = \"{EscapeString(ind.Definition)}\", RecommendedMetrics = \"{EscapeString(ind.RecommendedMetrics)}\", DataNeeded = {FormatDataCategories(ind.DataNeeded)}, Sectors = {FormatSectors(ind.Sectors)}, DataElementNames = {FormatDataElementNames(ind.DataElementNames)} }},");
+    }
+
+    writer.WriteLine("};");
+}
+
+Console.WriteLine($"\n=== Output written to {outputPath} ===");
+
+// Step 5: Validation report
+Console.WriteLine("\n=== VALIDATION REPORT ===\n");
+Console.WriteLine($"Total Indicators: {EwFrameworkIndicators.Indicators.Count}");
+Console.WriteLine($"Total Data Elements: {EwFrameworkDataElements.Elements.Count}");
+Console.WriteLine($"\nIndicators with no data elements:");
+foreach (var kvp in EwFrameworkIndicators.Indicators.Where(i => i.Value.DataElementNames.Count == 0))
+{
+    Console.WriteLine($"  - {kvp.Key}");
+}
+
+Console.WriteLine($"\nData elements referencing non-existent indicators:");
+var allIndicatorNames = new HashSet<string>(EwFrameworkIndicators.Indicators.Keys);
+foreach (var element in EwFrameworkDataElements.Elements.Values)
+{
+    foreach (var indicatorRef in element.RelatedIndicatorNames)
+    {
+        if (!allIndicatorNames.Contains(indicatorRef))
+        {
+            Console.WriteLine($"  - Element '{element.Name}' references unknown indicator '{indicatorRef}'");
+        }
+    }
+}

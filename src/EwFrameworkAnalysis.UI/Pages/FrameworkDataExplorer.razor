@@ -1,0 +1,667 @@
+@page "/framework-data-explorer"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.UI.Components
+@inject IJSRuntime JSRuntime
+
+<div class="container mx-auto p-4 space-y-6">
+    <!-- Page Header -->
+    <Card Shadow="Card.ShadowSize.XLarge">
+        <ChildContent>
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0 space-y-3">
+                    <h2 class="text-2xl font-title font-bold text-blue">Framework Data Explorer</h2>
+                    <h3 class="text-lg font-title font-semibold text-blue">Explore data requirements and assess readiness across the E-W Framework</h3>
+                </div>
+                <div class="flex items-center space-x-3 flex-shrink-0">
+                    <button class="btn btn-secondary" @onclick="ClearAllSelections">
+                        <i class="fas fa-times"></i>
+                        Clear All
+                    </button>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- View Mode Selection -->
+    <Card Shadow="Card.ShadowSize.Large">
+        <ChildContent>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-semibold text-gray-600">Assessment Mode</span>
+                    <div class="flex gap-2">
+                        <button class="btn @(_viewMode == ViewMode.CategorySector ? "btn-primary" : "btn-ghost btn-outline")"
+                                @onclick="() => SetViewMode(ViewMode.CategorySector)">
+                            Data Category & Sector
+                        </button>
+                        <button class="btn @(_viewMode == ViewMode.DataElement ? "btn-primary" : "btn-ghost btn-outline")"
+                                @onclick="() => SetViewMode(ViewMode.DataElement)">
+                            Data Elements
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        @if (_viewMode == ViewMode.CategorySector)
+                        {
+                            <span><strong>Data Category & Sector Mode:</strong> Select which data categories you have available by sector to assess readiness at a high level.</span>
+                        }
+                        else
+                        {
+                            <span><strong>Data Elements Mode:</strong> Select specific data elements you have available for a more granular assessment of readiness.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 @(_showSideBySide ? "lg:grid-cols-2" : "") gap-6">
+        <!-- Left Column: Selection Interface -->
+        <div>
+            <Card Shadow="Card.ShadowSize.Large">
+                <ChildContent>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-blue">
+                            @if (_viewMode == ViewMode.CategorySector)
+                            {
+                                <span>Data Category & Sector Selection</span>
+                            }
+                            else
+                            {
+                                <span>Data Element Selection</span>
+                            }
+                        </h3>
+                        @if (_viewMode == ViewMode.DataElement)
+                        {
+                            <button class="btn btn-sm btn-ghost" @onclick="() => _showSideBySide = !_showSideBySide">
+                                <i class="fas @(_showSideBySide ? "fa-bars" : "fa-columns")"></i>
+                                @(_showSideBySide ? "Stack" : "Side-by-Side")
+                            </button>
+                        }
+                    </div>
+
+                    @if (_viewMode == ViewMode.CategorySector)
+                    {
+                        @CategorySectorSelection
+                    }
+                    else
+                    {
+                        @DataElementSelection
+                    }
+                </ChildContent>
+            </Card>
+        </div>
+
+        <!-- Right Column: Results -->
+        <div>
+            <Card Shadow="Card.ShadowSize.Large">
+                <ChildContent>
+                    <h3 class="text-xl font-semibold text-blue mb-4">Readiness Assessment Results</h3>
+
+                    @if (_questionScores.Any())
+                    {
+                        <div class="alert alert-warning mb-4">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="text-sm">
+                                This application is in an experimental phase. Scores are intended for preliminary guidance only and should be verified against official E-W Framework resources.
+                            </div>
+                        </div>
+
+                        @QuestionScoresList
+                    }
+                    else
+                    {
+                        <div class="text-center py-12 text-gray-500">
+                            <i class="fas fa-chart-bar text-5xl mb-4 opacity-30"></i>
+                            <p>Select data availability to calculate readiness scores</p>
+                        </div>
+                    }
+                </ChildContent>
+            </Card>
+        </div>
+    </div>
+</div>
+
+<!-- Indicator Details Modal -->
+@if (_selectedIndicator != null && _showIndicatorModal)
+{
+    <Modal IsOpen="@_showIndicatorModal" CloseRequested="CloseIndicatorModal">
+        <Header>@_selectedIndicator.IndicatorCode</Header>
+        <Body>
+            <div class="space-y-4">
+                @{
+                    var indicator = GetIndicatorByCode(_selectedIndicator.IndicatorCode);
+                }
+
+                @if (indicator != null)
+                {
+                    <h5 class="font-semibold text-blue">@indicator.Definition</h5>
+
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><strong>Domain:</strong> @indicator.Domain.GetDisplayName()</p>
+                        <p><strong>Type:</strong> @indicator.Type.GetDisplayName()</p>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h5 class="font-semibold text-blue text-sm">Data Readiness Score:</h5>
+                    <progress class="progress @GetProgressBarColor(_selectedIndicator.ReadinessScore)" value="@(_selectedIndicator.ReadinessScore * 100)" max="100"></progress>
+                    <p class="text-center font-semibold">@_selectedIndicator.ReadinessScore.ToString("0.##%")</p>
+
+                    @if (_viewMode == ViewMode.CategorySector)
+                    {
+                        <div class="divider"></div>
+                        <h5 class="font-semibold text-blue text-sm">Data Categories & Sectors:</h5>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var item in _selectedIndicator.DataItemScores)
+                            {
+                                <div class="badge @(item.IsAvailable ? "badge-success" : "badge-ghost") badge-sm">
+                                    @item.DataItemName
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="divider"></div>
+                        <h5 class="font-semibold text-blue text-sm">Data Elements:</h5>
+                        <div class="space-y-2">
+                            @foreach (var item in _selectedIndicator.DataItemScores.OrderBy(x => x.DataItemName))
+                            {
+                                <p class="text-sm">
+                                    <i class="@(item.IsAvailable ? "fas fa-check-circle text-success" : "fas fa-times-circle text-error")"></i>
+                                    @item.DataItemName
+                                </p>
+                            }
+                        </div>
+                    }
+
+                    <div class="collapse border border-gray-300 rounded-lg collapse-arrow">
+                        <input type="checkbox" />
+                        <div class="collapse-title font-semibold">Additional Details</div>
+                        <div class="collapse-content text-sm space-y-3">
+
+                            <div>
+                                <h5 class="font-semibold text-sm text-blue mb-1">Recommended Metrics</h5>
+                                <p class="text-sm text-gray-600">@indicator.RecommendedMetrics</p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-sm text-blue mb-1">Sectors</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var sector in indicator.Sectors)
+                                    {
+                                        <div class="badge badge-secondary badge-sm">@sector.GetDisplayName()</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5 class="font-semibold text-sm text-blue mb-1">Data Needed</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var dataNeeded in indicator.DataNeeded)
+                                    {
+                                        <div class="badge badge-secondary badge-sm">@dataNeeded.GetDisplayName()</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </Body>
+        <Footer>
+            <button class="btn btn-ghost hover:bg-gray-200 hover:border-gray-300" @onclick="CloseIndicatorModal">Close</button>
+        </Footer>
+    </Modal>
+}
+
+@code {
+    private ViewMode _viewMode = ViewMode.CategorySector;
+    private bool _showSideBySide = false;
+    private const string VIEW_MODE_STORAGE_KEY = "framework_explorer_view_mode";
+    private const string CATEGORY_SECTOR_STORAGE_KEY = "framework_explorer_category_sector";
+    private const string DATA_ELEMENT_STORAGE_KEY = "framework_explorer_data_elements";
+
+    // Category & Sector Mode
+    private Dictionary<DataCategory, HashSet<Sector>> _selectedCategorySectors = new();
+
+    // Data Element Mode
+    private HashSet<string> _selectedDataElements = new();
+
+    // Scoring
+    private List<QuestionScore> _questionScores = new();
+
+    // Modal
+    private bool _showIndicatorModal = false;
+    private IndicatorScore? _selectedIndicator = null;
+
+    private enum ViewMode
+    {
+        CategorySector,
+        DataElement
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load saved preferences
+        try
+        {
+            var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", VIEW_MODE_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<ViewMode>(savedMode, out var mode))
+            {
+                _viewMode = mode;
+            }
+
+            var savedCategorySectors = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_SECTOR_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(savedCategorySectors))
+            {
+                _selectedCategorySectors = System.Text.Json.JsonSerializer.Deserialize<Dictionary<DataCategory, HashSet<Sector>>>(savedCategorySectors) ?? new();
+            }
+
+            var savedDataElements = await JSRuntime.InvokeAsync<string>("localStorage.getItem", DATA_ELEMENT_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(savedDataElements))
+            {
+                _selectedDataElements = System.Text.Json.JsonSerializer.Deserialize<HashSet<string>>(savedDataElements) ?? new();
+            }
+        }
+        catch { }
+
+        InitializeCategorySectorDictionary();
+        await CalculateScores();
+    }
+
+    private void InitializeCategorySectorDictionary()
+    {
+        foreach (var category in Enum.GetValues<DataCategory>())
+        {
+            if (!_selectedCategorySectors.ContainsKey(category))
+            {
+                _selectedCategorySectors[category] = new HashSet<Sector>();
+            }
+        }
+    }
+
+    private async Task SetViewMode(ViewMode mode)
+    {
+        _viewMode = mode;
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", VIEW_MODE_STORAGE_KEY, mode.ToString());
+        await CalculateScores();
+    }
+
+    private async Task ClearAllSelections()
+    {
+        _selectedCategorySectors.Clear();
+        _selectedDataElements.Clear();
+        InitializeCategorySectorDictionary();
+        await SaveAndRecalculate();
+    }
+
+    private async Task SaveAndRecalculate()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", CATEGORY_SECTOR_STORAGE_KEY,
+                System.Text.Json.JsonSerializer.Serialize(_selectedCategorySectors));
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", DATA_ELEMENT_STORAGE_KEY,
+                System.Text.Json.JsonSerializer.Serialize(_selectedDataElements));
+        }
+        catch { }
+
+        await CalculateScores();
+    }
+
+    private Task CalculateScores()
+    {
+        _questionScores.Clear();
+
+        if (_viewMode == ViewMode.CategorySector && !_selectedCategorySectors.Any(x => x.Value.Any()))
+        {
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
+
+        if (_viewMode == ViewMode.DataElement && !_selectedDataElements.Any())
+        {
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
+
+        foreach (var question in EwFrameworkEssentialQuestions.Questions)
+        {
+            var indicatorScores = new List<IndicatorScore>();
+
+            foreach (var indicatorName in question.RelatedIndicatorNames)
+            {
+                if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
+                    continue;
+
+                var dataItemScores = new List<DataItemScore>();
+                int availableCount = 0;
+                int totalCount = 0;
+
+                if (_viewMode == ViewMode.CategorySector)
+                {
+                    // Score based on DataCategory + Sector combinations
+                    var applicableSectors = indicator.Sectors.Where(s => question.ApplicableSectors.Contains(s)).ToList();
+
+                    foreach (var dataCategory in indicator.DataNeeded)
+                    {
+                        foreach (var sector in applicableSectors)
+                        {
+                            totalCount++;
+                            bool isAvailable = _selectedCategorySectors.TryGetValue(dataCategory, out var sectors) && sectors.Contains(sector);
+
+                            if (isAvailable)
+                                availableCount++;
+
+                            dataItemScores.Add(new DataItemScore
+                            {
+                                DataItemName = $"{dataCategory.GetDisplayName()} - {sector.GetDisplayName()}",
+                                IsAvailable = isAvailable
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    // Score based on specific data elements
+                    foreach (var elementName in indicator.DataElementNames)
+                    {
+                        totalCount++;
+                        bool isAvailable = _selectedDataElements.Contains(elementName);
+
+                        if (isAvailable)
+                            availableCount++;
+
+                        dataItemScores.Add(new DataItemScore
+                        {
+                            DataItemName = elementName,
+                            IsAvailable = isAvailable
+                        });
+                    }
+                }
+
+                var indicatorReadiness = totalCount > 0 ? (decimal)availableCount / totalCount : 0m;
+
+                indicatorScores.Add(new IndicatorScore
+                {
+                    IndicatorCode = indicatorName,
+                    ReadinessScore = indicatorReadiness,
+                    DataItemScores = dataItemScores
+                });
+            }
+
+            var questionReadiness = indicatorScores.Any()
+                ? indicatorScores.Average(i => i.ReadinessScore)
+                : 0m;
+
+            _questionScores.Add(new QuestionScore
+            {
+                QuestionNumber = question.QuestionNumber,
+                ReadinessScore = questionReadiness,
+                IndicatorScores = indicatorScores
+            });
+        }
+
+        _questionScores = _questionScores.OrderByDescending(q => q.ReadinessScore).ToList();
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private void ShowIndicatorDetails(IndicatorScore indicator)
+    {
+        _selectedIndicator = indicator;
+        _showIndicatorModal = true;
+    }
+
+    private void CloseIndicatorModal()
+    {
+        _showIndicatorModal = false;
+        _selectedIndicator = null;
+    }
+
+    private Indicator? GetIndicatorByCode(string code)
+    {
+        EwFrameworkIndicators.Indicators.TryGetValue(code, out var indicator);
+        return indicator;
+    }
+
+    private string GetProgressBarColor(decimal score)
+    {
+        if (score > 0.66m) return "progress-success";
+        if (score > 0.33m) return "progress-warning";
+        if (score > 0m) return "progress-error";
+        return "bg-gray-200";
+    }
+
+    // Nested component for Category & Sector selection
+    private RenderFragment CategorySectorSelection => __builder =>
+    {
+        <div class="space-y-4">
+            <p class="text-sm text-gray-600 mb-4">
+                Select which data categories you have available for each sector. <strong>PK</strong> = Pre-Kindergarten, <strong>K12</strong> = K-12, <strong>PS</strong> = Post-Secondary, <strong>WF</strong> = Workforce
+            </p>
+
+            <div class="space-y-4">
+                @foreach (var category in Enum.GetValues<DataCategory>())
+                {
+                    <div class="border border-gray-300 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-blue">@category.GetDisplayName()</h4>
+                            <button class="btn btn-xs btn-ghost"
+                                    @onclick="() => ToggleAllSectorsForCategory(category)">
+                                @if (_selectedCategorySectors[category].Count == Enum.GetValues<Sector>().Length)
+                                {
+                                    <span>Deselect All</span>
+                                }
+                                else
+                                {
+                                    <span>Select All</span>
+                                }
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var sector in Enum.GetValues<Sector>())
+                            {
+                                var isSelected = _selectedCategorySectors[category].Contains(sector);
+                                <button class="btn btn-sm @(isSelected ? "btn-primary" : "btn-ghost btn-outline")"
+                                        @onclick="async () => await ToggleCategorySector(category, sector)">
+                                    @sector.GetDisplayName()
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    };
+
+    private async Task ToggleCategorySector(DataCategory category, Sector sector)
+    {
+        if (_selectedCategorySectors[category].Contains(sector))
+            _selectedCategorySectors[category].Remove(sector);
+        else
+            _selectedCategorySectors[category].Add(sector);
+
+        await SaveAndRecalculate();
+    }
+
+    private async Task ToggleAllSectorsForCategory(DataCategory category)
+    {
+        if (_selectedCategorySectors[category].Count == Enum.GetValues<Sector>().Length)
+        {
+            _selectedCategorySectors[category].Clear();
+        }
+        else
+        {
+            _selectedCategorySectors[category] = Enum.GetValues<Sector>().ToHashSet();
+        }
+
+        await SaveAndRecalculate();
+    }
+
+    // Nested component for Data Element selection
+    private RenderFragment DataElementSelection => __builder =>
+    {
+        <div class="space-y-4">
+            <p class="text-sm text-gray-600 mb-4">
+                Select which specific data elements you have available.
+            </p>
+
+            <div class="border border-gray-300 rounded-lg overflow-hidden max-h-[600px] overflow-y-auto">
+                @{
+                    var categories = EwFrameworkDataElements.Elements.Values
+                    .GroupBy(e => e.EWFrameworkClusterCategory)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+                }
+
+                @foreach (var category in categories)
+                {
+                    var categoryElements = category.ToList();
+                    var selectedCount = categoryElements.Count(e => _selectedDataElements.Contains(e.Name));
+
+                    <div class="border-b border-gray-200 last:border-b-0">
+                        <div class="collapse collapse-arrow">
+                            <input type="checkbox" name="category-@category.Key" />
+                            <div class="collapse-title bg-base-100 hover:bg-base-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-blue">@category.Key</span>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-gray-500">@selectedCount of @categoryElements.Count selected</span>
+                                        <button class="btn btn-xs btn-ghost"
+                                                @onclick:stopPropagation="true"
+                                                @onclick="() => ToggleAllInCategory(categoryElements)">
+                                            @(selectedCount == categoryElements.Count ? "Clear" : "Select All")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse-content bg-gray-50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-3">
+                                    @foreach (var element in categoryElements.OrderBy(e => e.Name))
+                                    {
+                                        var isSelected = _selectedDataElements.Contains(element.Name);
+                                        <div class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded">
+                                            <input type="checkbox"
+                                                   class="checkbox checkbox-sm checkbox-primary"
+                                                   checked="@isSelected"
+                                                   @onchange="async () => await ToggleElement(element.Name)" />
+                                            <label class="text-sm cursor-pointer flex-1" @onclick="async () => await ToggleElement(element.Name)">@element.Name</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    };
+
+    private async Task ToggleElement(string elementName)
+    {
+        if (_selectedDataElements.Contains(elementName))
+            _selectedDataElements.Remove(elementName);
+        else
+            _selectedDataElements.Add(elementName);
+
+        await SaveAndRecalculate();
+    }
+
+    private async Task ToggleAllInCategory(List<DataElement> elements)
+    {
+        var allSelected = elements.All(e => _selectedDataElements.Contains(e.Name));
+
+        if (allSelected)
+        {
+            foreach (var element in elements)
+                _selectedDataElements.Remove(element.Name);
+        }
+        else
+        {
+            foreach (var element in elements)
+                _selectedDataElements.Add(element.Name);
+        }
+
+        await SaveAndRecalculate();
+    }
+
+    // Nested component for displaying question scores
+    private RenderFragment QuestionScoresList => __builder =>
+    {
+        <div class="space-y-4">
+            @foreach (var questionScore in _questionScores)
+            {
+                var question = EwFrameworkEssentialQuestions.Questions.FirstOrDefault(q => q.QuestionNumber == questionScore.QuestionNumber);
+                if (question == null) continue;
+
+                <div class="collapse collapse-arrow border border-gray-300 rounded-lg">
+                    <input type="checkbox" name="question-@questionScore.QuestionNumber" />
+                    <div class="collapse-title">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-8 font-semibold text-blue">
+                                @question.QuestionNumber
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <p class="font-semibold">@question.Question</p>
+                                <div class="flex items-center gap-2">
+                                    <progress class="progress @GetProgressBarColor(questionScore.ReadinessScore) flex-1"
+                                              value="@(questionScore.ReadinessScore * 100)"
+                                              max="100"></progress>
+                                    <span class="text-sm font-semibold">@questionScore.ReadinessScore.ToString("0.##%")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collapse-content">
+                        <div class="pt-4 space-y-4">
+                            <h4 class="font-semibold text-blue">Indicators</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @foreach (var indicator in questionScore.IndicatorScores.OrderByDescending(i => i.ReadinessScore))
+                                {
+                                    <div class="card border border-gray-300 rounded-md p-3 hover:shadow-md transition cursor-pointer"
+                                         @onclick="() => ShowIndicatorDetails(indicator)">
+                                        <p class="font-semibold text-sm mb-2">@indicator.IndicatorCode</p>
+                                        <progress class="progress @GetProgressBarColor(indicator.ReadinessScore)"
+                                                  value="@(indicator.ReadinessScore * 100)"
+                                                  max="100"></progress>
+                                        <p class="text-xs text-center mt-1">@indicator.ReadinessScore.ToString("0.##%")</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    };
+
+    // Simple data structures for scoring
+    private class QuestionScore
+    {
+        public int QuestionNumber { get; set; }
+        public decimal ReadinessScore { get; set; }
+        public List<IndicatorScore> IndicatorScores { get; set; } = new();
+    }
+
+    private class IndicatorScore
+    {
+        public string IndicatorCode { get; set; } = "";
+        public decimal ReadinessScore { get; set; }
+        public List<DataItemScore> DataItemScores { get; set; } = new();
+    }
+
+    private class DataItemScore
+    {
+        public string DataItemName { get; set; } = "";
+        public bool IsAvailable { get; set; }
+    }
+}
