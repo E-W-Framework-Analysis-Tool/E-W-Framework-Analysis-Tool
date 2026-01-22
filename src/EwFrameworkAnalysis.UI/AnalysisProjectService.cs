@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 namespace EwFrameworkAnalysis.UI;
 
 public class AnalysisProjectService
-{    
+{
     private readonly IJSRuntime _jsRuntime;
     private const string STORAGE_KEY = "ewframework_analysis_project";
     private readonly DataElementScoringRuleRegistry _ruleRegistry;
