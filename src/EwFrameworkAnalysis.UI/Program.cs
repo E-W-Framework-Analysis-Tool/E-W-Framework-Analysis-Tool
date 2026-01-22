@@ -32,6 +32,7 @@ builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 
 // Register Scoring Rules
+builder.Services.AddSingleton<DataElementScoringService>();
 builder.Services.AddSingleton<IDataElementScoringRule, ReportedAndCountScoringRule>();
 builder.Services.AddSingleton(sp =>
 {

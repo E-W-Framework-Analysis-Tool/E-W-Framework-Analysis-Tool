@@ -706,10 +706,10 @@ public static class EwFrameworkIndicators
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK, Sector.K12],
             DataElementNames = [
-                "Teacher credentials", "Credential or certification type", 
-                "Credential or certification type", "Highest level of education completed", 
-                "Leader effectiveness assessments", "Staff race/ethnicity", 
-                "Teacher qualification or certification type"            
+                "Teacher credentials", "Credential or certification type",
+                "Credential or certification type", "Highest level of education completed",
+                "Leader effectiveness assessments", "Staff race/ethnicity",
+                "Teacher qualification or certification type"
             ]
         },
         ["Teacher experience"] = new()
@@ -734,9 +734,9 @@ public static class EwFrameworkIndicators
             Sectors = [Sector.PK, Sector.K12],
             DataElementNames = [
                 "Teacher employment dates", "Principal employment dates",
-                "Job title or position type", "Years of teaching experience", 
-                "School assignment (prior and current year)", 
-                "Staff FTE status", "Years in current position"            
+                "Job title or position type", "Years of teaching experience",
+                "School assignment (prior and current year)",
+                "Staff FTE status", "Years in current position"
             ]
         },
         ["Classroom observations of instructional practice"] = new()

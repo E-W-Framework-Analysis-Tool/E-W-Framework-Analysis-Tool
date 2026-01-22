@@ -8,6 +8,14 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
 {
     public string RuleName => "ReportedAndCount";
 
+    public IReadOnlyDictionary<string, int> SourcePriority { get; }
+        = new Dictionary<string, int>
+        {
+            [DataSourceType.Custom.ToString()] = 1,
+            [DataSourceType.CedsDw.ToString()] = 2,
+            [DataSourceType.EdFiApi.ToString()] = 3,
+        };
+
     public DataElementScore Score(DataElementScoringRequest request)
     {
         var sourceScores = new List<DataElementSourceScore>();
@@ -23,21 +31,14 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
                 IsAvailable = availability > 0,
                 AvailabilityScore = availability,
                 QualityScore = availability,
-                Notes = $"Reported availability from {match.DataSourceType}"
+                Notes = $"Reported availability from {match.DataSourceType.ToString()}"
             });
         }
 
-        // Priority rule: manual input wins
         var selected = sourceScores
             .OrderByDescending(s => s.AvailabilityScore)
-            .FirstOrDefault(x => x.SourceType == DataSourceType.Custom.ToString());
-
-        if(selected == null)
-        {
-            selected = sourceScores
-            .OrderByDescending(s => s.AvailabilityScore)
+            .ThenBy(s => SourcePriority.TryGetValue(s.SourceType, out var priority) ? priority : 0)
             .FirstOrDefault();
-        }
 
         return new DataElementScore
         {
