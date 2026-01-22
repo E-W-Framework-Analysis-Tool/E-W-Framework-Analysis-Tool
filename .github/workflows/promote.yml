@@ -1,4 +1,8 @@
-name: Deploy to Environment
+name: Promote to Environment
+
+# This workflow is used to initiate a promotion of a particular version to an upper environment.
+# This is used in lieu of "environment protection policies" which require a per-user license over 5x more expensive for non-public repositories.
+# This should be revisited once the codebase is published as open-source -- cost aside, the policy approach is preferable.
 
 on:
   workflow_dispatch:
