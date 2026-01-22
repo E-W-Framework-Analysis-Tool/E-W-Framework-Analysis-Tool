@@ -1,0 +1,245 @@
+name: Promote to Environment
+
+# This workflow is used to initiate a promotion of a particular version to an upper environment.
+# This is used in lieu of "environment protection policies" which require a per-user license over 5x more expensive for non-public repositories.
+# This should be revisited once the codebase is published as open-source -- cost aside, the policy approach is preferable.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (semver only: 1.0.0)'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - test
+          - production
+      skip_progression_check:
+        description: 'Skip validation of environment progression (NOT RECOMMENDED for production)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  validate-deployment:
+    name: Validate Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.set-outputs.outputs.artifact_name }}
+      previous_environment: ${{ steps.set-outputs.outputs.previous_environment }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate version format
+        shell: pwsh
+        run: |
+          $version = "${{ inputs.version }}"
+          
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            Write-Error "Invalid version format: $version"
+            Write-Error "Only semantic versioning is allowed (e.g., 1.0.0)"
+            Write-Error "Non-release builds (main-xxx) cannot be deployed via this workflow"
+            exit 1
+          }
+          
+          Write-Host "Valid semantic version: $version"
+
+      - name: Set outputs
+        id: set-outputs
+        shell: pwsh
+        run: |
+          $version = "${{ inputs.version }}"
+          $artifactName = "blazor-app-$version"
+          echo "artifact_name=$artifactName" >> $env:GITHUB_OUTPUT
+          
+          # Determine which environment should have been deployed to before this one
+          $previousEnv = if ("${{ inputs.environment }}" -eq "production") { "test" } else { "dev" }
+          echo "previous_environment=$previousEnv" >> $env:GITHUB_OUTPUT
+          
+          Write-Host "Artifact to deploy: $artifactName"
+          Write-Host "Previous environment: $previousEnv"
+
+      - name: Verify environment progression
+        if: inputs.skip_progression_check == false
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = "${{ inputs.version }}"
+          $previousEnv = "${{ steps.set-outputs.outputs.previous_environment }}"
+          $targetEnv = "${{ inputs.environment }}"
+          
+          Write-Host "Checking if version '$version' was deployed to $previousEnv environment..."
+          
+          # Get recent deployments to the previous environment
+          $deployments = gh api "/repos/${{ github.repository }}/deployments" `
+            --jq ".[] | select(.environment == `"$previousEnv`") | {id, sha, ref, created_at, payload}" `
+            | ConvertFrom-Json
+          
+          # Check if this version was deployed to previous environment
+          $previousDeployed = $false
+          foreach ($deployment in $deployments) {
+            if ($deployment.ref -like "*$version*" -or 
+                $deployment.payload -like "*$version*") {
+              $previousDeployed = $true
+              Write-Host "Found $previousEnv deployment from $($deployment.created_at)"
+              break
+            }
+          }
+          
+          if (-not $previousDeployed) {
+            Write-Error "Version '$version' has not been deployed to $previousEnv environment yet."
+            Write-Error ""
+            Write-Error "$targetEnv DEPLOYMENT BLOCKED FOR SAFETY"
+            Write-Error ""
+            Write-Error "Please deploy to $previousEnv first and verify functionality."
+            Write-Error ""
+            if ($targetEnv -eq "production") {
+              Write-Error "If you absolutely must skip this check (NOT RECOMMENDED),"
+              Write-Error "re-run with 'skip_progression_check' enabled."
+            }
+            exit 1
+          }
+          
+          Write-Host "Validation passed - proceeding with $targetEnv deployment"
+
+      - name: Check artifact exists
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $artifactName = "blazor-app-${{ inputs.version }}"
+          
+          Write-Host "Searching for artifact: $artifactName"
+          
+          $runs = gh api "/repos/${{ github.repository }}/actions/runs?per_page=50" `
+            | ConvertFrom-Json
+          
+          $found = $false
+          foreach ($run in $runs.workflow_runs) {
+            $artifacts = gh api "/repos/${{ github.repository }}/actions/runs/$($run.id)/artifacts" `
+              | ConvertFrom-Json
+            
+            $artifact = $artifacts.artifacts | Where-Object { $_.name -eq $artifactName }
+            if ($artifact) {
+              $found = $true
+              Write-Host "Found artifact in run #$($run.run_number) (ID: $($run.id))"
+              Write-Host "Created: $($artifact.created_at)"
+              Write-Host "Size: $([math]::Round($artifact.size_in_bytes / 1MB, 2)) MB"
+              break
+            }
+          }
+          
+          if (-not $found) {
+            Write-Error "Artifact '$artifactName' not found in recent workflow runs."
+            Write-Error ""
+            Write-Error "Make sure version ${{ inputs.version }} has been built first."
+            Write-Error "Check the CI/CD workflow for available artifacts."
+            exit 1
+          }
+
+  deploy-test:
+    name: Deploy to Test Environment
+    runs-on: ubuntu-latest
+    needs: validate-deployment
+    if: inputs.environment == 'test'
+    environment: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.validate-deployment.outputs.artifact_name }}
+          path: publish/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Transform appsettings.json for Test
+        uses: ./.github/actions/transform-config
+        env:
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ inputs.version }}
+          EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.repository.updated_at }}
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
+          EWFTOOLSETTING__DeploymentInfo__GitCommit: ${{ github.sha }}
+          EWFTOOLSETTING__DeploymentInfo__BuildNumber: ${{ github.run_number }}
+          EWFTOOLSETTING__DemoEdFiApi__BaseUrl: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__BaseUrl }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_TEST }}
+
+      - name: Deploy to Azure Storage (Test)
+        shell: pwsh
+        run: |
+          ./eng/deploy-to-azure-storage.ps1 `
+            -StorageAccountName "${{ vars.AZURE_STORAGE_ACCOUNT_NAME_TEST }}" `
+            -ResourceGroupName "${{ vars.AZURE_RESOURCE_GROUP_TEST }}" `
+            -AppLocation "publish/wwwroot"
+
+      - name: Deployment Summary
+        shell: pwsh
+        run: |
+          Write-Host "Successfully deployed version ${{ inputs.version }} to test"
+          Write-Host "Storage Account: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME_TEST }}"
+
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    needs: validate-deployment
+    if: inputs.environment == 'production'
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.validate-deployment.outputs.artifact_name }}
+          path: publish/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Transform appsettings.json for Production
+        uses: ./.github/actions/transform-config
+        env:
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ inputs.version }}
+          EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.repository.updated_at }}
+          EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
+          EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
+          EWFTOOLSETTING__DeploymentInfo__GitCommit: ${{ github.sha }}
+          EWFTOOLSETTING__DeploymentInfo__BuildNumber: ${{ github.run_number }}
+          EWFTOOLSETTING__DemoEdFiApi__BaseUrl: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__BaseUrl }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientId: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientId }}
+          EWFTOOLSETTING__DemoEdFiApi__ClientSecret: ${{ vars.EWFTOOLSETTING__DemoEdFiApi__ClientSecret }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+
+      - name: Deploy to Azure Storage (Production)
+        shell: pwsh
+        run: |
+          ./eng/deploy-to-azure-storage.ps1 `
+            -StorageAccountName "${{ vars.AZURE_STORAGE_ACCOUNT_NAME_PROD }}" `
+            -ResourceGroupName "${{ vars.AZURE_RESOURCE_GROUP_PROD }}" `
+            -AppLocation "publish/wwwroot"
+
+      - name: Deployment Summary
+        shell: pwsh
+        run: |
+          Write-Host "Successfully deployed version ${{ inputs.version }} to production"
+          Write-Host "Storage Account: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME_PROD }}"
