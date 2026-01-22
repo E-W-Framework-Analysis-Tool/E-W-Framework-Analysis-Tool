@@ -1,16 +1,8 @@
-name: Promote to Environment
-
-# This workflow is used to initiate a promotion of a particular version to an upper environment.
-# This is used in lieu of "environment protection policies" which require a per-user license over 5x more expensive for non-public repositories.
-# This should be revisited once the codebase is published as open-source -- cost aside, the policy approach is preferable.
+name: Deploy to Environment
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to deploy (semver only: 1.0.0)'
-        required: true
-        type: string
       environment:
         description: 'Target environment'
         required: true
@@ -34,41 +26,44 @@ jobs:
     name: Validate Deployment
     runs-on: ubuntu-latest
     outputs:
-      artifact_name: ${{ steps.set-outputs.outputs.artifact_name }}
-      previous_environment: ${{ steps.set-outputs.outputs.previous_environment }}
+      version: ${{ steps.extract-version.outputs.version }}
+      artifact_name: ${{ steps.extract-version.outputs.artifact_name }}
+      previous_environment: ${{ steps.extract-version.outputs.previous_environment }}
       run_id: ${{ steps.find-artifact.outputs.run_id }}
       
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate version format
+      - name: Extract version from tag
+        id: extract-version
         shell: pwsh
         run: |
-          $version = "${{ inputs.version }}"
+          $ref = "${{ github.ref }}"
           
-          if ($version -notmatch '^\d+\.\d+\.\d+$') {
-            Write-Error "Invalid version format: $version"
-            Write-Error "Only semantic versioning is allowed (e.g., 1.0.0)"
-            Write-Error "Non-release builds (main-xxx) cannot be deployed via this workflow"
+          if ($ref -notmatch '^refs/tags/v(\d+\.\d+\.\d+)$') {
+            Write-Error "This workflow must be run from a version tag!"
+            Write-Error ""
+            Write-Error "Current ref: $ref"
+            Write-Error ""
+            Write-Error "To deploy:"
+            Write-Error "  Actions -> Deploy to Environment -> Run workflow"
+            Write-Error "  Change 'Use workflow from' dropdown to a version tag (e.g., v0.1.0)"
             exit 1
           }
           
-          Write-Host "Valid semantic version: $version"
-
-      - name: Set outputs
-        id: set-outputs
-        shell: pwsh
-        run: |
-          $version = "${{ inputs.version }}"
+          $version = $matches[1]
           $artifactName = "blazor-app-$version"
+          
+          echo "version=$version" >> $env:GITHUB_OUTPUT
           echo "artifact_name=$artifactName" >> $env:GITHUB_OUTPUT
           
           # Determine which environment should have been deployed to before this one
           $previousEnv = if ("${{ inputs.environment }}" -eq "production") { "test" } else { "dev" }
           echo "previous_environment=$previousEnv" >> $env:GITHUB_OUTPUT
           
-          Write-Host "Artifact to deploy: $artifactName"
+          Write-Host "Deploying version: $version"
+          Write-Host "Artifact name: $artifactName"
           Write-Host "Previous environment: $previousEnv"
 
       - name: Verify environment progression
@@ -77,25 +72,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $version = "${{ inputs.version }}"
-          $previousEnv = "${{ steps.set-outputs.outputs.previous_environment }}"
+          $version = "${{ steps.extract-version.outputs.version }}"
+          $previousEnv = "${{ steps.extract-version.outputs.previous_environment }}"
           $targetEnv = "${{ inputs.environment }}"
+          $expectedRef = "refs/tags/v$version"
           
           Write-Host "Checking if version '$version' was deployed to $previousEnv environment..."
           
-          # Get recent deployments to the previous environment
-          $deployments = gh api "/repos/${{ github.repository }}/deployments" `
-            --jq ".[] | select(.environment == `"$previousEnv`") | {id, sha, ref, created_at, payload}" `
+          # Get all deployments for the previous environment
+          $deployments = gh api "/repos/${{ github.repository }}/deployments?environment=$previousEnv&per_page=50" `
             | ConvertFrom-Json
           
-          # Check if this version was deployed to previous environment
           $previousDeployed = $false
+          
           foreach ($deployment in $deployments) {
-            if ($deployment.ref -like "*$version*" -or 
-                $deployment.payload -like "*$version*") {
-              $previousDeployed = $true
-              Write-Host "Found $previousEnv deployment from $($deployment.created_at)"
-              break
+            # Check if this deployment was for our version tag
+            if ($deployment.ref -eq $expectedRef -or $deployment.ref -eq "v$version") {
+              # Check deployment statuses to see if successful
+              $statuses = gh api "/repos/${{ github.repository }}/deployments/$($deployment.id)/statuses" `
+                | ConvertFrom-Json
+              
+              $hasSuccess = $statuses | Where-Object { $_.state -eq "success" }
+              
+              if ($hasSuccess) {
+                $previousDeployed = $true
+                Write-Host "Found successful $previousEnv deployment"
+                Write-Host "  Deployment ID: $($deployment.id)"
+                Write-Host "  Ref: $($deployment.ref)"
+                Write-Host "  Created: $($deployment.created_at)"
+                break
+              }
             }
           }
           
@@ -121,7 +127,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $artifactName = "blazor-app-${{ inputs.version }}"
+          $artifactName = "${{ steps.extract-version.outputs.artifact_name }}"
           
           Write-Host "Searching for artifact: $artifactName"
           
@@ -147,8 +153,8 @@ jobs:
           if (-not $found) {
             Write-Error "Artifact '$artifactName' not found in recent workflow runs."
             Write-Error ""
-            Write-Error "Make sure version ${{ inputs.version }} has been built first."
-            Write-Error "Check the CI/CD workflow for available artifacts."
+            Write-Error "Make sure version ${{ steps.extract-version.outputs.version }} has been built first."
+            Write-Error "The tag must have triggered the CI/CD workflow to create the artifact."
             exit 1
           }
 
@@ -174,7 +180,7 @@ jobs:
       - name: Transform appsettings.json for Test
         uses: ./.github/actions/transform-config
         env:
-          EWFTOOLSETTING__DeploymentInfo__Version: ${{ inputs.version }}
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ needs.validate-deployment.outputs.version }}
           EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.repository.updated_at }}
           EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
           EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
@@ -200,7 +206,7 @@ jobs:
       - name: Deployment Summary
         shell: pwsh
         run: |
-          Write-Host "Successfully deployed version ${{ inputs.version }} to test"
+          Write-Host "Successfully deployed version ${{ needs.validate-deployment.outputs.version }} to test"
           Write-Host "Storage Account: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME_TEST }}"
 
   deploy-production:
@@ -225,7 +231,7 @@ jobs:
       - name: Transform appsettings.json for Production
         uses: ./.github/actions/transform-config
         env:
-          EWFTOOLSETTING__DeploymentInfo__Version: ${{ inputs.version }}
+          EWFTOOLSETTING__DeploymentInfo__Version: ${{ needs.validate-deployment.outputs.version }}
           EWFTOOLSETTING__DeploymentInfo__DeployDateTime: ${{ github.event.repository.updated_at }}
           EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: ${{ vars.EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel }}
           EWFTOOLSETTING__DeploymentInfo__ShowDetails: ${{ vars.EWFTOOLSETTING__DeploymentInfo__ShowDetails }}
@@ -251,5 +257,5 @@ jobs:
       - name: Deployment Summary
         shell: pwsh
         run: |
-          Write-Host "Successfully deployed version ${{ inputs.version }} to production"
+          Write-Host "Successfully deployed version ${{ needs.validate-deployment.outputs.version }} to production"
           Write-Host "Storage Account: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME_PROD }}"
