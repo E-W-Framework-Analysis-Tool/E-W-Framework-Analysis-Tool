@@ -36,6 +36,7 @@ jobs:
     outputs:
       artifact_name: ${{ steps.set-outputs.outputs.artifact_name }}
       previous_environment: ${{ steps.set-outputs.outputs.previous_environment }}
+      run_id: ${{ steps.find-artifact.outputs.run_id }}
       
     steps:
       - name: Checkout repository
@@ -115,6 +116,7 @@ jobs:
           Write-Host "Validation passed - proceeding with $targetEnv deployment"
 
       - name: Check artifact exists
+        id: find-artifact
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -137,6 +139,7 @@ jobs:
               Write-Host "Found artifact in run #$($run.run_number) (ID: $($run.id))"
               Write-Host "Created: $($artifact.created_at)"
               Write-Host "Size: $([math]::Round($artifact.size_in_bytes / 1MB, 2)) MB"
+              echo "run_id=$($run.id)" >> $env:GITHUB_OUTPUT
               break
             }
           }
@@ -165,6 +168,7 @@ jobs:
         with:
           name: ${{ needs.validate-deployment.outputs.artifact_name }}
           path: publish/
+          run-id: ${{ needs.validate-deployment.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Transform appsettings.json for Test
@@ -215,6 +219,7 @@ jobs:
         with:
           name: ${{ needs.validate-deployment.outputs.artifact_name }}
           path: publish/
+          run-id: ${{ needs.validate-deployment.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Transform appsettings.json for Production
