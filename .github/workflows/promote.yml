@@ -24,6 +24,11 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+
 jobs:
   validate-deployment:
     name: Validate Deployment
