@@ -5,7 +5,8 @@
 
 <div class="flex flex-col h-full">
     <!-- Fixed Filter / Control Area -->
-    <div class="flex-shrink-0 space-y-4 pb-2 @(ShowFilterPadding ? "p-4" : "p-0")">
+    <div class="sticky top-0 flex-shrink-0 space-y-2 pb-0 @(ShowFilterPadding ? "p-4" : "p-0")">
+
         <!-- Search Row -->
         <label class="input input-bordered flex items-center gap-2 w-full">
             <i class="fas fa-search opacity-50"></i>
@@ -17,11 +18,10 @@
         </label>
 
         <!-- Filters Row -->
-        <div class="flex gap-6 items-start">
+        <div class="flex flex-wrap gap-2 items-start">
             <!-- Sector Filter -->
-            <div class="flex-1">
-                <div class="text-xs font-semibold text-gray-600 mb-2">Filter by Sector</div>
-                <form class="flex flex-wrap gap-2">
+            <div class="flex flex-1 flex-col flex-wrap">
+                <form class="flex gap-1">
                     @foreach (var sector in Enum.GetValues<Sector>())
                     {
                         <input class="btn btn-sm @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
@@ -30,19 +30,16 @@
                                @onchange="() => ToggleSector(sector)"
                                aria-label="@sector.ToString()" />
                     }
-                    @if (_selectedSectors.Any())
-                    {
-                        <button class="btn btn-sm btn-square btn-ghost" type="button" @onclick="ClearSectorFilter">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    }
+                    <button class="btn btn-sm btn-square btn-ghost @(_selectedSectors.Any() ? "" : "btn-disabled")" type="button" @onclick="ClearSectorFilter">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </form>
+                <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Sector</div>
             </div>
 
             <!-- Availability Filter -->
-            <div class="flex-1">
-                <div class="text-xs font-semibold text-gray-600 mb-2">Filter by Status</div>
-                <form class="flex flex-wrap gap-2">
+            <div class="flex flex-col">
+                <form class="flex flex-wrap gap-1">
                     <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.Available) ? "btn-success" : "")"
                            type="checkbox"
                            checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.Available)"
@@ -66,18 +63,16 @@
                                @onchange="() => _showUnreported = !_showUnreported"
                                aria-label="Not Yet Reported" />
                     }
-                    @if (HasAvailabilityFilters())
-                    {
-                        <button class="btn btn-sm btn-square btn-ghost" type="button" @onclick="ClearAvailabilityFilter">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    }
+                    <button class="btn btn-sm btn-square btn-ghost @(HasAvailabilityFilters() ? "" : "btn-disabled")" type="button" @onclick="ClearAvailabilityFilter">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </form>
+                <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Status</div>
             </div>
         </div>
 
         <!-- Expand/Collapse Button -->
-        <div class="flex justify-end mt-2">
+        <div class="flex justify-end space-y-0">
             <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
                                      IsExpandedChanged="OnAllExpandedChanged" />
         </div>
@@ -94,7 +89,7 @@
                          @onclick="() => ToggleCategoryExpanded(category.Name)">
                         <i class="fas @(IsCategoryExpanded(category.Name) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
 
-                        <div class="flex-1 flex items-center gap-2">
+                        <div class="flex-1 flex items-center gap-2 flex-wrap">
                             <i class="fas @category.Icon text-blue"></i>
                             <span class="font-semibold text-blue">@category.Name</span>
                             <span class="text-xs text-gray-500">
@@ -296,7 +291,7 @@
                     Icon = c.Icon,
                     Elements = c.Elements
                         .Where(e => e.Name.ToLowerInvariant().Contains(query) ||
-                                   (e.AdditionalNotes?.ToLowerInvariant().Contains(query) ?? false))
+                            (e.AdditionalNotes?.ToLowerInvariant().Contains(query) ?? false))
                         .ToList()
                 })
                 .Where(c => c.Elements.Any() || c.Name.ToLowerInvariant().Contains(query));

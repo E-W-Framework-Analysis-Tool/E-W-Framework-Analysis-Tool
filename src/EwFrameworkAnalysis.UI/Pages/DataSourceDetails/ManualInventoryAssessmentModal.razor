@@ -7,62 +7,58 @@
 
 @if (IsOpen)
 {
-    <div class="modal modal-open">
-        <div class="modal-box max-w-6xl h-[80vh] p-0 flex flex-col">
+    <div class="modal modal-open modal-bottom p-4 pb-0">
+        <div class="modal-box max-w-6xl mx-auto max-h-full h-full p-0 flex flex-col">
             <!-- HEADER -->
-            <div class="flex-shrink-0 p-6 pb-4 bg-base-100 border-b border-gray-200">
-                <h3 class="font-bold text-lg mb-4">Manual Data Inventory Assessment</h3>
+            <div class="flex-shrink-0 p-4 pb-0 bg-base-100 space-y-2">
+                <h3 class="font-bold text-lg">Manual Data Inventory Assessment</h3>
 
-                <div class="space-y-4">
-                    <p class="text-sm text-gray-600">
-                        Review your data inventory and mark the availability of each data element.
-                        Categories can be checked to mark all child elements at once.
-                    </p>
+                <p class="text-sm text-gray-600">
+                    Review your data inventory and mark the availability of each data element.
+                    Categories can be checked to mark all child elements at once.
+                </p>
 
-                    <!-- Summary Stats -->
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-success/10 border border-success rounded-lg p-3">
-                            <div class="text-xs text-gray-600 mb-1">Available</div>
-                            <div class="text-2xl font-bold text-success">@GetAvailabilityCount(AvailabilityJudgment.Available)</div>
-                        </div>
-                        <div class="bg-warning/10 border border-warning rounded-lg p-3">
-                            <div class="text-xs text-gray-600 mb-1">Partially Available</div>
-                            <div class="text-2xl font-bold text-warning">@GetAvailabilityCount(AvailabilityJudgment.PartiallyAvailable)</div>
-                        </div>
-                        <div class="bg-error/10 border border-error rounded-lg p-3">
-                            <div class="text-xs text-gray-600 mb-1">Not Available</div>
-                            <div class="text-2xl font-bold text-error">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</div>
-                        </div>
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 grid-cols-1 items-center bg-success/10 border border-success rounded-lg p-2">
+                        <div class="text-xs text-gray-600">Available</div>
+                        <div class="text-lg font-bold text-success justify-self-end">@GetAvailabilityCount(AvailabilityJudgment.Available)</div>
                     </div>
-
-                    @if (_error != null)
-                    {
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>@_error</span>
-                        </div>
-                    }
+                    <div class="grid grid-cols-2 grid-cols-1 items-center bg-warning/10 border border-warning rounded-lg p-2">
+                        <div class="text-xs text-gray-600">Partially Available</div>
+                        <div class="text-lg font-bold text-warning justify-self-end">@GetAvailabilityCount(AvailabilityJudgment.PartiallyAvailable)</div>
+                    </div>
+                    <div class="grid grid-cols-2 grid-cols-1 items-center bg-error/10 border border-error rounded-lg p-2">
+                        <div class="text-xs text-gray-600">Not Available</div>
+                        <div class="text-lg font-bold text-error justify-self-end">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</div>
+                    </div>
                 </div>
+
+                @if (_error != null)
+                {
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@_error</span>
+                    </div>
+                }
             </div>
 
             <!-- BODY (scrolling area) -->
-            <div class="flex-1 overflow-hidden bg-white border-t border-gray-200">
-                <div class="h-full overflow-y-auto">
-                    <DataElementList ElementAvailability="@_elementAvailability"
-                                     ElementAvailabilityChanged="OnElementAvailabilityChanged"
-                                     IsEditable="true"
-                                     HideUnreported="false"
-                                     ContainerClass="border-x border-gray-200 bg-white" />
-                </div>
+            <div class="max-h-[80vh] overflow-y-auto">
+                <DataElementList ElementAvailability="@_elementAvailability"
+                                 ElementAvailabilityChanged="OnElementAvailabilityChanged"
+                                 IsEditable="true"
+                                 HideUnreported="false"
+                                 ContainerClass="border-x border-gray-200 bg-white"/>
             </div>
 
             <!-- FOOTER -->
-            <div class="flex-shrink-0 bg-base-100 py-4 px-6 border-t border-gray-200 flex justify-end gap-2">
+            <div class="flex flex-shrink-0 flex-wrap bg-base-100 p-2 px-4 border-t border-gray-200 justify-end gap-2">
                 <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
-                    <i class="fas fa-times mr-2"></i>Discard Results
+                    <i class="fas fa-times"></i>Discard Results
                 </button>
                 <button class="btn btn-primary" @onclick="SaveResults">
-                    <i class="fas fa-save mr-2"></i>Save Results
+                    <i class="fas fa-save"></i>Save Results
                 </button>
             </div>
         </div>
@@ -109,9 +105,7 @@
     private void LoadPreviousAssessment()
     {
         // Load the most recent assessment for this data source
-        var previousAssessment = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id)
-            .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault();
+        var previousAssessment = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id).MaxBy(a => a.ConductedAt);
 
         _elementAvailability.Clear();
 
