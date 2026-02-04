@@ -51,7 +51,7 @@ public class DataElementScoringService
     private IndicatorScore GetIndicatorScores(string indicatorName, List<DataSourceAssessmentWithSource> assessments)
     {
         if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
-            return new IndicatorScore { };        
+            return new IndicatorScore { };
 
         var dataElementScores = indicator.DataElementNames
             .Select(dataElementName => GetDataElementScore(dataElementName, indicatorName, assessments))
@@ -62,7 +62,7 @@ public class DataElementScoringService
         {
             IndicatorCode = indicatorName,
             DataElementScores = dataElementScores
-        };        
+        };
 
         // Simple readiness metric: % of data elements available
         if (indicatorScore.DataElementScores.Count > 0)
@@ -106,6 +106,6 @@ public class DataElementScoringService
         };
 
         var rule = _ruleRegistry.Resolve(scoringRequest.ScoringRuleName);
-        return rule.Score(scoringRequest);        
+        return rule.Score(scoringRequest);
     }
 }
