@@ -251,7 +251,7 @@ public class DataElementScoringService
                 }
 
                 indicatorScore.ReadinessScore =
-                    indicatorScore.DataElementScores.Count == 0 ? 0 : indicatorScore.DataElementScores.Average(x => x.AvailabilityScore);
+                    indicatorScore.DataElementScores.Count == 0 ? 0 : indicatorScore.DataElementScores.Average(x => x.QualityScore);
 
                 questionScore.IndicatorScores.Add(indicatorScore);
             }
@@ -265,5 +265,5 @@ public class DataElementScoringService
         }
 
         return assessmentScore;
-    }    
+    }
 }
