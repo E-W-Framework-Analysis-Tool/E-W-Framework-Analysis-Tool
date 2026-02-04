@@ -13,7 +13,7 @@
     <AnalysisHeader/>
 
     <!-- Overall and Readiness Assessment -->
-    <OverallReadinessAssessment SectorReadinessScores="_sectorReadinessScores" OverallReadinessScores="_overallReadinessScores" />
+    <OverallReadinessAssessment SectorReadinessScores="SectorReadinessScores" OverallReadinessScores="OverallReadinessScores" />
 
     <!-- Tabs -->
     <div class="tabs tabs-border !rounded-none">
@@ -59,6 +59,10 @@
     private OverallReadinessResults _overallReadinessScores = new();
     private List<SectorReadinessResult> _sectorReadinessScores = [];
 
+    private OverallReadinessResults OverallReadinessScores = new OverallReadinessResults();
+
+    private List<SectorReadinessResult> SectorReadinessScores = new List<SectorReadinessResult>();
+
     protected override async Task OnInitializedAsync()
     {
         await ProjectSvc.InitializeAsync();
@@ -67,12 +71,10 @@
 
     private void CalculateScores()
     {
-        _questionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
+        QuestionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
 
-        _indicatorScores = _questionScores.SelectMany(qs => qs.IndicatorScores).ToList();
+        OverallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
 
-        _overallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
-
-        _sectorReadinessScores = ScoringSvc.CalculateSectorReadiness(_questionScores);
+        SectorReadinessScores = ScoringSvc.CalculateSectorReadiness(QuestionScores);
     }
 }
