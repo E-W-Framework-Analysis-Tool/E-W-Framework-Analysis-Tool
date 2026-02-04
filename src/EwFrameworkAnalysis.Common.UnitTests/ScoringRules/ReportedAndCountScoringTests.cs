@@ -89,7 +89,7 @@ public class ReportedAndCountScoringTests : IClassFixture<ScoringTestFixture>
 
         var result = rule.Score(request);
 
-        Assert.Equal(1, result.AvailabilityScore);
+        Assert.Equal(AvailabilityJudgment.Available, result.AvailabilityScore);
         Assert.Equal(DataSourceType.EdFiApi.ToString(), result.SelectedSource);
         Assert.Equal(3, result.SourceScores.Count);
     }
@@ -154,7 +154,7 @@ public class ReportedAndCountScoringTests : IClassFixture<ScoringTestFixture>
 
         var result = rule.Score(request);
 
-        Assert.Equal(1, result.AvailabilityScore);
+        Assert.Equal(AvailabilityJudgment.Available, result.AvailabilityScore);
         Assert.Equal(DataSourceType.Custom.ToString(), result.SelectedSource);
         Assert.Equal(3, result.SourceScores.Count);
     }
