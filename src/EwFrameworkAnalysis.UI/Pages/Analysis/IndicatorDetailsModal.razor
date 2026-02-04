@@ -1,5 +1,6 @@
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Scoring
+@using Common.Models.Project;
 @using EwFrameworkAnalysis.UI.Components
 
 <Modal IsOpen="@IsOpen" CloseRequested="HandleClose">
@@ -93,7 +94,12 @@
         var score = _indicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(DataElementName));
         if (score != null && score.IsAvailable)
         {
-            return score.AvailabilityScore == 1 ? "fas fa-check-circle text-success" : "fas fa-triangle-exclamation text-warning";
+            return score.AvailabilityScore switch
+            {
+                AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+                AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+                _ => ""
+            };
         }
         return "fas fa-times-circle text-error";
     }

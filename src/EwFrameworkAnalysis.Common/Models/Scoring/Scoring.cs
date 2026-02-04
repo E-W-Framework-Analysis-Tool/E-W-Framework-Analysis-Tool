@@ -30,8 +30,8 @@ public class IndicatorScore
 public class DataElementScore
 {
     public string DataElementName { get; set; } = string.Empty;
-    public decimal AvailabilityScore { get; set; }
-    public decimal? QualityScore { get; set; }
+    public AvailabilityJudgment AvailabilityScore { get; set; }
+    public decimal QualityScore { get; set; } = 0;
     public bool IsAvailable { get; set; }
     public string? Source { get; set; }
     public string? Notes { get; set; }
@@ -49,7 +49,7 @@ public class DataElementSourceScore
     public Guid AssessmentId { get; set; }
     public string SourceType { get; set; } = string.Empty;
 
-    public decimal AvailabilityScore { get; set; }
+    public AvailabilityJudgment AvailabilityScore { get; set; }
     public decimal QualityScore { get; set; }
     public bool IsAvailable { get; set; }
 

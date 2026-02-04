@@ -24,19 +24,28 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
         {
             var availability = ResolveAvailability(match.Assessment);
 
-            sourceScores.Add(new DataElementSourceScore
+            var dataElementSourceScore = new DataElementSourceScore
             {
                 AssessmentId = match.AssessmentId,
                 SourceType = match.DataSourceType.ToString(),
-                IsAvailable = availability > 0,
+                IsAvailable = availability == AvailabilityJudgment.Available || availability == AvailabilityJudgment.PartiallyAvailable,
                 AvailabilityScore = availability,
-                QualityScore = availability,
+                QualityScore = 0,
                 Notes = $"Reported availability from {match.DataSourceType.ToString()}"
-            });
+            };
+
+            dataElementSourceScore.QualityScore = availability switch
+            {
+                AvailabilityJudgment.Available => 1.0m,
+                AvailabilityJudgment.PartiallyAvailable => 0.5m,
+                _ => 0
+            };
+
+            sourceScores.Add(dataElementSourceScore);
         }
 
         var selected = sourceScores
-            .OrderByDescending(s => s.AvailabilityScore)
+            .OrderBy(s => s.AvailabilityScore)
             .ThenBy(s => SourcePriority.TryGetValue(s.SourceType, out var priority) ? priority : 0)
             .FirstOrDefault();
 
@@ -45,7 +54,7 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
             DataElementName = request.DataElementName,
             ScoringRuleName = RuleName,
 
-            AvailabilityScore = selected?.AvailabilityScore ?? 0,
+            AvailabilityScore = selected?.AvailabilityScore ?? AvailabilityJudgment.NotAvailable,
             QualityScore = selected?.QualityScore ?? 0,
             IsAvailable = selected?.IsAvailable ?? false,
             SelectedSource = selected?.SourceType.ToString() ?? "None",
@@ -54,7 +63,7 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
         };
     }
 
-    private decimal ResolveAvailability(DataElementAssessment assessment)
+    private AvailabilityJudgment ResolveAvailability(DataElementAssessment assessment)
     {
         var reported = assessment.Characteristics
             .OfType<ReportedAvailability>()
@@ -66,18 +75,12 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
 
         if (reported != null)
         {
-            return reported.Value switch
-            {
-                AvailabilityJudgment.Available => 1.0m,
-                AvailabilityJudgment.PartiallyAvailable => 0.5m,
-                AvailabilityJudgment.NotAvailable => 0.0m,
-                _ => 0.0m
-            };
+            return reported.Value;
         }
 
         if (recordCount != null)
-            return recordCount.Value > 0 ? 1.0m : 0.0m;
+            return recordCount.Value > 0 ? AvailabilityJudgment.Available : AvailabilityJudgment.NotAvailable;
 
-        return 0.0m;
+        return AvailabilityJudgment.NotAvailable;
     }
 }
