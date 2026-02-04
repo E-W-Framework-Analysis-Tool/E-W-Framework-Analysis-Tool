@@ -1,3 +1,4 @@
+using EwFrameworkAnalysis.Common.Models.Framework;
 using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Models.Scoring;
@@ -22,6 +23,7 @@ public class IndicatorScore
     public decimal ReadinessScore { get; set; }
     public List<DataElementScore> DataElementScores { get; set; } = [];
     public string? Notes { get; set; }
+    public List<Sector> Sectors { get; set; } = [];
 }
 
 /// <summary>
@@ -81,4 +83,25 @@ public interface IDataElementScoringRule
     string RuleName { get; }
 
     DataElementScore Score(DataElementScoringRequest request);
+}
+
+public class SectorReadinessResult
+{
+    public Sector Sector { get; init; }
+    public decimal ReadinessScore { get; init; } // 0–1
+    public int IndicatorCount { get; init; }
+}
+
+public class OverallReadinessResults
+{
+    public decimal CurrentReadiness { get; set; }
+    public decimal WithPublicDataReadiness { get; set; }
+    public decimal CompleteReadiness { get; set; }
+}
+
+public class AssessmentScore
+{
+    public Guid DataSourceAssessmentId { get; set; }
+    public DataSourceType SourceType { get; set; }   // optional, helpful for UI
+    public List<QuestionScore> QuestionScores { get; set; } = [];
 }
