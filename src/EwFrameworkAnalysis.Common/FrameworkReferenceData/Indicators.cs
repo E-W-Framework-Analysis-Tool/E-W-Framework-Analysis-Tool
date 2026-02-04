@@ -705,7 +705,12 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "• Pre-K: Percentage of lead teachers with at least a bachelor's degree\n• Pre-K: Percentage of lead teachers with specialized training in pre-K\n• K-12: Percentage of courses taught by full-time equivalent (FTE) teachers (that is, teachers other than substitutes or those with emergency or provisional licenses)\n• K-12: Percentage of courses taught by teachers certified to teach the given subject or grade level",
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK, Sector.K12],
-            DataElementNames = ["Teacher credentials"]
+            DataElementNames = [
+                "Teacher credentials", "Credential or certification type",
+                "Credential or certification type", "Highest level of education completed",
+                "Leader effectiveness assessments", "Staff race/ethnicity",
+                "Teacher qualification or certification type"
+            ]
         },
         ["Teacher experience"] = new()
         {
@@ -716,7 +721,7 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "• Pre-K: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience\n• K-12: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience",
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK, Sector.K12],
-            DataElementNames = ["Teacher experience"]
+            DataElementNames = ["Teacher experience", "Years of teaching experience"]
         },
         ["Educator retention"] = new()
         {
@@ -727,7 +732,12 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "• Teacher retention: Percentage of teachers who return to teaching in the same school from year to year\n• School leader tenure: Percentage of school leaders who have served in their current positions for < 2 years, 2-3 years, and 4+ years",
             DataNeeded = [DataCategory.EducatorAdministrativeData],
             Sectors = [Sector.PK, Sector.K12],
-            DataElementNames = ["Teacher employment dates", "Principal employment dates"]
+            DataElementNames = [
+                "Teacher employment dates", "Principal employment dates",
+                "Job title or position type", "Years of teaching experience",
+                "School assignment (prior and current year)",
+                "Staff FTE status", "Years in current position"
+            ]
         },
         ["Classroom observations of instructional practice"] = new()
         {

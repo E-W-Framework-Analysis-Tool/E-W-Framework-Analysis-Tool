@@ -9,6 +9,7 @@ public class DataSourceAssessment
     public string? Name { get; set; }
     public DateTimeOffset ConductedAt { get; set; } = DateTimeOffset.Now;
     public string? Notes { get; set; }
+    public bool? Active { get; set; }
 
     // All assessments from this session
     public List<DataElementAssessment> DataElementAssessments { get; set; } = [];
@@ -27,4 +28,10 @@ public class DataElementAssessment
     public List<DataCharacteristicBase> Characteristics { get; set; } = [];
     public string? Remarks { get; set; }
     public bool? AvailabilityUserOverride { get; set; }
+}
+
+public class DataSourceAssessmentWithSource : DataSourceAssessment
+{
+    public Guid DataSourceId { get; set; }
+    public DataSourceType DataSourceType { get; set; }
 }

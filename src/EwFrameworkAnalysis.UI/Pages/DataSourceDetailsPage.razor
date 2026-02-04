@@ -93,6 +93,7 @@ else
                 <AssessmentDetailsView Assessment="@_selectedAssessment"
                                        DataSource="@_dataSource"
                                        Version="@GetAssessmentVersion(_selectedAssessment)"
+                                       OnSetActive="@HandleSetActiveAssessment"
                                        OnRename="@HandleRenameAssessment"
                                        OnDelete="@HandleDeleteAssessment" />
             </div>
@@ -255,6 +256,14 @@ else
             .ToList();
 
         return orderedAssessments.IndexOf(assessment) + 1;
+    }
+    private async Task HandleSetActiveAssessment()
+    {
+        if (_selectedAssessment is null) return;
+        
+        await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment);
+        LoadDataSource();
+        ShowNotification("Assessment set as active successfully");
     }
 
     private async Task HandleRenameAssessment(string newName)

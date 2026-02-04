@@ -1,4 +1,6 @@
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
+using EwFrameworkAnalysis.Common.Models.Scoring;
+using EwFrameworkAnalysis.Common.Scoring;
 using EwFrameworkAnalysis.Common.Services;
 using EwFrameworkAnalysis.UI;
 using EwFrameworkAnalysis.UI.Options;
@@ -28,6 +30,15 @@ builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddSingleton<AnalysisProjectService>();
+
+// Register Scoring Rules
+builder.Services.AddSingleton<DataElementScoringService>();
+builder.Services.AddSingleton<IDataElementScoringRule, ReportedAndCountScoringRule>();
+builder.Services.AddSingleton(sp =>
+{
+    var rules = sp.GetServices<IDataElementScoringRule>();
+    return new DataElementScoringRuleRegistry(rules);
+});
 
 var assessorAssembly = typeof(IEdFiAssessor).Assembly;
 var assessorImplementations = assessorAssembly

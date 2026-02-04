@@ -1,5 +1,6 @@
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Scoring
+@using Common.Models.Project;
 @using EwFrameworkAnalysis.UI.Components
 
 <Modal IsOpen="@IsOpen" CloseRequested="HandleClose">
@@ -91,7 +92,16 @@
     private string GetDataElementIsAvailableIcon(string DataElementName)
     {
         var score = _indicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(DataElementName));
-        return score != null && score.IsAvailable ? "fas fa-check-circle text-success" : "fas fa-times-circle text-error";
+        if (score != null && score.IsAvailable)
+        {
+            return score.AvailabilityScore switch
+            {
+                AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+                AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+                _ => ""
+            };
+        }
+        return "fas fa-times-circle text-error";
     }
 
     private string GetProgressBarColor(decimal score)
