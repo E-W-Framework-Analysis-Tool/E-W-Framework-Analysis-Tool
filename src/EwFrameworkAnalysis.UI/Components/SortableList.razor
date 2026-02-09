@@ -1,0 +1,92 @@
+﻿@using EwFrameworkAnalysis.UI.Options
+
+@typeparam TItem
+
+@ChildContent(SortOptions)
+
+@code {
+
+    /// <summary>
+    /// The list of items to sort
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> List { get; set; } = [];
+
+    /// <summary>
+    /// Column options defining the columns key name and sort selector
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<SortColumn<TItem>> Columns { get; set; } = new List<SortColumn<TItem>>();
+
+    /// <summary>
+    /// The content to display inside the list
+    /// </summary>
+    [Parameter]
+    public RenderFragment<SortOptions<TItem>> ChildContent { get; set; } = default!;
+
+    private string? _activeColumn;
+    private bool _ascending = true;
+
+    /// <summary>
+    /// Sort options context available to any child content
+    /// </summary>
+    private SortOptions<TItem> SortOptions => new(
+        Columns,
+        GetSortedList(),
+        Toggle,
+        IsActive,
+        _activeColumn,
+        _ascending
+    );
+
+    /// <summary>
+    /// Used to toggle between ascending/descending.
+    /// Only switches directions if the current column is active; otherwise activate the column and sort ascending
+    /// </summary>
+    private async Task Toggle(string column)
+    {
+        if (_activeColumn == column)
+        {
+            _ascending = !_ascending;
+        }
+        else
+        {
+            _activeColumn = column;
+            _ascending = true;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Returns the sorted list based on the active column key, direction, and column sorting selector
+    /// </summary>
+    private IEnumerable<TItem> GetSortedList()
+    {
+        if (_activeColumn is null)
+        {
+            return List;
+        }
+
+        var column = Columns.FirstOrDefault(co => co.Key == _activeColumn);
+        if (column is null)
+        {
+            return List;
+        }
+
+        return _ascending
+            ? List.OrderBy(column.Selector)
+            : List.OrderByDescending(column.Selector);
+    }
+
+    /// <summary>
+    /// Used to inform the UI sort elements whether a specific column is active and in what direction.
+    /// </summary>
+    private bool IsActive(string column, bool ascending) => SortOptions.ActiveColumn == column && SortOptions.Ascending == ascending;
+
+    protected override void OnParametersSet()
+    {
+        // Activate the first available column by default
+        _activeColumn ??= Columns.First(x => !string.IsNullOrWhiteSpace(x.Key)).Key;
+    }
+}
