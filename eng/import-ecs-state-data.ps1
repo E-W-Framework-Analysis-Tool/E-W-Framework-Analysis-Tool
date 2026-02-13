@@ -61,6 +61,41 @@ var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 1;
 var stateRecords = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>(StringComparer.OrdinalIgnoreCase);
 var duplicateCount = 0;
 
+// Map ECS indicator names to their exact EW Framework equivalents
+var indicatorNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
+    ["Access to full day pre-K"] = "Access to full-day pre-K",
+    ["Grade point average (MS+HS)"] = "Grade point average",
+    ["Postsecondary enrollment after high school graduation"] = "Postsecondary enrollment directly after high school graduation",
+    ["Successful completion of Algebra 1 by 9th grade"] = "Successful completion of Algebra I by 9th grade"
+};
+
+string NormalizeIndicator(string indicator)
+{
+    var trimmed = indicator.Trim();
+    return indicatorNameMap.TryGetValue(trimmed, out var mapped) ? mapped : trimmed;
+}
+
+// Load data element name mapping from _DataElementMappings.json (ECS raw name -> normalized name)
+var elementMapPath = Path.Combine(outputDir, "_DataElementMappings.json");
+var elementNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+if (File.Exists(elementMapPath))
+{
+    var mapJson = File.ReadAllText(elementMapPath);
+    var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(mapJson);
+    if (parsed != null)
+    {
+        foreach (var kvp in parsed)
+            elementNameMap[kvp.Key] = kvp.Value;
+    }
+}
+
+string NormalizeElementName(string name)
+{
+    var trimmed = name.Trim();
+    return elementNameMap.TryGetValue(trimmed, out var mapped) ? mapped : trimmed;
+}
+
 string NormalizeSector(string sector)
 {
     return sector.Trim().ToLowerInvariant() switch
@@ -95,17 +130,22 @@ for (var row = 2; row <= lastRow; row++)
     if (filterStates && !stateFilters.Contains(state))
         continue;
 
+    var type = worksheet.Cell(row, 5).GetString()?.Trim();
+    if (string.Equals(type, "Disaggregate", StringComparison.OrdinalIgnoreCase))
+        continue;
+
     var metricType = worksheet.Cell(row, 9).GetString()?.Trim();
     if (!string.Equals(metricType, "Data element", StringComparison.OrdinalIgnoreCase))
         continue;
 
-    var elementName = worksheet.Cell(row, 10).GetString()?.Trim();
-    if (string.IsNullOrWhiteSpace(elementName))
+    var rawElementName = worksheet.Cell(row, 10).GetString()?.Trim();
+    if (string.IsNullOrWhiteSpace(rawElementName))
         continue;
 
+    var elementName = NormalizeElementName(rawElementName);
     var rawSector = worksheet.Cell(row, 7).GetString()?.Trim() ?? "";
     var sector = NormalizeSector(rawSector);
-    var indicator = worksheet.Cell(row, 8).GetString()?.Trim() ?? "";
+    var indicator = NormalizeIndicator(worksheet.Cell(row, 8).GetString()?.Trim() ?? "");
     var collected = worksheet.Cell(row, 11).GetString()?.Trim() ?? "";
     var reported = worksheet.Cell(row, 21).GetString()?.Trim() ?? "";
 
@@ -146,19 +186,29 @@ foreach (var (state, recordMap) in stateRecords.OrderBy(kvp => kvp.Key))
     Console.WriteLine($"  {state}: {records.Count} records -> {Path.GetFileName(fileName)}");
 }
 
-// Generate a distinct list of all indicators across all states
-var allIndicators = stateRecords.Values
+// Collect all raw element names encountered during import and merge into the mapping
+var rawElementNames = stateRecords.Values
     .SelectMany(recordMap => recordMap.Values)
-    .Select(r => r["indicator"])
-    .Where(i => !string.IsNullOrWhiteSpace(i))
+    .Select(r => r["elementName"])
+    .Where(n => !string.IsNullOrWhiteSpace(n))
     .Distinct(StringComparer.OrdinalIgnoreCase)
-    .OrderBy(i => i, StringComparer.OrdinalIgnoreCase)
     .ToList();
 
-var indicatorsFileName = Path.Combine(outputDir, "_indicators.json");
-var indicatorsJson = JsonSerializer.Serialize(allIndicators, options);
-File.WriteAllText(indicatorsFileName, indicatorsJson);
-Console.WriteLine($"  Indicators: {allIndicators.Count} distinct -> {Path.GetFileName(indicatorsFileName)}");
+foreach (var name in rawElementNames)
+{
+    if (!elementNameMap.ContainsKey(name))
+        elementNameMap[name] = name;
+}
+
+// Write the data element mapping as an ordered key-value object
+var orderedElementMap = elementNameMap
+    .OrderBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)
+    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+var elementMapFileName = Path.Combine(outputDir, "_indicators.json");
+var elementMapJson = JsonSerializer.Serialize(orderedElementMap, options);
+File.WriteAllText(elementMapFileName, elementMapJson);
+Console.WriteLine($"  Data elements: {orderedElementMap.Count} entries -> {Path.GetFileName(elementMapFileName)}");
 
 if (duplicateCount > 0)
     Console.WriteLine($"Deduplicated: {duplicateCount} duplicate row(s) merged (best status kept).");
