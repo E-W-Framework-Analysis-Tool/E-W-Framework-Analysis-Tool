@@ -1,3 +1,4 @@
+@using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
 
 <Card Overflow Title="Overall Readiness Assessment" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
@@ -11,31 +12,31 @@
 
                     <div class="flex flex-1 flex-col space-y-2">
                         <div class="flex justify-between">
-                            <div class="text-gray-500">Current Readiness</div>
-                            <div class="font-semibold">65%</div>
+                            <div class="text-gray-500">Current Readiness  </div>
+                            <div class="font-semibold">@OverallReadinessScores.CurrentReadiness.ToString("0.##%")</div>
                         </div>
                         <div class="flex">
-                            <progress class="progress progress-primary bg-gray-200 h-3" value="65" max="100"></progress>
+                            <progress class="progress progress-primary bg-gray-200 h-3" value="@(OverallReadinessScores.CurrentReadiness * 100)" max="100"></progress>
                         </div>
                     </div>
 
                     <div class="flex flex-1 flex-col space-y-2">
                         <div class="flex justify-between">
-                            <div class="text-gray-500">With Public Data</div>
-                            <div class="font-semibold">85%</div>
+                            <div class="text-gray-500">With Public Data </div>
+                            <div class="font-semibold"> @OverallReadinessScores.WithPublicDataReadiness.ToString("0.##%")</div>
                         </div>
                         <div class="flex">
-                            <progress class="progress progress-accent bg-gray-200 h-3" value="85" max="100"></progress>
+                            <progress class="progress progress-accent bg-gray-200 h-3" value="@(OverallReadinessScores.WithPublicDataReadiness * 100)" max="100"></progress>
                         </div>
                     </div>
 
                     <div class="flex flex-1 flex-col space-y-2">
                         <div class="flex justify-between">
-                            <div class="text-gray-500">Complete Readiness</div>
-                            <div class="font-semibold">100%</div>
+                            <div class="text-gray-500">Complete Readiness </div>
+                            <div class="font-semibold">@OverallReadinessScores.CompleteReadiness.ToString("0.##%")</div>
                         </div>
                         <div class="flex">
-                            <progress class="progress progress-secondary bg-gray-200 h-3" value="100" max="100"></progress>
+                            <progress class="progress progress-secondary bg-gray-200 h-3" value="@(OverallReadinessScores.CompleteReadiness * 100)" max="100"></progress>
                         </div>
                     </div>
                 </div>
@@ -47,29 +48,16 @@
                         <i class="fa-solid fa-question-circle"></i>
                     </div>
 
-                    <div class="flex w-full space-x-2">
-                        <div class="flex-1 text-gray-500">Early Learning</div>
-                        <div class="w-32">
-                            <progress class="progress progress-accent bg-gray-200 h-2" value="90" max="100"></progress>
+                    @foreach (var sector in SectorReadinessScores.OrderByDescending(x => x.ReadinessScore))
+                    {
+                        <div class="flex w-full space-x-2">
+                            <div class="flex-1 text-gray-500 uppercase">@sector.Sector.GetDisplayName()</div>
+                            <div class="w-32">
+                                <progress class="progress progress-accent bg-gray-200 h-2 @GetProgressBarColor(sector.ReadinessScore)" value="@(sector.ReadinessScore * 100)" max="100"></progress>
+                            </div>
+                            <div class="w-10 text-right">@(sector.ReadinessScore.ToString("0.##%"))</div>
                         </div>
-                        <div class="w-10 text-right">90%</div>
-                    </div>
-
-                    <div class="flex w-full space-x-2">
-                        <div class="flex-1 text-gray-500">Elementary Reading</div>
-                        <div class="w-32">
-                            <progress class="progress progress-accent bg-gray-200 h-2" value="85" max="100"></progress>
-                        </div>
-                        <div class="w-10 text-right">85%</div>
-                    </div>
-
-                    <div class="flex w-full space-x-2">
-                        <div class="flex-1 text-gray-500">Elementary Reading</div>
-                        <div class="w-32">
-                            <progress class="progress progress-primary bg-gray-200 h-2" value="78" max="100"></progress>
-                        </div>
-                        <div class="w-10 text-right">78%</div>
-                    </div>
+                    }
 
                 </div>
             </div>
@@ -78,5 +66,22 @@
 </Card>
 
 @code {
+    [Parameter]
+    public List<SectorReadinessResult> SectorReadinessScores { get; set; } = new List<SectorReadinessResult>();
 
+    [Parameter]
+    public OverallReadinessResults OverallReadinessScores { get; set; } = new OverallReadinessResults();
+
+    private string GetProgressBarColor(decimal score)
+    {
+        // Green (high score) gradient to Red (low score)
+        if (score > 0.66m)
+            return "progress-success";
+        else if (score > 0.33m)
+            return "progress-warning";
+        else if (score > 0m)
+            return "progress-error";
+
+        return "bg-gray-200";
+    }
 }

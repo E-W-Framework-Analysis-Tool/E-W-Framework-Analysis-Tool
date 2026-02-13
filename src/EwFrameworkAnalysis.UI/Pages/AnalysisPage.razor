@@ -12,7 +12,7 @@
     <AnalysisHeader />
 
     <!-- Overall and Readiness Assessment -->
-    <OverallReadinessAssessment />
+    <OverallReadinessAssessment SectorReadinessScores="SectorReadinessScores" OverallReadinessScores="OverallReadinessScores" />
 
     <!-- Essential Questions Grid -->
     <EssentialQuestionGrid QuestionScores="QuestionScores" />
@@ -40,6 +40,10 @@
 
     private List<QuestionScore> QuestionScores = new List<QuestionScore>();
 
+    private OverallReadinessResults OverallReadinessScores = new OverallReadinessResults();
+
+    private List<SectorReadinessResult> SectorReadinessScores = new List<SectorReadinessResult>();
+
     protected override async Task OnInitializedAsync()
     {
         await ProjectSvc.InitializeAsync();
@@ -49,5 +53,9 @@
     private void CalculateScores()
     {
         QuestionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
+
+        OverallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
+
+        SectorReadinessScores = ScoringSvc.CalculateSectorReadiness(QuestionScores);
     }
 }
