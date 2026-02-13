@@ -1,5 +1,6 @@
 
 using EwFrameworkAnalysis.Common.FrameworkReferenceData;
+using EwFrameworkAnalysis.Common.Models.Framework;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Models.Scoring;
 using EwFrameworkAnalysis.Common.Scoring;
@@ -8,11 +9,55 @@ namespace EwFrameworkAnalysis.Common.Services;
 
 public class DataElementScoringService
 {
-    private DataElementScoringRuleRegistry _ruleRegistry;
+    private readonly DataElementScoringRuleRegistry _ruleRegistry;
+    private readonly Dictionary<string, Indicator> _indicators;
 
-    public DataElementScoringService(DataElementScoringRuleRegistry ruleRegistry)
+    public DataElementScoringService(DataElementScoringRuleRegistry ruleRegistry, EcsStateDataProvider ecsStateDataProvider)
     {
         _ruleRegistry = ruleRegistry;
+        _indicators = BuildEnrichedIndicators(ecsStateDataProvider);
+    }
+
+    private static Dictionary<string, Indicator> BuildEnrichedIndicators(EcsStateDataProvider ecsStateDataProvider)
+    {
+        // Deep copy indicators so we don't mutate the static reference data
+        var indicators = EwFrameworkIndicators.Indicators.ToDictionary(
+            kvp => kvp.Key,
+            kvp => new Indicator
+            {
+                Name = kvp.Value.Name,
+                Type = kvp.Value.Type,
+                Domain = kvp.Value.Domain,
+                Definition = kvp.Value.Definition,
+                RecommendedMetrics = kvp.Value.RecommendedMetrics,
+                DataNeeded = [.. kvp.Value.DataNeeded],
+                Sectors = [.. kvp.Value.Sectors],
+                DataElementNames = [.. kvp.Value.DataElementNames]
+            });
+
+        // Enrich each indicator with data element names from all ECS state files
+        foreach (var state in ecsStateDataProvider.GetAvailableStates())
+        {
+            var records = ecsStateDataProvider.GetStateData(state);
+
+            foreach (var group in records.GroupBy(r => r.Indicator, StringComparer.OrdinalIgnoreCase))
+            {
+                if (!indicators.TryGetValue(group.Key, out var indicator))
+                    continue;
+
+                var existing = new HashSet<string>(indicator.DataElementNames, StringComparer.OrdinalIgnoreCase);
+
+                foreach (var elementName in group.Select(r => r.ElementName.Trim()).Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrWhiteSpace(elementName) && existing.Add(elementName))
+                    {
+                        indicator.DataElementNames.Add(elementName);
+                    }
+                }
+            }
+        }
+
+        return indicators;
     }
 
     public List<QuestionScore> CalculateScoresForActiveData(List<DataSourceAssessmentWithSource> assessments)
@@ -50,7 +95,7 @@ public class DataElementScoringService
 
     private IndicatorScore GetIndicatorScores(string indicatorName, List<DataSourceAssessmentWithSource> assessments)
     {
-        if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
+        if (!_indicators.TryGetValue(indicatorName, out var indicator))
             return new IndicatorScore { };
 
         var dataElementScores = indicator.DataElementNames
@@ -154,7 +199,8 @@ public class DataElementScoringService
 
         var publicIds = assessments
             .Where(a => a.DataSourceType == DataSourceType.EdFiApi ||
-                        a.DataSourceType == DataSourceType.CedsDw)
+                        a.DataSourceType == DataSourceType.CedsDw ||
+                        a.DataSourceType == DataSourceType.EcsExcel)
             .Select(a => a.Id)
             .ToHashSet();
 
@@ -189,7 +235,7 @@ public class DataElementScoringService
     private AssessmentScore GetAssessmentScore(DataSourceAssessmentWithSource assessment)
     {
         var questions = EwFrameworkEssentialQuestions.Questions;
-        var indicators = EwFrameworkIndicators.Indicators;
+        var indicators = _indicators;
         var dataElements = EwFrameworkDataElements.Elements;
 
         var assessmentScore = new AssessmentScore

@@ -25,5 +25,8 @@ public enum DataSourceType
     CedsDw,
 
     [Display(Name = "Manual Assessment", Description = "Flexible checklist for manual review")]
-    Custom
+    Custom,
+
+    [Display(Name = "ECS State Comparison", Description = "Upload ECS State Comparison Excel data")]
+    EcsExcel
 }

@@ -17,7 +17,13 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of eligible 3- and 4-year-olds enrolled in public pre-K",
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK],
-            DataElementNames = ["Enrollment dates (pre-K)", "Person age", "Program funding source (pre-K)", "Population demographics by age and EL eligibility"]
+            DataElementNames = ["Enrollment dates (pre-K)", "Person age", "Program funding source (pre-K)", "Population demographics by age and EL eligibility",
+                "Enrollment in public pre-K",
+                "Pre-K eligbility status",
+                "Age",
+                "English learner status",
+                "English learner classification date"
+            ]
         },
         ["Kindergarten readiness: language and literacy"] = new()
         {
@@ -28,7 +34,7 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of children meeting benchmarks on a teacher-reported kindergarten readiness assessment, such as:\n- Desired Results Developmental Profile (DRDP) Language and Literacy Development domain\n- Ready 4 Kindergarten Early Learning Assessment (R4K ELA) Language and Literacy domain\n- Teaching Strategies GOLD (TS GOLD) Language and Literacy subscales\nOr, percentage of children meeting benchmarks on direct child assessments administered by trained assessors, such as:\n- Woodcock-Johnson IV Tests of Early Cognition and Academic Development (ECAD) Letter-Word and Writing subtests\n- Individual Growth and Development Indicators (IGDIs) Early Literacy assessment",
             DataNeeded = [DataCategory.Assessments],
             Sectors = [Sector.PK],
-            DataElementNames = ["Developmental assessments"]
+            DataElementNames = ["Developmental assessments", "Developmental screening results"]
         },
         ["Kindergarten readiness: cognition"] = new()
         {
@@ -39,7 +45,7 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of children meeting benchmarks on teacher-reported kindergarten readiness assessment, such as:\n- DRDP Cognition domain\n- R4K ELA Mathematics and Science domains\n- TS GOLD Cognitive and Mathematics subscales\nOr, percentage of children meeting benchmarks on direct child assessments, such as:\n- Woodcock-Johnson IV Tests of ECAD Number Sense subtest\n- IGDIs Early Numeracy assessment\n- Research Based Early Mathematics Assessment (REMA)",
             DataNeeded = [DataCategory.Assessments],
             Sectors = [Sector.PK],
-            DataElementNames = ["Developmental assessments"]
+            DataElementNames = ["Developmental assessments", "Developmental screening results"]
         },
         ["Early grades on track"] = new()
         {
@@ -50,7 +56,13 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of students in grades 1 and 2 meeting grade-level math and reading benchmarks, with an attendance rate of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
             DataNeeded = [DataCategory.Assessments, DataCategory.AdministrativeData],
             Sectors = [Sector.K12],
-            DataElementNames = ["Attendance", "Enrollment grade level", "Standardized assessments: math (grades 1-2)", "Standardized assessments: reading (grades 1-2)", "Suspension", "Expulsion"]
+            DataElementNames = [
+                "Attendance", "Enrollment grade level", "Standardized assessments: math (grades 1-2)", "Standardized assessments: reading (grades 1-2)", "Suspension", "Expulsion",
+                "Student attendance rate (K-12)",
+                "Student grade level",
+                "Basic skills level",
+                "Suspensions and expulsions (K-12)"
+            ]
         },
         ["Consistent attendance"] = new()
         {
@@ -61,7 +73,11 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of students who are present for more than 90 percent of their enrolled days, excluding students enrolled for fewer than 90 days",
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK, Sector.K12, Sector.PS],
-            DataElementNames = ["Attendance", "Enrollment dates (K-12)", "Enrollment grade level"]
+            DataElementNames = ["Attendance", "Enrollment dates (K-12)", "Enrollment grade level",
+                "Student attendance rate (PK)",
+                "Student attendance rate (K-12)",
+                "Student grade level"
+            ]
         },
         ["Positive behavior"] = new()
         {
@@ -72,7 +88,12 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Pre-K, K-12: Percentage of children who do not experience any of the following: in-school suspensions, out-of-school suspensions, disciplinary use of restraint and seclusion, or expulsions",
             DataNeeded = [DataCategory.AdministrativeData],
             Sectors = [Sector.PK, Sector.K12],
-            DataElementNames = ["Disciplinary event type", "Suspension", "Expulsion"]
+            DataElementNames = ["Disciplinary event type", "Suspension", "Expulsion",
+                "Suspensions and expulsions (PK)",
+                "Suspensions and expulsions (K-12)",
+                "Restraint and seclusion (PK)",
+                "Restraint and seclusion (K-12)"
+            ]
         },
         ["Math and reading proficiency in grade 3"] = new()
         {
@@ -83,7 +104,10 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of students in grade 3 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests.",
             DataNeeded = [DataCategory.Assessments],
             Sectors = [Sector.K12],
-            DataElementNames = ["Enrollment grade level", "Standardized assessments: math (grade 3)", "Standardized assessments: reading (grade 3)"]
+            DataElementNames = ["Enrollment grade level", "Standardized assessments: math (grade 3)", "Standardized assessments: reading (grade 3)",
+                "Student grade level",
+                "Basic skills level"   // closest match for standardized ELA & math assessments
+            ]
         },
         ["6th grade on track"] = new()
         {
@@ -94,7 +118,12 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of students in grade 6 with passing grades in English language arts and math, attendance of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
             DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
             Sectors = [Sector.K12],
-            DataElementNames = ["Enrollment grade level", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion"]
+            DataElementNames = ["Enrollment grade level", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion",
+                "Student grade level",
+                "Basic skills level",                 // substitute for section grades in ELA/math
+                "Student attendance rate (K-12)",
+                "Suspensions and expulsions (K-12)"
+            ]
         },
         ["8th grade on track"] = new()
         {
@@ -105,7 +134,12 @@ public static class EwFrameworkIndicators
             RecommendedMetrics = "Percentage of students in grade 8 with a GPA of 2.5 or higher, no Ds or Fs in English language arts or math, attendance of 96 percent or higher, and no in- or out-of-school suspensions or expulsions.",
             DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
             Sectors = [Sector.K12],
-            DataElementNames = ["Enrollment grade level", "Grade point average (K-12)", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion"]
+            DataElementNames = ["Enrollment grade level", "Grade point average (K-12)", "Section grades: ELA", "Section grades: math", "Attendance", "Suspension", "Expulsion",
+                "Student grade level",
+                "Basic skills level",                 // substitute for GPA + section grades
+                "Student attendance rate (K-12)",
+                "Suspensions and expulsions (K-12)"
+            ]
         },
         ["Math and reading proficiency in grade 8"] = new()
         {
@@ -1121,6 +1155,26 @@ public static class EwFrameworkIndicators
         }
     };
 
+    /// <summary>
+    /// Merges data element names into the specified indicator's DataElementNames list.
+    /// Existing entries are preserved; only new names (case-insensitive) are appended.
+    /// </summary>
+    public static void AddDataElementsToIndicator(string indicatorName, IEnumerable<string> dataElementNames)
+    {
+        if (!Indicators.TryGetValue(indicatorName, out var indicator))
+            return;
+
+        var existing = new HashSet<string>(indicator.DataElementNames, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var name in dataElementNames)
+        {
+            var trimmed = name.Trim();
+            if (!string.IsNullOrWhiteSpace(trimmed) && existing.Add(trimmed))
+            {
+                indicator.DataElementNames.Add(trimmed);
+            }
+        }
+    }
 }
 
 public class Indicator

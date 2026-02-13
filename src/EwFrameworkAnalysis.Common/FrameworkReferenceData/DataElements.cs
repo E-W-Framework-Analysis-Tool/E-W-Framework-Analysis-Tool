@@ -92,7 +92,7 @@ public static class EwFrameworkDataElements
 
         // Course and Curriculum
         ["AP course designation"] = new("AP course designation", "Course and Curriculum", [], null, []),
-        ["Student course enrollment record"] = new("Student course enrollment record", "Course and Curriculum", [], null, []),
+        ["Student course enrollment record      "] = new("Student course enrollment record", "Course and Curriculum", [], null, []),
         ["CTE course ID or course title"] = new("CTE course ID or course title", "Course and Curriculum", [], null, []),
         ["CTE pathway or career cluster associated with CTE course"] = new("CTE pathway or career cluster associated with CTE course", "Course and Curriculum", [], null, []),
         ["CTE program"] = new("CTE program", "Course and Curriculum", [], null, []),
