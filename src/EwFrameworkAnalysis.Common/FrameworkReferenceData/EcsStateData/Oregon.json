@@ -2,7 +2,7 @@
   {
     "sector": "PK",
     "indicator": "Enrollment in quality public pre-K",
-    "elementName": "Age (or birth date)",
+    "elementName": "Age",
     "collected": "Found",
     "reported": ""
   },
@@ -51,7 +51,7 @@
   {
     "sector": "K12",
     "indicator": "Early grades on track",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -72,105 +72,70 @@
   {
     "sector": "K12",
     "indicator": "Early grades on track",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Early grades on track",
-    "elementName": "In school suspension",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early grades on track",
-    "elementName": "Out of school suspension",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Consistent attendance",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Consistent attendance",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Consistent attendance",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Positive behavior",
-    "elementName": "In school suspension",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Positive behavior",
-    "elementName": "Out of school suspension",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Positive behavior",
-    "elementName": "Disciplinary use of restraint and seclusion",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Positive behavior",
-    "elementName": "Expulsion",
+    "elementName": "Restraint and seclusion for discipline (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Positive behavior",
-    "elementName": "In school suspension",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Positive behavior",
-    "elementName": "Out of school suspension",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Positive behavior",
-    "elementName": "Disciplinary use of restraint and seclusion",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Positive behavior",
-    "elementName": "Expulsions",
+    "elementName": "Restraint and seclusion for discipline (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Math and reading proficiency in grade 3",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -191,7 +156,7 @@
   {
     "sector": "K12",
     "indicator": "6th grade on track",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -212,7 +177,7 @@
   {
     "sector": "K12",
     "indicator": "6th grade on track",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -226,14 +191,14 @@
   {
     "sector": "K12",
     "indicator": "6th grade on track",
-    "elementName": "Expulsions",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "8th grade on track",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -261,7 +226,7 @@
   {
     "sector": "K12",
     "indicator": "8th grade on track",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -275,14 +240,14 @@
   {
     "sector": "K12",
     "indicator": "8th grade on track",
-    "elementName": "Expulsions",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Math and reading proficiency in grade 8",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -303,7 +268,7 @@
   {
     "sector": "K12",
     "indicator": "Successful completion of Algebra I by 9th grade",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -317,28 +282,28 @@
   {
     "sector": "K12",
     "indicator": "Successful completion of Algebra I by 9th grade",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Successful completion of Algebra I by 9th grade",
-    "elementName": "Course passage or completion",
+    "elementName": "Course outcome",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "9th grade on track",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "9th grade on track",
-    "elementName": "Student attendance rate",
+    "elementName": "Student attendance rate (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -352,7 +317,7 @@
   {
     "sector": "K12",
     "indicator": "9th grade on track",
-    "elementName": "Course passage or completion",
+    "elementName": "Course outcome",
     "collected": "Not found",
     "reported": ""
   },
@@ -366,28 +331,28 @@
   {
     "sector": "K12",
     "indicator": "Grade point average",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Grade point average",
-    "elementName": "Grade point average",
+    "elementName": "Grade point average (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Grade point average",
-    "elementName": "Grade point average",
+    "elementName": "Grade point average (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Math and reading proficiency in high school",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -415,147 +380,49 @@
   {
     "sector": "K12",
     "indicator": "College preparatory coursework completion",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "College preparatory coursework completion",
-    "elementName": "Course passage or completion",
+    "elementName": "Course outcome",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Early college coursework completion",
-    "elementName": "AP enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Early college coursework completion",
-    "elementName": "IB enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "AP course passage",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "IB course passage",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit course passage",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "AP credit earned (or AP test scores)",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "IB credit earned (or IB test scores)",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit earned",
+    "elementName": "AP, IB, or Dual Credit course credits",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Early college coursework completion",
-    "elementName": "AP enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Early college coursework completion",
-    "elementName": "IB enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "AP course passage",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "IB course passage",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit course passage",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "AP credit earned (or AP test scores)",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "IB credit earned (or IB test scores)",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Early college coursework completion",
-    "elementName": "Dual credit earned",
+    "elementName": "AP, IB, or Dual Credit course credits",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "SAT and ACT participation and performance",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -590,7 +457,7 @@
   {
     "sector": "K12",
     "indicator": "FAFSA completion",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -604,7 +471,7 @@
   {
     "sector": "PS",
     "indicator": "FAFSA completion",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -618,7 +485,7 @@
   {
     "sector": "K12",
     "indicator": "College applications",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -688,7 +555,7 @@
   {
     "sector": "K12",
     "indicator": "Selection of a well-matched postsecondary institution",
-    "elementName": "PS institution graduation rate, by race/ethnicity and Pell grant receipt",
+    "elementName": "Institution graduation rate",
     "collected": "Partial",
     "reported": ""
   },
@@ -716,7 +583,7 @@
   {
     "sector": "PS",
     "indicator": "Selection of a well-matched postsecondary institution",
-    "elementName": "PS institution graduation rate, by race/ethnicity and Pell grant receipt",
+    "elementName": "Institution graduation rate",
     "collected": "Partial",
     "reported": ""
   },
@@ -793,7 +660,7 @@
   {
     "sector": "PS",
     "indicator": "First-year credit accumulation",
-    "elementName": "Postsecondary enrollment date OR first-year indicator",
+    "elementName": "Postsecondary enrollment date",
     "collected": "Found",
     "reported": ""
   },
@@ -821,14 +688,14 @@
   {
     "sector": "PS",
     "indicator": "First-year program of study concentration",
-    "elementName": "Postsecondary enrollment date OR first-year indicator",
+    "elementName": "Postsecondary enrollment date",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "First-year program of study concentration",
-    "elementName": "Course ID  - CIP code",
+    "elementName": "Course identifier or title",
     "collected": "Not found",
     "reported": ""
   },
@@ -842,14 +709,14 @@
   {
     "sector": "PS",
     "indicator": "Gateway course completion",
-    "elementName": "Postsecondary enrollment date OR first-year indicator",
+    "elementName": "Postsecondary enrollment date",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Gateway course completion",
-    "elementName": "Course ID  - CIP code",
+    "elementName": "Course identifier or title",
     "collected": "Not found",
     "reported": ""
   },
@@ -975,7 +842,7 @@
   {
     "sector": "PK",
     "indicator": "Kindergarten readiness: social-emotional development",
-    "elementName": "Results on teacher reports of social-emotional development",
+    "elementName": "Teacher reports of social-emotional development",
     "collected": "Not found",
     "reported": ""
   },
@@ -989,14 +856,14 @@
   {
     "sector": "PK",
     "indicator": "Kindergarten readiness: approaches to learning",
-    "elementName": "Results on teacher reports of executive function",
+    "elementName": "Teacher reports of executive function",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Kindergarten readiness: approaches to learning",
-    "elementName": "Results on direct child assessments of executive function",
+    "elementName": "Direct child assessments of executive function",
     "collected": "Not found",
     "reported": ""
   },
@@ -1017,77 +884,77 @@
   {
     "sector": "K12",
     "indicator": "Self-management",
-    "elementName": "Results on self-management survey (K-12)",
+    "elementName": "Self-management surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Self-management",
-    "elementName": "Self-management survey results (Postsecondary)",
+    "elementName": "Self-management surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Self-management",
-    "elementName": "Self-management survey results (Workforce)",
+    "elementName": "Self-management surveys (Workforce)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Growth mindset",
-    "elementName": "Growth mindset survey results (K-12)",
+    "elementName": "Growth mindset surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Growth mindset",
-    "elementName": "Growth mindset survey results (Postsecondary)",
+    "elementName": "Growth mindset surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Growth mindset",
-    "elementName": "Growth mindset survey results (Workforce)",
+    "elementName": "Growth mindset surveys (Workforce)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Self-efficacy",
-    "elementName": "Self-efficacy survey results (K-12)",
+    "elementName": "Self-efficacy surveys (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Self-efficacy",
-    "elementName": "Self-efficacy survey results (Postsecondary)",
+    "elementName": "Self-efficacy surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Self-efficacy",
-    "elementName": "Self-efficacy survey results (Workforce)",
+    "elementName": "Self-efficacy surveys (Workforce)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Social awareness",
-    "elementName": "Social awareness survey results (K-12)",
+    "elementName": "Self-management surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Social awareness",
-    "elementName": "Results on social awareness teacher rating",
+    "elementName": "Social awareness teacher ratings",
     "collected": "Not found",
     "reported": ""
   },
@@ -1129,49 +996,49 @@
   {
     "sector": "K12",
     "indicator": "Civic engagement",
-    "elementName": "Civic engagement survey results (K-12)",
+    "elementName": "Civic engagement surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Civic engagement",
-    "elementName": "Civic engagement survey results (Postsecondary)",
+    "elementName": "Civic engagement surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Civic engagement",
-    "elementName": "Civic engagement survey results (Workforce)",
+    "elementName": "Civic engagement surveys (Workforce)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Social capital",
-    "elementName": "Social capital survey results (K-12)",
+    "elementName": "Social capital surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Social capital",
-    "elementName": "Social capital survey results (Postsecondary)",
+    "elementName": "Social capital surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Social capital",
-    "elementName": "Social capital survey results (Workforce)",
+    "elementName": "Social capital surveys (Workforce)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Mental and emotional well-being",
-    "elementName": "Age (or birth date)",
+    "elementName": "Age",
     "collected": "Found",
     "reported": ""
   },
@@ -1185,7 +1052,7 @@
   {
     "sector": "K12",
     "indicator": "Mental and emotional well-being",
-    "elementName": "Age (or birth date)",
+    "elementName": "Age",
     "collected": "Found",
     "reported": ""
   },
@@ -1199,49 +1066,49 @@
   {
     "sector": "PS",
     "indicator": "Mental and emotional well-being",
-    "elementName": "Results on mental and emotional well-being assessments",
+    "elementName": "Mental and emotional well-being assessments",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Mental and emotional well-being",
-    "elementName": "Results on mental and emotional well-being assessments",
+    "elementName": "Mental and emotional well-being assessments",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Physical development and well-being",
-    "elementName": "Physical health survey results (K-12)",
+    "elementName": "Physical health surveys (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Physical development and well-being",
-    "elementName": "Physical health survey results (Postsecondary)",
+    "elementName": "Physical health surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Physical development and well-being",
-    "elementName": "Scores on Health-Related Quality of Life Scale",
+    "elementName": "Health-Related Quality of Life Scale scores",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Physical development and well-being",
-    "elementName": "Physical health survey results (Workforce)",
+    "elementName": "Physical health surveys (Workforce)",
     "collected": "Partial",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Physical development and well-being",
-    "elementName": "Scores on Health-Related Quality of Life Scale",
+    "elementName": "Health-Related Quality of Life Scale scores",
     "collected": "Partial",
     "reported": ""
   },
@@ -1290,14 +1157,14 @@
   {
     "sector": "K12",
     "indicator": "CTE pathway concentration",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "CTE pathway concentration",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
@@ -1318,7 +1185,7 @@
   {
     "sector": "PS",
     "indicator": "CTE pathway concentration",
-    "elementName": "CTE course enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
@@ -1339,14 +1206,14 @@
   {
     "sector": "K12",
     "indicator": "Industry-recognized credential",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Industry-recognized credential",
-    "elementName": "CTE course enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
@@ -1367,7 +1234,7 @@
   {
     "sector": "PS",
     "indicator": "Industry-recognized credential",
-    "elementName": "CTE course enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
@@ -1395,7 +1262,7 @@
   {
     "sector": "K12",
     "indicator": "Participation in work-based learning",
-    "elementName": "Student grade level",
+    "elementName": "Student grade level (PK)",
     "collected": "Found",
     "reported": ""
   },
@@ -1409,7 +1276,7 @@
   {
     "sector": "PS",
     "indicator": "Participation in work-based learning",
-    "elementName": "Student grade level or year",
+    "elementName": "Student grade level (K-12)",
     "collected": "Found",
     "reported": ""
   },
@@ -1591,7 +1458,7 @@
   {
     "sector": "WF",
     "indicator": "Employment in a quality job",
-    "elementName": "Results on job quality index",
+    "elementName": "Job quality index",
     "collected": "Not found",
     "reported": ""
   },
@@ -1717,98 +1584,70 @@
   {
     "sector": "PK",
     "indicator": "School-family engagement",
-    "elementName": "Results on family engagement surveys (Pre-K)",
+    "elementName": "Family engagement surveys (PK)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "School-family engagement",
-    "elementName": "Results on family engagement surveys (K-12)",
+    "elementName": "Family engagement surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Equitable discipline practices",
-    "elementName": "Office referrals",
+    "elementName": "Office referrals (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Equitable discipline practices",
-    "elementName": "Suspensions",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Equitable discipline practices",
-    "elementName": "Expulsions",
+    "elementName": "Restraint and seclusion for safety (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Equitable discipline practices",
-    "elementName": "Restraint",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Equitable discipline practices",
-    "elementName": "Seclusion",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Equitable discipline practices",
-    "elementName": "Number of days suspended",
+    "elementName": "Number of days suspended (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Equitable discipline practices",
-    "elementName": "Office referrals",
+    "elementName": "Office referrals (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Equitable discipline practices",
-    "elementName": "Suspensions",
+    "elementName": "Suspensions and expulsions (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Equitable discipline practices",
-    "elementName": "Expulsions",
+    "elementName": "Restraint and seclusion for safety (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Equitable discipline practices",
-    "elementName": "Restraint",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Equitable discipline practices",
-    "elementName": "Seclusion",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Equitable discipline practices",
-    "elementName": "Number of days suspended",
+    "elementName": "Number of days suspended (K-12)",
     "collected": "Found",
     "reported": ""
   },
@@ -1841,16 +1680,9 @@
     "reported": ""
   },
   {
-    "sector": "K12",
-    "indicator": "English learner progress",
-    "elementName": "English learner reclassification date",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
     "sector": "PK",
     "indicator": "Teacher credentials",
-    "elementName": "Position type (lead pre-K teacher status)",
+    "elementName": "Job title or position type",
     "collected": "Found",
     "reported": ""
   },
@@ -1871,7 +1703,7 @@
   {
     "sector": "K12",
     "indicator": "Teacher credentials",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
@@ -1885,7 +1717,7 @@
   {
     "sector": "K12",
     "indicator": "Teacher credentials",
-    "elementName": "Course instructor (or teacher\u0027s course assignments)",
+    "elementName": "Teaching assignment",
     "collected": "Found",
     "reported": ""
   },
@@ -1897,13 +1729,6 @@
     "reported": ""
   },
   {
-    "sector": "K12",
-    "indicator": "Teacher credentials",
-    "elementName": "Teaching assignment (subject and/or grade level taught)",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
     "sector": "PK",
     "indicator": "Teacher experience",
     "elementName": "Years of teaching experience",
@@ -1920,22 +1745,15 @@
   {
     "sector": "PK",
     "indicator": "Educator retention",
-    "elementName": "Job title or position type (teacher or educator, prior and current year)",
+    "elementName": "Job title or position type",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Educator retention",
-    "elementName": "School or program ID (prior and current year)",
+    "elementName": "School assignment (prior and current year)",
     "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Educator retention",
-    "elementName": "Job title or position type (school leader or administrator)",
-    "collected": "Not found",
     "reported": ""
   },
   {
@@ -1948,21 +1766,14 @@
   {
     "sector": "K12",
     "indicator": "Educator retention",
-    "elementName": "Job title or position type (teacher or educator, prior and current year)",
+    "elementName": "Job title or position type",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Educator retention",
-    "elementName": "School assignment or school ID (prior and current year)",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Educator retention",
-    "elementName": "Position type (school leader or administrator)",
+    "elementName": "School assignment (prior and current year)",
     "collected": "Found",
     "reported": ""
   },
@@ -1976,7 +1787,7 @@
   {
     "sector": "PK",
     "indicator": "Classroom observations of instructional practice",
-    "elementName": "Results on teacher-child interaction measure",
+    "elementName": "Teacher-child interaction measure (K-12)",
     "collected": "Not found",
     "reported": ""
   },
@@ -1997,28 +1808,28 @@
   {
     "sector": "PS",
     "indicator": "Classroom observations of instructional practice",
-    "elementName": "Instructor observation results",
+    "elementName": "Instructor observations",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Student perceptions of teaching",
-    "elementName": "Results on teacher effectiveness student survey",
+    "elementName": "Teacher effectiveness student surveys (K-12)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Student perceptions of teaching",
-    "elementName": "Results on instructor effectiveness student survey",
+    "elementName": "Teacher effectiveness student surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Teachers\u0027 contributions to student learning growth",
-    "elementName": "SGP for standardized assessments (subject specific for reading/literacy, math, and science)",
+    "elementName": "SGP for standardized assessments",
     "collected": "Partial",
     "reported": ""
   },
@@ -2032,7 +1843,7 @@
   {
     "sector": "PS",
     "indicator": "Teachers\u0027 contributions to student learning growth",
-    "elementName": "SGP for standardized assessments (subject specific for reading/literacy, math, and science)",
+    "elementName": "SGP for standardized assessments",
     "collected": "Not found",
     "reported": ""
   },
@@ -2046,14 +1857,14 @@
   {
     "sector": "PK",
     "indicator": "Effective program and school leadership",
-    "elementName": "Results on leader effectiveness assessment",
+    "elementName": "Leader effectiveness assessments",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Effective program and school leadership",
-    "elementName": "Results on leader effectiveness assessment",
+    "elementName": "Leader effectiveness assessments",
     "collected": "Found",
     "reported": ""
   },
@@ -2074,7 +1885,7 @@
   {
     "sector": "K12",
     "indicator": "Access to college preparatory coursework",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
@@ -2088,14 +1899,14 @@
   {
     "sector": "K12",
     "indicator": "Access to college preparatory coursework",
-    "elementName": "Level(s) at which course is offered (e.g., 9/10/11/12; Fr/So/Jr/Sr)",
+    "elementName": "Course offering by grade level",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Access to early college coursework",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
@@ -2123,49 +1934,21 @@
   {
     "sector": "K12",
     "indicator": "Access to early college coursework",
-    "elementName": "AP enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Access to early college coursework",
-    "elementName": "IB enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to early college coursework",
-    "elementName": "Dual credit enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to early college coursework",
-    "elementName": "AP test completion",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to early college coursework",
-    "elementName": "IB test completion",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to early college coursework",
-    "elementName": "Dual credit test completion",
+    "elementName": "AP, IB, or Dual Credit course credits",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Access to early college coursework",
-    "elementName": "Course ID or course title",
+    "elementName": "Course identifier or title",
     "collected": "Found",
     "reported": ""
   },
@@ -2193,42 +1976,14 @@
   {
     "sector": "PS",
     "indicator": "Access to early college coursework",
-    "elementName": "AP enrollment",
+    "elementName": "Student course enrollment record",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Access to early college coursework",
-    "elementName": "IB enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Access to early college coursework",
-    "elementName": "Dual credit enrollment",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Access to early college coursework",
-    "elementName": "AP test completion",
-    "collected": "Found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Access to early college coursework",
-    "elementName": "IB test completion",
-    "collected": "Not found",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Access to early college coursework",
-    "elementName": "Dual credit test completion",
+    "elementName": "AP, IB, or Dual Credit course credits",
     "collected": "Found",
     "reported": ""
   },
@@ -2242,35 +1997,21 @@
   {
     "sector": "K12",
     "indicator": "Equitable placement in rigorous coursework",
-    "elementName": "Algebra 1 enrollment",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Equitable placement in rigorous coursework",
-    "elementName": "Higher-level math enrollment",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "K12",
-    "indicator": "Equitable placement in rigorous coursework",
-    "elementName": "Early college course enrollment (AP, IB, and dual enrollment)",
+    "elementName": "Student course enrollment record",
     "collected": "Partial",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Expenditures per student",
-    "elementName": "Expenditures per Pre-K pupil",
+    "elementName": "Expenditures per student (PK)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Expenditures per student",
-    "elementName": "Expenditures per K-12 pupil",
+    "elementName": "Expenditures per student (K-12)",
     "collected": "Found",
     "reported": ""
   },
@@ -2284,7 +2025,7 @@
   {
     "sector": "PS",
     "indicator": "Expenditures per student",
-    "elementName": "Expenditures per student (postsecondary)",
+    "elementName": "Expenditures per student (Postsecondary)",
     "collected": "Partial",
     "reported": ""
   },
@@ -2298,7 +2039,7 @@
   {
     "sector": "PK",
     "indicator": "Access to early intervention screening",
-    "elementName": "Early intervention screening outcomes (connection to services)",
+    "elementName": "Early intervention screening services referral status",
     "collected": "Found",
     "reported": ""
   },
@@ -2326,49 +2067,49 @@
   {
     "sector": "K12",
     "indicator": "School safety",
-    "elementName": "Results on school climate survey (K-12)",
+    "elementName": "Campus climate surveys (K-12)",
     "collected": "Partial",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "School safety",
-    "elementName": "Results on campus climate survey (Postsecondary)",
+    "elementName": "Campus climate surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Inclusive environments",
-    "elementName": "Results on Pre-K sense of belonging questionnaire",
+    "elementName": "Sense of belonging surveys (PK)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "PK",
     "indicator": "Inclusive environments",
-    "elementName": "Results on sociocultural observational assessment",
+    "elementName": "Sociocultural observational assessments",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "K12",
     "indicator": "Inclusive environments",
-    "elementName": "Results on K-12 sense of belonging survey",
+    "elementName": "Sense of belonging surveys (K-12)",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
     "indicator": "Inclusive environments",
-    "elementName": "Results on campus sense of belonging survey",
+    "elementName": "Sense of belonging surveys (Postsecondary)",
     "collected": "Not found",
     "reported": ""
   },
   {
     "sector": "WF",
     "indicator": "Inclusive environments",
-    "elementName": "Results on workplace sense of belonging survey",
+    "elementName": "Sense of belonging surveys",
     "collected": "Not found",
     "reported": ""
   },
@@ -2501,7 +2242,7 @@
   {
     "sector": "K12",
     "indicator": "Access to health, mental health, and social supports",
-    "elementName": "Staff type or role description",
+    "elementName": "Job title or position type",
     "collected": "Found",
     "reported": ""
   },
@@ -2515,7 +2256,7 @@
   {
     "sector": "PS",
     "indicator": "Access to health, mental health, and social supports",
-    "elementName": "Staff type or role description",
+    "elementName": "Job title or position type",
     "collected": "Not found",
     "reported": ""
   },
@@ -2536,7 +2277,7 @@
   {
     "sector": "K12",
     "indicator": "Access to college and career advising",
-    "elementName": "Staff type or role description",
+    "elementName": "Job title or position type",
     "collected": "Found",
     "reported": ""
   },
@@ -2592,21 +2333,7 @@
   {
     "sector": "PS",
     "indicator": "Unmet financial need",
-    "elementName": "Average value of grants",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Unmet financial need",
-    "elementName": "Average value of scholarships",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "PS",
-    "indicator": "Unmet financial need",
-    "elementName": "Average value of tuition waivers",
+    "elementName": "Average financial aid amount (including grants, scholarships, and tuition waivers)",
     "collected": "Partial",
     "reported": ""
   },
@@ -2718,7 +2445,7 @@
   {
     "sector": "All",
     "indicator": "Food security",
-    "elementName": "Rating on USDA Food Security Survey module",
+    "elementName": "USDA Food Security Survey ratings",
     "collected": "Found",
     "reported": ""
   },
@@ -2837,14 +2564,14 @@
   {
     "sector": "All",
     "indicator": "Neighborhood racial diversity",
-    "elementName": "Race/ethnicity",
+    "elementName": "Student race/ethnicity",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "All",
     "indicator": "Neighborhood racial diversity",
-    "elementName": "Geographical indicator (e.g., census tract, city, county)",
+    "elementName": "Geographical indicator",
     "collected": "Found",
     "reported": ""
   },

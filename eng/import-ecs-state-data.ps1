@@ -201,7 +201,7 @@ foreach (var name in rawElementNames)
 }
 
 // Write the data element mapping as an ordered key-value object
-var orderedElementMap = elementNameMap
+/*var orderedElementMap = elementNameMap
     .OrderBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)
     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -209,6 +209,7 @@ var elementMapFileName = Path.Combine(outputDir, "_DataElementMappings.json");
 var elementMapJson = JsonSerializer.Serialize(orderedElementMap, options);
 File.WriteAllText(elementMapFileName, elementMapJson);
 Console.WriteLine($"  Data elements: {orderedElementMap.Count} entries -> {Path.GetFileName(elementMapFileName)}");
+*/
 
 // Build indicator-to-data-elements mapping across all states
 var indicatorDataElements = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);

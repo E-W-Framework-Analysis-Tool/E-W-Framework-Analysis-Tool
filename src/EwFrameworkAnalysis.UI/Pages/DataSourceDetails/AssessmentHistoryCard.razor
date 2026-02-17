@@ -4,10 +4,15 @@
 <Card Shadow="Card.ShadowSize.XLarge">
     <ChildContent>
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-title font-semibold text-blue">Assessment History</h3>
-            <span class="text-sm font-semibold text-gray">
-                @(Assessments?.Count ?? 0) total
-            </span>
+            <h3 class="text-lg font-title font-semibold text-blue">
+                @(DataSourceType == DataSourceType.EcsState ? "ECS State Data Snapshots" : "Assessment History")
+            </h3>
+            @if (DataSourceType != DataSourceType.EcsState)
+            {
+                <span class="text-sm font-semibold text-gray">
+                    @(Assessments?.Count ?? 0) total
+                </span>
+            }
         </div>
 
         @if (Assessments?.Any() == true)
@@ -70,4 +75,5 @@
     [Parameter] public List<DataSourceAssessment>? Assessments { get; set; }
     [Parameter] public DataSourceAssessment? SelectedAssessment { get; set; }
     [Parameter] public EventCallback<DataSourceAssessment> OnSelectAssessment { get; set; }
+    [Parameter] public DataSourceType DataSourceType { get; set; }
 }

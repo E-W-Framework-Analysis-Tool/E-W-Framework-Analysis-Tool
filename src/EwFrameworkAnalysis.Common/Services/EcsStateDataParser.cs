@@ -44,19 +44,21 @@ public class EcsStateDataParser
 
             var statusValue = dataColumn == EcsDataColumn.Collected ? record.Collected : record.Reported;
 
+            AvailabilityJudgment judgment;
             if (string.IsNullOrWhiteSpace(statusValue))
             {
-                stats.DataElementsSkipped++;
-                stats.SkippedReasons.Add($"No status value for '{record.ElementName}'");
-                continue;
+                judgment = AvailabilityJudgment.NotAvailable;
             }
-
-            var judgment = MapStatus(statusValue);
-            if (judgment == null)
+            else
             {
-                stats.DataElementsSkipped++;
-                stats.SkippedReasons.Add($"Unrecognized status '{statusValue}' for '{record.ElementName}'");
-                continue;
+                var mapped = MapStatus(statusValue);
+                if (mapped == null)
+                {
+                    stats.DataElementsSkipped++;
+                    stats.SkippedReasons.Add($"Unrecognized status '{statusValue}' for '{record.ElementName}'");
+                    continue;
+                }
+                judgment = mapped.Value;
             }
 
             stats.DataElementsProcessed++;
@@ -77,12 +79,12 @@ public class EcsStateDataParser
 
             if (mappedElements.TryGetValue(frameworkName, out var existing))
             {
-                if (judgment.Value < existing)
-                    mappedElements[frameworkName] = judgment.Value;
+                if (judgment < existing)
+                    mappedElements[frameworkName] = judgment;
             }
             else
             {
-                mappedElements[frameworkName] = judgment.Value;
+                mappedElements[frameworkName] = judgment;
             }
         }
 

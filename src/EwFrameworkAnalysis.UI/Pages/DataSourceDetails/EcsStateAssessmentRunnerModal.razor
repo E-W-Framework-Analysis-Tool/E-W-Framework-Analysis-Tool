@@ -36,7 +36,7 @@
                         <label class="label">
                             <span class="label-text">Data Column</span>
                         </label>
-                        <div class="space-y-2">
+                        <div class="space-y-4 space-x-4">
                             <label class="label cursor-pointer justify-start gap-3">
                                 <input type="radio" name="dataColumn" class="radio radio-primary"
                                        checked="@(_selectedDataColumn == EcsDataColumn.Collected && !_importBoth)"
@@ -74,27 +74,18 @@
                             <span>@_error</span>
                         </div>
                     }
-
-                    <button class="btn btn-primary w-full"
-                            @onclick="RunAssessment"
-                            disabled="@(string.IsNullOrEmpty(_selectedState) || _isProcessing)">
-                        @if (_isProcessing)
-                        {
-                            <span class="loading loading-spinner loading-sm"></span>
-                            <span>Processing...</span>
-                        }
-                        else
-                        {
-                            <i class="fas fa-cogs mr-2"></i>
-                            <span>Run Assessment</span>
-                        }
-                    </button>
                 </div>
             }
             else
             {
                 <!-- Step 2: Review Results -->
                 <div class="space-y-4">
+                    <div class="text-sm text-gray">
+                        <span class="font-semibold text-blue">@_selectedState</span>
+                        &mdash;
+                        @(_importBoth ? "Collected & Reported" : _selectedDataColumn.ToString())
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
                             <h3 class="text-sm text-gray mb-2">Data Elements Mapped</h3>
@@ -237,6 +228,20 @@
                 @if (_assessmentResult == null)
                 {
                     <button class="btn btn-ghost" @onclick="Close">Cancel</button>
+                    <button class="btn btn-primary"
+                            @onclick="RunAssessment"
+                            disabled="@(string.IsNullOrEmpty(_selectedState) || _isProcessing)">
+                        @if (_isProcessing)
+                        {
+                            <span class="loading loading-spinner loading-sm"></span>
+                            <span>Processing...</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-cogs mr-2"></i>
+                            <span>Run Assessment</span>
+                        }
+                    </button>
                 }
                 else
                 {
