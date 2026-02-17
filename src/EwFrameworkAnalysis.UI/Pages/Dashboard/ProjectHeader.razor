@@ -13,7 +13,7 @@
                     <EditableField Value="@(ProjectSvc.Project?.Title ?? "Untitled Project")"
                                    Placeholder="Enter project title"
                                    Variant="EditableField.FieldVariant.Title"
-                                   OnSave="@HandleTitleSave" />
+                                   OnSave="@HandleTitleSave"/>
 
                     <!-- Last Modified (Non-editable) -->
                     <p class="text-sm text-gray">@GetFormattedLastModified()</p>
@@ -48,12 +48,45 @@
     </ChildContent>
 </Card>
 
+<Modal IsOpen="@NewProjectModalIsOpen" CloseRequested="HandleNewProjectCanceled">
+    <Header>New Project</Header>
+    <Body>
+    <div>
+        <p>By creating a new project, any work you currently have in this session will be lost.</p>
+        <p>Do you want to proceed?</p>
+    </div>
+    </Body>
+    <Footer>
+        <div class="modal-action">
+            <button class="btn btn-ghost hover:bg-gray-200 hover:border-gray-300" @onclick="HandleNewProjectCanceled">No</button>
+            <button class="btn btn-error hover:bg-red-400 hover:border-red-400" @onclick="HandleNewProjectConfirmed">Yes</button>
+        </div>
+    </Footer>
+</Modal>
+
+<Modal IsOpen="@LoadProjectModalIsOpen" CloseRequested="HandleLoadProjectCanceled">
+    <Header>Load Project</Header>
+    <Body>
+    <div>
+        <p>By uploading a previously saved file, any work you currently have in this session will be lost.</p>
+        <p>The results from the file will overwrite any and all information you have currently input.</p>
+        <p>Do you want to proceed?</p>
+    </div>
+    </Body>
+    <Footer>
+        <div class="modal-action">
+            <button class="btn btn-ghost hover:bg-gray-200 hover:border-gray-300" @onclick="HandleLoadProjectCanceled">No</button>
+            <button class="btn btn-error hover:bg-red-400 hover:border-red-400" @onclick="HandleLoadProjectConfirmed">Yes</button>
+        </div>
+    </Footer>
+</Modal>
+
 <!-- Hidden file input for loading projects -->
 <input type="file"
        accept=".json"
        @ref="_fileInput"
        @onchange="OnFileSelected"
-       style="display: none;" />
+       style="display: none;"/>
 
 <script>
     window.ProjectHeaderHelpers = {
@@ -69,6 +102,11 @@
 
         triggerFileInput: function(element) {
             element.click();
+        },
+
+        // Reset file input value so that <input onchange="..."> is always changed even when trying to reload the same file
+        resetFileInput: function(element) {
+            element.value = null;
         },
 
         readFileAsText: function(element) {
@@ -87,7 +125,12 @@
 </script>
 
 @code {
-    [Parameter] public int ActiveSourceCount { get; set; }
+
+    [Parameter]
+    public int ActiveSourceCount { get; set; }
+
+    private bool NewProjectModalIsOpen { get; set; }
+    private bool LoadProjectModalIsOpen { get; set; }
 
     private ElementReference _fileInput;
 
@@ -99,16 +142,14 @@
         }
     }
 
-    private async Task HandleNewProject()
-    {
-        var confirmed = await JSRuntime.InvokeAsync<bool>(
-            "confirm",
-            "Create a new project? Any unsaved changes will be lost.");
+    private void HandleNewProject() => NewProjectModalIsOpen = true;
 
-        if (confirmed)
-        {
-            await ProjectSvc.CreateNewProjectAsync();
-        }
+    private void HandleNewProjectCanceled() => NewProjectModalIsOpen = false;
+
+    private async Task HandleNewProjectConfirmed()
+    {
+        NewProjectModalIsOpen = false;
+        await ProjectSvc.CreateNewProjectAsync();
     }
 
     private async Task HandleSaveProject()
@@ -119,9 +160,21 @@
         await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.downloadFile", fileName, json, "application/json");
     }
 
-    private async Task HandleLoadProject()
+    private void HandleLoadProject() => LoadProjectModalIsOpen = true;
+
+    private void HandleLoadProjectCanceled() => LoadProjectModalIsOpen = false;
+
+    private async Task HandleLoadProjectConfirmed()
     {
-        await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.triggerFileInput", _fileInput);
+        LoadProjectModalIsOpen = false;
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.triggerFileInput", _fileInput);
+        }
+        finally
+        {
+            await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.resetFileInput", _fileInput);
+        }
     }
 
     private async Task OnFileSelected(ChangeEventArgs e)
@@ -147,4 +200,5 @@
 
         return $"Last modified: {timeAgo}";
     }
+
 }
