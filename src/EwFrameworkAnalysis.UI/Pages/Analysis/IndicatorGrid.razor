@@ -1,0 +1,267 @@
+﻿@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+
+<Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">
+    <ChildContent>
+
+        @* Search *@
+        <div class="flex gap-4 pb-4">
+            <label class="input flex-1">
+                <i class="fa-solid fa-magnifying-glass opacity-50"></i>
+                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput" class="right-placeholder"/>
+                <span class="label">@FilteredIndicators.Count() of @_allIndicators.Count()</span>
+            </label>
+
+            <select class="select w-52" @bind="_selectedSector">
+                <option value="">All Sectors</option>
+                @foreach (var sector in Enum.GetValues<Sector>())
+                {
+                    <option value="@sector">@sector.GetDisplayName()</option>
+                }
+            </select>
+        </div>
+
+        @* List *@
+        <div class="join join-vertical border-1 border-gray-300 rounded-lg">
+            <SortableList List="@FilteredIndicators" Columns="@IndicatorColumnOptions()" Context="sortedIndicators">
+
+                @* Headers *@
+                <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
+                    <div class="grid grid-cols-24">
+                        <div class="col-span-18" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Name)">
+                            Indicator
+                            <span class="fa-stack fa-xs">
+                                <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Name, true) ? "" : "opacity-50")"></i>
+                                <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Name, false) ? "" : "opacity-50")"></i>
+                            </span>
+                        </div>
+                        <div class="col-span-6 justify-self-center" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
+                            Score
+                            <span class="fa-stack fa-xs">
+                                <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
+                                <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Score, false) ? "" : "opacity-50")"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                @* List Items *@
+                <div class="join-item border-b border-gray-300">
+                    @foreach (var (indicator, index) in PagedIndicators(sortedIndicators.List).Select((value, i) => (value, i)))
+                    {
+                        var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
+
+                        <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                            <input type="checkbox" name="indicator-check-@index"/>
+
+                            @* Name, Definition, & Score *@
+                            <div class="collapse-title font-semibold">
+                                <div class="grid grid-cols-24">
+                                    <div class="flex-col col-span-18 justify-start items-center">
+                                        @indicator.Name
+                                        <div class="justify-start items-center font-normal text-gray-500">@indicator.Definition</div>
+                                    </div>
+                                    <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
+                                        <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"> </progress>
+                                        @indicatorScore.ReadinessScore.ToString("0.##%")
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Collapsed Content *@
+                            <div class="collapse-content text-sm">
+                                <div class="grid grid-cols-24">
+                                    <div class="flex flex-col col-span-24 justify-start space-y-4">
+
+                                        @* Domain, Type, & Data Elements *@
+                                        <p class="font-semibold text-sm text-blue">Domain: <span class="font-normal text-gray">@indicator.Domain.GetDisplayName()</span></p>
+                                        <p class="font-semibold text-sm text-blue">Indicator Type: <span class="font-normal text-gray">@indicator.Type.GetDisplayName()</span></p>
+                                        <h5 class="font-semibold text-sm text-blue">Data Elements:</h5>
+                                        <div class="flex flex-col gap-2">
+                                            @foreach (var dataElementName in indicator.DataElementNames.Order())
+                                            {
+                                                <p class="text-sm text-gray">
+                                                    <i class="@GetDataElementIsAvailableIcon(indicatorScore, dataElementName)"></i>
+                                                    @dataElementName
+                                                </p>
+                                            }
+                                        </div>
+
+                                        @* Recommended Metrics *@
+                                        <h5 class="font-semibold text-sm text-blue">Recommended Metrics</h5>
+                                        <p class="text-sm text-gray">@indicator.RecommendedMetrics</p>
+
+                                        @* Sectors *@
+                                        <h5 class="font-semibold text-sm text-blue">Sectors</h5>
+                                        <div class="flex gap-2">
+                                            @foreach (var sector in indicator.Sectors)
+                                            {
+                                                <div class="badge badge-secondary ">@sector.GetDisplayName()</div>
+                                            }
+                                        </div>
+
+                                        @* Data Needed *@
+                                        <h5 class="font-semibold text-sm text-blue">Data Needed</h5>
+                                        <div class="flex gap-2">
+                                            @foreach (var dataNeeded in indicator.DataNeeded)
+                                            {
+                                                <div class="badge badge-secondary ">@dataNeeded.GetDisplayName()</div>
+                                            }
+                                        </div>
+
+                                        @* Essential Questions *@
+                                        <h5 class="font-semibold text-sm text-blue">Essential Questions</h5>
+                                        <ul class="flex flex-col gap-2 list-disc pl-5">
+                                            @foreach (var eq in GetEssentialQuestionsForIndicator(indicator))
+                                            {
+                                                <li class="text-sm text-gray">
+                                                    # @eq.QuestionNumber - @eq.Question
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </SortableList >
+        </div >
+
+        @* Pagination *@
+        @if (TotalPages > 1)
+        {
+            <div class="flex justify-center mt-6">
+                <div class="join">
+                    <button class="join-item btn shadow-none @(_currentPage == 1 ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
+                            @onclick="PreviousPage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    @for (int page = 1; page <= TotalPages; page++)
+                    {
+                        <!-- capture local copy -->
+                        var p = page;
+                        <button class="join-item btn shadow-none @(_currentPage == p ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
+                                @onclick="@(() => GoToPage(p))">
+                            @(p)
+                        </button>
+                    }
+
+                    <button class="join-item btn shadow-none @(_currentPage == TotalPages ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")" @onclick="NextPage">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </ChildContent>
+</Card >
+
+@code {
+
+    [Parameter]
+    public List<IndicatorScore> IndicatorScores { get; set; } = [];
+
+    private IEnumerable<Indicator> _allIndicators = [];
+    private List<EssentialQuestion> _allQuestions = [];
+    private string _searchQuery = string.Empty;
+    private string? _selectedSector = string.Empty;
+
+    private int _pageSize = 20;
+    private int _currentPage = 1;
+
+    private static class SortColumnNames
+    {
+        public const string Name = nameof(Name);
+        public const string Score = nameof(Score);
+    }
+
+    private List<SortColumn<Indicator>> IndicatorColumnOptions() =>
+    [
+        new SortColumn<Indicator> { Key = SortColumnNames.Name, Selector = eq => eq.Name },
+    ];
+
+    protected override void OnInitialized()
+    {
+        _allIndicators = EwFrameworkIndicators.Indicators.Values.ToList();
+        _allQuestions = EwFrameworkEssentialQuestions.Questions;
+    }
+
+    private IndicatorScore? GetIndicatorScoreByCode(string indicatorCode) =>
+        IndicatorScores.FirstOrDefault(x => x.IndicatorCode == indicatorCode);
+
+    private string GetProgressBarColor(decimal score) =>
+        score switch
+        {
+            // Green (high score) gradient to Red (low score)
+            > 0.66m => "progress-success",
+            > 0.33m => "progress-warning",
+            > 0m => "progress-error",
+            _ => "bg-gray-200"
+        };
+
+    private string GetDataElementIsAvailableIcon(IndicatorScore indicatorScore, string dataElementName)
+    {
+        var score = indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
+        if (score is { IsAvailable: true })
+        {
+            return score.AvailabilityScore switch
+            {
+                AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+                AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+                _ => ""
+            };
+        }
+
+        return "fas fa-times-circle text-error";
+    }
+
+    private IEnumerable<EssentialQuestion> GetEssentialQuestionsForIndicator(Indicator indicator) =>
+        _allQuestions
+            .Where(eq => eq.RelatedIndicatorNames.Contains(indicator.Name));
+
+    private int TotalPages => (int)Math.Ceiling((double)FilteredIndicators.Count() / _pageSize);
+
+    private IEnumerable<Indicator> FilteredIndicators =>
+        _allIndicators
+            .Where(q =>
+                string.IsNullOrWhiteSpace(_searchQuery)
+                || q.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)
+                || q.Definition.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
+            .Where(q =>
+                string.IsNullOrWhiteSpace(_selectedSector)
+                || q.Sectors.Contains(Enum.Parse<Sector>(_selectedSector))
+            );
+
+    private IEnumerable<Indicator> PagedIndicators(IEnumerable<Indicator> indicators) =>
+        indicators
+            .Skip((_currentPage - 1) * _pageSize)
+            .Take(_pageSize);
+
+    private void ClearSearch()
+    {
+        _searchQuery = string.Empty;
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage < TotalPages)
+            _currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (_currentPage > 1)
+            _currentPage--;
+    }
+
+    private void GoToPage(int page)
+    {
+        _currentPage = page;
+    }
+
+}

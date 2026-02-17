@@ -17,14 +17,14 @@
     [Parameter] public string? Title { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public RenderFragment? HeaderActions { get; set; }
-    [Parameter] public string AdditionalClasses { get; set; } = "";
-    [Parameter] public bool NoPadding { get; set; } = false;
+    [Parameter] public string AdditionalClasses { get; set; } = string.Empty;
+    [Parameter] public bool NoPadding { get; set; }
 
     // Granular visual parameters
     [Parameter] public ShadowSize Shadow { get; set; } = ShadowSize.Default;
-    [Parameter] public bool Overflow { get; set; } = false;
+    [Parameter] public bool Overflow { get; set; }
     [Parameter] public BackgroundColor Background { get; set; } = BackgroundColor.White;
-    [Parameter] public BorderStyle? Border { get; set; } = null;
+    [Parameter] public BorderStyle? Border { get; set; }
     [Parameter] public bool Rounded { get; set; } = true;
 
     private string GetCardClasses()
@@ -149,15 +149,9 @@
         Bottom
     }
 
-    public struct BorderStyle
+    public readonly struct BorderStyle(BorderColor color, BorderPosition position = BorderPosition.All)
     {
-        public BorderColor Color { get; set; }
-        public BorderPosition Position { get; set; }
-
-        public BorderStyle(BorderColor color, BorderPosition position = BorderPosition.All)
-        {
-            Color = color;
-            Position = position;
-        }
+        public BorderColor Color { get; } = color;
+        public BorderPosition Position { get; } = position;
     }
 }

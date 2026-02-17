@@ -4,13 +4,14 @@
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
 
-<Card Title="Essential Questions" Shadow="Card.ShadowSize.XLarge">
+<Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">
     <ChildContent>
         <div class="flex gap-4 pb-4">
             @* Search *@
             <label class="input flex-1">
                 <i class="fa-solid fa-magnifying-glass opacity-50"></i>
                 <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput"/>
+                <span class="label">@FilteredQuestions.Count() of @_allQuestions.Count()</span>
             </label>
 
             <select class="select w-52" @bind="_selectedSector">
@@ -27,7 +28,6 @@
             <SortableList List="@FilteredQuestions" Columns="@EssentialQuestionColumnOptions()" Context="eqContext">
                 <div class="collapse-title font-semibold">
                     <div class="grid grid-cols-24 font-semibold text-lg">
-
                         <div class="flex col-span-1 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">#</div>
                         <div class="flex col-span-17 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">
                             Question
@@ -67,7 +67,7 @@
                                 <div class="flex col-span-2 justify-center items-center text-center"> @qs.ReadinessScore.ToString("0.##%")</div>
                             </div>
                         </div>
-                        <div class="collapse-content  text-sm">
+                        <div class="collapse-content text-sm">
                             <div class="grid grid-cols-24">
                                 <div class="flex col-span-1 justify-start items-center"><!-- EMPTY / PLACEHOLDER --></div>
                                 <div class="flex flex-col col-span-21 justify-start items-center space-y-2">
@@ -75,7 +75,7 @@
                                         <h3 class="flex w-full font-semibold text-lg" @onclick="() => indicatorContext.Toggle(SortColumnNames.Indicators)">
                                             Indicators
                                             <span class="fa-stack fa-xs">
-                                                <i class="fas fa-stack-1x fa-sort-up @(indicatorContext.IsActive(SortColumnNames.Indicators, true) ? "" : "opacity-50")"></i>
+                                                <i class="fas fa-stack-1x fa-sort-up @(indicatorContext.IsActive    (SortColumnNames.Indicators, true) ? "" : "opacity-50")"></i>
                                                 <i class="fas fa-stack-1x fa-sort-down @(indicatorContext.IsActive(SortColumnNames.Indicators, false) ? "" : "opacity-50")"></i>
                                             </span>
                                         </h3>
@@ -153,7 +153,6 @@
     {
         public const string Question = nameof(Question);
         public const string Score = nameof(Score);
-        public const string IndicatorsAligned = nameof(IndicatorsAligned);
         public const string Indicators = nameof(Indicators);
     }
 

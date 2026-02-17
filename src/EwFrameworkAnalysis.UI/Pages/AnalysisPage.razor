@@ -1,4 +1,5 @@
 @page "/analysis"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.Common.Services
@@ -9,13 +10,28 @@
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Header -->
-    <AnalysisHeader />
+    <AnalysisHeader/>
 
     <!-- Overall and Readiness Assessment -->
-    <OverallReadinessAssessment SectorReadinessScores="SectorReadinessScores" OverallReadinessScores="OverallReadinessScores" />
+    <OverallReadinessAssessment SectorReadinessScores="_sectorReadinessScores" OverallReadinessScores="_overallReadinessScores" />
 
-    <!-- Essential Questions Grid -->
-    <EssentialQuestionGrid QuestionScores="QuestionScores" />
+    <!-- Tabs -->
+    <div class="tabs tabs-border !rounded-none">
+
+        <!-- Essential Questions Grid -->
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked"/>
+        <EssentialQuestionGrid QuestionScores="_questionScores"/>
+
+        <!-- Indicators Grid -->
+        <input type="radio" name="my_tabs_3" class="tab text-lg  bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators"/>
+        <IndicatorGrid IndicatorScores="_indicatorScores"/>
+
+        <!-- Disaggregates Grid -->
+        <input type="radio" name="my_tabs_3" class="tab text-lg  bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates"/>
+        <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">Not implemented.</Card>
+        @* <DisaggregateGrid DisaggregateScore="_disaggregateScores" /> *@
+
+    </div>
 </div>
 
 @code {
@@ -38,11 +54,10 @@
     }))
     .ToList();
 
-    private List<QuestionScore> QuestionScores = new List<QuestionScore>();
-
-    private OverallReadinessResults OverallReadinessScores = new OverallReadinessResults();
-
-    private List<SectorReadinessResult> SectorReadinessScores = new List<SectorReadinessResult>();
+    private List<QuestionScore> _questionScores = [];
+    private List<IndicatorScore> _indicatorScores = [];
+    private OverallReadinessResults _overallReadinessScores = new();
+    private List<SectorReadinessResult> _sectorReadinessScores = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,10 +67,12 @@
 
     private void CalculateScores()
     {
-        QuestionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
+        _questionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
 
-        OverallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
+        _indicatorScores = _questionScores.SelectMany(qs => qs.IndicatorScores).ToList();
 
-        SectorReadinessScores = ScoringSvc.CalculateSectorReadiness(QuestionScores);
+        _overallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
+
+        _sectorReadinessScores = ScoringSvc.CalculateSectorReadiness(_questionScores);
     }
 }
