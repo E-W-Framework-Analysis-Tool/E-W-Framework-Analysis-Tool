@@ -27,6 +27,6 @@ public enum DataSourceType
     [Display(Name = "Manual Assessment", Description = "Flexible checklist for manual review")]
     Custom,
 
-    [Display(Name = "ECS State Comparison", Description = "Upload ECS State Comparison Excel data")]
-    EcsExcel
+    [Display(Name = "ECS State Comparison", Description = "Compare against ECS state-level data")]
+    EcsState
 }

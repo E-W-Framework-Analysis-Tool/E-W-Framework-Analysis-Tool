@@ -205,10 +205,43 @@ var orderedElementMap = elementNameMap
     .OrderBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)
     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-var elementMapFileName = Path.Combine(outputDir, "_indicators.json");
+var elementMapFileName = Path.Combine(outputDir, "_DataElementMappings.json");
 var elementMapJson = JsonSerializer.Serialize(orderedElementMap, options);
 File.WriteAllText(elementMapFileName, elementMapJson);
 Console.WriteLine($"  Data elements: {orderedElementMap.Count} entries -> {Path.GetFileName(elementMapFileName)}");
+
+// Build indicator-to-data-elements mapping across all states
+var indicatorDataElements = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+foreach (var recordMap in stateRecords.Values)
+{
+    foreach (var record in recordMap.Values)
+    {
+        var indicator = record["indicator"];
+        var element = record["elementName"];
+        if (string.IsNullOrWhiteSpace(indicator) || string.IsNullOrWhiteSpace(element))
+            continue;
+
+        if (!indicatorDataElements.ContainsKey(indicator))
+            indicatorDataElements[indicator] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        indicatorDataElements[indicator].Add(element);
+    }
+}
+
+// Write indicators with their associated data elements
+var indicatorsList = indicatorDataElements
+    .OrderBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)
+    .Select(kvp => new Dictionary<string, object>
+    {
+        ["indicator"] = kvp.Key,
+        ["dataElements"] = kvp.Value.OrderBy(e => e, StringComparer.OrdinalIgnoreCase).ToList()
+    })
+    .ToList();
+
+var indicatorsFileName = Path.Combine(outputDir, "_indicators.json");
+var indicatorsJson = JsonSerializer.Serialize(indicatorsList, options);
+File.WriteAllText(indicatorsFileName, indicatorsJson);
+Console.WriteLine($"  Indicators: {indicatorsList.Count} entries -> {Path.GetFileName(indicatorsFileName)}");
 
 if (duplicateCount > 0)
     Console.WriteLine($"Deduplicated: {duplicateCount} duplicate row(s) merged (best status kept).");

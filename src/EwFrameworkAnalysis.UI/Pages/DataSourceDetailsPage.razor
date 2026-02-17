@@ -68,9 +68,9 @@ else
                                          DataSource="@_dataSource"
                                          OnAssessmentComplete="@HandleAssessmentComplete" />
         }
-        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsExcel)
+        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsState)
         {
-            <EcsExcelAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
+            <EcsStateAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
                                             IsOpenChanged="@((value) => _showAssessmentRunner = value)"
                                             DataSource="@_dataSource"
                                             OnAssessmentComplete="@HandleAssessmentComplete" />

@@ -302,28 +302,28 @@
   },
   {
     "sector": "K12",
-    "indicator": "Successful completion of Algebra 1 by 9th grade",
+    "indicator": "Successful completion of Algebra I by 9th grade",
     "elementName": "Student grade level",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
-    "indicator": "Successful completion of Algebra 1 by 9th grade",
+    "indicator": "Successful completion of Algebra I by 9th grade",
     "elementName": "First-time 9th grade student status",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
-    "indicator": "Successful completion of Algebra 1 by 9th grade",
+    "indicator": "Successful completion of Algebra I by 9th grade",
     "elementName": "Course ID or course title",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
-    "indicator": "Successful completion of Algebra 1 by 9th grade",
+    "indicator": "Successful completion of Algebra I by 9th grade",
     "elementName": "Course passage or completion",
     "collected": "Found",
     "reported": ""
@@ -365,14 +365,14 @@
   },
   {
     "sector": "K12",
-    "indicator": "Grade point average (MS\u002BHS)",
+    "indicator": "Grade point average",
     "elementName": "Student grade level",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
-    "indicator": "Grade point average (MS\u002BHS)",
+    "indicator": "Grade point average",
     "elementName": "Grade point average",
     "collected": "Found",
     "reported": ""
@@ -764,28 +764,28 @@
   },
   {
     "sector": "K12",
-    "indicator": "Postsecondary enrollment after high school graduation",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
     "elementName": "High school graduation date",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "K12",
-    "indicator": "Postsecondary enrollment after high school graduation",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
     "elementName": "Postsecondary enrollment date",
     "collected": "Not Found",
     "reported": ""
   },
   {
     "sector": "PS",
-    "indicator": "Postsecondary enrollment after high school graduation",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
     "elementName": "High school graduation date",
     "collected": "Found",
     "reported": ""
   },
   {
     "sector": "PS",
-    "indicator": "Postsecondary enrollment after high school graduation",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
     "elementName": "Postsecondary enrollment date",
     "collected": "Partial",
     "reported": ""
@@ -1646,14 +1646,14 @@
   },
   {
     "sector": "PK",
-    "indicator": "Access to full day pre-K",
+    "indicator": "Access to full-day pre-K",
     "elementName": "Pre-K program hours per day",
     "collected": "Partial",
     "reported": ""
   },
   {
     "sector": "PK",
-    "indicator": "Access to full day pre-K",
+    "indicator": "Access to full-day pre-K",
     "elementName": "Pre-K program days per week",
     "collected": "Not Found",
     "reported": ""
@@ -2860,510 +2860,6 @@
     "indicator": "Neighborhood juvenile arrests",
     "elementName": "Number of juvenile arrests in city or county",
     "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Race and ethnicity",
-    "elementName": "Self-reported race and ethnicity",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Race and ethnicity",
-    "elementName": "Self-reported race and ethnicity",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Race and ethnicity",
-    "elementName": "Self-reported race and ethnicity",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Race and ethnicity",
-    "elementName": "Self-reported race and ethnicity",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Gender",
-    "elementName": "Self-identified gender",
-    "collected": "Found",
-    "reported": "Partial"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Gender",
-    "elementName": "Self-identified gender",
-    "collected": "Found",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Gender",
-    "elementName": "Self-identified gender",
-    "collected": "Found",
-    "reported": "Partial"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Gender",
-    "elementName": "Self-identified gender",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "LGBT status",
-    "elementName": "Individuals who identify as a member of the LGBT community",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "LGBT status",
-    "elementName": "Individuals who identify as a member of the LGBT community",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "LGBT status",
-    "elementName": "Individuals who identify as a member of the LGBT community",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Disability status",
-    "elementName": "Students who receive special education supports or adults with a disability",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Disability status",
-    "elementName": "Students who receive special education supports or adults with a disability",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Disability status",
-    "elementName": "Students who receive special education supports or adults with a disability",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Disability status",
-    "elementName": "Students who receive special education supports or adults with a disability",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Income level",
-    "elementName": "Whether individuals or households are considered low income, middle income, or high income",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Income level",
-    "elementName": "Whether individuals or households are considered low income, middle income, or high income",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Income level",
-    "elementName": "Whether individuals or households are considered low income, middle income, or high income",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Income level",
-    "elementName": "Whether individuals or households are considered low income, middle income, or high income",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Parental education level",
-    "elementName": "Highest level of education achieved by either parent",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Parental education level",
-    "elementName": "Highest level of education achieved by either parent",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Parental education level",
-    "elementName": "Highest level of education achieved by either parent",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Parental education level",
-    "elementName": "Highest level of education achieved by either parent",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "First-generation college student",
-    "elementName": "Students who are the first in their family to complete any postsecondary degree",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "First-generation college student",
-    "elementName": "Students who are the first in their family to complete any postsecondary degree",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Student from migrant family household",
-    "elementName": "Students who are the children of migratory or seasonal farmworkers or are migratory or seasonal farmworkers themselves",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Student from migrant family household",
-    "elementName": "Students who are the children of migratory or seasonal farmworkers or are migratory or seasonal farmworkers themselves",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Home language",
-    "elementName": "The language an individual speaks at home, if not English",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Home language",
-    "elementName": "The language an individual speaks at home, if not English",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Home language",
-    "elementName": "The language an individual speaks at home, if not English",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Home language",
-    "elementName": "The language an individual speaks at home, if not English",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "English learner",
-    "elementName": "A student or individual who is classified as an English language learner or as having limited English proficiency",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "English learner",
-    "elementName": "A student or individual who is classified as an English language learner or as having limited English proficiency",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "English learner",
-    "elementName": "A student or individual who is classified as an English language learner or as having limited English proficiency",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "English learner",
-    "elementName": "A student or individual who is classified as an English language learner or as having limited English proficiency",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Attendance intensity",
-    "elementName": "Whether a child attends a half-day or full-day pre-K or kindergarten program, or a postsecondary student attends college part time or Found time",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Attendance intensity",
-    "elementName": "Whether a child attends a half-day or Full-day pre-K or kindergarten program, or a postsecondary student attends college part time or full time",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Attendance intensity",
-    "elementName": "Whether a child attends a half-day or full-day pre-K or kindergarten program, or a postsecondary student attends college part time or Found time",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "K-12 school type",
-    "elementName": "The type of school that a student attends",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Postsecondary institution classification",
-    "elementName": "The highest undergraduate degree level (less than two years, two year, or four year) and the sector (public, nonprofit, or for-profit) of a postsecondary institution",
-    "collected": "Found",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Transfer enrollment status",
-    "elementName": "Whether students are first-time students in college or have transferred from another postsecondary institution",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Credential-seeking status",
-    "elementName": "Type of award a student is seeking upon completion of studies",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Postsecondary major",
-    "elementName": "A student\u2019s postsecondary major(s)",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Postsecondary major",
-    "elementName": "A student\u2019s postsecondary major(s)",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Occupation category",
-    "elementName": "A worker\u2019s occupational category",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Dislocated worker status",
-    "elementName": "Individuals who have been terminated or laid off from employment, are unemployed due to economic conditions or natural disaster, are unemployed or underemployed spouses of active-duty members of the U.S. Armed Forces, or are displaced homemakers having trouble finding employment",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Dislocated worker status",
-    "elementName": "Individuals who have been terminated or laid off from employment, are unemployed due to economic conditions or natural disaster, are unemployed or underemployed spouses of active-duty members of the U.S. Armed Forces, or are displaced homemakers having trouble finding employment",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Basic skills level",
-    "elementName": "An individual\u2019s level of basic skills proficiency",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Age group",
-    "elementName": "An individual\u2019s age grouping",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Age group",
-    "elementName": "An individual\u2019s age grouping",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Age group",
-    "elementName": "An individual\u2019s age grouping",
-    "collected": "Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Age group",
-    "elementName": "An individual\u2019s age grouping",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Urbanicity",
-    "elementName": "Whether an individual or institution is located in an urban, suburban, town, or rural area",
-    "collected": "Partial",
-    "reported": "Partial"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Urbanicity",
-    "elementName": "Whether an individual or institution is located in an urban, suburban, town, or rural area",
-    "collected": "Found",
-    "reported": "Partial"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Urbanicity",
-    "elementName": "Whether an individual or institution is located in an urban, suburban, town, or rural area",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Urbanicity",
-    "elementName": "Whether an individual or institution is located in an urban, suburban, town, or rural area",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Individuals experiencing homelessness",
-    "elementName": "Any individual who lacks a fixed, regular, and adequate nighttime residence",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Individuals experiencing homelessness",
-    "elementName": "Any individual who lacks a fixed, regular, and adequate nighttime residence",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Individuals experiencing homelessness",
-    "elementName": "Any individual who lacks a fixed, regular, and adequate nighttime residence",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Individuals experiencing homelessness",
-    "elementName": "Any individual who lacks a fixed, regular, and adequate nighttime residence",
-    "collected": "Partial",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Individual or family military status",
-    "elementName": "Whether a student, parent, or spouse is a member of the U.S. Armed Forces (including the reserves or National Guard)",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Individual or family military status",
-    "elementName": "Whether a student, parent, or spouse is a member of the U.S. Armed Forces (including the reserves or National Guard)",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Individual or family military status",
-    "elementName": "Whether a student, parent, or spouse is a member of the U.S. Armed Forces (including the reserves or National Guard)",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Individual or family military status",
-    "elementName": "Whether a student, parent, or spouse is a member of the U.S. Armed Forces (including the reserves or National Guard)",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Individual with current or past child welfare involvement",
-    "elementName": "Students in foster care",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Individual with current or past child welfare involvement",
-    "elementName": "Students in foster care",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Individual with current or past child welfare involvement",
-    "elementName": "Students in foster care",
-    "collected": "Partial",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Justice involvement",
-    "elementName": "Individuals who have interacted with the justice system in any capacity",
-    "collected": "Found",
-    "reported": "Found"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Justice involvement",
-    "elementName": "Individuals who have interacted with the justice system in any capacity",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "WF",
-    "indicator": "Justice involvement",
-    "elementName": "Individuals who have interacted with the justice system in any capacity",
-    "collected": "Not Found",
-    "reported": "Not Found"
-  },
-  {
-    "sector": "PK",
-    "indicator": "Access to full-day pre-K",
-    "elementName": "Pre-K program hours per day",
-    "collected": "Partial",
-    "reported": ""
-  },
-  {
-    "sector": "PK",
-    "indicator": "Access to full-day pre-K",
-    "elementName": "Pre-K program days per week",
-    "collected": "Not Found",
     "reported": ""
   }
 ]

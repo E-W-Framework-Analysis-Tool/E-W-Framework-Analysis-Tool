@@ -29,7 +29,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
-builder.Services.AddScoped<EcsExcelFileParser>();
+builder.Services.AddScoped<EcsStateDataParser>();
 builder.Services.AddSingleton<EcsStateDataProvider>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 
