@@ -52,6 +52,7 @@
     --text-4xl--line-height: calc(2.5 / 2.25);
     --font-weight-thin: 100;
     --font-weight-light: 300;
+    --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -359,6 +360,86 @@
     }
     > :nth-child(7) {
       display: none;
+    }
+  }
+  .tab {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    appearance: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    webkit-user-select: none;
+    user-select: none;
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-base-content);
+      }
+    }
+    --tab-p: 1rem;
+    --tab-bg: var(--color-base-100);
+    --tab-border-color: var(--color-base-300);
+    --tab-radius-ss: 0;
+    --tab-radius-se: 0;
+    --tab-radius-es: 0;
+    --tab-radius-ee: 0;
+    --tab-order: 0;
+    --tab-radius-min: calc(0.75rem - var(--border));
+    border-color: #0000;
+    order: var(--tab-order);
+    height: var(--tab-height);
+    font-size: 0.875rem;
+    padding-inline-start: var(--tab-p);
+    padding-inline-end: var(--tab-p);
+    &:is(input[type="radio"]) {
+      min-width: fit-content;
+      &:after {
+        content: attr(aria-label);
+      }
+    }
+    &:is(label) {
+      position: relative;
+      input {
+        position: absolute;
+        inset: calc(0.25rem * 0);
+        cursor: pointer;
+        appearance: none;
+        opacity: 0%;
+      }
+    }
+    &:checked, &:is(label:has(:checked)), &:is(.tab-active, [aria-selected=true], [aria-current=true], [aria-current=page]) {
+      & + .tab-content {
+        display: block;
+        height: calc(100% - var(--tab-height) + var(--border));
+      }
+    }
+    &:not(:checked, label:has(:checked), :hover, .tab-active, [aria-selected=true], [aria-current=true], [aria-current=page]) {
+      color: var(--color-base-content);
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+      }
+    }
+    &:not(input):empty {
+      flex-grow: 1;
+      cursor: default;
+    }
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+      @media (forced-colors: active) {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+    &:focus-visible, &:is(label:has(:checked:focus-visible)) {
+      outline: 2px solid currentColor;
+      outline-offset: -5px;
+    }
+    &[disabled] {
+      pointer-events: none;
+      opacity: 40%;
     }
   }
   .menu {
@@ -1264,6 +1345,31 @@
       translate: var(--indicator-x, 50%) var(--indicator-y, -50%);
     }
   }
+  .tabs-border {
+    .tab {
+      --tab-border-color: #0000 #0000 var(--tab-border-color) #0000;
+      position: relative;
+      border-radius: var(--radius-field);
+      &:before {
+        --tw-content: "";
+        content: var(--tw-content);
+        background-color: var(--tab-border-color);
+        transition: background-color 0.2s ease;
+        width: 80%;
+        height: 3px;
+        border-radius: var(--radius-field);
+        bottom: 0;
+        left: 10%;
+        position: absolute;
+      }
+      &:is(.tab-active, [aria-selected=true], [aria-current=true], [aria-current=page]):not(.tab-disabled, [disabled]), &:is(input:checked), &:is(label:has(:checked)) {
+        &:before {
+          --tab-border-color: currentColor;
+          border-top: 3px solid;
+        }
+      }
+    }
+  }
   .select {
     border: var(--border) solid #0000;
     position: relative;
@@ -1603,6 +1709,66 @@
       opacity: 20%;
     }
   }
+  .radio {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    cursor: pointer;
+    appearance: none;
+    border-radius: calc(infinity * 1px);
+    padding: calc(0.25rem * 1);
+    vertical-align: middle;
+    border: var(--border) solid var(--input-color, currentColor);
+    @supports (color: color-mix(in lab, red, red)) {
+      border: var(--border) solid var(--input-color, color-mix(in srgb, currentColor 20%, #0000));
+    }
+    box-shadow: 0 1px oklch(0% 0 0 / calc(var(--depth) * 0.1)) inset;
+    --size: calc(var(--size-selector, 0.25rem) * 6);
+    width: var(--size);
+    height: var(--size);
+    color: var(--input-color, currentColor);
+    &:before {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: calc(infinity * 1px);
+      --tw-content: "";
+      content: var(--tw-content);
+      background-size: auto, calc(var(--noise) * 100%);
+      background-image: none, var(--fx-noise);
+    }
+    &:focus-visible {
+      outline: 2px solid currentColor;
+    }
+    &:checked, &[aria-checked="true"] {
+      border-color: currentColor;
+      background-color: var(--color-base-100);
+      @media (prefers-reduced-motion: no-preference) {
+        animation: radio 0.2s ease-out;
+      }
+      &:before {
+        background-color: currentColor;
+        box-shadow: 0 -1px oklch(0% 0 0 / calc(var(--depth) * 0.1)) inset, 0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * 0.1)) inset, 0 1px oklch(0% 0 0 / calc(var(--depth) * 0.1));
+      }
+      @media (forced-colors: active) {
+        &:before {
+          outline-style: var(--tw-outline-style);
+          outline-width: 1px;
+          outline-offset: calc(1px * -1);
+        }
+      }
+      @media print {
+        &:before {
+          outline: 0.25rem solid;
+          outline-offset: -1rem;
+        }
+      }
+    }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 20%;
+    }
+  }
   .progress {
     position: relative;
     height: calc(0.25rem * 2);
@@ -1811,6 +1977,23 @@
   .z-50 {
     z-index: 50;
   }
+  .tab-content {
+    order: var(--tabcontent-order);
+    display: none;
+    border-color: transparent;
+    --tabcontent-radius-ss: 0;
+    --tabcontent-radius-se: 0;
+    --tabcontent-radius-es: 0;
+    --tabcontent-radius-ee: 0;
+    --tabcontent-order: 1;
+    width: 100%;
+    margin: var(--tabcontent-margin);
+    border-width: var(--border);
+    border-start-start-radius: var(--tabcontent-radius-ss);
+    border-start-end-radius: var(--tabcontent-radius-se);
+    border-end-start-radius: var(--tabcontent-radius-es);
+    border-end-end-radius: var(--tabcontent-radius-ee);
+  }
   .col-span-1 {
     grid-column: span 1 / span 1;
   }
@@ -1820,14 +2003,23 @@
   .col-span-4 {
     grid-column: span 4 / span 4;
   }
+  .col-span-6 {
+    grid-column: span 6 / span 6;
+  }
   .col-span-12 {
     grid-column: span 12 / span 12;
   }
   .col-span-17 {
     grid-column: span 17 / span 17;
   }
+  .col-span-18 {
+    grid-column: span 18 / span 18;
+  }
   .col-span-21 {
     grid-column: span 21 / span 21;
+  }
+  .col-span-24 {
+    grid-column: span 24 / span 24;
   }
   .modal-box {
     grid-column-start: 1;
@@ -2180,6 +2372,15 @@
     --badge-fg: var(--color-base-content);
     --size: calc(var(--size-selector, 0.25rem) * 6);
     height: var(--size);
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    --tabs-height: auto;
+    --tabs-direction: row;
+    --tab-height: calc(var(--size-field, 0.25rem) * 10);
+    height: var(--tabs-height);
+    flex-direction: var(--tabs-direction);
   }
   .navbar {
     display: flex;
@@ -2570,6 +2771,9 @@
   .place-items-center {
     place-items: center;
   }
+  .content-center {
+    align-content: center;
+  }
   .items-center {
     align-items: center;
   }
@@ -2611,6 +2815,13 @@
   }
   .gap-8 {
     gap: calc(var(--spacing) * 8);
+  }
+  .space-y-0 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 0) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 0) * calc(1 - var(--tw-space-y-reverse)));
+    }
   }
   .space-y-1 {
     :where(& > :not(:last-child)) {
@@ -2661,6 +2872,9 @@
       margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
+  .justify-self-center {
+    justify-self: center;
+  }
   .justify-self-end {
     justify-self: flex-end;
   }
@@ -2677,6 +2891,9 @@
   }
   .overflow-y-scroll {
     overflow-y: scroll;
+  }
+  .\!rounded-none {
+    border-radius: 0 !important;
   }
   .rounded {
     border-radius: 0.25rem;
@@ -2701,6 +2918,19 @@
   }
   .rounded-xl {
     border-radius: var(--radius-xl);
+  }
+  .\!rounded-tl-none {
+    border-top-left-radius: 0 !important;
+  }
+  .rounded-tl-none {
+    border-top-left-radius: 0;
+  }
+  .\!rounded-tr-none {
+    border-top-right-radius: 0 !important;
+  }
+  .\!rounded-b-none {
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
   }
   .rounded-b-2xl {
     border-bottom-right-radius: var(--radius-2xl);
@@ -2745,6 +2975,10 @@
   .border-b-4 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 4px;
+  }
+  .\!border-l-0 {
+    border-left-style: var(--tw-border-style) !important;
+    border-left-width: 0px !important;
   }
   .border-l {
     border-left-style: var(--tw-border-style);
@@ -3093,6 +3327,9 @@
   .pl-3 {
     padding-left: calc(var(--spacing) * 3);
   }
+  .pl-5 {
+    padding-left: calc(var(--spacing) * 5);
+  }
   .pl-6 {
     padding-left: calc(var(--spacing) * 6);
   }
@@ -3160,6 +3397,10 @@
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
+  }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
   }
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
@@ -3510,6 +3751,9 @@
     --btn-color: var(--color-warning);
     --btn-fg: var(--color-warning-content);
   }
+  .\[--tab-border-color\:red\] {
+    --tab-border-color: red;
+  }
   .peer-checked\:text-primary {
     &:is(:where(.peer):checked ~ *) {
       color: var(--color-primary);
@@ -3856,20 +4100,6 @@
   .xl\:w-11\/12 {
     @media (width >= 80rem) {
       width: calc(11/12 * 100%);
-    }
-  }
-  .xl\:gap-2 {
-    @media (width >= 80rem) {
-      gap: calc(var(--spacing) * 2);
-    }
-  }
-  .xl\:space-y-4 {
-    @media (width >= 80rem) {
-      :where(& > :not(:last-child)) {
-        --tw-space-y-reverse: 0;
-        margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
-        margin-block-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)));
-      }
     }
   }
 }
