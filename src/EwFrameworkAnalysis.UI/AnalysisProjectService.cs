@@ -1,8 +1,5 @@
 using System.Text.Json;
-using System.Xml.Linq;
-using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
-using EwFrameworkAnalysis.Common.Models.Scoring;
 using EwFrameworkAnalysis.Common.Scoring;
 using Microsoft.JSInterop;
 
@@ -196,6 +193,7 @@ public class AnalysisProjectService
         dataSource.Assessments.Insert(0, assessment);
         Project.LastModifiedAt = DateTimeOffset.Now;
 
+        await SetActiveAssessmentAsync(assessment.Id);
         NewlyAddedAssessmentId = assessment.Id;
 
         await SaveAsync();
@@ -243,17 +241,17 @@ public class AnalysisProjectService
         }
     }
 
-    public async Task SetActiveAssessmentAsync(DataSourceAssessment activeAssessment)
+    public async Task SetActiveAssessmentAsync(Guid assessmentId)
     {
         var dataSource = DataSources
-            .FirstOrDefault(ds => ds.Assessments.Any(a => a.Id == activeAssessment.Id));
+            .FirstOrDefault(ds => ds.Assessments.Any(a => a.Id == assessmentId));
 
         if (dataSource is null)
             return;
 
         foreach (var assessment in dataSource.Assessments)
         {
-            assessment.Active = assessment.Id == activeAssessment.Id;
+            assessment.Active = assessment.Id == assessmentId;
         }
 
         Project.LastModifiedAt = DateTimeOffset.Now;
