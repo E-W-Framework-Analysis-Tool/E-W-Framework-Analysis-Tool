@@ -1,4 +1,4 @@
-﻿@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
@@ -32,14 +32,14 @@
                 @* Headers *@
                 <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
                     <div class="grid grid-cols-24">
-                        <div class="col-span-18" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Name)">
+                        <div class="col-span-18 cursor-pointer" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Name)">
                             Indicator
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Name, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Name, false) ? "" : "opacity-50")"></i>
                             </span>
                         </div>
-                        <div class="col-span-6 justify-self-center" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
+                        <div class="col-span-6 justify-self-center cursor-pointer" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
                             Score
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
@@ -180,9 +180,11 @@
         public const string Score = nameof(Score);
     }
 
+    // TODO: we should refactor to project to a list of what is needed here rather than looking up the value N times by indicator code
     private List<SortColumn<Indicator>> IndicatorColumnOptions() =>
     [
         new SortColumn<Indicator> { Key = SortColumnNames.Name, Selector = eq => eq.Name },
+        new SortColumn<Indicator> { Key = SortColumnNames.Score, Selector = i => GetIndicatorScoreByCode(i.Name)?.ReadinessScore ?? 0m },
     ];
 
     protected override void OnInitialized()
