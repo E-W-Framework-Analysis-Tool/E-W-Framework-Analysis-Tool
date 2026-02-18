@@ -261,7 +261,7 @@ else
     {
         if (_selectedAssessment is null) return;
         
-        await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment);
+        await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment.Id);
         LoadDataSource();
         ShowNotification("Assessment set as active successfully");
     }
