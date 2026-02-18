@@ -20,7 +20,7 @@ public class ScoringTestFixture : IDisposable
         };
 
         RuleRegistry = new DataElementScoringRuleRegistry(rules);
-        ScoringService = new DataElementScoringService(RuleRegistry, new EcsStateDataProvider());
+        ScoringService = new DataElementScoringService(RuleRegistry);
     }
 
     public void Dispose()

@@ -55,7 +55,7 @@
                     {
                         <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
                             <i class="fas fa-play"></i>
-                            Run New Assessment
+                            @(DataSource.Type == DataSourceType.EcsState ? "Add ECS State Data" : "Run New Assessment")
                         </button>
                     }
                 </div>
