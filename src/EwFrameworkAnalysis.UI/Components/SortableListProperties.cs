@@ -1,6 +1,4 @@
-using System.Runtime.CompilerServices;
-
-namespace EwFrameworkAnalysis.UI.Options;
+namespace EwFrameworkAnalysis.UI.Components;
 
 public sealed record class SortOptions<T>(
     IEnumerable<SortColumn<T>> Columns,
@@ -16,4 +14,9 @@ public class SortColumn<T>
     public string Key { get; set; } = default!;
 
     public Func<T, object?> Selector { get; set; } = default!;
+
+    /// <summary>
+    /// Whether the default sort order for this column is ascending
+    /// </summary>
+    public bool DefaultAscending { get; set; } = true;
 }

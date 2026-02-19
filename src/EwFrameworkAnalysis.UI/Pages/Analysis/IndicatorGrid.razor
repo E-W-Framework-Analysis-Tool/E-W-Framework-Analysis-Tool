@@ -12,7 +12,7 @@
         <div class="flex gap-4 pb-4">
             <label class="input flex-1">
                 <i class="fa-solid fa-magnifying-glass opacity-50"></i>
-                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput" class="right-placeholder"/>
+                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput" class="right-placeholder" />
                 <span class="label">@FilteredIndicators.Count() of @_allIndicators.Count()</span>
             </label>
 
@@ -27,7 +27,7 @@
 
         @* List *@
         <div class="join join-vertical border-1 border-gray-300 rounded-lg">
-            <SortableList List="@FilteredIndicators" Columns="@IndicatorColumnOptions()" Context="sortedIndicators">
+            <SortableList List="@FilteredIndicators" Columns="@IndicatorColumnOptions()" DefaultSortColumn="@SortColumnNames.Score" Context="sortedIndicators">
 
                 @* Headers *@
                 <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
@@ -56,7 +56,7 @@
                         var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
 
                         <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                            <input type="checkbox" name="indicator-check-@index"/>
+                            <input type="checkbox" name="indicator-check-@index" />
 
                             @* Name, Definition, & Score *@
                             <div class="collapse-title font-semibold">
@@ -129,8 +129,8 @@
                         </div>
                     }
                 </div>
-            </SortableList >
-        </div >
+            </SortableList>
+        </div>
 
         @* Pagination *@
         @if (TotalPages > 1)
@@ -159,10 +159,9 @@
             </div>
         }
     </ChildContent>
-</Card >
+</Card>
 
 @code {
-
     [Parameter]
     public List<IndicatorScore> IndicatorScores { get; set; } = [];
 
@@ -183,8 +182,8 @@
     // TODO: we should refactor to project to a list of what is needed here rather than looking up the value N times by indicator code
     private List<SortColumn<Indicator>> IndicatorColumnOptions() =>
     [
-        new SortColumn<Indicator> { Key = SortColumnNames.Name, Selector = eq => eq.Name },
-        new SortColumn<Indicator> { Key = SortColumnNames.Score, Selector = i => GetIndicatorScoreByCode(i.Name)?.ReadinessScore ?? 0m },
+        new SortColumn<Indicator> { Key = SortColumnNames.Name, Selector = eq => eq.Name, DefaultAscending = true },
+        new SortColumn<Indicator> { Key = SortColumnNames.Score, Selector = i => GetIndicatorScoreByCode(i.Name)?.ReadinessScore ?? 0m, DefaultAscending = false },
     ];
 
     protected override void OnInitialized()
