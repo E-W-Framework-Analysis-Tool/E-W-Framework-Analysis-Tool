@@ -25,11 +25,11 @@
 
         @* List *@
         <div class="join join-vertical border-1 border-gray-300 rounded-lg">
-            <SortableList List="@FilteredQuestions" Columns="@EssentialQuestionColumnOptions()" Context="eqContext">
+            <SortableList List="@FilteredQuestions" Columns="@EssentialQuestionColumnOptions()" DefaultSortColumn="@SortColumnNames.Score" Context="eqContext">
                 <div class="collapse-title font-semibold">
                     <div class="grid grid-cols-24 font-semibold text-lg">
                         <div class="flex col-span-1 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">#</div>
-                        <div class="flex col-span-17 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">
+                        <div class="flex col-span-17 justify-start items-center cursor-pointer" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">
                             Question
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(eqContext.IsActive(SortColumnNames.Question, true) ? "" : "opacity-50")"></i>
@@ -37,7 +37,7 @@
                             </span>
                         </div>
                         <div class="flex col-span-4 justify-center items-center text-center" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">Indicators Aligned</div>
-                        <div class="flex col-span-2 justify-center items-center text-center px-4 gap-4" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">
+                        <div class="flex col-span-2 justify-center items-center text-center px-4 gap-4 cursor-pointer" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">
                             Score
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(eqContext.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
@@ -158,13 +158,13 @@
 
     private List<SortColumn<EssentialQuestion>> EssentialQuestionColumnOptions() =>
     [
-        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Question, Selector = eq => eq.QuestionNumber },
-        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Score, Selector = eq => (GetQuestionScoreByNumber(eq.QuestionNumber) ?? new QuestionScore()).ReadinessScore }
+        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Question, Selector = eq => eq.QuestionNumber, DefaultAscending = true },
+        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Score, Selector = eq => (GetQuestionScoreByNumber(eq.QuestionNumber) ?? new QuestionScore()).ReadinessScore, DefaultAscending = false }
     ];
 
     private List<SortColumn<IndicatorScore>> IndicatorColumnOptions() =>
     [
-        new SortColumn<IndicatorScore> { Key = SortColumnNames.Indicators, Selector = i => -i.ReadinessScore }
+        new SortColumn<IndicatorScore> { Key = SortColumnNames.Indicators, Selector = i => i.ReadinessScore, DefaultAscending = false }
     ];
 
     protected override void OnInitialized()

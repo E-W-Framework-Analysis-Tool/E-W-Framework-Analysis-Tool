@@ -1,8 +1,6 @@
-﻿@using EwFrameworkAnalysis.UI.Options
-
 @typeparam TItem
 
-@ChildContent(SortOptions)
+@ChildContent(_sortOptions)
 
 @code {
 
@@ -19,6 +17,12 @@
     public IEnumerable<SortColumn<TItem>> Columns { get; set; } = new List<SortColumn<TItem>>();
 
     /// <summary>
+    /// The key for the initial sort column -- defaults to the first column if not specified
+    /// </summary>
+    [Parameter]
+    public string? DefaultSortColumn { get; set; }
+
+    /// <summary>
     /// The content to display inside the list
     /// </summary>
     [Parameter]
@@ -30,7 +34,7 @@
     /// <summary>
     /// Sort options context available to any child content
     /// </summary>
-    private SortOptions<TItem> SortOptions => new(
+    private SortOptions<TItem> _sortOptions => new(
         Columns,
         GetSortedList(),
         Toggle,
@@ -52,9 +56,8 @@
         else
         {
             _activeColumn = column;
-            _ascending = true;
+            _ascending = Columns.FirstOrDefault(c => c.Key == column)?.DefaultAscending ?? true;
         }
-
         await InvokeAsync(StateHasChanged);
     }
 
@@ -82,11 +85,16 @@
     /// <summary>
     /// Used to inform the UI sort elements whether a specific column is active and in what direction.
     /// </summary>
-    private bool IsActive(string column, bool ascending) => SortOptions.ActiveColumn == column && SortOptions.Ascending == ascending;
+    private bool IsActive(string column, bool ascending) => _activeColumn == column && _ascending == ascending;
 
     protected override void OnParametersSet()
     {
-        // Activate the first available column by default
-        _activeColumn ??= Columns.First(x => !string.IsNullOrWhiteSpace(x.Key)).Key;
+        if (_activeColumn is null)
+        {
+            var first = Columns.FirstOrDefault(x => x.Key == DefaultSortColumn)
+                ?? Columns.First(x => !string.IsNullOrWhiteSpace(x.Key));
+            _activeColumn = first.Key;
+            _ascending = first.DefaultAscending;
+        }
     }
 }
