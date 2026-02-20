@@ -48,9 +48,12 @@ else
     return 1;
 }
 
-string NormalizeElementName(string name)
+string NormalizeElementName(string name, string normalizedSector)
 {
     var trimmed = name.Trim();
+    var sectorKey = $"{trimmed} ({normalizedSector})";
+    if (elementNameMap.TryGetValue(sectorKey, out var sectorMapped))
+        return sectorMapped;
     return elementNameMap.TryGetValue(trimmed, out var mapped) ? mapped : trimmed;
 }
 
@@ -100,9 +103,9 @@ for (var row = 2; row <= lastRow; row++)
     if (string.IsNullOrWhiteSpace(rawElementName))
         continue;
 
-    var elementName = NormalizeElementName(rawElementName);
     var rawSector = worksheet.Cell(row, 7).GetString()?.Trim() ?? "";
     var sector = NormalizeSector(rawSector);
+    var elementName = NormalizeElementName(rawElementName, sector);
     var indicator = NormalizeIndicator(worksheet.Cell(row, 8).GetString()?.Trim() ?? "");
     var collected = worksheet.Cell(row, 11).GetString()?.Trim() ?? "";
     var reported = worksheet.Cell(row, 21).GetString()?.Trim() ?? "";

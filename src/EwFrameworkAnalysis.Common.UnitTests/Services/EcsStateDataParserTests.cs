@@ -47,11 +47,14 @@ public class EcsStateDataParserTests
     [Fact]
     public void Should_ProcessStateData_ConsolidateElements()
     {
+        // Records from the JSON already carry the framework element name; multiple
+        // records mapping to the same framework element should be consolidated
+        // by keeping the best (highest) availability judgment.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "Discipline indicator", "In school suspension", "Not Found", ""),
-            new("K-12", "Discipline indicator", "Out of school suspension", "Found", ""),
-            new("K-12", "Discipline indicator", "Expulsions", "Partial", "")
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Not Found", ""),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Found", ""),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Partial", "")
         };
 
         var (assessment, _) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
