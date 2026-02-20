@@ -146,16 +146,20 @@ public class DataElementScoringService
             assessmentScores.Add(score);
         }
 
-        // Group IDs
+        // Group IDs by source type
         var manualIds = assessments
             .Where(a => a.DataSourceType == DataSourceType.Custom)
             .Select(a => a.Id)
             .ToHashSet();
 
-        var publicIds = assessments
+        var automaticIds = assessments
             .Where(a => a.DataSourceType == DataSourceType.EdFiApi ||
-                        a.DataSourceType == DataSourceType.CedsDw ||
-                        a.DataSourceType == DataSourceType.EcsState)
+                        a.DataSourceType == DataSourceType.CedsDw)
+            .Select(a => a.Id)
+            .ToHashSet();
+
+        var ecsIds = assessments
+            .Where(a => a.DataSourceType == DataSourceType.EcsState)
             .Select(a => a.Id)
             .ToHashSet();
 
@@ -182,7 +186,8 @@ public class DataElementScoringService
         return new OverallReadinessResults
         {
             CurrentReadiness = ComputeScore(manualIds),
-            WithPublicDataReadiness = ComputeScore(publicIds),
+            AutomaticReadiness = ComputeScore(automaticIds),
+            EcsReadiness = ComputeScore(ecsIds),
             CompleteReadiness = ComputeScore(allIds)
         };
     }
