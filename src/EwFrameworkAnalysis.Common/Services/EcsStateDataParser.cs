@@ -1,4 +1,3 @@
-using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
@@ -14,11 +13,8 @@ public class EcsParsingStats
     public int TotalRowsRead { get; set; }
     public int DataElementsProcessed { get; set; }
     public int DataElementsSkipped { get; set; }
-    public int DataElementsMapped { get; set; }
-    public int DataElementsUnmapped { get; set; }
-    public List<string> UnmappedElements { get; set; } = [];
     public List<string> SkippedReasons { get; set; } = [];
-    public bool HasWarnings => DataElementsUnmapped > 0 || DataElementsSkipped > 0;
+    public bool HasWarnings => DataElementsSkipped > 0;
 }
 
 public class EcsStateDataParser
@@ -28,8 +24,7 @@ public class EcsStateDataParser
         EcsDataColumn dataColumn)
     {
         var stats = new EcsParsingStats();
-        var mappedElements = new Dictionary<string, AvailabilityJudgment>(StringComparer.OrdinalIgnoreCase);
-        var unmappedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var elements = new Dictionary<string, AvailabilityJudgment>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var record in records)
         {
@@ -42,56 +37,32 @@ public class EcsStateDataParser
                 continue;
             }
 
-            var statusValue = dataColumn == EcsDataColumn.Collected ? record.Collected : record.Reported;
+            var judgment = dataColumn == EcsDataColumn.Collected ? record.Collected : record.Reported;
 
-            if (string.IsNullOrWhiteSpace(statusValue))
+            if (judgment == null)
             {
                 stats.DataElementsSkipped++;
-                stats.SkippedReasons.Add($"Empty status for '{record.ElementName}'");
+                stats.SkippedReasons.Add($"No valid status for '{record.ElementName}'");
                 continue;
             }
-
-            var mapped = MapStatus(statusValue);
-            if (mapped == null)
-            {
-                stats.DataElementsSkipped++;
-                stats.SkippedReasons.Add($"Unrecognized status '{statusValue}' for '{record.ElementName}'");
-                continue;
-            }
-
-            var judgment = mapped.Value;
 
             stats.DataElementsProcessed++;
 
-            var frameworkName = record.ElementName;
-
-            if (!EwFrameworkDataElements.Elements.ContainsKey(frameworkName))
+            if (elements.TryGetValue(record.ElementName, out var existing))
             {
-                if (unmappedSet.Add(frameworkName))
-                {
-                    stats.DataElementsUnmapped++;
-                    stats.UnmappedElements.Add(frameworkName);
-                }
-                continue;
-            }
-
-            stats.DataElementsMapped++;
-
-            if (mappedElements.TryGetValue(frameworkName, out var existing))
-            {
-                if (judgment < existing)
-                    mappedElements[frameworkName] = judgment;
+                if (judgment.Value < existing)
+                    elements[record.ElementName] = judgment.Value;
             }
             else
             {
-                mappedElements[frameworkName] = judgment;
+                elements[record.ElementName] = judgment.Value;
             }
         }
 
         var assessment = new DataSourceAssessment
         {
             ConductedAt = DateTimeOffset.Now,
-            DataElementAssessments = [.. mappedElements.Select(kvp => new DataElementAssessment
+            DataElementAssessments = [.. elements.Select(kvp => new DataElementAssessment
             {
                 DataElementName = kvp.Key,
                 Characteristics = [new ReportedAvailability(kvp.Value)]
@@ -99,16 +70,5 @@ public class EcsStateDataParser
         };
 
         return (assessment, stats);
-    }
-
-    private static AvailabilityJudgment? MapStatus(string status)
-    {
-        return status.Trim().ToLowerInvariant() switch
-        {
-            "found" => AvailabilityJudgment.Available,
-            "partial" => AvailabilityJudgment.PartiallyAvailable,
-            "not found" => AvailabilityJudgment.NotAvailable,
-            _ => null
-        };
     }
 }

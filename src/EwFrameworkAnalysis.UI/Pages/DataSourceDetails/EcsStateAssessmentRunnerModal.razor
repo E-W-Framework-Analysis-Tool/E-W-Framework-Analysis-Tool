@@ -96,8 +96,8 @@
                             <div class="text-3xl font-bold text-blue">@_parsingStats!.DataElementsProcessed</div>
                         </div>
                         <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
-                            <h3 class="text-sm text-gray mb-2">Unmapped Elements</h3>
-                            <div class="text-3xl font-bold @(_parsingStats.DataElementsUnmapped > 0 ? "text-warning" : "text-blue")">@_parsingStats.DataElementsUnmapped</div>
+                            <h3 class="text-sm text-gray mb-2">Rows Skipped</h3>
+                            <div class="text-3xl font-bold @(_parsingStats!.DataElementsSkipped > 0 ? "text-warning" : "text-blue")">@_parsingStats.DataElementsSkipped</div>
                         </div>
                     </div>
 
@@ -108,10 +108,6 @@
                             <div class="flex-1">
                                 <h3 class="font-bold">Some Data Could Not Be Mapped</h3>
                                 <div class="text-sm">
-                                    @if (_parsingStats.DataElementsUnmapped > 0)
-                                    {
-                                        <p>@_parsingStats.DataElementsUnmapped ECS element(s) had no matching framework data element.</p>
-                                    }
                                     @if (_parsingStats.DataElementsSkipped > 0)
                                     {
                                         <p>@_parsingStats.DataElementsSkipped row(s) were skipped due to missing data.</p>
@@ -137,27 +133,10 @@
                                         <span class="font-mono">@_parsingStats.DataElementsProcessed</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span>Mapped to framework:</span>
-                                        <span class="font-mono">@_parsingStats.DataElementsMapped</span>
-                                    </div>
-                                    <div class="flex justify-between">
                                         <span>Skipped:</span>
                                         <span class="font-mono">@_parsingStats.DataElementsSkipped</span>
                                     </div>
                                 </div>
-
-                                @if (_parsingStats.UnmappedElements.Count > 0)
-                                {
-                                    <div class="mt-3">
-                                        <h5 class="font-semibold text-xs mb-1">Unmapped ECS Elements:</h5>
-                                        <ul class="text-xs space-y-1 list-disc list-inside max-h-48 overflow-y-auto">
-                                            @foreach (var element in _parsingStats.UnmappedElements)
-                                            {
-                                                <li>@element</li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
 
                                 @if (_parsingStats.SkippedReasons.Count > 0)
                                 {

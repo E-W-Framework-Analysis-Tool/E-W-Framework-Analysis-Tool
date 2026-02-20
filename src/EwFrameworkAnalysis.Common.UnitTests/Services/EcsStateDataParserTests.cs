@@ -12,14 +12,14 @@ public class EcsStateDataParserTests
     {
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "ACT completion indicator", "ACT completion", "Found", "Not Found"),
-            new("K-12", "SAT completion indicator", "SAT completion", "Partial", "Found")
+            new("K-12", "ACT completion indicator", "ACT completion", AvailabilityJudgment.Available, AvailabilityJudgment.NotAvailable),
+            new("K-12", "SAT completion indicator", "SAT completion", AvailabilityJudgment.PartiallyAvailable, AvailabilityJudgment.Available)
         };
 
         var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
 
         Assert.Equal(2, assessment.DataElementAssessments.Count);
-        Assert.Equal(2, stats.DataElementsMapped);
+        Assert.Equal(2, stats.DataElementsProcessed);
 
         var act = assessment.DataElementAssessments.First(a => a.DataElementName == "ACT completion");
         var actAvailability = act.Characteristics.OfType<ReportedAvailability>().First();
@@ -35,7 +35,7 @@ public class EcsStateDataParserTests
     {
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "ACT completion indicator", "ACT completion", "Found", "Not Found")
+            new("K-12", "ACT completion indicator", "ACT completion", AvailabilityJudgment.Available, AvailabilityJudgment.NotAvailable)
         };
 
         var (assessment, _) = _parser.ProcessStateData(records, EcsDataColumn.Reported);
@@ -47,14 +47,13 @@ public class EcsStateDataParserTests
     [Fact]
     public void Should_ProcessStateData_ConsolidateElements()
     {
-        // Records from the JSON already carry the framework element name; multiple
-        // records mapping to the same framework element should be consolidated
-        // by keeping the best (highest) availability judgment.
+        // Multiple records with the same element name are consolidated,
+        // keeping the best (most available) judgment.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Not Found", ""),
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Found", ""),
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", "Partial", "")
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.NotAvailable, null),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.Available, null),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.PartiallyAvailable, null)
         };
 
         var (assessment, _) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
@@ -67,12 +66,12 @@ public class EcsStateDataParserTests
     }
 
     [Fact]
-    public void Should_ProcessStateData_SkipEmptyStatus()
+    public void Should_ProcessStateData_SkipNullStatus()
     {
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "ACT indicator", "ACT completion", "", ""),
-            new("K-12", "SAT indicator", "SAT completion", "Found", "")
+            new("K-12", "ACT indicator", "ACT completion", null, null),
+            new("K-12", "SAT indicator", "SAT completion", AvailabilityJudgment.Available, null)
         };
 
         var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
@@ -82,18 +81,19 @@ public class EcsStateDataParserTests
     }
 
     [Fact]
-    public void Should_ProcessStateData_TrackUnmappedElements()
+    public void Should_ProcessStateData_IncludeUnknownElements()
     {
+        // Elements not in the EW Framework dictionary are included in the assessment.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "Unknown indicator", "Some Unknown Element", "Found", ""),
-            new("K-12", "ACT indicator", "ACT completion", "Found", "")
+            new("K-12", "Unknown indicator", "Some Unknown Element", AvailabilityJudgment.Available, null),
+            new("K-12", "ACT indicator", "ACT completion", AvailabilityJudgment.Available, null)
         };
 
         var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
 
-        Assert.Single(assessment.DataElementAssessments);
-        Assert.Equal(1, stats.DataElementsUnmapped);
-        Assert.Contains("Some Unknown Element", stats.UnmappedElements);
+        Assert.Equal(2, assessment.DataElementAssessments.Count);
+        Assert.Equal(2, stats.DataElementsProcessed);
+        Assert.Contains(assessment.DataElementAssessments, a => a.DataElementName == "Some Unknown Element");
     }
 }

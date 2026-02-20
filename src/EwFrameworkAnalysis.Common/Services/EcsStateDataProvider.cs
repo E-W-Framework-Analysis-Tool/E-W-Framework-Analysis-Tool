@@ -1,9 +1,11 @@
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
-public record EcsStateDataRecord(string Sector, string Indicator, string ElementName, string Collected, string Reported);
+public record EcsStateDataRecord(string Sector, string Indicator, string ElementName, AvailabilityJudgment? Collected, AvailabilityJudgment? Reported);
 
 public class EcsStateDataProvider
 {
@@ -30,7 +32,8 @@ public class EcsStateDataProvider
 
         var records = JsonSerializer.Deserialize<List<EcsStateDataRecord>>(json, new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
         });
 
         return records ?? [];

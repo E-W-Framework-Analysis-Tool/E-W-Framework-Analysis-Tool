@@ -82,6 +82,14 @@ string BestStatus(string existing, string incoming)
     return Rank(incoming) > Rank(existing) ? incoming : existing;
 }
 
+string? MapStatus(string status) => status.Trim().ToLowerInvariant() switch
+{
+    "found" => "Available",
+    "partial" => "PartiallyAvailable",
+    "not found" => "NotAvailable",
+    _ => null
+};
+
 for (var row = 2; row <= lastRow; row++)
 {
     var state = worksheet.Cell(row, 2).GetString()?.Trim();
@@ -139,7 +147,14 @@ var options = new JsonSerializerOptions { WriteIndented = true };
 
 foreach (var (state, recordMap) in stateRecords.OrderBy(kvp => kvp.Key))
 {
-    var records = recordMap.Values.ToList();
+    var records = recordMap.Values.Select(r => new
+    {
+        sector = r["sector"],
+        indicator = r["indicator"],
+        elementName = r["elementName"],
+        collected = MapStatus(r["collected"]),
+        reported = MapStatus(r["reported"])
+    }).ToList();
     var fileName = Path.Combine(outputDir, state + ".json");
     var json = JsonSerializer.Serialize(records, options);
     File.WriteAllText(fileName, json);
