@@ -1,6 +1,7 @@
 # ECS State Data Import Tool
 
-A .NET 9 console application that reads an ECS (Early Childhood through Workforce Systems) Excel data file and converts it into per-state JSON files consumed by the EW Framework.
+A .NET 9 console application that reads an ECS (Early Childhood through Workforce Systems) Excel data file and converts
+it into per-state JSON files consumed by the EW Framework.
 
 ---
 
@@ -12,10 +13,13 @@ A .NET 9 console application that reads an ECS (Early Childhood through Workforc
    - The record type (col 5) is `Disaggregate`
    - The metric type (col 9) is not `Data element`
 3. **Normalizes values** using two mapping sources:
-   - **Indicator names** — a small hardcoded map corrects known name differences between the ECS source and the EW Framework (e.g. `"Access to full day pre-K"` → `"Access to full-day pre-K"`).
-   - **Data element names** — loaded from `DataElementNormalizationMap.json` (must be present next to the executable). The tool exits with an error if this file is missing.
+   - **Indicator names** — a small hardcoded map corrects known name differences between the ECS source and the EW
+     Framework (e.g. `"Access to full day pre-K"` → `"Access to full-day pre-K"`).
+   - **Data element names** — loaded from `DataElementNormalizationMap.json` (must be present next to the executable).
+     The tool exits with an error if this file is missing.
    - **Sector codes** — normalized to `PK`, `K12`, `PS`, or `WF`.
-4. **Deduplicates** — rows sharing the same `indicator|sector|elementName` key are merged, keeping the highest-ranked `collected`/`reported` status (`Found` > `Partial` > `Not Found`).
+4. **Deduplicates** — rows sharing the same `indicator|sector|elementName` key are merged, keeping the highest-ranked
+   `collected`/`reported` status (`Found` > `Partial` > `Not Found`).
 5. **Writes output** — one JSON file per state (e.g. `Alabama.json`) to the output directory.
 
 ### DataElementNormalizationMap.json
@@ -35,7 +39,8 @@ This file is copied to the build output directory automatically by the project a
 
 ## Running the Import
 
-Use the PowerShell wrapper script from the repo root. It handles restoring dependencies, building the tool, and invoking it with the correct arguments.
+Use the PowerShell wrapper script from the repo root. It handles restoring dependencies, building the tool, and invoking
+it with the correct arguments.
 
 ### Import all states
 
@@ -74,27 +79,28 @@ Output is written to `src/EwFrameworkAnalysis.Common/FrameworkReferenceData/EcsS
 
 ## Parameters
 
-| Parameter    | Required | Default                                              | Description                                              |
-|--------------|----------|------------------------------------------------------|----------------------------------------------------------|
-| `-ExcelPath` | Yes      | —                                                    | Path to the ECS Excel (.xlsx) file to import             |
-| `-States`    | No       | *(all states)*                                       | One or more state names to include; omit to export all   |
-| `-OutputDir` | No       | `src/.../EcsStateData` (relative to repo root)       | Directory where JSON output files will be written        |
+| Parameter    | Required | Default                | Description                                |
+| ------------ | -------- | ---------------------- | ------------------------------------------ |
+| `-ExcelPath` | Yes      | —                      | Path to the ECS Excel file                 |
+| `-States`    | No       | _(all states)_         | State names to include; omit to export all |
+| `-OutputDir` | No       | `src/.../EcsStateData` | Directory for JSON output files            |
 
 ---
 
 ## Output Files
 
-| File | Description |
-|------|-------------|
-| `<StateName>.json` | Array of data element records for that state, each with `sector`, `indicator`, `elementName`, `collected`, and `reported` fields |
+| File               | Description                                                              |
+| ------------------ | ------------------------------------------------------------------------ |
+| `<StateName>.json` | Array of data element records for that state, each with                  |
+|                    | `sector`, `indicator`, `elementName`, `collected`, and `reported` fields |
 
 ---
 
 ## Project Files
 
-| File | Description |
-|------|-------------|
-| `Program.cs` | Main import logic |
-| `import.csproj` | Project definition (.NET 9, references ClosedXML) |
+| File                               | Description                                               |
+| ---------------------------------- | --------------------------------------------------------- |
+| `Program.cs`                       | Main import logic                                         |
+| `import.csproj`                    | Project definition (.NET 9, references ClosedXML)         |
 | `DataElementNormalizationMap.json` | Data element name normalization map (required at runtime) |
-| `ECS-State-Data-Sample.xlsx` | Sample Excel file for testing |
+| `ECS-State-Data-Sample.xlsx`       | Sample Excel file for testing                             |
