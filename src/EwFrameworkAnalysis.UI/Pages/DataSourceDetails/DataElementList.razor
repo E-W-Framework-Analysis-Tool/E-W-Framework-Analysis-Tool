@@ -209,24 +209,25 @@
 
     private readonly Dictionary<string, string> _categoryIcons = new()
     {
-        ["Academic Assessment and Performance"] = "fa-chart-line",
-        ["Attendance and Engagement"] = "fa-calendar-check",
-        ["Behavior and Discipline"] = "fa-gavel",
-        ["Community and Environmental Conditions"] = "fa-city",
-        ["Course and Curriculum"] = "fa-book",
-        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
-        ["Educator Qualifications and Credentials"] = "fa-certificate",
-        ["Financial Support and Resources"] = "fa-dollar-sign",
-        ["Health and Well-being"] = "fa-heart",
-        ["Instructional Quality and Practice"] = "fa-chalkboard",
-        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
-        ["Program Eligibility and Enrollment"] = "fa-school",
-        ["Program Quality and Standards"] = "fa-award",
-        ["School Climate and Engagement"] = "fa-users",
-        ["Student Demographics"] = "fa-user",
+        ["Academic Coursework"] = "fa-book",
+        ["Academic Performance"] = "fa-chart-line",
+        ["Assessments"] = "fa-clipboard-check",
+        ["Attendance & Enrollment"] = "fa-user-check",
+        ["Career & Technical Education (CTE)"] = "fa-tools",
+        ["Community Context"] = "fa-users",
+        ["Demographics"] = "fa-chart-pie",
+        ["Discipline & Behavior"] = "fa-gavel",
+        ["Early Learning"] = "fa-seedling",
+        ["Employment & Earnings"] = "fa-briefcase",
+        ["Finance & Resources"] = "fa-coins",
+        ["Financial Aid & Affordability"] = "fa-hand-holding-usd",
+        ["Health & Wellness"] = "fa-heartbeat",
+        ["Postsecondary Outcomes"] = "fa-graduation-cap",
+        ["School Climate"] = "fa-school",
+        ["Social-Emotional Learning (SEL)"] = "fa-smile",
+        ["Staff & Educators"] = "fa-chalkboard-teacher",
         ["Student Support Services"] = "fa-hands-helping",
-        ["System Economic Conditions"] = "fa-coins",
-        ["Workforce and Career Outcomes"] = "fa-briefcase"
+        ["Transportation"] = "fa-bus",
     };
 
     private List<DataElementCategory> _categories = new();
@@ -234,7 +235,7 @@
     protected override void OnInitialized()
     {
         _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(e => e.Category)
+            .GroupBy(e => e.DataElementCategory)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
