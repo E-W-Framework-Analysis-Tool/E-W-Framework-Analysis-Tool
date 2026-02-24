@@ -1,0 +1,2557 @@
+[
+  {
+    "sector": "PK",
+    "indicator": "Enrollment in quality public pre-K",
+    "elementName": "Age",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Enrollment in quality public pre-K",
+    "elementName": "Pre-K eligbility status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Enrollment in quality public pre-K",
+    "elementName": "Enrollment in public pre-K",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: language and literacy",
+    "elementName": "Teacher-reported kindergarten readiness assessments (language and literacy)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: language and literacy",
+    "elementName": "Direct child assessments (language and literacy)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: cognition",
+    "elementName": "Kindergarten readiness assessments (cognition)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: cognition",
+    "elementName": "Direct child assessments (cognition)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early grades on track",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early grades on track",
+    "elementName": "State standardized test (Math proficiency)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early grades on track",
+    "elementName": "State standardized test (Reading proficiency)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early grades on track",
+    "elementName": "Student attendance rate (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early grades on track",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Consistent attendance",
+    "elementName": "Student attendance rate (PK)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Consistent attendance",
+    "elementName": "Student attendance rate (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Consistent attendance",
+    "elementName": "Student attendance rate (PK)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Positive behavior",
+    "elementName": "Suspensions and expulsions (PK)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Positive behavior",
+    "elementName": "Restraint and seclusion (PK)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Positive behavior",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Positive behavior",
+    "elementName": "Restraint and seclusion (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 3",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 3",
+    "elementName": "State standardized test (Math proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 3",
+    "elementName": "State standardized test (Reading proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "6th grade on track",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "6th grade on track",
+    "elementName": "Course performance (English and Math)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "6th grade on track",
+    "elementName": "Student attendance rate (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "6th grade on track",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "8th grade on track",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "8th grade on track",
+    "elementName": "Grade point average (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "8th grade on track",
+    "elementName": "Course performance (English and Math)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "8th grade on track",
+    "elementName": "Student attendance rate (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "8th grade on track",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 8",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 8",
+    "elementName": "State standardized test (Math proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in grade 8",
+    "elementName": "State standardized test (Reading proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful completion of Algebra I by 9th grade",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful completion of Algebra I by 9th grade",
+    "elementName": "First-time 9th grade student status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful completion of Algebra I by 9th grade",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful completion of Algebra I by 9th grade",
+    "elementName": "Course outcome",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "9th grade on track",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "9th grade on track",
+    "elementName": "Student attendance rate (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "9th grade on track",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "9th grade on track",
+    "elementName": "Course outcome",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Grade point average",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Grade point average",
+    "elementName": "Grade point average (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Grade point average",
+    "elementName": "Grade point average (Postsecondary)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in high school",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in high school",
+    "elementName": "State standardized test (Math proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Math and reading proficiency in high school",
+    "elementName": "State standardized test (Reading proficiency)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "College preparatory coursework completion",
+    "elementName": "High school graduation indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "College preparatory coursework completion",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "College preparatory coursework completion",
+    "elementName": "Course outcome",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early college coursework completion",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Early college coursework completion",
+    "elementName": "AP, IB, or Dual Credit course credits",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Early college coursework completion",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Early college coursework completion",
+    "elementName": "AP, IB, or Dual Credit course credits",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "SAT and ACT participation and performance",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "SAT and ACT participation and performance",
+    "elementName": "SAT completion",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "SAT and ACT participation and performance",
+    "elementName": "ACT completion",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "SAT and ACT participation and performance",
+    "elementName": "SAT score",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "SAT and ACT participation and performance",
+    "elementName": "ACT score",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "FAFSA completion",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "FAFSA completion",
+    "elementName": "FAFSA completion date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "FAFSA completion",
+    "elementName": "Student grade level (PK)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "FAFSA completion",
+    "elementName": "FAFSA completion date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "College applications",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "College applications",
+    "elementName": "Postsecondary applications submitted",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "High school graduation",
+    "elementName": "Enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "High school graduation",
+    "elementName": "Cohort year",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "High school graduation",
+    "elementName": "Cohort graduation year",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "High school graduation",
+    "elementName": "Diploma or credential award date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "High school graduation",
+    "elementName": "High school diploma type",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "High school graduation indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "Postsecondary Institution ID",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "PS institution graduation rate; by race/ethnicity and Pell grant receipt",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "High school graduation indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "Postsecondary Institution ID",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Selection of a well-matched postsecondary institution",
+    "elementName": "PS institution graduation rate; by race/ethnicity and Pell grant receipt",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Senior summer on track",
+    "elementName": "High school graduation indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Senior summer on track",
+    "elementName": "Reported intent to enroll in postsecondary education",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Senior summer on track",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Senior summer on track",
+    "elementName": "High school graduation indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Senior summer on track",
+    "elementName": "Reported intent to enroll in postsecondary education",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Senior summer on track",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary enrollment directly after high school graduation",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year credit accumulation",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year credit accumulation",
+    "elementName": "Postsecondary enrollment status (Full time/part time)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year credit accumulation",
+    "elementName": "Number of credits attempted",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year credit accumulation",
+    "elementName": "Number of credits earned",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year program of study concentration",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year program of study concentration",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "First-year program of study concentration",
+    "elementName": "Number of credits earned",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Gateway course completion",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Gateway course completion",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Gateway course completion",
+    "elementName": "Number of credits earned",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary persistence",
+    "elementName": "Postsecondary degree program length",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary persistence",
+    "elementName": "Enrollment status (current and prior years)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary persistence",
+    "elementName": "Postsecondary credential attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Transfer (if applicable)",
+    "elementName": "Postsecondary degree program length",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Transfer (if applicable)",
+    "elementName": "Transfer indicator or transfer student status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Transfer (if applicable)",
+    "elementName": "Postsecondary institution ID (current and prior years)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Transfer (if applicable)",
+    "elementName": "Enrollment status (current and prior years)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary certificate or degree completion",
+    "elementName": "Postsecondary degree program length",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary certificate or degree completion",
+    "elementName": "Postsecondary enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary certificate or degree completion",
+    "elementName": "Postsecondary credential attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Enrollment in graduate education",
+    "elementName": "Bachelor\u0027s degree completion date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Enrollment in graduate education",
+    "elementName": "Post-baccalaureate program enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Enrollment in graduate education",
+    "elementName": "Graduate program enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary certificate or degree completion",
+    "elementName": "Graduate program enrollment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Postsecondary certificate or degree completion",
+    "elementName": "Graduate credential attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: social-emotional development",
+    "elementName": "Results on teacher-reported kindergarten readiness assessment (social-emotional development)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: social-emotional development",
+    "elementName": "Teacher reports of social-emotional development",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: approaches to learning",
+    "elementName": "Results on teacher-reported kindergarten readiness assessment (self-regulation; approaches to learning; executive function)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: approaches to learning",
+    "elementName": "Teacher reports of executive function",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: approaches to learning",
+    "elementName": "Direct child assessments of executive function",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: perceptual, motor, and physical development",
+    "elementName": "Results on teacher-reported kindergarten readiness assessment (physical development)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Kindergarten readiness: perceptual, motor, and physical development",
+    "elementName": "Direct child assessments of physical development",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Self-management",
+    "elementName": "Self-management surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Self-management",
+    "elementName": "Self-management surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Self-management",
+    "elementName": "Self-management surveys (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Growth mindset",
+    "elementName": "Growth mindset surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Growth mindset",
+    "elementName": "Growth mindset surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Growth mindset",
+    "elementName": "Growth mindset surveys (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Self-efficacy",
+    "elementName": "Self-efficacy surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Self-efficacy",
+    "elementName": "Self-efficacy surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Self-efficacy",
+    "elementName": "Self-efficacy surveys (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Social awareness",
+    "elementName": "Self-management surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Social awareness",
+    "elementName": "Social awareness teacher ratings",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Social awareness",
+    "elementName": "Social proficiency performance assessment results (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Social awareness",
+    "elementName": "Social proficiency performance assessment results (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Cultural competency",
+    "elementName": "Cultural competency assessment results (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Cultural competency",
+    "elementName": "Cultural competency assessment results (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Cultural competency",
+    "elementName": "Cultural competency assessment results (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Civic engagement",
+    "elementName": "Civic engagement surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Civic engagement",
+    "elementName": "Civic engagement surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Civic engagement",
+    "elementName": "Civic engagement surveys (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Social capital",
+    "elementName": "Social capital surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Social capital",
+    "elementName": "Social capital surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Social capital",
+    "elementName": "Social capital surveys (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Age",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Developmental screening results",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Age",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Universal screening results",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Mental and emotional well-being assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Mental and emotional well-being",
+    "elementName": "Mental and emotional well-being assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Physical development and well-being",
+    "elementName": "Physical health surveys (K-12)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Physical development and well-being",
+    "elementName": "Physical health surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Physical development and well-being",
+    "elementName": "Health-Related Quality of Life Scale scores",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Physical development and well-being",
+    "elementName": "Physical health surveys (Workforce)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Physical development and well-being",
+    "elementName": "Health-Related Quality of Life Scale scores",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "Apprenticeship program enrollment date",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "Enrollment in noncredit CTE date",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "Enlistment in the military",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "Employment date",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Successful career transition after high school",
+    "elementName": "Earnings",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "CTE pathway concentration",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "CTE pathway concentration",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "CTE pathway concentration",
+    "elementName": "CTE pathway or career cluster associated with CTE course",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "CTE pathway concentration",
+    "elementName": "CTE course completion",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "CTE pathway concentration",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "CTE pathway concentration",
+    "elementName": "CTE course ID or course title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "CTE pathway concentration",
+    "elementName": "CTE course completion",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Industry-recognized credential attainment",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Indicator of current enrollment in postsecondary",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Industry-recognized credential attainment",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Workforce development program participation",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Industry-recognized credential",
+    "elementName": "Industry-recognized credential attainment",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Participation in work-based learning",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Student grade level (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Participation in work-based learning",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Enrollment in workforce training program",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Participation in work-based learning",
+    "elementName": "Participation in work-based learning",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Digital skills",
+    "elementName": "Digital skills assessment results (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Digital skills",
+    "elementName": "Digital skills assessment results (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Digital skills",
+    "elementName": "Digital skills assessment results (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Communication skills",
+    "elementName": "Communication skills performance assessment results (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Communication skills",
+    "elementName": "Communication skills performance assessment results (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Communication skills",
+    "elementName": "Communication skills performance assessment results (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Higher-order thinking skills",
+    "elementName": "Higher-order thinking skills performance assessment results (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Higher-order thinking skills",
+    "elementName": "Higher-order thinking skills performance assessment results (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Higher-order thinking skills",
+    "elementName": "Higher-order thinking skills performance assessment results (Workforce)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Minimum economic return",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Minimum economic return",
+    "elementName": "Postsecondary degree attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Minimum economic return",
+    "elementName": "Earnings",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Minimum economic return",
+    "elementName": "Total net price of education plus interest",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Minimum economic return",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Minimum economic return",
+    "elementName": "Postsecondary degree attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Minimum economic return",
+    "elementName": "Earnings",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Minimum economic return",
+    "elementName": "Total net price of education plus interest",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Student loan repayment",
+    "elementName": "Repayment status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Student loan repayment",
+    "elementName": "Repayment phase start date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Student loan repayment",
+    "elementName": "Repayment status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Student loan repayment",
+    "elementName": "Repayment phase start date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Employment in a quality job",
+    "elementName": "Employment status",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Employment in a quality job",
+    "elementName": "Job quality index",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic mobility",
+    "elementName": "Earnings",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic mobility",
+    "elementName": "High school graduation date",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic mobility",
+    "elementName": "Postsecondary degree attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic security",
+    "elementName": "Net worth",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic security",
+    "elementName": "High school graduation date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Economic security",
+    "elementName": "Postsecondary degree attainment date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to quality public pre-K",
+    "elementName": "Pre-K program QRIS rating",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to full-day pre-K",
+    "elementName": "Pre-K program hours per day",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to full-day pre-K",
+    "elementName": "Pre-K program days per week",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Family eligibility for child care subsidies",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Receipt of child care subsidies",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Family eligibility for child care subsidies",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Receipt of child care subsidies",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Family eligibility for child care subsidies",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Receipt of child care subsidies",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Family eligibility for child care subsidies",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to child care subsidies",
+    "elementName": "Receipt of child care subsidies",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "School-family engagement",
+    "elementName": "Family engagement surveys (PK)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "School-family engagement",
+    "elementName": "Family engagement surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Office referrals (PK)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Suspensions and expulsions (PK)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Restraint and seclusion (PK)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Number of days suspended (PK)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Office referrals (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Suspensions and expulsions (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Restraint and seclusion (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable discipline practices",
+    "elementName": "Number of days suspended (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to full-day kindergarten",
+    "elementName": "Kindergarten program hours per day",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to full-day kindergarten",
+    "elementName": "Kindergarten program days per week",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "English learner progress",
+    "elementName": "English learner status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "English learner progress",
+    "elementName": "English learner classification date",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Teacher credentials",
+    "elementName": "Job title or position type",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Teacher credentials",
+    "elementName": "Highest level of education completed",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Teacher credentials",
+    "elementName": "Credential or certification type",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teacher credentials",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teacher credentials",
+    "elementName": "Staff FTE status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teacher credentials",
+    "elementName": "Teaching assignment",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teacher credentials",
+    "elementName": "Teacher qualification or certification type",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Teacher experience",
+    "elementName": "Years of teaching experience",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teacher experience",
+    "elementName": "Years of teaching experience",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Educator retention",
+    "elementName": "Job title or position type",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Educator retention",
+    "elementName": "School assignment (prior and current year)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Educator retention",
+    "elementName": "Years in current position",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Educator retention",
+    "elementName": "Job title or position type",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Educator retention",
+    "elementName": "School assignment (prior and current year)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Educator retention",
+    "elementName": "Years in current position",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Classroom observations of instructional practice",
+    "elementName": "Teacher-child interaction measure (PK)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Classroom observations of instructional practice",
+    "elementName": "Overall teacher observation score",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Classroom observations of instructional practice",
+    "elementName": "Subscale observation scores",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Classroom observations of instructional practice",
+    "elementName": "Instructor observations",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Student perceptions of teaching",
+    "elementName": "Teacher effectiveness student surveys (K-12)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Student perceptions of teaching",
+    "elementName": "Teacher effectiveness student surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teachers\u0027 contributions to student learning growth",
+    "elementName": "SGP for standardized assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Teachers\u0027 contributions to student learning growth",
+    "elementName": "VAM for subject specific assessment",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Teachers\u0027 contributions to student learning growth",
+    "elementName": "SGP for standardized assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Teachers\u0027 contributions to student learning growth",
+    "elementName": "VAM for subject specific assessment",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Effective program and school leadership",
+    "elementName": "Leader effectiveness assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Effective program and school leadership",
+    "elementName": "Leader effectiveness assessments",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Institutions\u0027 contributions to student outcomes",
+    "elementName": "School value-added",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Institutions\u0027 contributions to student outcomes",
+    "elementName": "College value-added",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to college preparatory coursework",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to college preparatory coursework",
+    "elementName": "Course department",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to college preparatory coursework",
+    "elementName": "Course offering by grade level",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "AP course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "IB course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "Dual credit course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to early college coursework",
+    "elementName": "AP, IB, or Dual Credit course credits",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "Course identifier or title",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "AP course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "IB course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "Dual credit course designation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": "PartiallyAvailable"
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to early college coursework",
+    "elementName": "AP, IB, or Dual Credit course credits",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable placement in rigorous coursework",
+    "elementName": "Gifted and talented participation",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Equitable placement in rigorous coursework",
+    "elementName": "Student course enrollment record",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Expenditures per student",
+    "elementName": "Expenditures per student (PK)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Expenditures per student",
+    "elementName": "Expenditures per student (K-12)",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Expenditures per student",
+    "elementName": "Student FTE status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Expenditures per student",
+    "elementName": "Expenditures per student (Postsecondary)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to early intervention screening",
+    "elementName": "Early intervention screening results",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to early intervention screening",
+    "elementName": "Early intervention screening services referral status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to early intervention screening",
+    "elementName": "Indicator of whether services were provided",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to early intervention screening",
+    "elementName": "Date of services provided",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to early intervention screening",
+    "elementName": "Kindergarten enrollment date",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "School safety",
+    "elementName": "Campus climate surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "School safety",
+    "elementName": "Campus climate surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Inclusive environments",
+    "elementName": "Sense of belonging surveys (PK)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Inclusive environments",
+    "elementName": "Sociocultural observational assessments",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Inclusive environments",
+    "elementName": "Sense of belonging surveys (K-12)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Inclusive environments",
+    "elementName": "Sense of belonging surveys (Postsecondary)",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Inclusive environments",
+    "elementName": "Sense of belonging surveys",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Student race/ethnicity",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Staff race/ethnicity",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Student race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Staff race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Student race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Representational racial and ethnic diversity of educators",
+    "elementName": "Staff race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "School and workplace racial and ethnic diversity",
+    "elementName": "Student race/ethnicity",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "School and workplace racial and ethnic diversity",
+    "elementName": "Student race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "School and workplace racial and ethnic diversity",
+    "elementName": "Student race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "School and workplace racial and ethnic diversity",
+    "elementName": "Employee race/ethnicity",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "School and workplace socioeconomic diversity",
+    "elementName": "Student or family socioeconomic status",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "School and workplace socioeconomic diversity",
+    "elementName": "Student or family socioeconomic status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "School and workplace socioeconomic diversity",
+    "elementName": "Student socioeconomic status",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "School and workplace socioeconomic diversity",
+    "elementName": "Employee income level",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Health services offered",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Mental health services offered",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Social services offered",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PK",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "IECMHC services offered",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Job title or position type",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Staff FTE status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Job title or position type",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "Staff FTE status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to health, mental health, and social supports",
+    "elementName": "EAP or mental health services provided",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to college and career advising",
+    "elementName": "Job title or position type",
+    "collected": "Available",
+    "reported": "Available"
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to college and career advising",
+    "elementName": "Staff FTE status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to college and career advising",
+    "elementName": "Advising and counseling service utilization",
+    "collected": "NotAvailable",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to in-demand CTE pathways",
+    "elementName": "CTE program",
+    "collected": "Available",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "K12",
+    "indicator": "Access to in-demand CTE pathways",
+    "elementName": "In-demand status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to in-demand CTE pathways",
+    "elementName": "CTE program",
+    "collected": "Available",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "PS",
+    "indicator": "Access to in-demand CTE pathways",
+    "elementName": "In-demand status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Unmet financial need",
+    "elementName": "Average cost of attendance",
+    "collected": "PartiallyAvailable",
+    "reported": "PartiallyAvailable"
+  },
+  {
+    "sector": "PS",
+    "indicator": "Unmet financial need",
+    "elementName": "Average financial aid amount (including grants, scholarships, and tuition waivers)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Unmet financial need",
+    "elementName": "Average expected family contribution (EFC)",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "PS",
+    "indicator": "Cumulative student debt",
+    "elementName": "Median student debt",
+    "collected": "PartiallyAvailable",
+    "reported": "PartiallyAvailable"
+  },
+  {
+    "sector": "WF",
+    "indicator": "Cumulative student debt",
+    "elementName": "Median student debt",
+    "collected": "PartiallyAvailable",
+    "reported": "PartiallyAvailable"
+  },
+  {
+    "sector": "WF",
+    "indicator": "Expenditures on workforce development programs",
+    "elementName": "Funding dedicated to workforce development programs",
+    "collected": "NotAvailable",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "WF",
+    "indicator": "Expenditures on workforce development programs",
+    "elementName": "Total educational funding",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to jobs paying a living wage",
+    "elementName": "Average pay in county or MSA",
+    "collected": "Available",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to jobs paying a living wage",
+    "elementName": "Location-adjusted cost of living in county or MSA",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to ongoing career skills development",
+    "elementName": "On-the-job training offered",
+    "collected": "NotAvailable",
+    "reported": "NotAvailable"
+  },
+  {
+    "sector": "WF",
+    "indicator": "Access to ongoing career skills development",
+    "elementName": "Learning and development plan offered",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Childhood experiences",
+    "elementName": "Number of ACEs",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Health insurance coverage",
+    "elementName": "Insured status",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Health insurance coverage",
+    "elementName": "Medicaid eligibility status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Health insurance coverage",
+    "elementName": "Medicaid enrollment",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Health insurance coverage",
+    "elementName": "CHIP eligibility status",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Health insurance coverage",
+    "elementName": "CHIP enrollment",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Food security",
+    "elementName": "USDA Food Security Survey ratings",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Food security",
+    "elementName": "SNAP eligibility",
+    "collected": "NotAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Food security",
+    "elementName": "SNAP participation",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Food security",
+    "elementName": "USDA Food Access Research Atlas Access Level Flag",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to affordable housing",
+    "elementName": "Number of affordable housing units in city or county",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to affordable housing",
+    "elementName": "Number of households with low income in city or county",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to affordable housing",
+    "elementName": "Number of households with very low income in city or county",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to affordable housing",
+    "elementName": "Eligibility for federal rental assistance",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to affordable housing",
+    "elementName": "Receipt of federal rental assistance",
+    "collected": "PartiallyAvailable",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to technology",
+    "elementName": "Indicator of access to desktop or laptop at home",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to technology",
+    "elementName": "Indicator of access to reliable broadband internet",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Access to transportation",
+    "elementName": "Commute time",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Exposure to neighborhood crime",
+    "elementName": "City or county population",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Exposure to neighborhood crime",
+    "elementName": "Number of violent felonies in city or county",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Exposure to neighborhood crime",
+    "elementName": "Number of property felonies in city or county",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood economic diversity",
+    "elementName": "Number of city or county residents experiencing poverty",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood economic diversity",
+    "elementName": "Number of city or county residents living in a high poverty neighborhood",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood racial diversity",
+    "elementName": "Student race/ethnicity",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood racial diversity",
+    "elementName": "Geographical indicator",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood juvenile arrests",
+    "elementName": "City or county population",
+    "collected": "Available",
+    "reported": null
+  },
+  {
+    "sector": "All",
+    "indicator": "Neighborhood juvenile arrests",
+    "elementName": "Number of juvenile arrests in city or county",
+    "collected": "Available",
+    "reported": null
+  }
+]

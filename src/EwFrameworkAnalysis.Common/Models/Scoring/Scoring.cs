@@ -94,9 +94,10 @@ public class SectorReadinessResult
 
 public class OverallReadinessResults
 {
-    public decimal CurrentReadiness { get; set; }
-    public decimal WithPublicDataReadiness { get; set; }
-    public decimal CompleteReadiness { get; set; }
+    public decimal CustomDataSourceReadiness { get; set; }
+    public decimal AutomatedDataSourceReadiness { get; set; }
+    public decimal EcsReadiness { get; set; }
+    public decimal CombinedReadiness { get; set; }
 }
 
 public class AssessmentScore

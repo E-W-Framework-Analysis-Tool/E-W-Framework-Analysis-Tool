@@ -25,5 +25,8 @@ public enum DataSourceType
     CedsDw,
 
     [Display(Name = "Manual Assessment", Description = "Flexible checklist for manual review")]
-    Custom
+    Custom,
+
+    [Display(Name = "ECS State Data", Description = "State-specific inventory of data as collected by ECS or reported by the state")]
+    EcsState
 }

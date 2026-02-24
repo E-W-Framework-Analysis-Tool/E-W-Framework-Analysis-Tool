@@ -51,11 +51,11 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center space-x-3 flex-shrink-0">
-                    @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw || DataSource.Type == DataSourceType.Custom)
+                    @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw || DataSource.Type == DataSourceType.Custom || DataSource.Type == DataSourceType.EcsState)
                     {
                         <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
                             <i class="fas fa-play"></i>
-                            Run New Assessment
+                            @(DataSource.Type == DataSourceType.EcsState ? "Add ECS State Data" : "Run New Assessment")
                         </button>
                     }
                 </div>

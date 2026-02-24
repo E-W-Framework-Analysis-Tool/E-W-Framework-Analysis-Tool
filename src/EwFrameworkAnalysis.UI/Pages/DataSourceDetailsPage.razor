@@ -68,6 +68,13 @@ else
                                          DataSource="@_dataSource"
                                          OnAssessmentComplete="@HandleAssessmentComplete" />
         }
+        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsState)
+        {
+            <EcsStateAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
+                                            IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                            DataSource="@_dataSource"
+                                            OnAssessmentComplete="@HandleAssessmentComplete" />
+        }
         else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.Custom)
         {
             <ManualInventoryAssessmentModal IsOpen="@_showAssessmentRunner"
@@ -81,7 +88,8 @@ else
             <div class="lg:col-span-1 space-y-6">
                 <AssessmentHistoryCard Assessments="@_dataSourceAssessments"
                                        SelectedAssessment="@_selectedAssessment"
-                                       OnSelectAssessment="@SelectAssessment" />
+                                       OnSelectAssessment="@SelectAssessment"
+                                       DataSourceType="@_dataSource.Type" />
 
                 <DataSourceManagementCard DataSource="@_dataSource"
                                           OnToggleEnabled="@ToggleEnabled"
