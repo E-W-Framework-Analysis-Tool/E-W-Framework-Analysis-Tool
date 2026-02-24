@@ -152,7 +152,7 @@ public class DataElementScoringService
             .Select(a => a.Id)
             .ToHashSet();
 
-        var automaticIds = assessments
+        var automatedIds = assessments
             .Where(a => a.DataSourceType == DataSourceType.EdFiApi ||
                         a.DataSourceType == DataSourceType.CedsDw)
             .Select(a => a.Id)
@@ -185,10 +185,10 @@ public class DataElementScoringService
 
         return new OverallReadinessResults
         {
-            CurrentReadiness = ComputeScore(manualIds),
-            AutomaticReadiness = ComputeScore(automaticIds),
+            CustomDataSourceReadiness = ComputeScore(manualIds),
+            AutomatedDataSourceReadiness = ComputeScore(automatedIds),
             EcsReadiness = ComputeScore(ecsIds),
-            CompleteReadiness = ComputeScore(allIds)
+            CombinedReadiness = ComputeScore(allIds)
         };
     }
 
