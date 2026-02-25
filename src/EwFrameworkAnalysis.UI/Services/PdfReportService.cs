@@ -40,10 +40,15 @@ public class PdfReportService(IJSRuntime jsRuntime)
                     .Select(g => g.Min(de => de.AvailabilityScore))
                     .ToList() ?? [];
 
+                var scoredByName = qs?.IndicatorScores
+                    .ToDictionary(i => i.IndicatorCode) ?? [];
+
                 return new
                 {
                     number = eq.QuestionNumber,
+                    question = eq.Question,
                     summary = eq.QuestionSummary,
+                    sectors = eq.ApplicableSectors.Select(s => s.GetDisplayName()).ToArray(),
                     readinessScore = qs != null ? (double)qs.ReadinessScore : 0.0,
                     indicatorCount = qs?.IndicatorScores.Count ?? 0,
                     dataElements = new
@@ -52,6 +57,33 @@ public class PdfReportService(IJSRuntime jsRuntime)
                         partial = distinctAvailability.Count(a => a == AvailabilityJudgment.PartiallyAvailable),
                         notAvailable = distinctAvailability.Count(a => a is AvailabilityJudgment.NotAvailable or AvailabilityJudgment.InsufficientData),
                     },
+                    indicators = eq.RelatedIndicatorNames.Select(indName =>
+                    {
+                        if (scoredByName.TryGetValue(indName, out var scored))
+                        {
+                            return new
+                            {
+                                name = indName,
+                                readinessScore = (double)scored.ReadinessScore,
+                                sectors = scored.Sectors.Select(s => s.GetDisplayName()).ToArray(),
+                            };
+                        }
+
+                        var fallbackSectors = EwFrameworkIndicators.Indicators.TryGetValue(indName, out var def)
+                            ? def.Sectors.Select(s => s.GetDisplayName()).ToArray()
+                            : [];
+                        return new { name = indName, readinessScore = 0.0, sectors = fallbackSectors };
+                    }).ToArray(),
+                    distinctDataElements = qs?.IndicatorScores
+                        .SelectMany(i => i.DataElementScores)
+                        .GroupBy(de => de.DataElementName)
+                        .Select(g => new
+                        {
+                            name = g.Key,
+                            availability = g.Min(de => de.AvailabilityScore).ToString(),
+                        })
+                        .OrderBy(de => de.name)
+                        .ToArray() ?? [],
                 };
             })
             .ToArray();

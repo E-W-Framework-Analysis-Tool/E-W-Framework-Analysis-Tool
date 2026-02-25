@@ -126,7 +126,7 @@ window.generatePdfReport = function (reportData) {
         body: sortedQuestions.map(function (q) {
             return [
                 String(q.number),
-                q.summary,
+                q.question,
                 String(q.indicatorCount),
                 '', // drawn via didDrawCell
                 (q.readinessScore * 100).toFixed(1) + '%',
@@ -141,6 +141,21 @@ window.generatePdfReport = function (reportData) {
             4: { cellWidth: 20, halign: 'right' },
         },
         tableWidth: contentWidth,
+        didParseCell: function (data) {
+            if (data.row.section === 'head') {
+                data.cell.styles.halign = 'center';
+            }
+            if (data.column.index === 4 && data.row.section === 'body') {
+                var pct = sortedQuestions[data.row.index].readinessScore * 100;
+                if (pct >= 66) {
+                    data.cell.styles.textColor = [34, 197, 94];
+                } else if (pct >= 33) {
+                    data.cell.styles.textColor = [234, 179, 8];
+                } else {
+                    data.cell.styles.textColor = [239, 68, 68];
+                }
+            }
+        },
         didDrawCell: function (data) {
             if (data.column.index !== 3 || data.row.section !== 'body') return;
 
@@ -174,6 +189,153 @@ window.generatePdfReport = function (reportData) {
             doc.setTextColor(0, 0, 0);
         },
     });
+
+    // ── Per-Question Detail Pages ──────────────────────────────────────────────
+    var orderedQuestions = reportData.questions.slice().sort(function (a, b) {
+        return a.number - b.number;
+    });
+
+    for (var qi = 0; qi < orderedQuestions.length; qi++) {
+        var q = orderedQuestions[qi];
+        doc.addPage();
+        y = 14;
+
+        // Section Header
+        doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
+        doc.rect(0, y, pageWidth, 14, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(255, 255, 255);
+        doc.text('EQ ' + q.number + ': ' + q.summary, margin, y + 9);
+        doc.setTextColor(0, 0, 0);
+        y += 20;
+
+        // Full Question Text
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(10);
+        var qLines = doc.splitTextToSize(q.question, contentWidth);
+        doc.text(qLines, margin, y);
+        y += qLines.length * 5 + 6;
+
+        // Sector Pills
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Sectors:', margin, y);
+        var pillX = margin + doc.getTextWidth('Sectors:') + 3;
+        doc.setFontSize(8);
+        for (var si = 0; si < q.sectors.length; si++) {
+            var pillText = q.sectors[si];
+            var pillW = doc.getTextWidth(pillText) + 4;
+            doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
+            doc.roundedRect(pillX, y - 3.5, pillW, 6, 1, 1, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.text(pillText, pillX + 2, y + 0.5);
+            doc.setTextColor(0, 0, 0);
+            pillX += pillW + 2;
+        }
+        y += 12;
+
+        // Indicators Subheading
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('Indicators', margin, y);
+        y += 4;
+
+        // Indicators Table
+        (function (currentQ) {
+            doc.autoTable({
+                startY: y,
+                margin: { left: margin, right: margin },
+                head: [['Indicator', 'Sectors', 'Score']],
+                body: currentQ.indicators.map(function (ind) {
+                    return [
+                        ind.name,
+                        ind.sectors.join(', '),
+                        (ind.readinessScore * 100).toFixed(1) + '%',
+                    ];
+                }),
+                styles: { fontSize: 9 },
+                headStyles: { fillColor: brandBlue },
+                columnStyles: {
+                    2: { cellWidth: 20, halign: 'right' },
+                },
+                tableWidth: contentWidth,
+                didParseCell: function (data) {
+                    if (data.row.section === 'head') {
+                        data.cell.styles.halign = 'center';
+                    }
+                    if (data.column.index === 2 && data.row.section === 'body') {
+                        var pct = currentQ.indicators[data.row.index].readinessScore * 100;
+                        if (pct >= 66) {
+                            data.cell.styles.textColor = [34, 197, 94];
+                        } else if (pct >= 33) {
+                            data.cell.styles.textColor = [234, 179, 8];
+                        } else {
+                            data.cell.styles.textColor = [239, 68, 68];
+                        }
+                    }
+                },
+            });
+        }(q));
+
+        y = doc.lastAutoTable.finalY + 8;
+
+        // Data Elements Subheading (new page if near bottom)
+        if (y + 20 > pageHeight) {
+            doc.addPage();
+            y = 20;
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('Data Elements', margin, y);
+        y += 4;
+
+        // Data Elements Table
+        (function (currentQ) {
+            doc.autoTable({
+                startY: y,
+                margin: { left: margin, right: margin },
+                head: [['Data Element', 'Availability']],
+                body: currentQ.distinctDataElements.map(function (de) {
+                    return [de.name, ''];
+                }),
+                styles: { fontSize: 9 },
+                headStyles: { fillColor: brandBlue },
+                columnStyles: {
+                    1: { cellWidth: 44 },
+                },
+                tableWidth: contentWidth,
+                didParseCell: function (data) {
+                    if (data.row.section === 'head') {
+                        data.cell.styles.halign = 'center';
+                    }
+                },
+                didDrawCell: function (data) {
+                    if (data.column.index !== 1 || data.row.section !== 'body') return;
+                    var avail = currentQ.distinctDataElements[data.row.index].availability;
+                    var color, label;
+                    if (avail === 'Available') {
+                        color = [34, 197, 94]; label = 'Available';
+                    } else if (avail === 'PartiallyAvailable') {
+                        color = [234, 179, 8]; label = 'Partially Available';
+                    } else if (avail === 'NotAvailable') {
+                        color = [239, 68, 68]; label = 'Not Available';
+                    } else {
+                        color = [239, 68, 68]; label = 'Insufficient Data';
+                    }
+                    var cx = data.cell.x + 4;
+                    var cy = data.cell.y + data.cell.height / 2;
+                    doc.setFillColor(color[0], color[1], color[2]);
+                    doc.circle(cx, cy, 1.5, 'F');
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(8);
+                    doc.text(label, cx + 3.5, cy + 0.8);
+                },
+            });
+        }(q));
+    }
 
     var pdfUrl = doc.output('bloburl');
     window.open(pdfUrl, '_blank');

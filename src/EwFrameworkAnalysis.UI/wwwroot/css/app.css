@@ -3631,6 +3631,9 @@
   .uppercase {
     text-transform: uppercase;
   }
+  .italic {
+    font-style: italic;
+  }
   .link-hover {
     text-decoration-line: none;
     &:hover {
