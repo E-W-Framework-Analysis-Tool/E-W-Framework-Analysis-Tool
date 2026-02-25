@@ -1,0 +1,133 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Overflow Title="EQ Readiness Summary" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
+    <ChildContent>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                @* EQ Score Distribution *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness Score Distribution</h2>
+                    <div class="flex flex-col gap-3">
+                        @foreach (var band in _scoreBands)
+                        {
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">@band.Label</span>
+                                    <span class="font-semibold">@band.Count EQ@(band.Count != 1 ? "s" : "")</span>
+                                </div>
+                                <progress class="progress h-3 @band.BarColor bg-gray-200"
+                                          value="@band.Count"
+                                          max="@_totalQuestions"></progress>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* Readiness by Sector *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness by Sector</h2>
+                    <div class="flex flex-col gap-3">
+                        @foreach (var sector in SectorReadinessScores.OrderByDescending(x => x.ReadinessScore))
+                        {
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">@sector.Sector.GetDisplayName()</span>
+                                    <span class="font-semibold">@sector.ReadinessScore.ToString("0.##%")</span>
+                                </div>
+                                <progress class="progress h-3 @GetProgressBarColor(sector.ReadinessScore) bg-gray-200"
+                                          value="@(sector.ReadinessScore * 100)"
+                                          max="100"></progress>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* Readiness by Data Source *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness by Data Source</h2>
+                    <div class="flex flex-col gap-3">
+
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Custom Manual</span>
+                                <span class="font-semibold">@OverallReadinessScores.CustomDataSourceReadiness.ToString("0.##%")</span>
+                            </div>
+                            <progress class="progress progress-primary h-3 bg-gray-200"
+                                      value="@(OverallReadinessScores.CustomDataSourceReadiness * 100)"
+                                      max="100"></progress>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Automated (Ed-Fi &amp; CEDS)</span>
+                                <span class="font-semibold">@OverallReadinessScores.AutomatedDataSourceReadiness.ToString("0.##%")</span>
+                            </div>
+                            <progress class="progress progress-accent h-3 bg-gray-200"
+                                      value="@(OverallReadinessScores.AutomatedDataSourceReadiness * 100)"
+                                      max="100"></progress>
+                        </div>
+
+                        @if (_ecsActive)
+                        {
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">ECS State Data</span>
+                                    <span class="font-semibold">@OverallReadinessScores.EcsReadiness.ToString("0.##%")</span>
+                                </div>
+                                <progress class="progress progress-info h-3 bg-gray-200"
+                                          value="@(OverallReadinessScores.EcsReadiness * 100)"
+                                          max="100"></progress>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<QuestionScore> QuestionScores { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public List<SectorReadinessResult> SectorReadinessScores { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public OverallReadinessResults OverallReadinessScores { get; set; } = new();
+
+    [Parameter, EditorRequired]
+    public List<DataSource> ActiveDataSources { get; set; } = [];
+
+    private bool _ecsActive => ActiveDataSources.Any(ds => ds.Type == DataSourceType.EcsState);
+
+    private int _totalQuestions;
+    private List<ScoreBand> _scoreBands = [];
+
+    private record ScoreBand(string Label, int Count, string BarColor);
+
+    protected override void OnParametersSet()
+    {
+        _totalQuestions = Math.Max(QuestionScores.Count, 1);
+        _scoreBands =
+        [
+            new("100% Readiness", QuestionScores.Count(q => q.ReadinessScore >= 0.9m), "progress-success"),
+            new("80–90% Readiness", QuestionScores.Count(q => q.ReadinessScore is >= 0.80m and < 0.90m), "progress-info"),
+            new("50–79% Readiness", QuestionScores.Count(q => q.ReadinessScore is >= 0.50m and < 0.80m), "progress-warning"),
+            new("Under 50% Readiness", QuestionScores.Count(q => q.ReadinessScore < 0.50m), "progress-error"),
+        ];
+    }
+
+    private string GetProgressBarColor(decimal score)
+    {
+        if (score > 0.66m) return "progress-success";
+        if (score > 0.33m) return "progress-warning";
+        if (score > 0m) return "progress-error";
+        return "bg-gray-200";
+    }
+}
