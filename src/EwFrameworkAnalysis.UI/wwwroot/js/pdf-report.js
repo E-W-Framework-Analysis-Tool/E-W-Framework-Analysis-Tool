@@ -276,7 +276,7 @@ function drawEssentialQuestionsTable(ctx, questions) {
                 (q.readinessScore * 100).toFixed(1) + '%',
             ];
         }),
-        styles: { fontSize: 9 },
+        styles: { fontSize: 9, valign: 'middle' },
         headStyles: { fillColor: brandBlue },
         columnStyles: {
             0: { cellWidth: 12, halign: 'center' },
