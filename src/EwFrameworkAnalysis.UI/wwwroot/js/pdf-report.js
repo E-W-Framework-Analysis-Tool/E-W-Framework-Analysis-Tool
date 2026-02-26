@@ -122,12 +122,12 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
     // ── Score Distribution bar chart (right half) ────────────────────────────
     var bins = [
-        { label: '<50%',    count: questions.filter(function (q) { return q.readinessScore < 0.50; }).length,                                              color: [239, 68,  68 ] },
-        { label: '50-60%',  count: questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).length,                  color: [249, 115, 22 ] },
-        { label: '60-70%',  count: questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).length,                  color: [234, 179, 8  ] },
-        { label: '70-80%',  count: questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).length,                  color: [163, 230, 53 ] },
-        { label: '80-90%',  count: questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).length,                  color: [74,  222, 128] },
         { label: '90-100%', count: questions.filter(function (q) { return q.readinessScore >= 0.90; }).length,                                            color: [34,  197, 94 ] },
+        { label: '80-90%',  count: questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).length,                  color: [74,  222, 128] },
+        { label: '70-80%',  count: questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).length,                  color: [163, 230, 53 ] },
+        { label: '60-70%',  count: questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).length,                  color: [234, 179, 8  ] },
+        { label: '50-60%',  count: questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).length,                  color: [249, 115, 22 ] },
+        { label: '<50%',    count: questions.filter(function (q) { return q.readinessScore < 0.50; }).length,                                              color: [239, 68,  68 ] },
     ];
 
     var maxCount = Math.max.apply(null, bins.map(function (b) { return b.count; }));
