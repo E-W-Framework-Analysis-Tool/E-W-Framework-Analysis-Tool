@@ -65,24 +65,22 @@ public class PdfReportService(IJSRuntime jsRuntime)
                             {
                                 name = indName,
                                 readinessScore = (double)scored.ReadinessScore,
-                                sectors = scored.Sectors.Select(s => s.GetDisplayName()).ToArray(),
+                                sectors = scored.Sectors.Select(s => s.ToString()).ToArray(),
                             };
                         }
 
                         var fallbackSectors = EwFrameworkIndicators.Indicators.TryGetValue(indName, out var def)
-                            ? def.Sectors.Select(s => s.GetDisplayName()).ToArray()
+                            ? def.Sectors.Select(s => s.ToString()).ToArray()
                             : [];
                         return new { name = indName, readinessScore = 0.0, sectors = fallbackSectors };
                     }).ToArray(),
                     distinctDataElements = qs?.IndicatorScores
                         .SelectMany(i => i.DataElementScores)
                         .GroupBy(de => de.DataElementName)
-                        .Select(g => new
-                        {
-                            name = g.Key,
-                            availability = g.Min(de => de.AvailabilityScore).ToString(),
-                        })
-                        .OrderBy(de => de.name)
+                        .Select(g => (name: g.Key, score: g.Min(de => de.AvailabilityScore)))
+                        .OrderBy(x => x.score)
+                        .ThenBy(x => x.name)
+                        .Select(x => new { x.name, availability = x.score.ToString() })
                         .ToArray() ?? [],
                 };
             })

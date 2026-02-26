@@ -251,8 +251,8 @@ window.generatePdfReport = function (reportData) {
         var indBarH = 3;
         var indNameFS = 8;
         var indNameLineH = 3.8;
-        var indPillFS = 6;
-        var indPillH = 5;
+        var indPillFS = 8;
+        var indPillH = 6;
         var indScoreFS = 9;
 
         // Pre-compute text layout for each indicator (sets font state, so must run before drawing)
@@ -334,7 +334,7 @@ window.generatePdfReport = function (reportData) {
                         for (var ipp = 0; ipp < indLayout.pillRows[ipr].length; ipp++) {
                             var pill = indLayout.pillRows[ipr][ipp];
                             doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
-                            doc.roundedRect(pillX, ty - 3, pill.w, indPillH, indPillH / 2, indPillH / 2, 'F');
+                            doc.roundedRect(pillX, ty - 3.5, pill.w, indPillH, indPillH / 2, indPillH / 2, 'F');
                             doc.setTextColor(255, 255, 255);
                             doc.text(pill.text, pillX + 2, ty + 0.5);
                             doc.setTextColor(0, 0, 0);
@@ -370,6 +370,8 @@ window.generatePdfReport = function (reportData) {
             y += indCellH + indRowGap;
         }
 
+        y += 10;
+
         // Data Elements Subheading (new page if near bottom)
         if (y + 20 > pageHeight) {
             doc.addPage();
@@ -378,56 +380,79 @@ window.generatePdfReport = function (reportData) {
 
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
+        doc.setTextColor("#000000");
         doc.text('Data Elements', margin, y);
         y += 4;
 
-        // Data Elements Table
-        (function (currentQ) {
-            doc.autoTable({
-                startY: y,
-                margin: { left: margin, right: margin },
-                head: [['Data Element', 'Availability']],
-                body: currentQ.distinctDataElements.map(function (de) {
-                    return [de.name, de.availability]; // availability stored as raw cell value
-                }),
-                styles: { fontSize: 9 },
-                headStyles: { fillColor: brandBlue },
-                columnStyles: {
-                    1: { cellWidth: 44 },
-                },
-                tableWidth: contentWidth,
-                didParseCell: function (data) {
-                    if (data.row.section === 'head') {
-                        data.cell.styles.halign = 'center';
-                    }
-                    // suppress the raw text in the availability column — drawn manually below
-                    if (data.column.index === 1 && data.row.section === 'body') {
-                        data.cell.text = [''];
-                    }
-                },
-                didDrawCell: function (data) {
-                    if (data.column.index !== 1 || data.row.section !== 'body') return;
-                    var avail = data.cell.raw;
-                    var color, label;
-                    if (avail === 'Available') {
-                        color = [34, 197, 94]; label = 'Available';
-                    } else if (avail === 'PartiallyAvailable') {
-                        color = [234, 179, 8]; label = 'Partially Available';
-                    } else if (avail === 'NotAvailable') {
-                        color = [239, 68, 68]; label = 'Not Available';
-                    } else {
-                        color = [239, 68, 68]; label = 'Insufficient Data';
-                    }
-                    var cx = data.cell.x + 4;
-                    var cy = data.cell.y + data.cell.height / 2;
-                    doc.setFillColor(color[0], color[1], color[2]);
-                    doc.circle(cx, cy, 1.5, 'F');
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(8);
-                    doc.text(label, cx + 3.5, cy + 0.8);
-                },
-            });
-        }(q));
+        // ── Data Elements Grid (2-column, horizontal-first) ─────────────────────
+        var DE_COLS = 2;
+        var deColGap = 8;
+        var deColW = (contentWidth - deColGap) / 2;
+        var deCircleR = 1.5;
+        var deCircleGap = 1.5;
+        var deFontSize = 8;
+        var deLineH = 3.8;
+        var dePad = 1.5;
+        var deRowGap = 1.5;
+        var deTextW = deColW - deCircleR * 2 - deCircleGap;
+
+        // Pre-compute line wrapping and availability color for each element
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(deFontSize);
+        var deLayouts = q.distinctDataElements.map(function (de) {
+            var nameLines = doc.splitTextToSize(de.name, deTextW);
+            if (nameLines.length > 2) { nameLines = nameLines.slice(0, 2); }
+            var deColor;
+            if (de.availability === 'Available') {
+                deColor = [34, 197, 94];
+            } else if (de.availability === 'PartiallyAvailable') {
+                deColor = [234, 179, 8];
+            } else {
+                deColor = [239, 68, 68];
+            }
+            return { de: de, nameLines: nameLines, deColor: deColor };
+        });
+
+        // Group into pairs (horizontal-first order)
+        var deGridRows = [];
+        for (var dgr = 0; dgr < deLayouts.length; dgr += DE_COLS) {
+            deGridRows.push(deLayouts.slice(dgr, dgr + DE_COLS));
+        }
+
+        for (var drow = 0; drow < deGridRows.length; drow++) {
+            var deRowItems = deGridRows[drow];
+            var maxDeLines = Math.max.apply(null, deRowItems.map(function (d) { return d.nameLines.length; }));
+            var deRowH = dePad + maxDeLines * deLineH + dePad;
+
+            if (y + deRowH > pageHeight - 10) {
+                doc.addPage();
+                y = 20;
+            }
+
+            // Circle center and first-line baseline, consistent for all cells in this row
+            var deCy = y + dePad + deLineH - 1.0;
+            var deTextY = y + dePad + deLineH;
+
+            for (var dc = 0; dc < deRowItems.length; dc++) {
+                var deLayout = deRowItems[dc];
+                var dx = margin + dc * (deColW + deColGap);
+
+                // Colored status circle
+                doc.setFillColor(deLayout.deColor[0], deLayout.deColor[1], deLayout.deColor[2]);
+                doc.circle(dx + deCircleR, deCy, deCircleR, 'F');
+
+                // Bold data element name
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(deFontSize);
+                doc.setTextColor(0, 0, 0);
+                var deTextX = dx + deCircleR * 2 + deCircleGap;
+                for (var dnl = 0; dnl < deLayout.nameLines.length; dnl++) {
+                    doc.text(deLayout.nameLines[dnl], deTextX, deTextY + dnl * deLineH);
+                }
+            }
+
+            y += deRowH + deRowGap;
+        }
     }
 
     var pdfUrl = doc.output('bloburl');
