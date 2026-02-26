@@ -75,7 +75,7 @@
 
     private async Task GenerateReportAsync()
     {
-        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources);
+        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources, ProjectSvc.Project.Title);
     }
 
     private void CalculateScores()

@@ -11,7 +11,8 @@ public class PdfReportService(IJSRuntime jsRuntime)
         List<QuestionScore> questionScores,
         List<SectorReadinessResult> sectorReadinessScores,
         OverallReadinessResults overallReadinessScores,
-        List<DataSource> activeDataSources)
+        List<DataSource> activeDataSources,
+        string? projectTitle)
     {
         var ecsActive = activeDataSources.Any(ds => ds.Type == DataSourceType.EcsState);
 
@@ -88,6 +89,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
 
         var reportData = new
         {
+            projectTitle = projectTitle ?? string.Empty,
             summary = new
             {
                 eqBands,

@@ -12,37 +12,46 @@ function buildCtx() {
         contentWidth: pageWidth - 2 * margin,
         brandBlue: [2, 40, 71],
         y: 0,
-        eqRowBounds: [],    // populated by drawEssentialQuestionsTable; consumed by applyEqTableLinks
-        questionPageMap: {} // populated by drawQuestionDetailPage; consumed by applyEqTableLinks
+        eqRowBounds: [],     // populated by drawEssentialQuestionsTable; consumed by applyEqTableLinks
+        eqBandLinkQueue: [], // populated by drawEqReadinessSummary;    consumed by applyEqTableLinks
+        questionPageMap: {}  // populated by drawQuestionDetailPage;     consumed by applyEqTableLinks
     };
 }
 
 // ── Header Banner ───────────────────────────────────────────────────────────────
-function drawHeaderBanner(ctx) {
+function drawHeaderBanner(ctx, projectTitle) {
     var doc = ctx.doc;
     var bb = ctx.brandBlue;
+    var hasProject = typeof projectTitle === 'string' && projectTitle.length > 0;
+    var bannerH = hasProject ? 32 : 28;
 
     doc.setFillColor(bb[0], bb[1], bb[2]);
-    doc.rect(0, 0, ctx.pageWidth, 28, 'F');
+    doc.rect(0, 0, ctx.pageWidth, bannerH, 'F');
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
-    doc.text('E-W Framework Readiness Report', ctx.margin, 13);
+    doc.text('E-W Framework Readiness Report', ctx.margin, hasProject ? 11 : 13);
+
+    if (hasProject) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(projectTitle, ctx.margin, 20);
+    }
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     var dateStr = new Date().toLocaleDateString('en-US', {
         month: 'numeric', day: 'numeric', year: 'numeric'
     });
-    doc.text('Generated: ' + dateStr, ctx.margin, 22);
+    doc.text('Generated: ' + dateStr, ctx.margin, hasProject ? 27 : 22);
 
     doc.setTextColor(0, 0, 0);
-    ctx.y = 36;
+    ctx.y = hasProject ? 40 : 36;
 }
 
 // ── EQ Readiness Summary ────────────────────────────────────────────────────────
-function drawEqReadinessSummary(ctx, summary) {
+function drawEqReadinessSummary(ctx, summary, questions) {
     var doc = ctx.doc;
     var margin = ctx.margin;
     var contentWidth = ctx.contentWidth;
@@ -58,17 +67,51 @@ function drawEqReadinessSummary(ctx, summary) {
     doc.text('Readiness Score Distribution', margin, ctx.y);
     ctx.y += 3;
 
+    // EQ membership per band — thresholds mirror PdfReportService.cs
+    var sortByNumber = function (a, b) { return a.number - b.number; };
+    var bandEqLists = [
+        questions.filter(function (q) { return q.readinessScore >= 0.9; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.80; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore < 0.50; }).sort(sortByNumber),
+    ];
+
     doc.autoTable({
         startY: ctx.y,
         margin: { left: margin, right: margin },
-        head: [['Band', 'Count']],
-        body: summary.eqBands.map(function (b) {
-            return [b.label, String(b.count)];
+        head: [['', 'EQs', 'Count']],
+        body: summary.eqBands.map(function (b, i) {
+            var eqText = bandEqLists[i].map(function (q) { return 'EQ-' + q.number; }).join(', ');
+            return [b.label, eqText, String(b.count)];
         }),
         styles: { fontSize: 9 },
         headStyles: { fillColor: brandBlue },
-        columnStyles: { 1: { halign: 'center', cellWidth: 24 } },
+        columnStyles: {
+            2: { halign: 'center', cellWidth: 24 },
+        },
         tableWidth: contentWidth,
+        didDrawCell: function (data) {
+            if (data.column.index !== 1 || data.row.section !== 'body') return;
+            var eqItems = bandEqLists[data.row.index];
+            if (eqItems.length === 0) return;
+
+            // Re-measure each "EQ-X" fragment to record individual link hotspots
+            doc.setFontSize(9);
+            var textX = data.cell.x + 2; // default autoTable left cell padding
+            for (var i = 0; i < eqItems.length; i++) {
+                var eqLabel = 'EQ-' + eqItems[i].number;
+                var eqW = doc.getTextWidth(eqLabel);
+                ctx.eqBandLinkQueue.push({
+                    questionNumber: eqItems[i].number,
+                    page: doc.internal.getCurrentPageInfo().pageNumber,
+                    x: textX,
+                    y: data.cell.y,
+                    w: eqW,
+                    h: data.cell.height,
+                });
+                textX += eqW + (i < eqItems.length - 1 ? doc.getTextWidth(', ') : 0);
+            }
+        },
     });
 
     ctx.y = doc.lastAutoTable.finalY + 8;
@@ -93,7 +136,7 @@ function drawEqReadinessSummary(ctx, summary) {
         }),
         styles: { fontSize: 9 },
         headStyles: { fillColor: brandBlue },
-        columnStyles: { 1: { halign: 'right', cellWidth: 22 } },
+        columnStyles: { 1: { halign: 'center', cellWidth: 22 } },
         tableWidth: halfWidth,
     });
 
@@ -115,7 +158,7 @@ function drawEqReadinessSummary(ctx, summary) {
         body: dsRows,
         styles: { fontSize: 9 },
         headStyles: { fillColor: brandBlue },
-        columnStyles: { 1: { halign: 'right', cellWidth: 22 } },
+        columnStyles: { 1: { halign: 'center', cellWidth: 22 } },
         tableWidth: halfWidth,
     });
 
@@ -142,6 +185,12 @@ function drawEssentialQuestionsTable(ctx, questions) {
     var sortedQuestions = questions.slice().sort(function (a, b) {
         return b.readinessScore - a.readinessScore;
     });
+
+    // Keyed by question number for safe lookup inside autoTable callbacks —
+    // row.index is page-relative and resets on each page break, so it cannot
+    // be used as a direct index into sortedQuestions.
+    var questionByNumber = {};
+    sortedQuestions.forEach(function (q) { questionByNumber[q.number] = q; });
 
     // Columns: #, Question, Indicators, Data Elements (colored dots), Score
     doc.autoTable({
@@ -171,7 +220,9 @@ function drawEssentialQuestionsTable(ctx, questions) {
                 data.cell.styles.halign = 'center';
             }
             if (data.column.index === 4 && data.row.section === 'body') {
-                var pct = sortedQuestions[data.row.index].readinessScore * 100;
+                var q = questionByNumber[parseInt(data.row.raw[0], 10)];
+                if (!q) return;
+                var pct = q.readinessScore * 100;
                 if (pct >= 66) {
                     data.cell.styles.textColor = [34, 197, 94];
                 } else if (pct >= 33) {
@@ -183,18 +234,22 @@ function drawEssentialQuestionsTable(ctx, questions) {
         },
         didDrawCell: function (data) {
             if (data.row.section === 'body' && data.column.index === 0) {
-                ctx.eqRowBounds.push({
-                    questionNumber: sortedQuestions[data.row.index].number,
-                    x: margin,
-                    y: data.cell.y,
-                    w: contentWidth,
-                    h: data.cell.height,
-                    page: doc.internal.getCurrentPageInfo().pageNumber,
-                });
+                var qNum = parseInt(data.row.raw[0], 10);
+                if (!isNaN(qNum)) {
+                    ctx.eqRowBounds.push({
+                        questionNumber: qNum,
+                        x: margin,
+                        y: data.cell.y,
+                        w: contentWidth,
+                        h: data.cell.height,
+                        page: doc.internal.getCurrentPageInfo().pageNumber,
+                    });
+                }
             }
             if (data.column.index !== 3 || data.row.section !== 'body') return;
 
-            var de = sortedQuestions[data.row.index].dataElements;
+            var de = (questionByNumber[parseInt(data.row.raw[0], 10)] || {}).dataElements;
+            if (!de) return;
             var cx = data.cell.x + 3;
             var cy = data.cell.y + data.cell.height / 2;
             var r = 1.5;
@@ -497,6 +552,8 @@ function drawQuestionDetailPage(ctx, q) {
 // ── Back-fill internal links: EQ table rows → question detail pages ─────────────
 function applyEqTableLinks(ctx) {
     var doc = ctx.doc;
+
+    // EQ summary table row links
     ctx.eqRowBounds.forEach(function (row) {
         var targetPage = ctx.questionPageMap[row.questionNumber];
         if (targetPage) {
@@ -504,6 +561,16 @@ function applyEqTableLinks(ctx) {
             doc.link(row.x, row.y, row.w, row.h, { pageNumber: targetPage });
         }
     });
+
+    // Readiness Score Distribution — individual EQ label links
+    ctx.eqBandLinkQueue.forEach(function (entry) {
+        var targetPage = ctx.questionPageMap[entry.questionNumber];
+        if (targetPage) {
+            doc.setPage(entry.page);
+            doc.link(entry.x, entry.y, entry.w, entry.h, { pageNumber: targetPage });
+        }
+    });
+
     doc.setPage(doc.internal.getNumberOfPages());
 }
 
@@ -511,8 +578,8 @@ function applyEqTableLinks(ctx) {
 window.generatePdfReport = function (reportData) {
     var ctx = buildCtx();
 
-    drawHeaderBanner(ctx);
-    drawEqReadinessSummary(ctx, reportData.summary);
+    drawHeaderBanner(ctx, reportData.projectTitle);
+    drawEqReadinessSummary(ctx, reportData.summary, reportData.questions);
     drawEssentialQuestionsTable(ctx, reportData.questions);
 
     var orderedQuestions = reportData.questions.slice().sort(function (a, b) {
