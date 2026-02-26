@@ -5,6 +5,8 @@ using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI.Services;
 
+public record CustomDataSourceScore(string Name, double Score);
+
 public class PdfReportService(IJSRuntime jsRuntime)
 {
     public async Task GenerateReportAsync(
@@ -12,16 +14,19 @@ public class PdfReportService(IJSRuntime jsRuntime)
         List<SectorReadinessResult> sectorReadinessScores,
         OverallReadinessResults overallReadinessScores,
         List<DataSource> activeDataSources,
-        string? projectTitle)
+        string? projectTitle,
+        List<CustomDataSourceScore> customSourceScores)
     {
         var ecsActive = activeDataSources.Any(ds => ds.Type == DataSourceType.EcsState);
 
         var eqBands = new[]
         {
-            new { label = "100% Readiness", count = questionScores.Count(q => q.ReadinessScore >= 0.9m) },
-            new { label = "80\u201390% Readiness", count = questionScores.Count(q => q.ReadinessScore is >= 0.80m and < 0.90m) },
-            new { label = "50\u201379% Readiness", count = questionScores.Count(q => q.ReadinessScore is >= 0.50m and < 0.80m) },
-            new { label = "Under 50% Readiness", count = questionScores.Count(q => q.ReadinessScore < 0.50m) },
+            new { label = "90\u2013100%", count = questionScores.Count(q => q.ReadinessScore >= 0.90m) },
+            new { label = "80\u201390%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.80m and < 0.90m) },
+            new { label = "70\u201380%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.70m and < 0.80m) },
+            new { label = "60\u201370%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.60m and < 0.70m) },
+            new { label = "50\u201360%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.50m and < 0.60m) },
+            new { label = "<50%",         count = questionScores.Count(q => q.ReadinessScore < 0.50m) },
         };
 
         var sectorReadiness = sectorReadinessScores
@@ -96,7 +101,9 @@ public class PdfReportService(IJSRuntime jsRuntime)
                 sectorReadiness,
                 dataSourceReadiness = new
                 {
-                    custom = (double)overallReadinessScores.CustomDataSourceReadiness,
+                    customSources = customSourceScores
+                        .Select(cs => new { name = cs.Name, score = cs.Score })
+                        .ToArray(),
                     automated = (double)overallReadinessScores.AutomatedDataSourceReadiness,
                     ecs = (double)overallReadinessScores.EcsReadiness,
                     ecsActive,

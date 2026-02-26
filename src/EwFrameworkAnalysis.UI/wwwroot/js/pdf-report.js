@@ -76,9 +76,11 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     // EQ membership per band — thresholds mirror PdfReportService.cs
     var sortByNumber = function (a, b) { return a.number - b.number; };
     var bandEqLists = [
-        questions.filter(function (q) { return q.readinessScore >= 0.9; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.90; }).sort(sortByNumber),
         questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.80; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).sort(sortByNumber),
+        questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).sort(sortByNumber),
         questions.filter(function (q) { return q.readinessScore < 0.50; }).sort(sortByNumber),
     ];
 
@@ -211,10 +213,10 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     var leftFinalY = doc.lastAutoTable.finalY;
 
     // Right: Data Source table
-    var dsRows = [
-        ['Custom Manual', (summary.dataSourceReadiness.custom * 100).toFixed(1) + '%'],
-        ['Automated (Ed-Fi & CEDS)', (summary.dataSourceReadiness.automated * 100).toFixed(1) + '%'],
-    ];
+    var dsRows = (summary.dataSourceReadiness.customSources || []).map(function (cs) {
+        return [cs.name, (cs.score * 100).toFixed(1) + '%'];
+    });
+    dsRows.push(['Automated (Ed-Fi & CEDS)', (summary.dataSourceReadiness.automated * 100).toFixed(1) + '%']);
     if (summary.dataSourceReadiness.ecsActive) {
         dsRows.push(['ECS State Data', (summary.dataSourceReadiness.ecs * 100).toFixed(1) + '%']);
     }

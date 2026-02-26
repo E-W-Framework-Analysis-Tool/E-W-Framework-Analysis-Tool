@@ -75,7 +75,17 @@
 
     private async Task GenerateReportAsync()
     {
-        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources, ProjectSvc.Project.Title);
+        var customSourceScores = ProjectSvc.DataSources
+            .Where(ds => ds.Enabled && ds.Type == DataSourceType.Custom)
+            .Select(ds => new CustomDataSourceScore(
+                ds.Name,
+                (double)ScoringSvc.CalculateOverallReadinessScores(
+                    Assessments.Where(a => a.DataSourceId == ds.Id).ToList()
+                ).CustomDataSourceReadiness
+            ))
+            .ToList();
+
+        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources, ProjectSvc.Project.Title, customSourceScores);
     }
 
     private void CalculateScores()
