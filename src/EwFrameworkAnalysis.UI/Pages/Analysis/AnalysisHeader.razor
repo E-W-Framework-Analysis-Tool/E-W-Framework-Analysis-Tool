@@ -1,8 +1,4 @@
-@using EwFrameworkAnalysis.Common.Models.Project
-@using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-@using EwFrameworkAnalysis.UI.Services
-@inject PdfReportService PdfReportSvc
 
 <Card Overflow Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
@@ -40,16 +36,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<QuestionScore> QuestionScores { get; set; } = [];
-
-    [Parameter, EditorRequired]
-    public List<SectorReadinessResult> SectorReadinessScores { get; set; } = [];
-
-    [Parameter, EditorRequired]
-    public OverallReadinessResults OverallReadinessScores { get; set; } = new();
-
-    [Parameter, EditorRequired]
-    public List<DataSource> ActiveDataSources { get; set; } = [];
+    public EventCallback OnGenerateReport { get; set; }
 
     private bool _isGenerating;
 
@@ -58,7 +45,7 @@
         _isGenerating = true;
         try
         {
-            await PdfReportSvc.GenerateReportAsync(QuestionScores, SectorReadinessScores, OverallReadinessScores, ActiveDataSources);
+            await OnGenerateReport.InvokeAsync();
         }
         finally
         {

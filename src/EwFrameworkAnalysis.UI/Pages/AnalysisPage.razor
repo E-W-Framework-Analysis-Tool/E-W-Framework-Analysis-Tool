@@ -5,15 +5,14 @@
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Pages.Analysis
+@using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
 @inject DataElementScoringService ScoringSvc
+@inject PdfReportService PdfReportSvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Header -->
-    <AnalysisHeader QuestionScores="_questionScores"
-                    SectorReadinessScores="_sectorReadinessScores"
-                    OverallReadinessScores="_overallReadinessScores"
-                    ActiveDataSources="ActiveDataSources"/>
+    <AnalysisHeader OnGenerateReport="GenerateReportAsync"/>
 
     <!-- EQ Readiness Summary -->
     <EqReadinessSummary QuestionScores="_questionScores"
@@ -72,6 +71,11 @@
     {
         await ProjectSvc.InitializeAsync();
         CalculateScores();
+    }
+
+    private async Task GenerateReportAsync()
+    {
+        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources);
     }
 
     private void CalculateScores()
