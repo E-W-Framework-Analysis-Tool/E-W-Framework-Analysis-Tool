@@ -62,10 +62,16 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     doc.text('EQ Readiness Summary', margin, ctx.y);
     ctx.y += 7;
 
+    var halfWidth = (contentWidth - 6) / 2;
+    var chartX = margin + halfWidth + 6;
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text('Readiness Score Distribution', margin, ctx.y);
+    doc.text('Score Distribution', chartX, ctx.y);
     ctx.y += 3;
+
+    var distributionStartY = ctx.y;
 
     // EQ membership per band — thresholds mirror PdfReportService.cs
     var sortByNumber = function (a, b) { return a.number - b.number; };
@@ -77,7 +83,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     ];
 
     doc.autoTable({
-        startY: ctx.y,
+        startY: distributionStartY,
         margin: { left: margin, right: margin },
         head: [['', 'EQs', 'Count']],
         body: summary.eqBands.map(function (b, i) {
@@ -89,7 +95,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         columnStyles: {
             2: { halign: 'center', cellWidth: 24 },
         },
-        tableWidth: contentWidth,
+        tableWidth: halfWidth,
         didDrawCell: function (data) {
             if (data.column.index !== 1 || data.row.section !== 'body') return;
             var eqItems = bandEqLists[data.row.index];
@@ -114,9 +120,71 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         },
     });
 
-    ctx.y = doc.lastAutoTable.finalY + 8;
+    // ── Score Distribution bar chart (right half) ────────────────────────────
+    var bins = [
+        { label: '<50%',    count: questions.filter(function (q) { return q.readinessScore < 0.50; }).length,                                              color: [239, 68,  68 ] },
+        { label: '50-60%',  count: questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).length,                  color: [249, 115, 22 ] },
+        { label: '60-70%',  count: questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).length,                  color: [234, 179, 8  ] },
+        { label: '70-80%',  count: questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).length,                  color: [163, 230, 53 ] },
+        { label: '80-90%',  count: questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).length,                  color: [74,  222, 128] },
+        { label: '90-100%', count: questions.filter(function (q) { return q.readinessScore >= 0.90; }).length,                                            color: [34,  197, 94 ] },
+    ];
 
-    var halfWidth = (contentWidth - 6) / 2;
+    var maxCount = Math.max.apply(null, bins.map(function (b) { return b.count; }));
+    if (maxCount === 0) maxCount = 1;
+
+    var headerH  = 7;
+    var barH     = 6;
+    var barGap   = 2;
+    var labelW   = 16;
+    var countW   = 7;
+    var barPad   = 2;
+    var barAreaW = halfWidth - labelW - countW - barPad * 2;
+
+    // Header bar — matches autoTable headStyles colour
+    doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
+    doc.rect(chartX, distributionStartY, halfWidth, headerH, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text('EQ Distribution', chartX + halfWidth / 2, distributionStartY + 5, { align: 'center' });
+    doc.setTextColor(0, 0, 0);
+
+    var bY = distributionStartY + headerH + 2;
+
+    for (var bi = 0; bi < bins.length; bi++) {
+        var bin = bins[bi];
+        var barX = chartX + labelW + barPad;
+
+        // Label — right-aligned in the label column
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text(bin.label, chartX + labelW - 1, bY + barH / 2 + 1.5, { align: 'right' });
+
+        // Bar track (light gray)
+        doc.setFillColor(225, 225, 225);
+        doc.roundedRect(barX, bY, barAreaW, barH, 1, 1, 'F');
+
+        // Colored fill proportional to count vs max
+        if (bin.count > 0) {
+            var fillW = barAreaW * (bin.count / maxCount);
+            doc.setFillColor(bin.color[0], bin.color[1], bin.color[2]);
+            if (fillW >= 2) {
+                doc.roundedRect(barX, bY, fillW, barH, 1, 1, 'F');
+            } else {
+                doc.rect(barX, bY, fillW, barH, 'F');
+            }
+        }
+
+        // Count label — after the bar track
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.text(String(bin.count), barX + barAreaW + barPad, bY + barH / 2 + 1.5);
+
+        bY += barH + barGap;
+    }
+
+    ctx.y = Math.max(doc.lastAutoTable.finalY, bY + 2) + 8;
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
