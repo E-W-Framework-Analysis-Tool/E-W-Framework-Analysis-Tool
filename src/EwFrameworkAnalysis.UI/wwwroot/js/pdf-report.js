@@ -119,6 +119,7 @@ window.generatePdfReport = function (reportData) {
     });
 
     // Columns: #, Question, Indicators, Data Elements (colored dots), Score
+    var eqRowBounds = []; // populated in didDrawCell; used to back-fill internal links
     doc.autoTable({
         startY: y,
         margin: { left: margin, right: margin },
@@ -157,6 +158,16 @@ window.generatePdfReport = function (reportData) {
             }
         },
         didDrawCell: function (data) {
+            if (data.row.section === 'body' && data.column.index === 0) {
+                eqRowBounds.push({
+                    questionNumber: sortedQuestions[data.row.index].number,
+                    x: margin,
+                    y: data.cell.y,
+                    w: contentWidth,
+                    h: data.cell.height,
+                    page: doc.internal.getCurrentPageInfo().pageNumber,
+                });
+            }
             if (data.column.index !== 3 || data.row.section !== 'body') return;
 
             var de = sortedQuestions[data.row.index].dataElements;
@@ -194,10 +205,12 @@ window.generatePdfReport = function (reportData) {
     var orderedQuestions = reportData.questions.slice().sort(function (a, b) {
         return a.number - b.number;
     });
+    var questionPageMap = {}; // { questionNumber: pageNumber } — used for EQ table links
 
     for (var qi = 0; qi < orderedQuestions.length; qi++) {
         var q = orderedQuestions[qi];
         doc.addPage();
+        questionPageMap[q.number] = doc.internal.getCurrentPageInfo().pageNumber;
         y = 6;
 
         // Section Header
@@ -454,6 +467,16 @@ window.generatePdfReport = function (reportData) {
             y += deRowH + deRowGap;
         }
     }
+
+    // ── Back-fill internal links: EQ table rows → question detail pages ────────
+    eqRowBounds.forEach(function (row) {
+        var targetPage = questionPageMap[row.questionNumber];
+        if (targetPage) {
+            doc.setPage(row.page);
+            doc.link(row.x, row.y, row.w, row.h, { pageNumber: targetPage });
+        }
+    });
+    doc.setPage(doc.internal.getNumberOfPages());
 
     var pdfUrl = doc.output('bloburl');
     window.open(pdfUrl, '_blank');
