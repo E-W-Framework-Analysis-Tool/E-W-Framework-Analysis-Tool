@@ -4,56 +4,141 @@
 <Card Overflow Title="Overall Readiness Assessment" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
         <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-            <div class="flex flex-col gap-4 max-w-md">
-                <h2 class="flex font-semibold">Readiness Comparison</h2>
+                @* Readiness Comparison *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness Comparison</h2>
 
-                <div class="flex flex-1 flex-col space-y-2">
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">Custom Manual</div>
-                        <div class="font-semibold">@OverallReadinessScores.CustomDataSourceReadiness.ToString("0.##%")</div>
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Custom Manual</div>
+                            <div class="font-semibold">@OverallReadinessScores.CustomDataSourceReadiness.ToString("0.##%")</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-primary bg-gray-200 h-3" value="@(OverallReadinessScores.CustomDataSourceReadiness * 100)" max="100"></progress>
+                        </div>
                     </div>
-                    <div class="flex">
-                        <progress class="progress progress-primary bg-gray-200 h-3" value="@(OverallReadinessScores.CustomDataSourceReadiness * 100)" max="100"></progress>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Automated (Ed-Fi &amp; CEDS)</div>
+                            <div class="font-semibold">@OverallReadinessScores.AutomatedDataSourceReadiness.ToString("0.##%")</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-accent bg-gray-200 h-3" value="@(OverallReadinessScores.AutomatedDataSourceReadiness * 100)" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Public Data (ECS)</div>
+                            <div class="font-semibold">@OverallReadinessScores.EcsReadiness.ToString("0.##%")</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-info bg-gray-200 h-3" value="@(OverallReadinessScores.EcsReadiness * 100)" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 flex-col space-y-2">
+                        <div class="flex justify-between">
+                            <div class="text-gray-500">Combined Readiness (All Data Sources)</div>
+                            <div class="font-semibold">@OverallReadinessScores.CombinedReadiness.ToString("0.##%")</div>
+                        </div>
+                        <div class="flex">
+                            <progress class="progress progress-secondary bg-gray-200 h-3" value="@(OverallReadinessScores.CombinedReadiness * 100)" max="100"></progress>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex flex-1 flex-col space-y-2">
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">Automated (Ed-Fi &amp; CEDS)</div>
-                        <div class="font-semibold">@OverallReadinessScores.AutomatedDataSourceReadiness.ToString("0.##%")</div>
+                @* Highest ROI Data Elements *@
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-0.5">
+                        <h2 class="font-semibold">Highest ROI Data Elements</h2>
+                        <p class="text-xs text-gray-500">Data elements whose availability would improve the most indicators</p>
                     </div>
-                    <div class="flex">
-                        <progress class="progress progress-accent bg-gray-200 h-3" value="@(OverallReadinessScores.AutomatedDataSourceReadiness * 100)" max="100"></progress>
-                    </div>
+
+                    @if (_roiItems.Count > 0)
+                    {
+                        <ol class="flex flex-col gap-3">
+                            @foreach (var item in _roiItems)
+                            {
+                                <li class="flex items-center gap-2">
+                                    <span class="font-semibold text-sm">@item.Name</span>
+                                    <button class="badge badge-neutral badge-sm shrink-0 cursor-pointer hover:badge-primary transition-colors"
+                                            @onclick="() => _selectedItem = item">
+                                        @item.Indicators.Count indicator@(item.Indicators.Count != 1 ? "s" : "")
+                                    </button>
+                                </li>
+                            }
+                        </ol>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-gray-400">No unscored data elements found. Run an assessment to see ROI recommendations.</p>
+                    }
                 </div>
 
-                <div class="flex flex-1 flex-col space-y-2">
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">Public Data (ECS)</div>
-                        <div class="font-semibold">@OverallReadinessScores.EcsReadiness.ToString("0.##%")</div>
-                    </div>
-                    <div class="flex">
-                        <progress class="progress progress-info bg-gray-200 h-3" value="@(OverallReadinessScores.EcsReadiness * 100)" max="100"></progress>
-                    </div>
-                </div>
-
-                <div class="flex flex-1 flex-col space-y-2">
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">Combined Readiness (All Data Sources)</div>
-                        <div class="font-semibold">@OverallReadinessScores.CombinedReadiness.ToString("0.##%")</div>
-                    </div>
-                    <div class="flex">
-                        <progress class="progress progress-secondary bg-gray-200 h-3" value="@(OverallReadinessScores.CombinedReadiness * 100)" max="100"></progress>
-                    </div>
-                </div>
             </div>
-
         </div>
     </ChildContent>
 </Card>
 
+@if (_selectedItem != null)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">@_selectedItem.Name</h3>
+            <p class="text-sm text-gray-500 mt-1 mb-4">Improving this data element's availability would affect the following @_selectedItem.Indicators.Count indicator@(_selectedItem.Indicators.Count != 1 ? "s" : ""):</p>
+            <ul class="flex flex-col gap-2">
+                @foreach (var indicator in _selectedItem.Indicators)
+                {
+                    <li class="flex items-start gap-2 text-sm">
+                        <span class="text-gray-400 mt-0.5">•</span>
+                        <span>@indicator</span>
+                    </li>
+                }
+            </ul>
+            <div class="modal-action">
+                <button class="btn btn-sm" @onclick="() => _selectedItem = null">Close</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" @onclick="() => _selectedItem = null"></div>
+    </div>
+}
+
 @code {
     [Parameter]
     public OverallReadinessResults OverallReadinessScores { get; set; } = new OverallReadinessResults();
+
+    [Parameter, EditorRequired]
+    public List<IndicatorScore> IndicatorScores { get; set; } = [];
+
+    private record RoiItem(string Name, List<string> Indicators, decimal PotentialImpact);
+
+    private List<RoiItem> _roiItems = [];
+    private RoiItem? _selectedItem;
+
+    protected override void OnParametersSet()
+    {
+        var uniqueIndicators = IndicatorScores
+            .GroupBy(i => i.IndicatorCode)
+            .Select(g => g.First())
+            .ToList();
+
+        _roiItems = uniqueIndicators
+            .SelectMany(i => i.DataElementScores
+                .Where(de => de.QualityScore < 1.0m)
+                .Select(de => new { i.IndicatorCode, DataElement = de }))
+            .GroupBy(x => x.DataElement.DataElementName)
+            .Select(g => new RoiItem(
+                Name: g.Key,
+                Indicators: g.Select(x => x.IndicatorCode).Distinct().OrderBy(x => x).ToList(),
+                PotentialImpact: g.Sum(x => 1.0m - x.DataElement.QualityScore)
+            ))
+            .OrderByDescending(x => x.PotentialImpact)
+            .ThenByDescending(x => x.Indicators.Count)
+            .Take(5)
+            .ToList();
+    }
 }
