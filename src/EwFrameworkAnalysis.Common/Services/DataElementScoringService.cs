@@ -65,12 +65,11 @@ public class DataElementScoringService
             DataElementScores = dataElementScores
         };
 
-        // Simple readiness metric: % of data elements available
+        // Weighted readiness: Available=1.0, PartiallyAvailable=0.5, NotAvailable=0.0
         if (indicatorScore.DataElementScores.Count > 0)
         {
-            var availableCount = indicatorScore.DataElementScores.Count(x => x.IsAvailable);
             indicatorScore.ReadinessScore =
-                Math.Round((decimal)availableCount / indicatorScore.DataElementScores.Count, 2);
+                Math.Round(indicatorScore.DataElementScores.Average(x => x.QualityScore), 2);
         }
 
         return indicatorScore;

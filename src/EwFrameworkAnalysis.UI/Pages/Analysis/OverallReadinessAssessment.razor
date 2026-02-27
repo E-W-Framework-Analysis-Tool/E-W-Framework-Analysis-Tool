@@ -4,94 +4,56 @@
 <Card Overflow Title="Overall Readiness Assessment" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
         <div class="px-4 py-5 sm:p-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
 
-                @* Readiness Comparison *@
-                <div class="flex flex-col gap-4">
-                    <h2 class="flex font-semibold">Readiness Comparison</h2>
+            <div class="flex flex-col gap-4 max-w-md">
+                <h2 class="flex font-semibold">Readiness Comparison</h2>
 
-                    <div class="flex flex-1 flex-col space-y-2">
-                        <div class="flex justify-between">
-                            <div class="text-gray-500">Custom Manual</div>
-                            <div class="font-semibold">@OverallReadinessScores.CustomDataSourceReadiness.ToString("0.##%")</div>
-                        </div>
-                        <div class="flex">
-                            <progress class="progress progress-primary bg-gray-200 h-3" value="@(OverallReadinessScores.CustomDataSourceReadiness * 100)" max="100"></progress>
-                        </div>
+                <div class="flex flex-1 flex-col space-y-2">
+                    <div class="flex justify-between">
+                        <div class="text-gray-500">Custom Manual</div>
+                        <div class="font-semibold">@OverallReadinessScores.CustomDataSourceReadiness.ToString("0.##%")</div>
                     </div>
-
-                    <div class="flex flex-1 flex-col space-y-2">
-                        <div class="flex justify-between">
-                            <div class="text-gray-500">Automated (Ed-Fi &amp; CEDS)</div>
-                            <div class="font-semibold">@OverallReadinessScores.AutomatedDataSourceReadiness.ToString("0.##%")</div>
-                        </div>
-                        <div class="flex">
-                            <progress class="progress progress-accent bg-gray-200 h-3" value="@(OverallReadinessScores.AutomatedDataSourceReadiness * 100)" max="100"></progress>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-1 flex-col space-y-2">
-                        <div class="flex justify-between">
-                            <div class="text-gray-500">Public Data (ECS)</div>
-                            <div class="font-semibold">@OverallReadinessScores.EcsReadiness.ToString("0.##%")</div>
-                        </div>
-                        <div class="flex">
-                            <progress class="progress progress-info bg-gray-200 h-3" value="@(OverallReadinessScores.EcsReadiness * 100)" max="100"></progress>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-1 flex-col space-y-2">
-                        <div class="flex justify-between">
-                            <div class="text-gray-500">Combined Readiness (All Data Sources)</div>
-                            <div class="font-semibold">@OverallReadinessScores.CombinedReadiness.ToString("0.##%")</div>
-                        </div>
-                        <div class="flex">
-                            <progress class="progress progress-secondary bg-gray-200 h-3" value="@(OverallReadinessScores.CombinedReadiness * 100)" max="100"></progress>
-                        </div>
+                    <div class="flex">
+                        <progress class="progress progress-primary bg-gray-200 h-3" value="@(OverallReadinessScores.CustomDataSourceReadiness * 100)" max="100"></progress>
                     </div>
                 </div>
 
-                @* Sector Breakdown *@
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-1 flex-col space-y-2">
                     <div class="flex justify-between">
-                        <h2 class="flex font-semibold">Sector Breakdown</h2>
-                        <i class="fa-solid fa-question-circle"></i>
+                        <div class="text-gray-500">Automated (Ed-Fi &amp; CEDS)</div>
+                        <div class="font-semibold">@OverallReadinessScores.AutomatedDataSourceReadiness.ToString("0.##%")</div>
                     </div>
+                    <div class="flex">
+                        <progress class="progress progress-accent bg-gray-200 h-3" value="@(OverallReadinessScores.AutomatedDataSourceReadiness * 100)" max="100"></progress>
+                    </div>
+                </div>
 
-                    @foreach (var sector in SectorReadinessScores.OrderByDescending(x => x.ReadinessScore))
-                    {
-                        <div class="flex w-full space-x-2">
-                            <div class="flex-1 text-gray-500 uppercase">@sector.Sector.GetDisplayName()</div>
-                            <div class="w-32">
-                                <progress class="progress progress-accent bg-gray-200 h-2 @GetProgressBarColor(sector.ReadinessScore)" value="@(sector.ReadinessScore * 100)" max="100"></progress>
-                            </div>
-                            <div class="w-10 text-right">@(sector.ReadinessScore.ToString("0.##%"))</div>
-                        </div>
-                    }
+                <div class="flex flex-1 flex-col space-y-2">
+                    <div class="flex justify-between">
+                        <div class="text-gray-500">Public Data (ECS)</div>
+                        <div class="font-semibold">@OverallReadinessScores.EcsReadiness.ToString("0.##%")</div>
+                    </div>
+                    <div class="flex">
+                        <progress class="progress progress-info bg-gray-200 h-3" value="@(OverallReadinessScores.EcsReadiness * 100)" max="100"></progress>
+                    </div>
+                </div>
 
+                <div class="flex flex-1 flex-col space-y-2">
+                    <div class="flex justify-between">
+                        <div class="text-gray-500">Combined Readiness (All Data Sources)</div>
+                        <div class="font-semibold">@OverallReadinessScores.CombinedReadiness.ToString("0.##%")</div>
+                    </div>
+                    <div class="flex">
+                        <progress class="progress progress-secondary bg-gray-200 h-3" value="@(OverallReadinessScores.CombinedReadiness * 100)" max="100"></progress>
+                    </div>
                 </div>
             </div>
+
         </div>
     </ChildContent>
 </Card>
 
 @code {
     [Parameter]
-    public List<SectorReadinessResult> SectorReadinessScores { get; set; } = new List<SectorReadinessResult>();
-
-    [Parameter]
     public OverallReadinessResults OverallReadinessScores { get; set; } = new OverallReadinessResults();
-
-    private string GetProgressBarColor(decimal score)
-    {
-        // Green (high score) gradient to Red (low score)
-        if (score > 0.66m)
-            return "progress-success";
-        else if (score > 0.33m)
-            return "progress-warning";
-        else if (score > 0m)
-            return "progress-error";
-
-        return "bg-gray-200";
-    }
 }
