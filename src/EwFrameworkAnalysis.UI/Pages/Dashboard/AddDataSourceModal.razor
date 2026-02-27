@@ -23,6 +23,22 @@
             </div>
             <!-- Body -->
             <div class="px-6 pb-6 space-y-3">
+                <!-- Manual/Custom Option -->
+                <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.Custom)"
+                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
+                                   focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green/20 rounded-lg grid place-items-center">
+                            <i class="fas fa-list-check text-green-700"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-blue">Manual Assessment</h4>
+                            <p class="mt-1 text-xs text-gray">Add a data source that does not have automated connections and manually create an inventory</p>
+                            <p class="mt-1 text-xs text-blue font-medium">Manual • Flexible</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray"></i>
+                    </div>
+                </button>
                 <!-- Ed-Fi API Option -->
                 <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.EdFiApi)"
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
@@ -33,7 +49,7 @@
                         </div>
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">Ed-Fi ODS API</h4>
-                            <p class="mt-1 text-xs text-gray">Automated discovery & analysis</p>
+                            <p class="mt-1 text-xs text-gray">Automated discovery & analysis via API connection</p>
                             <p class="mt-1 text-xs text-blue font-medium">Automated • Real-time</p>
                         </div>
                         <i class="fas fa-chevron-right text-gray"></i>
@@ -49,7 +65,7 @@
                         </div>
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">CEDS Data Warehouse</h4>
-                            <p class="mt-1 text-xs text-gray">Upload SQL result sets from CEDS DW</p>
+                            <p class="mt-1 text-xs text-gray">Discovery & analysis of CEDS DW via SQL scripts and file upload</p>
                             <p class="mt-1 text-xs text-blue font-medium">SQL-based • Upload</p>
                         </div>
                         <i class="fas fa-chevron-right text-gray"></i>
@@ -65,24 +81,8 @@
                         </div>
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">ECS State Data</h4>
-                            <p class="mt-1 text-xs text-gray">Add a state-specific inventory of data as collected by ECS or reported by the state</p>
+                            <p class="mt-1 text-xs text-gray">Add a state-specific inventory of available data as researched by Education Commission of the States</p>
                             <p class="mt-1 text-xs text-blue font-medium">Built-in &bull; Select state</p>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray"></i>
-                    </div>
-                </button>
-                <!-- Manual/Custom Option -->
-                <button @onclick="() => HandleDataSourceTypeSelected(DataSourceType.Custom)"
-                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                                   focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-green/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-list-check text-green-700"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-blue">Manual Assessment</h4>
-                            <p class="mt-1 text-xs text-gray">Flexible checklist for manual review</p>
-                            <p class="mt-1 text-xs text-blue font-medium">Manual • Flexible</p>
                         </div>
                         <i class="fas fa-chevron-right text-gray"></i>
                     </div>

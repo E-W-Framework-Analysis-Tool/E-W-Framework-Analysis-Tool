@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace EwFrameworkAnalysis.Common.Models.Project;
@@ -37,9 +38,13 @@ public class ReportedAvailability : DataCharacteristicBase
 
 public enum AvailabilityJudgment
 {
+    [Display(Name = "Available", Description = "")]
     Available,
+    [Display(Name = "Partially Available", Description = "")]
     PartiallyAvailable,
+    [Display(Name = "Not Available", Description = "")]
     NotAvailable,
+    [Display(Name = "Insufficient Data", Description = "")]
     InsufficientData
 }
 
