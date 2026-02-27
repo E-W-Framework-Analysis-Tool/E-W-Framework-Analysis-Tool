@@ -1,0 +1,34 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Background="@_bgColor"
+      Border="new Card.BorderStyle(_borderColor, Card.BorderPosition.Left)"
+      Shadow="Card.ShadowSize.None">
+    <div class="flex items-center justify-between">
+        <span class="font-semibold text-sm text-blue">@Element.DataElementName</span>
+        <span class="badge @_badgeClass">@(_availability?.Value.GetDisplayName() ?? "Unknown")</span>
+    </div>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public DataElementAssessment Element { get; set; } = null!;
+
+    private ReportedAvailability? _availability;
+    private string _badgeClass = "badge-ghost";
+    private Card.BorderColor _borderColor = Card.BorderColor.Red;
+    private Card.BackgroundColor _bgColor = Card.BackgroundColor.Red;
+
+    protected override void OnParametersSet()
+    {
+        _availability = Element.Characteristics.OfType<ReportedAvailability>().FirstOrDefault();
+
+        (_badgeClass, _borderColor, _bgColor) = _availability?.Value switch
+        {
+            AvailabilityJudgment.Available => ("badge-success", Card.BorderColor.Green, Card.BackgroundColor.Green),
+            AvailabilityJudgment.PartiallyAvailable => ("badge-warning", Card.BorderColor.Yellow, Card.BackgroundColor.Yellow),
+            AvailabilityJudgment.NotAvailable => ("badge-error", Card.BorderColor.Red, Card.BackgroundColor.Red),
+            _ => ("badge-ghost", Card.BorderColor.Gray, Card.BackgroundColor.Gray)
+        };
+    }
+}
