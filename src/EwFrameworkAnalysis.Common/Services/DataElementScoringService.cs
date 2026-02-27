@@ -135,140 +135,30 @@ public class DataElementScoringService
 
     public OverallReadinessResults CalculateOverallReadinessScores(List<DataSourceAssessmentWithSource> assessments)
     {
-        // Score All Active Assessments
-
-        var assessmentScores = new List<AssessmentScore>();
-
-        foreach (var assessment in assessments.Where(a => a.Active == true))
+        // For each source type, consolidate all its assessments into one combined view
+        // (the scoring rule picks the best available score per DE across all runs),
+        // then compute the average indicator readiness against the full EW Framework.
+        decimal ScoreForGroup(IEnumerable<DataSourceAssessmentWithSource> group)
         {
-            var score = GetAssessmentScore(assessment);
-            assessmentScores.Add(score);
-        }
+            var groupList = group.ToList();
+            if (groupList.Count == 0) return 0;
 
-        // Group IDs by source type
-        var manualIds = assessments
-            .Where(a => a.DataSourceType == DataSourceType.Custom)
-            .Select(a => a.Id)
-            .ToHashSet();
-
-        var automatedIds = assessments
-            .Where(a => a.DataSourceType == DataSourceType.EdFiApi ||
-                        a.DataSourceType == DataSourceType.CedsDw)
-            .Select(a => a.Id)
-            .ToHashSet();
-
-        var ecsIds = assessments
-            .Where(a => a.DataSourceType == DataSourceType.EcsState)
-            .Select(a => a.Id)
-            .ToHashSet();
-
-        var allIds = assessments
-            .Select(a => a.Id)
-            .ToHashSet();
-
-        // Helper to compute average indicator readiness across selected assessment scores
-        decimal ComputeScore(HashSet<Guid> selectedIds)
-        {
-            var scores = assessmentScores
-                .Where(a => selectedIds.Contains(a.DataSourceAssessmentId))
-                .SelectMany(a => a.QuestionScores)
+            var scores = CalculateScoresForActiveData(groupList)
                 .SelectMany(q => q.IndicatorScores)
                 .Select(i => i.ReadinessScore)
                 .ToList();
 
-            if (scores.Count == 0)
-                return 0;
-
-            return Math.Round(scores.Average(), 2);
+            return scores.Count == 0 ? 0 : Math.Round(scores.Average(), 2);
         }
+
+        var active = assessments.Where(a => a.Active == true).ToList();
 
         return new OverallReadinessResults
         {
-            CustomDataSourceReadiness = ComputeScore(manualIds),
-            AutomatedDataSourceReadiness = ComputeScore(automatedIds),
-            EcsReadiness = ComputeScore(ecsIds),
-            CombinedReadiness = ComputeScore(allIds)
+            CustomDataSourceReadiness    = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.Custom)),
+            AutomatedDataSourceReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EdFiApi || a.DataSourceType == DataSourceType.CedsDw)),
+            EcsReadiness                 = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EcsState)),
+            CombinedReadiness            = ScoreForGroup(active),
         };
-    }
-
-    private AssessmentScore GetAssessmentScore(DataSourceAssessmentWithSource assessment)
-    {
-        var questions = EwFrameworkEssentialQuestions.Questions;
-        var indicators = EwFrameworkIndicators.Indicators;
-        var dataElements = EwFrameworkDataElements.Elements;
-
-        var assessmentScore = new AssessmentScore
-        {
-            DataSourceAssessmentId = assessment.Id,
-            SourceType = assessment.DataSourceType
-        };
-
-        var assessedDataElementsWithSource = assessment
-            .DataElementAssessments.Select(de => new { Assessment = assessment, DataElement = de })
-            .ToList();
-
-        foreach (var question in questions)
-        {
-            var questionScore = new QuestionScore
-            {
-                QuestionNumber = question.QuestionNumber
-            };
-
-            foreach (var indicatorName in question.RelatedIndicatorNames)
-            {
-                if (!indicators.TryGetValue(indicatorName, out var indicator))
-                    continue;
-
-                var indicatorScore = new IndicatorScore
-                {
-                    IndicatorCode = indicatorName
-                };
-
-                foreach (var dataElementName in indicator.DataElementNames)
-                {
-
-                    var matches = assessedDataElementsWithSource
-                        .Where(x => x.DataElement.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase))
-                        .Select(x => new DataElementAssessmentContext
-                        {
-                            AssessmentId = x.Assessment.Id,
-                            AssessmentName = x.Assessment.Name,
-                            DataSourceType = x.Assessment.DataSourceType,
-                            Assessment = x.DataElement
-                        })
-                        .ToList();
-
-                    dataElements.TryGetValue(dataElementName, out var dataElement);
-
-                    var scoringRequest = new DataElementScoringRequest
-                    {
-                        DataElementName = dataElementName,
-                        IndicatorName = indicatorName,
-                        ScoringRuleName = dataElement?.ScoringRuleName ?? "ReportedAndCount",
-                        Matches = matches
-                    };
-
-                    var rule = _ruleRegistry.Resolve(scoringRequest.ScoringRuleName);
-                    var dataElementScore = rule.Score(scoringRequest);
-
-                    indicatorScore.DataElementScores.Add(dataElementScore);
-
-                }
-
-                indicatorScore.ReadinessScore =
-                    indicatorScore.DataElementScores.Count == 0 ? 0 : indicatorScore.DataElementScores.Average(x => x.QualityScore);
-
-                questionScore.IndicatorScores.Add(indicatorScore);
-            }
-
-            questionScore.ReadinessScore =
-                questionScore.IndicatorScores.Count == 0
-                ? 0
-                : questionScore.IndicatorScores.Average(x => x.ReadinessScore);
-
-            assessmentScore.QuestionScores.Add(questionScore);
-        }
-
-        return assessmentScore;
     }
 }
