@@ -155,10 +155,10 @@ public class DataElementScoringService
 
         return new OverallReadinessResults
         {
-            CustomDataSourceReadiness    = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.Custom)),
+            CustomDataSourceReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.Custom)),
             AutomatedDataSourceReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EdFiApi || a.DataSourceType == DataSourceType.CedsDw)),
-            EcsReadiness                 = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EcsState)),
-            CombinedReadiness            = ScoreForGroup(active),
+            EcsReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EcsState)),
+            CombinedReadiness = ScoreForGroup(active),
         };
     }
 }
