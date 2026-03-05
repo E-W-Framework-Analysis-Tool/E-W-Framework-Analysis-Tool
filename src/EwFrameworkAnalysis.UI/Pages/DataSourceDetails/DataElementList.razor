@@ -19,7 +19,7 @@
         </label>
 
         <!-- Filters Row -->
-        <div class="flex flex-wrap gap-2 items-start">
+        <div class="flex flex-wrap gap-2 items-start mt-2">
             <!-- Sector Filter -->
             <div class="flex flex-1 flex-col flex-wrap">
                 <form class="flex gap-1">
@@ -71,35 +71,33 @@
                 <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Status</div>
             </div>
         </div>
+    </div>
 
-        <!-- Group By Row -->
-        <div class="flex flex-1 flex-col flex-wrap">
-            <div class="btn-group">
+    <!-- List View Header -->
+    <div class="flex items-center justify-between px-3 py-2 bg-secondary text-secondary-content rounded-t-lg mt-3">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold">Group by</span>
+            <div class="flex gap-1">
                 <input type="radio"
                        name="category-view"
-                       class="btn btn-sm"
+                       class="btn btn-sm btn-ghost hover:bg-transparent text-secondary-content font-normal @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-60")"
                        aria-label="E-W Framework Clusters"
                        checked="@(_categoryMode == CategoryMode.EWFramework)"
                        @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
                 <input type="radio"
                        name="category-view"
-                       class="btn btn-sm"
+                       class="btn btn-sm btn-ghost hover:bg-transparent text-secondary-content font-normal @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-60")"
                        aria-label="Data Categories"
                        checked="@(_categoryMode == CategoryMode.DataElement)"
                        @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
             </div>
-            <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Group Elements By</div>
         </div>
-
-        <!-- Expand/Collapse Button -->
-        <div class="flex justify-end space-y-0">
-            <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
-                                     IsExpandedChanged="OnAllExpandedChanged" />
-        </div>
+        <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
+                                 IsExpandedChanged="OnAllExpandedChanged" />
     </div>
 
     <!-- Scrollable Data Element Categories -->
-    <div class="flex-1 overflow-y-scroll mt-2">
+    <div class="flex-1 overflow-y-scroll">
         <div class="bg-white border border-gray-200 rounded-lg shadow @ContainerClass">
             @foreach (var category in GetFilteredCategories())
             {
@@ -124,7 +122,7 @@
                                 {
                                     <button class="btn btn-xs @GetCategoryButtonClass(category, judgment)"
                                             @onclick="() => SetCategoryAvailability(category, judgment)"
-                                            title="@judgment.ToString()">
+                                            title="@judgment.GetDisplayName()">
                                         @GetAvailabilityIcon(judgment)
                                     </button>
                                 }
@@ -157,7 +155,7 @@
                                             {
                                                 <button class="btn btn-xs @GetElementButtonClass(element, judgment)"
                                                         @onclick="() => SetElementAvailability(element, judgment)"
-                                                        title="@judgment.ToString()">
+                                                        title="@judgment.GetDisplayName()">
                                                     @GetAvailabilityIcon(judgment)
                                                 </button>
                                             }
@@ -168,7 +166,7 @@
                                         @if (ElementAvailability.TryGetValue(element.Name, out var availability))
                                         {
                                             <div class="badge @GetAvailabilityBadgeClass(availability) badge-sm">
-                                                @GetAvailabilityIcon(availability) @availability.ToString()
+                                                @GetAvailabilityIcon(availability) @availability.GetDisplayName()
                                             </div>
                                         }
                                     }
