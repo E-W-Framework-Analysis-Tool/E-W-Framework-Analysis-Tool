@@ -1,5 +1,4 @@
 @using EwFrameworkAnalysis.Common.Models.Project
-
 <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer"
      @onclick="OnClick">
     <div class="card-body p-4">
@@ -25,23 +24,20 @@
                 }
                 @if (DataSource.Enabled)
                 {
-                    @if (HasRecentAssessment)
-                    {
-                        <div class="badge badge-accent gap-1">
-                            <i class="fas fa-check-circle"></i>Active
-                        </div>
-                    }
-                    else
+                    @if (!HasRecentAssessment)
                     {
                         <div class="badge badge-warning gap-1">
-                            <i class="fas fa-clock"></i>Pending
+                            <i class="fas fa-clock"></i>No Assessments Yet
                         </div>
                     }
+                    <div class="badge badge-accent gap-1">
+                        <i class="fas fa-toggle-on"></i>Enabled
+                    </div>
                 }
                 else
                 {
                     <div class="badge badge-error gap-1">
-                        <i class="fas fa-times-circle"></i>Disabled
+                        <i class="fas fa-toggle-off"></i>Disabled
                     </div>
                 }
                 <i class="fas fa-chevron-right text-gray ml-2"></i>
@@ -49,14 +45,12 @@
         </div>
     </div>
 </div>
-
 @code {
     [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public bool IsNewlyAdded { get; set; }
     [Parameter] public bool HasRecentAssessment { get; set; }
     [Parameter] public string AssessmentSummary { get; set; } = "";
-
     private string GetSourceIcon(DataSourceType type) => type switch
     {
         DataSourceType.EdFiApi => "fas fa-network-wired",
