@@ -2,6 +2,7 @@
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@inject IJSRuntime JSRuntime
 
 <div class="flex flex-col h-full">
     <!-- Fixed Filter / Control Area -->
@@ -69,6 +70,25 @@
                 </form>
                 <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Status</div>
             </div>
+        </div>
+
+        <!-- Group By Row -->
+        <div class="flex flex-1 flex-col flex-wrap">
+            <div class="btn-group">
+                <input type="radio"
+                       name="category-view"
+                       class="btn btn-sm"
+                       aria-label="E-W Framework Clusters"
+                       checked="@(_categoryMode == CategoryMode.EWFramework)"
+                       @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
+                <input type="radio"
+                       name="category-view"
+                       class="btn btn-sm"
+                       aria-label="Data Categories"
+                       checked="@(_categoryMode == CategoryMode.DataElement)"
+                       @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
+            </div>
+            <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Group Elements By</div>
         </div>
 
         <!-- Expand/Collapse Button -->
@@ -185,6 +205,44 @@
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
+    private CategoryMode _categoryMode = CategoryMode.EWFramework;
+    private const string CATEGORY_MODE_STORAGE_KEY = "ewframework_analysis_category_preference";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load saved preference from localStorage
+        try
+        {
+            var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
+            {
+                _categoryMode = mode;
+            }
+        }
+        catch
+        {
+            // If localStorage fails, just use default
+        }
+
+        BuildCategories();
+    }
+
+    private enum CategoryMode
+    {
+        EWFramework,
+        DataElement
+    }
+
+    private async Task SetCategoryMode(CategoryMode mode)
+    {
+        _categoryMode = mode;
+        _expandedCategories.Clear();
+        _allExpanded = false;
+        BuildCategories();
+
+        // Save to localStorage
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", CATEGORY_MODE_STORAGE_KEY, mode.ToString());
+    }
 
     private void OnAllExpandedChanged(bool expanded)
     {
@@ -232,10 +290,14 @@
 
     private List<DataElementCategory> _categories = new();
 
-    protected override void OnInitialized()
+    private void BuildCategories()
     {
+        var groupingSelector = _categoryMode == CategoryMode.EWFramework
+            ? (Func<DataElement, string>)(e => e.ClusterOnlyCategory)
+            : (e => e.DataElementCategory);
+
         _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(e => e.DataElementCategory)
+            .GroupBy(groupingSelector)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
