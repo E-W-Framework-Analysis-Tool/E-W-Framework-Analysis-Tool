@@ -122,8 +122,7 @@
     protected override void OnParametersSet()
     {
         var uniqueIndicators = IndicatorScores
-            .GroupBy(i => i.IndicatorCode)
-            .Select(g => g.First())
+            .DistinctBy(i => i.IndicatorCode)
             .ToList();
 
         _roiItems = uniqueIndicators

@@ -74,6 +74,8 @@
 
     private async Task GenerateReportAsync()
     {
+        // Add each manual data source individually to the report
+        // Displays data source name set by the user and it's individual score
         var customSourceScores = ProjectSvc.DataSources
             .Where(ds => ds.Enabled && ds.Type == DataSourceType.Custom)
             .Select(ds => new CustomDataSourceScore(

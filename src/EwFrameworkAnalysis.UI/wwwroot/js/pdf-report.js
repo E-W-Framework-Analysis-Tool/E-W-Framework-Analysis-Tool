@@ -1,16 +1,35 @@
+const THEME = {
+    brandBlue:  [2, 40, 71],
+    white:      [255, 255, 255],
+    black:      [0, 0, 0],
+    green:      [34, 197, 94],
+    ltGreen:    [74, 222, 128],
+    lime:       [163, 230, 53],
+    amber:      [234, 179, 8],
+    orange:     [249, 115, 22],
+    red:        [239, 68, 68],
+    grayLight:  [225, 225, 225],
+    gray:       [220, 220, 220],
+    grayDark:   [210, 210, 210],
+};
+
+function scoreColor(pct) {
+    return pct >= 66 ? THEME.green : pct >= 33 ? THEME.amber : THEME.red;
+}
+
 // ── Shared context ─────────────────────────────────────────────────────────────
 function buildCtx() {
     const { jsPDF } = window.jspdf;
-    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var margin = 14;
-    var pageWidth = doc.internal.pageSize.getWidth();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const margin = 14;
+    const pageWidth = doc.internal.pageSize.getWidth();
     return {
         doc: doc,
         pageWidth: pageWidth,
         pageHeight: doc.internal.pageSize.getHeight(),
         margin: margin,
         contentWidth: pageWidth - 2 * margin,
-        brandBlue: [2, 40, 71],
+        brandBlue: THEME.brandBlue,
         y: 0,
         eqRowBounds: [],     // populated by drawEssentialQuestionsTable; consumed by applyEqTableLinks
         eqBandLinkQueue: [], // populated by drawEqReadinessSummary;    consumed by applyEqTableLinks
@@ -20,17 +39,17 @@ function buildCtx() {
 
 // ── Header Banner ───────────────────────────────────────────────────────────────
 function drawHeaderBanner(ctx, projectTitle) {
-    var doc = ctx.doc;
-    var bb = ctx.brandBlue;
-    var hasProject = typeof projectTitle === 'string' && projectTitle.length > 0;
-    var bannerH = hasProject ? 32 : 28;
+    const doc = ctx.doc;
+    const bb = ctx.brandBlue;
+    const hasProject = typeof projectTitle === 'string' && projectTitle.length > 0;
+    const bannerH = hasProject ? 32 : 28;
 
     doc.setFillColor(bb[0], bb[1], bb[2]);
     doc.rect(0, 0, ctx.pageWidth, bannerH, 'F');
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(18);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor.apply(doc, THEME.white);
     doc.text('E-W Framework Readiness Report', ctx.margin, hasProject ? 11 : 13);
 
     if (hasProject) {
@@ -41,29 +60,29 @@ function drawHeaderBanner(ctx, projectTitle) {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    var dateStr = new Date().toLocaleDateString('en-US', {
+    const dateStr = new Date().toLocaleDateString('en-US', {
         month: 'numeric', day: 'numeric', year: 'numeric'
     });
     doc.text('Generated: ' + dateStr, ctx.margin, hasProject ? 27 : 22);
 
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor.apply(doc, THEME.black);
     ctx.y = hasProject ? 40 : 36;
 }
 
 // ── EQ Readiness Summary ────────────────────────────────────────────────────────
 function drawEqReadinessSummary(ctx, summary, questions) {
-    var doc = ctx.doc;
-    var margin = ctx.margin;
-    var contentWidth = ctx.contentWidth;
-    var brandBlue = ctx.brandBlue;
+    const doc = ctx.doc;
+    const margin = ctx.margin;
+    const contentWidth = ctx.contentWidth;
+    const brandBlue = ctx.brandBlue;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
     doc.text('EQ Readiness Summary', margin, ctx.y);
     ctx.y += 7;
 
-    var halfWidth = (contentWidth - 6) / 2;
-    var chartX = margin + halfWidth + 6;
+    const halfWidth = (contentWidth - 6) / 2;
+    const chartX = margin + halfWidth + 6;
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -71,25 +90,25 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     doc.text('Score Distribution', chartX, ctx.y);
     ctx.y += 3;
 
-    var distributionStartY = ctx.y;
+    const distributionStartY = ctx.y;
 
     // EQ membership per band — thresholds mirror PdfReportService.cs
-    var sortByNumber = function (a, b) { return a.number - b.number; };
-    var bandEqLists = [
-        questions.filter(function (q) { return q.readinessScore >= 0.90; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).sort(sortByNumber),
-        questions.filter(function (q) { return q.readinessScore < 0.50; }).sort(sortByNumber),
+    const sortByNumber = (a, b) => a.number - b.number;
+    const bandEqLists = [
+        questions.filter(q => q.readinessScore >= 0.90).sort(sortByNumber),
+        questions.filter(q => q.readinessScore >= 0.80 && q.readinessScore < 0.90).sort(sortByNumber),
+        questions.filter(q => q.readinessScore >= 0.70 && q.readinessScore < 0.80).sort(sortByNumber),
+        questions.filter(q => q.readinessScore >= 0.60 && q.readinessScore < 0.70).sort(sortByNumber),
+        questions.filter(q => q.readinessScore >= 0.50 && q.readinessScore < 0.60).sort(sortByNumber),
+        questions.filter(q => q.readinessScore < 0.50).sort(sortByNumber),
     ];
 
     doc.autoTable({
         startY: distributionStartY,
         margin: { left: margin, right: margin },
         head: [['', 'EQs', 'Count']],
-        body: summary.eqBands.map(function (b, i) {
-            var eqText = bandEqLists[i].map(function (q) { return 'EQ-' + q.number; }).join(', ');
+        body: summary.eqBands.map((b, i) => {
+            const eqText = bandEqLists[i].map(q => 'EQ-' + q.number).join(', ');
             return [b.label, eqText, String(b.count)];
         }),
         styles: { fontSize: 9 },
@@ -100,15 +119,15 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         tableWidth: halfWidth,
         didDrawCell: function (data) {
             if (data.column.index !== 1 || data.row.section !== 'body') return;
-            var eqItems = bandEqLists[data.row.index];
+            const eqItems = bandEqLists[data.row.index];
             if (eqItems.length === 0) return;
 
             // Re-measure each "EQ-X" fragment to record individual link hotspots
             doc.setFontSize(9);
-            var textX = data.cell.x + 2; // default autoTable left cell padding
-            for (var i = 0; i < eqItems.length; i++) {
-                var eqLabel = 'EQ-' + eqItems[i].number;
-                var eqW = doc.getTextWidth(eqLabel);
+            let textX = data.cell.x + 2; // default autoTable left cell padding
+            for (let i = 0; i < eqItems.length; i++) {
+                const eqLabel = 'EQ-' + eqItems[i].number;
+                const eqW = doc.getTextWidth(eqLabel);
                 ctx.eqBandLinkQueue.push({
                     questionNumber: eqItems[i].number,
                     page: doc.internal.getCurrentPageInfo().pageNumber,
@@ -123,40 +142,40 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     });
 
     // ── Score Distribution bar chart (right half) ────────────────────────────
-    var bins = [
-        { label: '90-100%', count: questions.filter(function (q) { return q.readinessScore >= 0.90; }).length,                                            color: [34,  197, 94 ] },
-        { label: '80-90%',  count: questions.filter(function (q) { return q.readinessScore >= 0.80 && q.readinessScore < 0.90; }).length,                  color: [74,  222, 128] },
-        { label: '70-80%',  count: questions.filter(function (q) { return q.readinessScore >= 0.70 && q.readinessScore < 0.80; }).length,                  color: [163, 230, 53 ] },
-        { label: '60-70%',  count: questions.filter(function (q) { return q.readinessScore >= 0.60 && q.readinessScore < 0.70; }).length,                  color: [234, 179, 8  ] },
-        { label: '50-60%',  count: questions.filter(function (q) { return q.readinessScore >= 0.50 && q.readinessScore < 0.60; }).length,                  color: [249, 115, 22 ] },
-        { label: '<50%',    count: questions.filter(function (q) { return q.readinessScore < 0.50; }).length,                                              color: [239, 68,  68 ] },
+    const bins = [
+        { label: '90-100%', count: questions.filter(q => q.readinessScore >= 0.90).length,                                             color: THEME.green },
+        { label: '80-90%',  count: questions.filter(q => q.readinessScore >= 0.80 && q.readinessScore < 0.90).length,                  color: THEME.ltGreen },
+        { label: '70-80%',  count: questions.filter(q => q.readinessScore >= 0.70 && q.readinessScore < 0.80).length,                  color: THEME.lime },
+        { label: '60-70%',  count: questions.filter(q => q.readinessScore >= 0.60 && q.readinessScore < 0.70).length,                  color: THEME.amber },
+        { label: '50-60%',  count: questions.filter(q => q.readinessScore >= 0.50 && q.readinessScore < 0.60).length,                  color: THEME.orange },
+        { label: '<50%',    count: questions.filter(q => q.readinessScore < 0.50).length,                                              color: THEME.red },
     ];
 
-    var maxCount = Math.max.apply(null, bins.map(function (b) { return b.count; }));
+    let maxCount = Math.max.apply(null, bins.map(b => b.count));
     if (maxCount === 0) maxCount = 1;
 
-    var headerH  = 7;
-    var barH     = 6;
-    var barGap   = 2;
-    var labelW   = 16;
-    var countW   = 7;
-    var barPad   = 2;
-    var barAreaW = halfWidth - labelW - countW - barPad * 2;
+    const headerH  = 7;
+    const barH     = 6;
+    const barGap   = 2;
+    const labelW   = 16;
+    const countW   = 7;
+    const barPad   = 2;
+    const barAreaW = halfWidth - labelW - countW - barPad * 2;
 
     // Header bar — matches autoTable headStyles colour
     doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
     doc.rect(chartX, distributionStartY, halfWidth, headerH, 'F');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor.apply(doc, THEME.white);
     doc.text('EQ Distribution', chartX + halfWidth / 2, distributionStartY + 5, { align: 'center' });
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor.apply(doc, THEME.black);
 
-    var bY = distributionStartY + headerH + 2;
+    let bY = distributionStartY + headerH + 2;
 
-    for (var bi = 0; bi < bins.length; bi++) {
-        var bin = bins[bi];
-        var barX = chartX + labelW + barPad;
+    for (let bi = 0; bi < bins.length; bi++) {
+        const bin = bins[bi];
+        const barX = chartX + labelW + barPad;
 
         // Label — right-aligned in the label column
         doc.setFont('helvetica', 'normal');
@@ -164,12 +183,12 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         doc.text(bin.label, chartX + labelW - 1, bY + barH / 2 + 1.5, { align: 'right' });
 
         // Bar track (light gray)
-        doc.setFillColor(225, 225, 225);
+        doc.setFillColor.apply(doc, THEME.grayLight);
         doc.roundedRect(barX, bY, barAreaW, barH, 1, 1, 'F');
 
         // Colored fill proportional to count vs max
         if (bin.count > 0) {
-            var fillW = barAreaW * (bin.count / maxCount);
+            const fillW = barAreaW * (bin.count / maxCount);
             doc.setFillColor(bin.color[0], bin.color[1], bin.color[2]);
             if (fillW >= 2) {
                 doc.roundedRect(barX, bY, fillW, barH, 1, 1, 'F');
@@ -194,28 +213,24 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     doc.text('Readiness by Data Source', margin + halfWidth + 6, ctx.y);
     ctx.y += 3;
 
-    var sectorTableStartY = ctx.y;
+    const sectorTableStartY = ctx.y;
 
     // Left: Sector table
     doc.autoTable({
         startY: sectorTableStartY,
         margin: { left: margin },
         head: [['Sector', 'Score']],
-        body: summary.sectorReadiness.map(function (s) {
-            return [s.sector, (s.score * 100).toFixed(1) + '%'];
-        }),
+        body: summary.sectorReadiness.map(s => [s.sector, (s.score * 100).toFixed(1) + '%']),
         styles: { fontSize: 9 },
         headStyles: { fillColor: brandBlue },
         columnStyles: { 1: { halign: 'center', cellWidth: 22 } },
         tableWidth: halfWidth,
     });
 
-    var leftFinalY = doc.lastAutoTable.finalY;
+    const leftFinalY = doc.lastAutoTable.finalY;
 
     // Right: Data Source table
-    var dsRows = (summary.dataSourceReadiness.customSources || []).map(function (cs) {
-        return [cs.name, (cs.score * 100).toFixed(1) + '%'];
-    });
+    const dsRows = (summary.dataSourceReadiness.customSources || []).map(cs => [cs.name, (cs.score * 100).toFixed(1) + '%']);
     dsRows.push(['Automated (Ed-Fi & CEDS)', (summary.dataSourceReadiness.automated * 100).toFixed(1) + '%']);
     if (summary.dataSourceReadiness.ecsActive) {
         dsRows.push(['ECS State Data', (summary.dataSourceReadiness.ecs * 100).toFixed(1) + '%']);
@@ -237,10 +252,10 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
 // ── Essential Questions Table ───────────────────────────────────────────────────
 function drawEssentialQuestionsTable(ctx, questions) {
-    var doc = ctx.doc;
-    var margin = ctx.margin;
-    var contentWidth = ctx.contentWidth;
-    var brandBlue = ctx.brandBlue;
+    const doc = ctx.doc;
+    const margin = ctx.margin;
+    const contentWidth = ctx.contentWidth;
+    const brandBlue = ctx.brandBlue;
 
     if (ctx.y + 20 > ctx.pageHeight) {
         doc.addPage();
@@ -252,30 +267,26 @@ function drawEssentialQuestionsTable(ctx, questions) {
     doc.text('Essential Questions', margin, ctx.y);
     ctx.y += 4;
 
-    var sortedQuestions = questions.slice().sort(function (a, b) {
-        return b.readinessScore - a.readinessScore;
-    });
+    const sortedQuestions = questions.slice().sort((a, b) => b.readinessScore - a.readinessScore);
 
     // Keyed by question number for safe lookup inside autoTable callbacks —
     // row.index is page-relative and resets on each page break, so it cannot
     // be used as a direct index into sortedQuestions.
-    var questionByNumber = {};
-    sortedQuestions.forEach(function (q) { questionByNumber[q.number] = q; });
+    const questionByNumber = {};
+    sortedQuestions.forEach(q => { questionByNumber[q.number] = q; });
 
     // Columns: #, Question, Indicators, Data Elements (colored dots), Score
     doc.autoTable({
         startY: ctx.y,
         margin: { left: margin, right: margin },
         head: [['#', 'Question', 'Indicators', 'Data Elements', 'Score']],
-        body: sortedQuestions.map(function (q) {
-            return [
-                String(q.number),
-                q.question,
-                String(q.indicatorCount),
-                '', // drawn via didDrawCell
-                (q.readinessScore * 100).toFixed(1) + '%',
-            ];
-        }),
+        body: sortedQuestions.map(q => [
+            String(q.number),
+            q.question,
+            String(q.indicatorCount),
+            '', // drawn via didDrawCell
+            (q.readinessScore * 100).toFixed(1) + '%',
+        ]),
         styles: { fontSize: 9, valign: 'middle' },
         headStyles: { fillColor: brandBlue },
         columnStyles: {
@@ -290,21 +301,15 @@ function drawEssentialQuestionsTable(ctx, questions) {
                 data.cell.styles.halign = 'center';
             }
             if (data.column.index === 4 && data.row.section === 'body') {
-                var q = questionByNumber[parseInt(data.row.raw[0], 10)];
+                const q = questionByNumber[parseInt(data.row.raw[0], 10)];
                 if (!q) return;
-                var pct = q.readinessScore * 100;
-                if (pct >= 66) {
-                    data.cell.styles.textColor = [34, 197, 94];
-                } else if (pct >= 33) {
-                    data.cell.styles.textColor = [234, 179, 8];
-                } else {
-                    data.cell.styles.textColor = [239, 68, 68];
-                }
+                const pct = q.readinessScore * 100;
+                data.cell.styles.textColor = scoreColor(pct);
             }
         },
         didDrawCell: function (data) {
             if (data.row.section === 'body' && data.column.index === 0) {
-                var qNum = parseInt(data.row.raw[0], 10);
+                const qNum = parseInt(data.row.raw[0], 10);
                 if (!isNaN(qNum)) {
                     ctx.eqRowBounds.push({
                         questionNumber: qNum,
@@ -318,84 +323,84 @@ function drawEssentialQuestionsTable(ctx, questions) {
             }
             if (data.column.index !== 3 || data.row.section !== 'body') return;
 
-            var de = (questionByNumber[parseInt(data.row.raw[0], 10)] || {}).dataElements;
+            const de = (questionByNumber[parseInt(data.row.raw[0], 10)] || {}).dataElements;
             if (!de) return;
-            var cx = data.cell.x + 3;
-            var cy = data.cell.y + data.cell.height / 2;
-            var r = 1.5;
-            var textGap = r * 2 + 1;
-            var groupStep = 13;
+            let cx = data.cell.x + 3;
+            const cy = data.cell.y + data.cell.height / 2;
+            const r = 1.5;
+            const textGap = r * 2 + 1;
+            const groupStep = 13;
 
             doc.setFontSize(8);
 
             // Green — available
-            doc.setFillColor(34, 197, 94);
+            doc.setFillColor.apply(doc, THEME.green);
             doc.circle(cx + r, cy, r, 'F');
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor.apply(doc, THEME.black);
             doc.text(String(de.available), cx + textGap, cy + 0.8);
 
             // Yellow — partially available
             cx += groupStep;
-            doc.setFillColor(234, 179, 8);
+            doc.setFillColor.apply(doc, THEME.amber);
             doc.circle(cx + r, cy, r, 'F');
             doc.text(String(de.partial), cx + textGap, cy + 0.8);
 
             // Red — not available / insufficient
             cx += groupStep;
-            doc.setFillColor(239, 68, 68);
+            doc.setFillColor.apply(doc, THEME.red);
             doc.circle(cx + r, cy, r, 'F');
             doc.text(String(de.notAvailable), cx + textGap, cy + 0.8);
 
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor.apply(doc, THEME.black);
         },
     });
 }
 
 // ── Per-Question Detail Page ────────────────────────────────────────────────────
 function drawQuestionDetailPage(ctx, q) {
-    var doc = ctx.doc;
-    var margin = ctx.margin;
-    var contentWidth = ctx.contentWidth;
-    var pageWidth = ctx.pageWidth;
-    var pageHeight = ctx.pageHeight;
-    var brandBlue = ctx.brandBlue;
+    const doc = ctx.doc;
+    const margin = ctx.margin;
+    const contentWidth = ctx.contentWidth;
+    const pageWidth = ctx.pageWidth;
+    const pageHeight = ctx.pageHeight;
+    const brandBlue = ctx.brandBlue;
 
     doc.addPage();
     ctx.questionPageMap[q.number] = doc.internal.getCurrentPageInfo().pageNumber;
-    var y = 6;
+    let y = 6;
 
     // Section Header
     doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
     doc.rect(0, y, pageWidth, 14, 'F');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor.apply(doc, THEME.white);
     doc.text('EQ ' + q.number + ': ' + q.summary, margin, y + 9);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor.apply(doc, THEME.black);
     y += 20;
 
     // Full Question Text
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(10);
-    var qLines = doc.splitTextToSize(q.question, contentWidth);
+    const qLines = doc.splitTextToSize(q.question, contentWidth);
     doc.text(qLines, margin, y);
     y += qLines.length * 5 + 6;
 
     // Sector Pills
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor.apply(doc, THEME.black);
     doc.text('Sectors:', margin, y);
-    var pillX = margin + doc.getTextWidth('Sectors:') + 3;
+    let pillX = margin + doc.getTextWidth('Sectors:') + 3;
     doc.setFontSize(8);
-    for (var si = 0; si < q.sectors.length; si++) {
-        var pillText = q.sectors[si];
-        var pillW = doc.getTextWidth(pillText) + 4;
+    for (let si = 0; si < q.sectors.length; si++) {
+        const pillText = q.sectors[si];
+        const pillW = doc.getTextWidth(pillText) + 4;
         doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
         doc.roundedRect(pillX, y - 3.5, pillW, 6, 3, 3, 'F');
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor.apply(doc, THEME.white);
         doc.text(pillText, pillX + 2, y + 0.5);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor.apply(doc, THEME.black);
         pillX += pillW + 2;
     }
     y += 12;
@@ -407,32 +412,35 @@ function drawQuestionDetailPage(ctx, q) {
     y += 4;
 
     // ── Indicators Grid ─────────────────────────────────────────────────────────
-    var IND_COLS = 3;
-    var indColGap = 3;
-    var indRowGap = 4;
-    var indPad = 3;
-    var indCellW = (contentWidth - (IND_COLS - 1) * indColGap) / IND_COLS;
-    var indBarH = 3;
-    var indNameFS = 8;
-    var indNameLineH = 3.8;
-    var indPillFS = 8;
-    var indPillH = 6;
-    var indScoreFS = 9;
+    const IND_COLS = 3;
+    const indColGap = 3;
+    const indRowGap = 4;
+    const indPad = 3;
+    const indCellW = (contentWidth - (IND_COLS - 1) * indColGap) / IND_COLS;
+    const indBarH = 3;
+    const indNameFS = 8;
+    const indNameLineH = 3.8;
+    const indPillFS = 8;
+    const indPillH = 6;
+    const indScoreFS = 9;
 
     // Pre-compute text layout for each indicator (sets font state, so must run before drawing)
-    var indLayouts = q.indicators.map(function (indItem) {
+    const indLayouts = q.indicators.map(function (indItem) {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(indNameFS);
-        var nameLines = doc.splitTextToSize(indItem.name, indCellW - indPad * 2);
-        if (nameLines.length > 3) { nameLines = nameLines.slice(0, 3); }
+        let nameLines = doc.splitTextToSize(indItem.name, indCellW - indPad * 2);
+        if (nameLines.length > 3) {
+            nameLines = nameLines.slice(0, 3);
+            nameLines[2] = nameLines[2].trimEnd() + '…';
+        }
 
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(indPillFS);
-        var pillRows = [[]];
-        var pillRowW = 0;
-        var pillMaxW = indCellW - indPad * 2;
+        let pillRows = [[]];
+        let pillRowW = 0;
+        const pillMaxW = indCellW - indPad * 2;
         (indItem.sectors || []).forEach(function (s) {
-            var pw = doc.getTextWidth(s) + 4;
+            const pw = doc.getTextWidth(s) + 4;
             if (pillRowW > 0 && pillRowW + 2 + pw > pillMaxW) {
                 pillRows.push([]);
                 pillRowW = 0;
@@ -446,17 +454,17 @@ function drawQuestionDetailPage(ctx, q) {
     });
 
     // Group layouts into rows of IND_COLS
-    var indGridRows = [];
-    for (var igr = 0; igr < indLayouts.length; igr += IND_COLS) {
+    const indGridRows = [];
+    for (let igr = 0; igr < indLayouts.length; igr += IND_COLS) {
         indGridRows.push(indLayouts.slice(igr, igr + IND_COLS));
     }
 
-    for (var irow = 0; irow < indGridRows.length; irow++) {
-        var indRowItems = indGridRows[irow];
-        var maxNameLines = Math.max.apply(null, indRowItems.map(function (d) { return d.nameLines.length; }));
-        var maxPillRows = Math.max.apply(null, indRowItems.map(function (d) { return d.pillRows.length; }));
+    for (let irow = 0; irow < indGridRows.length; irow++) {
+        const indRowItems = indGridRows[irow];
+        const maxNameLines = Math.max.apply(null, indRowItems.map(d => d.nameLines.length));
+        const maxPillRows = Math.max.apply(null, indRowItems.map(d => d.pillRows.length));
         // Cell height: top-pad + name lines (with baseline offset) + gap + pill rows + score/bar/pad anchored at bottom
-        var indCellH = 2 * indPad + (maxNameLines + 1) * indNameLineH + 2
+        const indCellH = 2 * indPad + (maxNameLines + 1) * indNameLineH + 2
             + maxPillRows * (indPillH + 1) + indBarH + 5;
 
         if (y + indCellH > pageHeight - 10) {
@@ -464,27 +472,27 @@ function drawQuestionDetailPage(ctx, q) {
             y = 20;
         }
 
-        for (var ic = 0; ic < indRowItems.length; ic++) {
-            var indLayout = indRowItems[ic];
-            var indItem = indLayout.indItem;
-            var pct = indItem.readinessScore * 100;
-            var scoreColor = pct >= 66 ? [34, 197, 94] : pct >= 33 ? [234, 179, 8] : [239, 68, 68];
-            var icellX = margin + ic * (indCellW + indColGap);
-            var icellY = y;
-            var barTop = icellY + indCellH - indPad - indBarH;
-            var scoreY = barTop - 1.5;
+        for (let ic = 0; ic < indRowItems.length; ic++) {
+            const indLayout = indRowItems[ic];
+            const indItem = indLayout.indItem;
+            const pct = indItem.readinessScore * 100;
+            const indScoreColor = scoreColor(pct);
+            const icellX = margin + ic * (indCellW + indColGap);
+            const icellY = y;
+            const barTop = icellY + indCellH - indPad - indBarH;
+            const scoreY = barTop - 1.5;
 
             // Cell border — light gray, rounded corners
-            doc.setDrawColor(210, 210, 210);
+            doc.setDrawColor.apply(doc, THEME.grayDark);
             doc.setLineWidth(0.3);
             doc.roundedRect(icellX, icellY, indCellW, indCellH, 2, 2, 'S');
 
             // Indicator name (bold, from top of cell)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(indNameFS);
-            doc.setTextColor(0, 0, 0);
-            var ty = icellY + indPad + indNameLineH;
-            for (var nl = 0; nl < indLayout.nameLines.length; nl++) {
+            doc.setTextColor.apply(doc, THEME.black);
+            let ty = icellY + indPad + indNameLineH;
+            for (let nl = 0; nl < indLayout.nameLines.length; nl++) {
                 doc.text(indLayout.nameLines[nl], icellX + indPad, ty + nl * indNameLineH);
             }
             ty += indLayout.nameLines.length * indNameLineH + 2;
@@ -493,15 +501,15 @@ function drawQuestionDetailPage(ctx, q) {
             if (indLayout.pillRows.length > 0) {
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(indPillFS);
-                for (var ipr = 0; ipr < indLayout.pillRows.length; ipr++) {
+                for (let ipr = 0; ipr < indLayout.pillRows.length; ipr++) {
                     pillX = icellX + indPad;
-                    for (var ipp = 0; ipp < indLayout.pillRows[ipr].length; ipp++) {
-                        var pill = indLayout.pillRows[ipr][ipp];
+                    for (let ipp = 0; ipp < indLayout.pillRows[ipr].length; ipp++) {
+                        const pill = indLayout.pillRows[ipr][ipp];
                         doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
                         doc.roundedRect(pillX, ty - 3.5, pill.w, indPillH, indPillH / 2, indPillH / 2, 'F');
-                        doc.setTextColor(255, 255, 255);
+                        doc.setTextColor.apply(doc, THEME.white);
                         doc.text(pill.text, pillX + 2, ty + 0.5);
-                        doc.setTextColor(0, 0, 0);
+                        doc.setTextColor.apply(doc, THEME.black);
                         pillX += pill.w + 2;
                     }
                     ty += indPillH + 1;
@@ -511,22 +519,22 @@ function drawQuestionDetailPage(ctx, q) {
             // Score percentage — centered, anchored above the progress bar
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(indScoreFS);
-            doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+            doc.setTextColor(indScoreColor[0], indScoreColor[1], indScoreColor[2]);
             doc.text(pct.toFixed(1) + '%', icellX + indCellW / 2, scoreY, { align: 'center' });
 
             // Progress bar — gray background track
-            var barX = icellX + indPad;
-            var barW = indCellW - indPad * 2;
-            doc.setFillColor(220, 220, 220);
+            const barX = icellX + indPad;
+            const barW = indCellW - indPad * 2;
+            doc.setFillColor.apply(doc, THEME.gray);
             doc.roundedRect(barX, barTop, barW, indBarH, 1, 1, 'F');
 
             // Progress bar — colored fill
-            var fillW = barW * pct / 100;
+            const fillW = barW * pct / 100;
             if (fillW >= 2) {
-                doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+                doc.setFillColor(indScoreColor[0], indScoreColor[1], indScoreColor[2]);
                 doc.roundedRect(barX, barTop, fillW, indBarH, 1, 1, 'F');
             } else if (fillW > 0) {
-                doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+                doc.setFillColor(indScoreColor[0], indScoreColor[1], indScoreColor[2]);
                 doc.rect(barX, barTop, fillW, indBarH, 'F');
             }
         }
@@ -544,49 +552,49 @@ function drawQuestionDetailPage(ctx, q) {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor("#000000");
+    doc.setTextColor.apply(doc, THEME.black);
     doc.text('Data Elements', margin, y);
     y += 4;
 
     // ── Data Elements Grid (2-column, horizontal-first) ──────────────────────────
-    var DE_COLS = 2;
-    var deColGap = 8;
-    var deColW = (contentWidth - deColGap) / 2;
-    var deCircleR = 1.5;
-    var deCircleGap = 1.5;
-    var deFontSize = 8;
-    var deLineH = 3.8;
-    var dePad = 1.5;
-    var deRowGap = 1.5;
-    var deTextW = deColW - deCircleR * 2 - deCircleGap;
+    const DE_COLS = 2;
+    const deColGap = 8;
+    const deColW = (contentWidth - deColGap) / 2;
+    const deCircleR = 1.5;
+    const deCircleGap = 1.5;
+    const deFontSize = 8;
+    const deLineH = 3.8;
+    const dePad = 1.5;
+    const deRowGap = 1.5;
+    const deTextW = deColW - deCircleR * 2 - deCircleGap;
 
     // Pre-compute line wrapping and availability color for each element
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(deFontSize);
-    var deLayouts = q.distinctDataElements.map(function (de) {
-        var nameLines = doc.splitTextToSize(de.name, deTextW);
+    const deLayouts = q.distinctDataElements.map(function (de) {
+        let nameLines = doc.splitTextToSize(de.name, deTextW);
         if (nameLines.length > 2) { nameLines = nameLines.slice(0, 2); }
-        var deColor;
+        let deColor;
         if (de.availability === 'Available') {
-            deColor = [34, 197, 94];
+            deColor = THEME.green;
         } else if (de.availability === 'PartiallyAvailable') {
-            deColor = [234, 179, 8];
+            deColor = THEME.amber;
         } else {
-            deColor = [239, 68, 68];
+            deColor = THEME.red;
         }
         return { de: de, nameLines: nameLines, deColor: deColor };
     });
 
     // Group into pairs (horizontal-first order)
-    var deGridRows = [];
-    for (var dgr = 0; dgr < deLayouts.length; dgr += DE_COLS) {
+    const deGridRows = [];
+    for (let dgr = 0; dgr < deLayouts.length; dgr += DE_COLS) {
         deGridRows.push(deLayouts.slice(dgr, dgr + DE_COLS));
     }
 
-    for (var drow = 0; drow < deGridRows.length; drow++) {
-        var deRowItems = deGridRows[drow];
-        var maxDeLines = Math.max.apply(null, deRowItems.map(function (d) { return d.nameLines.length; }));
-        var deRowH = dePad + maxDeLines * deLineH + dePad;
+    for (let drow = 0; drow < deGridRows.length; drow++) {
+        const deRowItems = deGridRows[drow];
+        const maxDeLines = Math.max.apply(null, deRowItems.map(d => d.nameLines.length));
+        const deRowH = dePad + maxDeLines * deLineH + dePad;
 
         if (y + deRowH > pageHeight - 10) {
             doc.addPage();
@@ -594,12 +602,12 @@ function drawQuestionDetailPage(ctx, q) {
         }
 
         // Circle center and first-line baseline, consistent for all cells in this row
-        var deCy = y + dePad + deLineH - 1.0;
-        var deTextY = y + dePad + deLineH;
+        const deCy = y + dePad + deLineH - 1.0;
+        const deTextY = y + dePad + deLineH;
 
-        for (var dc = 0; dc < deRowItems.length; dc++) {
-            var deLayout = deRowItems[dc];
-            var dx = margin + dc * (deColW + deColGap);
+        for (let dc = 0; dc < deRowItems.length; dc++) {
+            const deLayout = deRowItems[dc];
+            const dx = margin + dc * (deColW + deColGap);
 
             // Colored status circle
             doc.setFillColor(deLayout.deColor[0], deLayout.deColor[1], deLayout.deColor[2]);
@@ -608,9 +616,9 @@ function drawQuestionDetailPage(ctx, q) {
             // Bold data element name
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(deFontSize);
-            doc.setTextColor(0, 0, 0);
-            var deTextX = dx + deCircleR * 2 + deCircleGap;
-            for (var dnl = 0; dnl < deLayout.nameLines.length; dnl++) {
+            doc.setTextColor.apply(doc, THEME.black);
+            const deTextX = dx + deCircleR * 2 + deCircleGap;
+            for (let dnl = 0; dnl < deLayout.nameLines.length; dnl++) {
                 doc.text(deLayout.nameLines[dnl], deTextX, deTextY + dnl * deLineH);
             }
         }
@@ -621,11 +629,11 @@ function drawQuestionDetailPage(ctx, q) {
 
 // ── Back-fill internal links: EQ table rows → question detail pages ─────────────
 function applyEqTableLinks(ctx) {
-    var doc = ctx.doc;
+    const doc = ctx.doc;
 
     // EQ summary table row links
     ctx.eqRowBounds.forEach(function (row) {
-        var targetPage = ctx.questionPageMap[row.questionNumber];
+        const targetPage = ctx.questionPageMap[row.questionNumber];
         if (targetPage) {
             doc.setPage(row.page);
             doc.link(row.x, row.y, row.w, row.h, { pageNumber: targetPage });
@@ -634,7 +642,7 @@ function applyEqTableLinks(ctx) {
 
     // Readiness Score Distribution — individual EQ label links
     ctx.eqBandLinkQueue.forEach(function (entry) {
-        var targetPage = ctx.questionPageMap[entry.questionNumber];
+        const targetPage = ctx.questionPageMap[entry.questionNumber];
         if (targetPage) {
             doc.setPage(entry.page);
             doc.link(entry.x, entry.y, entry.w, entry.h, { pageNumber: targetPage });
@@ -646,21 +654,19 @@ function applyEqTableLinks(ctx) {
 
 // ── Orchestrator ────────────────────────────────────────────────────────────────
 window.generatePdfReport = function (reportData) {
-    var ctx = buildCtx();
+    const ctx = buildCtx();
 
     drawHeaderBanner(ctx, reportData.projectTitle);
     drawEqReadinessSummary(ctx, reportData.summary, reportData.questions);
     drawEssentialQuestionsTable(ctx, reportData.questions);
 
-    var orderedQuestions = reportData.questions.slice().sort(function (a, b) {
-        return a.number - b.number;
-    });
-    for (var qi = 0; qi < orderedQuestions.length; qi++) {
+    const orderedQuestions = reportData.questions.slice().sort((a, b) => a.number - b.number);
+    for (let qi = 0; qi < orderedQuestions.length; qi++) {
         drawQuestionDetailPage(ctx, orderedQuestions[qi]);
     }
 
     applyEqTableLinks(ctx);
 
-    var pdfUrl = ctx.doc.output('bloburl');
+    const pdfUrl = ctx.doc.output('bloburl');
     window.open(pdfUrl, '_blank');
 };
