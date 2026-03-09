@@ -247,7 +247,8 @@ else
             Name = data.name,
             Description = data.description,
             Type = _dataSource.Type,
-            Enabled = _dataSource.Enabled
+            Enabled = _dataSource.Enabled,
+            Assessments = _dataSource.Assessments
         };
 
         await ProjectSvc.UpdateDataSourceAsync(updatedDs);

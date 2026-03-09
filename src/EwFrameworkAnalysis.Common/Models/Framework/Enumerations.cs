@@ -7,7 +7,7 @@ public enum Sector
     [Display(Name = "Pre-K", Description = "")]
     PK,
 
-    [Display(Name = "k-12", Description = "")]
+    [Display(Name = "K-12", Description = "")]
     K12,
 
     [Display(Name = "Postsecondary", Description = "")]

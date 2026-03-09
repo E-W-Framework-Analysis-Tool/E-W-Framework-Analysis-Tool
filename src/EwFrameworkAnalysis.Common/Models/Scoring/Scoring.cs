@@ -100,9 +100,3 @@ public class OverallReadinessResults
     public decimal CombinedReadiness { get; set; }
 }
 
-public class AssessmentScore
-{
-    public Guid DataSourceAssessmentId { get; set; }
-    public DataSourceType SourceType { get; set; }   // optional, helpful for UI
-    public List<QuestionScore> QuestionScores { get; set; } = [];
-}

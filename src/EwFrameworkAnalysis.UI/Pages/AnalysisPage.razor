@@ -5,15 +5,22 @@
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Pages.Analysis
+@using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
 @inject DataElementScoringService ScoringSvc
+@inject PdfReportService PdfReportSvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Header -->
-    <AnalysisHeader/>
+    <AnalysisHeader OnGenerateReport="GenerateReportAsync"/>
+
+    <!-- EQ Readiness Summary -->
+    <EqReadinessSummary QuestionScores="_questionScores"
+                        SectorReadinessScores="_sectorReadinessScores"/>
 
     <!-- Overall and Readiness Assessment -->
-    <OverallReadinessAssessment SectorReadinessScores="_sectorReadinessScores" OverallReadinessScores="_overallReadinessScores" />
+    <OverallReadinessAssessment OverallReadinessScores="_overallReadinessScores"
+                                IndicatorScores="_indicatorScores" />
 
     <!-- Tabs -->
     <div class="tabs tabs-border !rounded-none">
@@ -63,6 +70,23 @@
     {
         await ProjectSvc.InitializeAsync();
         CalculateScores();
+    }
+
+    private async Task GenerateReportAsync()
+    {
+        // Add each manual data source individually to the report
+        // Displays data source name set by the user and it's individual score
+        var customSourceScores = ProjectSvc.DataSources
+            .Where(ds => ds.Enabled && ds.Type == DataSourceType.Custom)
+            .Select(ds => new CustomDataSourceScore(
+                ds.Name,
+                (double)ScoringSvc.CalculateOverallReadinessScores(
+                    Assessments.Where(a => a.DataSourceId == ds.Id).ToList()
+                ).CustomDataSourceReadiness
+            ))
+            .ToList();
+
+        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ActiveDataSources, ProjectSvc.Project.Title, customSourceScores);
     }
 
     private void CalculateScores()
