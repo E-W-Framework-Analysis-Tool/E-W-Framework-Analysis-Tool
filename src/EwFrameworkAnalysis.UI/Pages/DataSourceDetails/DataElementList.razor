@@ -2,85 +2,150 @@
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@inject IJSRuntime JSRuntime
 
 <div class="flex flex-col h-full">
     <!-- Fixed Filter / Control Area -->
     <div class="sticky bg-white top-0 flex-shrink-0 space-y-2 pb-0 @(ShowFilterPadding ? "p-4" : "p-0")">
 
-        <!-- Search Row -->
-        <label class="input input-bordered flex items-center gap-2 w-full">
-            <i class="fas fa-search opacity-50"></i>
-            <input type="search"
-                   placeholder="Search data elements..."
-                   class="grow"
-                   @bind="_searchQuery"
-                   @bind:event="oninput" />
-        </label>
+        <!-- Main Toolbar Row -->
+        <div class="flex items-center gap-2">
 
-        <!-- Filters Row -->
-        <div class="flex flex-wrap gap-2 items-start">
-            <!-- Sector Filter -->
-            <div class="flex flex-1 flex-col flex-wrap">
-                <form class="flex gap-1">
-                    @foreach (var sector in Enum.GetValues<Sector>())
+            <!-- Search Input -->
+            <label class="input input-bordered input-sm flex items-center gap-2 flex-1">
+                <i class="fas fa-search opacity-50"></i>
+                <input type="search"
+                       placeholder="Search data elements..."
+                       class="grow"
+                       @bind="_searchQuery"
+                       @bind:event="oninput" />
+            </label>
+
+            <!-- Vertical Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Filter Button -->
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="text-[10px] font-semibold text-gray-500 leading-none">Filters</span>
+                <button class="btn btn-sm btn-ghost gap-1 @(HasAnyFilters() ? "text-primary" : "")"
+                        @onclick="() => _showFilters = !_showFilters"
+                        title="Toggle filters"
+                        aria-expanded="@_showFilters"
+                        aria-label="Toggle filters panel">
+                    <i class="fas fa-sliders-h"></i>
+                    @if (HasAnyFilters())
                     {
-                        <input class="btn btn-sm @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
-                               type="checkbox"
-                               checked="@_selectedSectors.Contains(sector)"
-                               @onchange="() => ToggleSector(sector)"
-                               aria-label="@sector.ToString()" />
+                        <span class="badge badge-primary badge-xs">@GetActiveFilterCount()</span>
                     }
-                    <button class="btn btn-sm btn-square btn-ghost @(_selectedSectors.Any() ? "" : "btn-disabled")" type="button" @onclick="ClearSectorFilter">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
-                <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Sector</div>
+                </button>
             </div>
 
-            <!-- Availability Filter -->
-            <div class="flex flex-col">
-                <form class="flex flex-wrap gap-1">
-                    <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.Available) ? "btn-success" : "")"
-                           type="checkbox"
-                           checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.Available)"
-                           @onchange="() => ToggleAvailability(AvailabilityJudgment.Available)"
-                           aria-label="Available" />
-                    <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.PartiallyAvailable) ? "btn-warning" : "")"
-                           type="checkbox"
-                           checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.PartiallyAvailable)"
-                           @onchange="() => ToggleAvailability(AvailabilityJudgment.PartiallyAvailable)"
-                           aria-label="Partially Available" />
-                    <input class="btn btn-sm @(_selectedAvailabilities.Contains(AvailabilityJudgment.NotAvailable) ? "btn-error" : "")"
-                           type="checkbox"
-                           checked="@_selectedAvailabilities.Contains(AvailabilityJudgment.NotAvailable)"
-                           @onchange="() => ToggleAvailability(AvailabilityJudgment.NotAvailable)"
-                           aria-label="Not Available" />
-                    @if (!HideUnreported)
-                    {
-                        <input class="btn btn-sm @(_showUnreported ? "btn-neutral" : "")"
-                               type="checkbox"
-                               checked="@_showUnreported"
-                               @onchange="() => _showUnreported = !_showUnreported"
-                               aria-label="Not Yet Reported" />
-                    }
-                    <button class="btn btn-sm btn-square btn-ghost @(HasAvailabilityFilters() ? "" : "btn-disabled")" type="button" @onclick="ClearAvailabilityFilter">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
-                <div class="text-xs font-semibold text-gray-600 mt-1 px-1">Filter by Status</div>
+            <!-- Vertical Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Group By Toggle -->
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
+                <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                    <i class="fas fa-layer-group text-xs text-gray-400"></i>
+                    <input type="radio"
+                           name="category-view"
+                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-50")"
+                           aria-label="E-W Clusters"
+                           checked="@(_categoryMode == CategoryMode.EWFramework)"
+                           @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
+                    <input type="radio"
+                           name="category-view"
+                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-50")"
+                           aria-label="Data Categories"
+                           checked="@(_categoryMode == CategoryMode.DataElement)"
+                           @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
+                </div>
+            </div>
+
+            <!-- Vertical Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Expand / Collapse -->
+            <div class="flex flex-col items-center gap-0.5">
+                <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
+                                         IsExpandedChanged="OnAllExpandedChanged" />
             </div>
         </div>
 
-        <!-- Expand/Collapse Button -->
-        <div class="flex justify-end space-y-0">
-            <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
-                                     IsExpandedChanged="OnAllExpandedChanged" />
-        </div>
+        <!-- Collapsible Filters Panel -->
+        @if (_showFilters)
+        {
+            <div class="flex flex-wrap gap-4 items-start pt-2 pb-1 px-1 border-t border-gray-200">
+
+                <!-- Sector Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Sector</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var sector in Enum.GetValues<Sector>())
+                        {
+                            <input class="btn btn-xs @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
+                                   type="checkbox"
+                                   checked="@_selectedSectors.Contains(sector)"
+                                   @onchange="() => ToggleSector(sector)"
+                                   aria-label="@sector.ToString()" />
+                        }
+                        @if (_selectedSectors.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost"
+                                    type="button"
+                                    @onclick="ClearSectorFilter"
+                                    title="Clear sector filter"
+                                    aria-label="Clear sector filter">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Vertical Divider -->
+                <div class="w-px self-stretch bg-gray-200"></div>
+
+                <!-- Status Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Status</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var judgment in _availabilityOptions)
+                        {
+                            var isSelected = _selectedAvailabilities.Contains(judgment);
+                            <input class="btn btn-xs @(isSelected? GetAvailabilityActiveClass(judgment) : "")"
+                                   type="checkbox"
+                                   checked="@isSelected"
+                                   @onchange="() => ToggleAvailability(judgment)"
+                                   aria-label="@judgment.GetDisplayName()" />
+                        }
+                        @if (!HideUnreported)
+                        {
+                            <input class="btn btn-xs @(_showUnreported ? "btn-neutral" : "")"
+                                   type="checkbox"
+                                   checked="@_showUnreported"
+                                   @onchange="() => _showUnreported = !_showUnreported"
+                                   aria-label="Not Yet Reported" />
+                        }
+                        @if (HasAvailabilityFilters())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost"
+                                    type="button"
+                                    @onclick="ClearAvailabilityFilter"
+                                    title="Clear status filter"
+                                    aria-label="Clear status filter">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 
     <!-- Scrollable Data Element Categories -->
-    <div class="flex-1 overflow-y-scroll mt-2 @ContainerClass">
-        <div class="bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
+    <div class="flex-1 overflow-y-auto mt-2 rounded-lg border-1 border-gray-300 shadow-inner">
+        <div class="bg-white divide-y divide-gray-200 @ContainerClass">
             @foreach (var category in GetFilteredCategories())
             {
                 <div class="border-b border-gray-200 last:border-b-0">
@@ -104,7 +169,7 @@
                                 {
                                     <button class="btn btn-xs @GetCategoryButtonClass(category, judgment)"
                                             @onclick="() => SetCategoryAvailability(category, judgment)"
-                                            title="@judgment.ToString()">
+                                            title="@judgment.GetDisplayName()">
                                         @GetAvailabilityIcon(judgment)
                                     </button>
                                 }
@@ -137,7 +202,7 @@
                                             {
                                                 <button class="btn btn-xs @GetElementButtonClass(element, judgment)"
                                                         @onclick="() => SetElementAvailability(element, judgment)"
-                                                        title="@judgment.ToString()">
+                                                        title="@judgment.GetDisplayName()">
                                                     @GetAvailabilityIcon(judgment)
                                                 </button>
                                             }
@@ -147,8 +212,9 @@
                                     {
                                         @if (ElementAvailability.TryGetValue(element.Name, out var availability))
                                         {
-                                            <div class="badge @GetAvailabilityBadgeClass(availability) badge-sm">
-                                                @GetAvailabilityIcon(availability) @availability.ToString()
+                                            <div class="badge @GetAvailabilityBadgeClass(availability) badge-sm"
+                                                 title="@availability.GetDisplayName()">
+                                                @GetAvailabilityIcon(availability) @availability.GetDisplayName()
                                             </div>
                                         }
                                     }
@@ -185,19 +251,44 @@
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
+    private bool _showFilters = false;
+    private CategoryMode _categoryMode = CategoryMode.EWFramework;
+    private const string CATEGORY_MODE_STORAGE_KEY = "ewframework_analysis_category_preference";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
+                _categoryMode = mode;
+        }
+        catch { }
+
+        BuildCategories();
+    }
+
+    private enum CategoryMode
+    {
+        EWFramework,
+        DataElement
+    }
+
+    private async Task SetCategoryMode(CategoryMode mode)
+    {
+        _categoryMode = mode;
+        _expandedCategories.Clear();
+        _allExpanded = false;
+        BuildCategories();
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", CATEGORY_MODE_STORAGE_KEY, mode.ToString());
+    }
 
     private void OnAllExpandedChanged(bool expanded)
     {
         _allExpanded = expanded;
-
-        if (expanded)
-        {
-            _expandedCategories = _categories.Select(c => c.Name).ToHashSet();
-        }
-        else
-        {
-            _expandedCategories.Clear();
-        }
+        _expandedCategories = expanded
+            ? _categories.Select(c => c.Name).ToHashSet()
+            : new HashSet<string>();
     }
 
     private readonly List<AvailabilityJudgment> _availabilityOptions = new()
@@ -209,6 +300,26 @@
 
     private readonly Dictionary<string, string> _categoryIcons = new()
     {
+        // E-W Framework Clusters
+        ["Academic Assessment and Performance"] = "fa-chart-line",
+        ["Attendance and Engagement"] = "fa-calendar-check",
+        ["Behavior and Discipline"] = "fa-gavel",
+        ["Community and Environmental Conditions"] = "fa-city",
+        ["Course and Curriculum"] = "fa-book",
+        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
+        ["Educator Qualifications and Credentials"] = "fa-certificate",
+        ["Financial Support and Resources"] = "fa-dollar-sign",
+        ["Health and Well-being"] = "fa-heart",
+        ["Instructional Quality and Practice"] = "fa-chalkboard",
+        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
+        ["Program Eligibility and Enrollment"] = "fa-school",
+        ["Program Quality and Standards"] = "fa-award",
+        ["School Climate and Engagement"] = "fa-users",
+        ["Student Demographics"] = "fa-user",
+        ["Student Support Services"] = "fa-hands-helping",
+        ["System Economic Conditions"] = "fa-coins",
+        ["Workforce and Career Outcomes"] = "fa-briefcase",
+        // Data Element Categories
         ["Academic Coursework"] = "fa-book",
         ["Academic Performance"] = "fa-chart-line",
         ["Assessments"] = "fa-clipboard-check",
@@ -226,16 +337,19 @@
         ["School Climate"] = "fa-school",
         ["Social-Emotional Learning (SEL)"] = "fa-smile",
         ["Staff & Educators"] = "fa-chalkboard-teacher",
-        ["Student Support Services"] = "fa-hands-helping",
         ["Transportation"] = "fa-bus",
     };
 
     private List<DataElementCategory> _categories = new();
 
-    protected override void OnInitialized()
+    private void BuildCategories()
     {
+        var groupingSelector = _categoryMode == CategoryMode.EWFramework
+            ? (Func<DataElement, string>)(e => e.ClusterOnlyCategory)
+            : (e => e.DataElementCategory);
+
         _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(e => e.DataElementCategory)
+            .GroupBy(groupingSelector)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
@@ -248,23 +362,16 @@
 
     private void ToggleSector(Sector sector)
     {
-        if (_selectedSectors.Contains(sector))
-            _selectedSectors.Remove(sector);
-        else
-            _selectedSectors.Add(sector);
+        if (_selectedSectors.Contains(sector)) _selectedSectors.Remove(sector);
+        else _selectedSectors.Add(sector);
     }
 
-    private void ClearSectorFilter()
-    {
-        _selectedSectors.Clear();
-    }
+    private void ClearSectorFilter() => _selectedSectors.Clear();
 
     private void ToggleAvailability(AvailabilityJudgment availability)
     {
-        if (_selectedAvailabilities.Contains(availability))
-            _selectedAvailabilities.Remove(availability);
-        else
-            _selectedAvailabilities.Add(availability);
+        if (_selectedAvailabilities.Contains(availability)) _selectedAvailabilities.Remove(availability);
+        else _selectedAvailabilities.Add(availability);
     }
 
     private void ClearAvailabilityFilter()
@@ -273,10 +380,11 @@
         _showUnreported = false;
     }
 
-    private bool HasAvailabilityFilters()
-    {
-        return _selectedAvailabilities.Any() || _showUnreported;
-    }
+    private bool HasAvailabilityFilters() => _selectedAvailabilities.Any() || _showUnreported;
+
+    private bool HasAnyFilters() => _selectedSectors.Any() || HasAvailabilityFilters();
+
+    private int GetActiveFilterCount() => _selectedSectors.Count + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
 
     private List<DataElementCategory> GetFilteredCategories()
     {
@@ -323,8 +431,7 @@
                         .Where(e =>
                         {
                             var hasAvailability = ElementAvailability.TryGetValue(e.Name, out var availability);
-                            if (!hasAvailability)
-                                return _showUnreported;
+                            if (!hasAvailability) return _showUnreported;
                             return _selectedAvailabilities.Contains(availability);
                         })
                         .ToList()
@@ -332,7 +439,6 @@
                 .Where(c => c.Elements.Any());
         }
 
-        // Filter out unreported if HideUnreported is true
         if (HideUnreported)
         {
             categories = categories
@@ -352,47 +458,31 @@
 
     private void ToggleCategoryExpanded(string categoryName)
     {
-        if (_expandedCategories.Contains(categoryName))
-            _expandedCategories.Remove(categoryName);
-        else
-            _expandedCategories.Add(categoryName);
+        if (_expandedCategories.Contains(categoryName)) _expandedCategories.Remove(categoryName);
+        else _expandedCategories.Add(categoryName);
     }
 
-    private bool IsCategoryExpanded(string categoryName)
-    {
-        return _expandedCategories.Contains(categoryName);
-    }
+    private bool IsCategoryExpanded(string categoryName) => _expandedCategories.Contains(categoryName);
 
     private void SetCategoryAvailability(DataElementCategory category, AvailabilityJudgment judgment)
     {
         if (!IsEditable) return;
-
         var allMatch = category.Elements.All(e =>
             ElementAvailability.TryGetValue(e.Name, out var val) && val == judgment);
-
         if (allMatch)
-        {
-            foreach (var element in category.Elements)
-                ElementAvailability.Remove(element.Name);
-        }
+            foreach (var element in category.Elements) ElementAvailability.Remove(element.Name);
         else
-        {
-            foreach (var element in category.Elements)
-                ElementAvailability[element.Name] = judgment;
-        }
-
+            foreach (var element in category.Elements) ElementAvailability[element.Name] = judgment;
         ElementAvailabilityChanged.InvokeAsync(ElementAvailability);
     }
 
     private void SetElementAvailability(DataElement element, AvailabilityJudgment judgment)
     {
         if (!IsEditable) return;
-
         if (ElementAvailability.TryGetValue(element.Name, out var current) && current == judgment)
             ElementAvailability.Remove(element.Name);
         else
             ElementAvailability[element.Name] = judgment;
-
         ElementAvailabilityChanged.InvokeAsync(ElementAvailability);
     }
 
@@ -400,7 +490,6 @@
     {
         var allMatch = category.Elements.All(e =>
             ElementAvailability.TryGetValue(e.Name, out var val) && val == judgment);
-
         var baseClass = judgment switch
         {
             AvailabilityJudgment.Available => "btn-success",
@@ -408,14 +497,12 @@
             AvailabilityJudgment.NotAvailable => "btn-error",
             _ => "btn-ghost"
         };
-
         return allMatch ? baseClass : "btn-ghost btn-outline";
     }
 
     private string GetElementButtonClass(DataElement element, AvailabilityJudgment judgment)
     {
         var isSelected = ElementAvailability.TryGetValue(element.Name, out var current) && current == judgment;
-
         return judgment switch
         {
             AvailabilityJudgment.Available => isSelected ? "btn-success" : "btn-ghost btn-outline",
@@ -424,6 +511,14 @@
             _ => "btn-ghost"
         };
     }
+
+    private string GetAvailabilityActiveClass(AvailabilityJudgment judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => "btn-success",
+        AvailabilityJudgment.PartiallyAvailable => "btn-warning",
+        AvailabilityJudgment.NotAvailable => "btn-error",
+        _ => "btn-neutral"
+    };
 
     private string GetAvailabilityBadgeClass(AvailabilityJudgment judgment) => judgment switch
     {
@@ -441,10 +536,8 @@
         _ => "?"
     };
 
-    private int GetCategoryReportedCount(DataElementCategory category)
-    {
-        return category.Elements.Count(e => ElementAvailability.ContainsKey(e.Name));
-    }
+    private int GetCategoryReportedCount(DataElementCategory category) =>
+        category.Elements.Count(e => ElementAvailability.ContainsKey(e.Name));
 
     private class DataElementCategory
     {
