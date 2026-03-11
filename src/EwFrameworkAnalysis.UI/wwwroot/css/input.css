@@ -69,6 +69,32 @@
   font-family: 'Zilla Slab', serif !important;
 }
 
+.walkthrough-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: all;
+}
+
+.walkthrough-spotlight {
+    position: absolute;
+    border-radius: 6px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+    transition: all 0.25s ease;
+}
+
+.walkthrough-tooltip {
+    position: fixed;
+    z-index: 9999;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    pointer-events: all;
+    transition: left 0.25s ease, top 0.25s ease, width 0.25s ease;
+}
+
 @layer base {
     button,
     [type='button'],
