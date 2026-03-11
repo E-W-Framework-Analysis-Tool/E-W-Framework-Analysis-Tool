@@ -4,6 +4,7 @@ using EwFrameworkAnalysis.Common.Scoring;
 using EwFrameworkAnalysis.Common.Services;
 using EwFrameworkAnalysis.UI;
 using EwFrameworkAnalysis.UI.Options;
+using EwFrameworkAnalysis.UI.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Options;
@@ -32,6 +33,7 @@ builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddScoped<EcsStateDataParser>();
 builder.Services.AddSingleton<EcsStateDataProvider>();
 builder.Services.AddSingleton<AnalysisProjectService>();
+builder.Services.AddScoped<PdfReportService>();
 
 // Register Scoring Rules
 builder.Services.AddSingleton<DataElementScoringService>();

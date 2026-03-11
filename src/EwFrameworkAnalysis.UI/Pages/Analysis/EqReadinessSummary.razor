@@ -1,0 +1,99 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Overflow Title="EQ Readiness Summary" Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
+    <ChildContent>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                @* EQ Score Distribution Bar Chart *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness Score Distribution</h2>
+                    <div class="flex flex-col gap-2">
+                        @foreach (var band in _scoreBands)
+                        {
+                            <div class="tooltip tooltip-bottom w-full text-left" data-tip="@band.TooltipText">
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="text-gray-500 w-16 shrink-0 text-right">@band.ShortLabel</span>
+                                    <div class="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full @band.ChartColor transition-all"
+                                             style="width: @(GetBarWidthPct(band.Count))%;">
+                                        </div>
+                                    </div>
+                                    <span class="font-semibold w-6 shrink-0">@band.Count</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* Readiness by Sector *@
+                <div class="flex flex-col gap-4">
+                    <h2 class="flex font-semibold">Readiness by Sector</h2>
+                    <div class="flex flex-col gap-3">
+                        @foreach (var sector in SectorReadinessScores.OrderByDescending(x => x.ReadinessScore))
+                        {
+                            <div class="flex flex-col gap-1">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">@sector.Sector.GetDisplayName()</span>
+                                    <span class="font-semibold">@sector.ReadinessScore.ToString("0.##%")</span>
+                                </div>
+                                <progress class="progress h-3 @GetProgressBarColor(sector.ReadinessScore) bg-gray-200"
+                                          value="@(sector.ReadinessScore * 100)"
+                                          max="100"></progress>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<QuestionScore> QuestionScores { get; set; } = [];
+
+    [Parameter, EditorRequired]
+    public List<SectorReadinessResult> SectorReadinessScores { get; set; } = [];
+
+    private int _maxBandCount;
+    private List<ScoreBand> _scoreBands = [];
+
+    private record ScoreBand(string Label, string ShortLabel, int Count, string ChartColor, string TooltipText);
+
+    private int GetBarWidthPct(int count) =>
+        _maxBandCount == 0 ? 0 : (int)Math.Round((double)count / _maxBandCount * 100);
+
+    private static string BuildTooltip(IEnumerable<QuestionScore> questions)
+    {
+        var labels = questions.Select(q => $"EQ-{q.QuestionNumber}").ToList();
+        return labels.Count > 0 ? string.Join(", ", labels) : "No EQs in this range";
+    }
+
+    protected override void OnParametersSet()
+    {
+        var sorted = QuestionScores.OrderBy(q => q.QuestionNumber).ToList();
+
+        _scoreBands =
+        [
+            new("90–100% Readiness", "90–100%", sorted.Count(q => q.ReadinessScore >= 0.90m),                             "bg-success", BuildTooltip(sorted.Where(q => q.ReadinessScore >= 0.90m))),
+            new("80–90% Readiness",  "80–90%",  sorted.Count(q => q.ReadinessScore is >= 0.80m and < 0.90m),              "bg-success", BuildTooltip(sorted.Where(q => q.ReadinessScore is >= 0.80m and < 0.90m))),
+            new("70–80% Readiness",  "70–80%",  sorted.Count(q => q.ReadinessScore is >= 0.70m and < 0.80m),              "bg-warning", BuildTooltip(sorted.Where(q => q.ReadinessScore is >= 0.70m and < 0.80m))),
+            new("60–70% Readiness",  "60–70%",  sorted.Count(q => q.ReadinessScore is >= 0.60m and < 0.70m),              "bg-warning", BuildTooltip(sorted.Where(q => q.ReadinessScore is >= 0.60m and < 0.70m))),
+            new("50–60% Readiness",  "50–60%",  sorted.Count(q => q.ReadinessScore is >= 0.50m and < 0.60m),              "bg-error",   BuildTooltip(sorted.Where(q => q.ReadinessScore is >= 0.50m and < 0.60m))),
+            new("Under 50% Readiness", "<50%",  sorted.Count(q => q.ReadinessScore < 0.50m),                              "bg-error",   BuildTooltip(sorted.Where(q => q.ReadinessScore < 0.50m))),
+        ];
+        _maxBandCount = _scoreBands.Any(b => b.Count > 0) ? _scoreBands.Max(b => b.Count) : 1;
+    }
+
+    private string GetProgressBarColor(decimal score)
+    {
+        if (score > 0.66m) return "progress-success";
+        if (score > 0.33m) return "progress-warning";
+        if (score > 0m) return "progress-error";
+        return "bg-gray-200";
+    }
+}

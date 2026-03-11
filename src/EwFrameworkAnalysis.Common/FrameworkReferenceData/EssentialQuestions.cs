@@ -32,7 +32,11 @@ public static class EwFrameworkEssentialQuestions
             QuestionSummary = "Quality pre-K enrollment",
             ApplicableSectors = [Sector.PK],
             RelatedIndicatorNames = [
-                "Enrollment in quality public pre-K"
+                "Enrollment in quality public pre-K",
+                "Access to quality public pre-K",
+                "Access to full-day pre-K",
+                "Access to early intervention screening",
+                "Access to child care subsidies"
             ]
         },
         new()
@@ -46,16 +50,16 @@ public static class EwFrameworkEssentialQuestions
                 "Kindergarten readiness: cognition",
                 "Kindergarten readiness: social-emotional development",
                 "Kindergarten readiness: approaches to learning",
+                "Kindergarten readiness: perceptual, motor, and physical development",
+                "Access to quality public pre-K",
+                "Access to full-day pre-K",
                 "School-family engagement",
                 "Teacher credentials",
                 "Teacher experience",
                 "Educator retention",
                 "Classroom observations of instructional practice",
-                "Access to child care subsidies",
                 "Access to early intervention screening",
-                "Access to full-day pre-K",
-                "Access to quality public pre-K",
-                "Enrollment in quality public pre-K"
+                "Access to child care subsidies"
             ]
         },
         new()
@@ -75,16 +79,11 @@ public static class EwFrameworkEssentialQuestions
             QuestionSummary = "Early grades on track",
             ApplicableSectors = [Sector.PK, Sector.K12],
             RelatedIndicatorNames = [
-                "Kindergarten readiness: perceptual, motor, and physical development",
-                "Equitable discipline practices",
-                "Teachers' contributions to student learning growth",
-                "Access to quality, culturally responsive curricula",
-                "Access to full-day kindergarten",
-                "Classroom observations of instructional practice",
                 "Kindergarten readiness: approaches to learning",
                 "Kindergarten readiness: cognition",
                 "Kindergarten readiness: language and literacy",
                 "Kindergarten readiness: social-emotional development",
+                "Kindergarten readiness: perceptual, motor, and physical development",
                 "Early grades on track",
                 "Educator retention",
                 "Teacher credentials",
@@ -120,8 +119,9 @@ public static class EwFrameworkEssentialQuestions
             QuestionSummary = "Equitable discipline practices",
             ApplicableSectors = [Sector.PK, Sector.K12],
             RelatedIndicatorNames = [
-                "Consistent attendance",
                 "Positive behavior",
+                "Consistent attendance",
+                "Equitable discipline practices",
                 "School safety",
                 "Inclusive environments",
                 "Equitable discipline practices"
@@ -143,8 +143,6 @@ public static class EwFrameworkEssentialQuestions
                 "Educator retention",
                 "Effective program and school leadership",
                 "Institutions' contributions to student outcomes",
-                "Teacher credentials",
-                "Teachers' contributions to student learning growth"
             ]
         },
         new()
@@ -190,7 +188,10 @@ public static class EwFrameworkEssentialQuestions
                 "School-family engagement",
                 "Equitable discipline practices",
                 "Inclusive environments",
-                "School safety"
+                "Representational racial and ethnic diversity of educators",
+                "School and workplace racial and ethnic diversity",
+                "School and workplace socioeconomic diversity",
+                "Access to health, mental health, and social supports",
             ]
         },
         new()
@@ -200,6 +201,7 @@ public static class EwFrameworkEssentialQuestions
             QuestionSummary = "High school graduation track",
             ApplicableSectors = [Sector.K12],
             RelatedIndicatorNames = [
+                "Positive behavior",
                 "8th grade on track",
                 "9th grade on track",
                 "Access to quality, culturally responsive curricula",
@@ -211,7 +213,8 @@ public static class EwFrameworkEssentialQuestions
                 "Institutions' contributions to student outcomes",
                 "Math and reading proficiency in grade 8",
                 "Math and reading proficiency in high school",
-                "Positive behavior",
+                "Consistent attendance",
+                "Equitable discipline practices",
                 "Teacher credentials",
                 "Teachers' contributions to student learning growth"
             ]
@@ -278,6 +281,9 @@ public static class EwFrameworkEssentialQuestions
                 "Access to ongoing career skills development",
                 "Access to in-demand CTE pathways",
                 "CTE pathway concentration",
+                "Participation in work-based learning",
+                "Employment in a quality job",
+                "Access to in-demand CTE pathways",
                 "Expenditures on workforce development programs",
                 "Participation in work-based learning"
             ]
@@ -355,9 +361,9 @@ public static class EwFrameworkEssentialQuestions
                 "Cumulative student debt",
                 "Institutions' contributions to student outcomes",
                 "Minimum economic return",
-                "Social awareness",
-                "Social capital",
-                "Student loan repayment"
+                "Student loan repayment",
+                "Institutions' contributions to student outcomes",
+                "Cumulative student debt",
             ]
         },
         new()
@@ -386,5 +392,5 @@ public class EssentialQuestion
     public string Question { get; set; } = string.Empty;
     public string QuestionSummary { get; set; } = string.Empty;
     public List<Sector> ApplicableSectors { get; set; } = [];
-    public List<string> RelatedIndicatorNames { get; set; } = []; // References to Indicator.Name
+    public List<string> RelatedIndicatorNames { get; set; } = [];
 }
