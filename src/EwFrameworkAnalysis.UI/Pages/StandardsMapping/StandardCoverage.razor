@@ -9,304 +9,254 @@
 
 <PageTitle>Standard Coverage — E-W Analysis Tool</PageTitle>
 
-<div class="flex flex-col gap-6 p-4">
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+    <div class="flex flex-col gap-6">
 
-    <!-- ================================================================
-         HEADER
-    ================================================================ -->
-    <div class="flex items-center justify-between flex-wrap gap-2">
-        <div>
-            <h1 class="text-2xl font-bold">Standard Coverage</h1>
-            <p class="text-sm text-gray-500 mt-0.5">
-                Which EWF data elements are mapped to each standard, derived from registered assessors.
-            </p>
-        </div>
-
-        <!-- Standard selector -->
-        <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold text-gray-500">View</span>
-            <div class="join border border-gray-200 rounded-lg">
-                <button class="join-item btn btn-sm @(_selectedStandard == null ? "btn-primary" : "btn-ghost")"
-                        @onclick="() => SetStandard(null)">
-                    Both
-                </button>
-                <button class="join-item btn btn-sm @(_selectedStandard == CoverageStandard.EdFi ? "btn-primary" : "btn-ghost")"
-                        @onclick="() => SetStandard(CoverageStandard.EdFi)">
-                    Ed-Fi ODS API v7.2
-                </button>
-                <button class="join-item btn btn-sm @(_selectedStandard == CoverageStandard.Ceds ? "btn-primary" : "btn-ghost")"
-                        @onclick="() => SetStandard(CoverageStandard.Ceds)">
-                    CEDS DW v13
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================================================================
-         SUMMARY STATS
-    ================================================================ -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-
-        <!-- Total elements -->
-        <div class="card border border-gray-200 shadow-sm bg-base-100 p-4">
-            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">EWF Data Elements</div>
-            <div class="text-3xl font-bold mt-1">@_report.TotalElements</div>
-            <div class="text-xs text-gray-400 mt-1">Total in framework</div>
-        </div>
-
-        <!-- Ed-Fi coverage -->
-        <div class="card border border-gray-200 shadow-sm bg-base-100 p-4 @(_selectedStandard == CoverageStandard.Ceds ? "opacity-40" : "")">
-            <div class="text-xs font-semibold uppercase tracking-wide text-blue-600">Ed-Fi ODS API v7.2</div>
-            <div class="flex items-end gap-2 mt-1">
-                <span class="text-3xl font-bold">@_report.EdFiCoveragePercent%</span>
-                <span class="text-sm text-gray-400 mb-0.5">(@_report.EdFiMappedCount of @_report.TotalElements)</span>
-            </div>
-            <progress class="progress progress-info w-full mt-2" value="@_report.EdFiCoveragePercent" max="100"></progress>
-        </div>
-
-        <!-- CEDS coverage -->
-        <div class="card border border-gray-200 shadow-sm bg-base-100 p-4 @(_selectedStandard == CoverageStandard.EdFi ? "opacity-40" : "")">
-            <div class="text-xs font-semibold uppercase tracking-wide text-purple-600">CEDS Data Warehouse v13</div>
-            <div class="flex items-end gap-2 mt-1">
-                <span class="text-3xl font-bold">@_report.CedsCoveragePercent%</span>
-                <span class="text-sm text-gray-400 mb-0.5">(@_report.CedsMappedCount of @_report.TotalElements)</span>
-            </div>
-            <progress class="progress progress-secondary w-full mt-2" value="@_report.CedsCoveragePercent" max="100"></progress>
-        </div>
-
-        <!-- Mapped to both -->
-        <div class="card border border-gray-200 shadow-sm bg-base-100 p-4">
-            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Mapped to Both</div>
-            <div class="flex items-end gap-2 mt-1">
-                <span class="text-3xl font-bold">@_bothCount</span>
-                <span class="text-sm text-gray-400 mb-0.5">elements</span>
-            </div>
-            <div class="text-xs text-gray-400 mt-2">@_neitherCount unmapped to either standard</div>
-        </div>
-    </div>
-
-    <!-- ================================================================
-         MAIN PANEL  (filter toolbar + category list)
-    ================================================================ -->
-    <Card Shadow="Card.ShadowSize.XLarge">
-        <ChildContent>
-            <div class="flex flex-col h-full">
-
-                <!-- Toolbar -->
-                <div class="sticky bg-white top-0 flex-shrink-0 flex items-center gap-2 pb-3">
-
-                    <!-- Search -->
-                    <label class="input input-bordered input-sm flex items-center gap-2 flex-1">
-                        <i class="fas fa-search opacity-50"></i>
-                        <input type="search"
-                               placeholder="Search data elements..."
-                               class="grow"
-                               @bind="_searchQuery"
-                               @bind:event="oninput" />
-                    </label>
-
-                    <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
-
-                    <!-- Coverage filter -->
-                    <div class="flex flex-col items-center gap-0.5">
-                        <span class="text-[10px] font-semibold text-gray-500 leading-none">Show</span>
-                        <select class="select select-sm select-bordered" @bind="_coverageFilter">
-                            <option value="All">All</option>
-                            <option value="MappedEdFi">Mapped — Ed-Fi</option>
-                            <option value="MappedCeds">Mapped — CEDS</option>
-                            <option value="MappedBoth">Mapped — Both</option>
-                            <option value="GapEdFi">Gap — Ed-Fi only</option>
-                            <option value="GapCeds">Gap — CEDS only</option>
-                            <option value="GapNeither">Gap — Neither</option>
-                        </select>
+        <!-- ================================================================
+             PAGE TITLE CARD
+        ================================================================ -->
+        <Card Shadow="Card.ShadowSize.Small">
+            <ChildContent>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h1 class="text-2xl font-bold">Standard Coverage</h1>
+                        <p class="text-sm text-gray-500 mt-0.5">
+                            EWF data elements mapped to each technical implementation, derived directly from
+                            registered assessors. Coverage reflects what each implementation can assess,
+                            not the full breadth of the underlying standard.
+                        </p>
                     </div>
-
-                    <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
-
-                    <!-- Group by -->
-                    <div class="flex flex-col items-center gap-0.5">
-                        <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
-                        <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
-                            <button class="btn btn-xs btn-ghost @(_groupByCluster ? "font-bold underline" : "opacity-50")"
-                                    @onclick="() => _groupByCluster = true">
-                                E-W Clusters
-                            </button>
-                            <button class="btn btn-xs btn-ghost @(!_groupByCluster ? "font-bold underline" : "opacity-50")"
-                                    @onclick="() => _groupByCluster = false">
-                                Data Categories
-                            </button>
-                        </div>
+                    <div class="flex gap-4 text-sm text-gray-500">
+                        <span>
+                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.2</span>
+                            — @_report.EdFiMappedCount / @_report.TotalElements
+                            <span class="text-gray-400">(@_report.EdFiCoveragePercent%)</span>
+                        </span>
+                        <span class="text-gray-300">|</span>
+                        <span>
+                            <span class="font-semibold text-purple-600">CEDS DW v13</span>
+                            — @_report.CedsMappedCount / @_report.TotalElements
+                            <span class="text-gray-400">(@_report.CedsCoveragePercent%)</span>
+                        </span>
                     </div>
-
-                    <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
-
-                    <ExpandCollapseAllToggle IsExpanded="@_allExpanded" IsExpandedChanged="OnExpandedChanged" />
                 </div>
+            </ChildContent>
+        </Card>
 
-                <!-- Category list -->
-                <div class="flex-1 overflow-y-auto rounded-lg border border-gray-300 shadow-inner">
-                    <div class="bg-white divide-y divide-gray-200">
+        <!-- ================================================================
+             MAIN PANEL
+        ================================================================ -->
+        <Card Shadow="Card.ShadowSize.XLarge">
+            <ChildContent>
+                <div class="flex flex-col h-full">
 
-                        @foreach (var category in FilteredCategories)
-                        {
-                            var catRows = category.Value;
-                            var catEdFi = catRows.Count(r => r.IsMappedToEdFi);
-                            var catCeds = catRows.Count(r => r.IsMappedToCeds);
+                    <!-- Toolbar -->
+                    <div class="sticky bg-white top-0 flex-shrink-0 flex items-center gap-2 pb-3">
 
-                            <div class="border-b border-gray-200 last:border-b-0">
+                        <!-- Search -->
+                        <label class="input input-bordered input-sm flex items-center gap-2 flex-1">
+                            <i class="fas fa-search opacity-50"></i>
+                            <input type="search"
+                                   placeholder="Search data elements..."
+                                   class="grow"
+                                   @bind="_searchQuery"
+                                   @bind:event="oninput" />
+                        </label>
 
-                                <!-- Category header -->
-                                <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
-                                     @onclick="() => ToggleCategory(category.Key)">
-                                    <i class="fas @(IsCategoryExpanded(category.Key) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
-                                    <span class="font-semibold text-blue flex-1">@category.Key</span>
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
 
-                                    <!-- Per-standard mini-bars in header -->
-                                    @if (_selectedStandard != CoverageStandard.Ceds)
-                                    {
-                                        <div class="flex items-center gap-1 text-xs text-blue-600 w-36" title="Ed-Fi: @catEdFi of @catRows.Count">
+                        <!-- Show toggle -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <span class="text-[10px] font-semibold text-gray-500 leading-none">Show</span>
+                            <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.All ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.All">
+                                    All
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.Mapped ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.Mapped">
+                                    Mapped
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.Unmapped ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.Unmapped">
+                                    Unmapped
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+                        <!-- Group by -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
+                            <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                                <button class="btn btn-xs btn-ghost @(_groupByCluster ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _groupByCluster = true">
+                                    E-W Clusters
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(!_groupByCluster ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _groupByCluster = false">
+                                    Data Categories
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+                        <ExpandCollapseAllToggle IsExpanded="@_allExpanded" IsExpandedChanged="OnExpandedChanged" />
+                    </div>
+
+                    <!-- Category list -->
+                    <div class="flex-1 overflow-y-auto rounded-lg border border-gray-300 shadow-inner">
+                        <div class="bg-white divide-y divide-gray-200">
+
+                            @foreach (var category in FilteredCategories)
+                            {
+                                var catRows = category.Value;
+                                var catEdFi = catRows.Count(r => r.IsMappedToEdFi);
+                                var catCeds = catRows.Count(r => r.IsMappedToCeds);
+
+                                <div class="border-b border-gray-200 last:border-b-0">
+
+                                    <!-- Category header -->
+                                    <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
+                                         @onclick="() => ToggleCategory(category.Key)">
+                                        <i class="fas @(IsCategoryExpanded(category.Key) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
+                                        <span class="font-semibold text-blue flex-1">@category.Key</span>
+
+                                        <!-- Ed-Fi mini-bar -->
+                                        <div class="flex items-center gap-1 text-xs text-blue-600 w-36"
+                                             title="Ed-Fi ODS API: @catEdFi of @catRows.Count">
                                             <span class="w-14 text-right font-mono">@catEdFi/@catRows.Count</span>
                                             <progress class="progress progress-info flex-1 h-2"
                                                       value="@catEdFi" max="@catRows.Count"></progress>
                                         </div>
-                                    }
-                                    @if (_selectedStandard != CoverageStandard.EdFi)
-                                    {
-                                        <div class="flex items-center gap-1 text-xs text-purple-600 w-36" title="CEDS: @catCeds of @catRows.Count">
+
+                                        <!-- CEDS mini-bar -->
+                                        <div class="flex items-center gap-1 text-xs text-purple-600 w-36"
+                                             title="CEDS DW: @catCeds of @catRows.Count">
                                             <span class="w-14 text-right font-mono">@catCeds/@catRows.Count</span>
                                             <progress class="progress progress-secondary flex-1 h-2"
                                                       value="@catCeds" max="@catRows.Count"></progress>
                                         </div>
-                                    }
-                                </div>
-
-                                <!-- Element rows -->
-                                @if (IsCategoryExpanded(category.Key))
-                                {
-                                    <!-- Column sub-header -->
-                                    <div class="grid @RowGridClass gap-2 px-3 py-1 pl-10 bg-gray-50 border-t border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                                        <span>Data Element</span>
-                                        @if (_selectedStandard != CoverageStandard.Ceds)
-                                        {
-                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.2</span>
-                                        }
-                                        @if (_selectedStandard != CoverageStandard.EdFi)
-                                        {
-                                            <span class="text-center text-purple-500">CEDS DW v13</span>
-                                        }
                                     </div>
 
-                                    @foreach (var row in catRows)
+                                    <!-- Element rows -->
+                                    @if (IsCategoryExpanded(category.Key))
                                     {
-                                        <div class="grid @RowGridClass gap-2 items-center p-3 pl-10 border-t border-gray-200 hover:bg-gray-50 text-sm">
+                                        <!-- Column sub-header -->
+                                        <div class="grid grid-cols-[1fr_160px_160px] gap-2 px-3 py-1 pl-10 bg-gray-50 border-t border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                            <span>Data Element</span>
+                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.2</span>
+                                            <span class="text-center text-purple-500">CEDS DW v13</span>
+                                        </div>
 
-                                            <!-- Element name -->
-                                            <span class="font-medium text-gray-800">@row.DataElementName</span>
+                                        @foreach (var row in catRows)
+                                        {
+                                            <div class="grid grid-cols-[1fr_160px_160px] gap-2 items-center p-3 pl-10 border-t border-gray-200 hover:bg-gray-50 text-sm">
+                                                <span class="font-medium text-gray-800">@row.DataElementName</span>
+                                                <div class="flex justify-center">@MappingBadge(row.EdFiMapping)</div>
+                                                <div class="flex justify-center">@MappingBadge(row.CedsMapping)</div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
 
-                                            <!-- Ed-Fi badge -->
-                                            @if (_selectedStandard != CoverageStandard.Ceds)
-                                            {
-                                                <div class="flex justify-center">
-                                                    @MappingBadge(row.EdFiMapping, CoverageStandard.EdFi)
-                                                </div>
-                                            }
+                            @if (!FilteredCategories.Any())
+                            {
+                                <div class="p-8 text-center text-gray-500">
+                                    <i class="fas fa-search text-3xl mb-2"></i>
+                                    <div>No data elements match your filters</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </ChildContent>
+        </Card>
 
-                                            <!-- CEDS badge -->
-                                            @if (_selectedStandard != CoverageStandard.EdFi)
-                                            {
-                                                <div class="flex justify-center">
-                                                    @MappingBadge(row.CedsMapping, CoverageStandard.Ceds)
-                                                </div>
-                                            }
+        <!-- ================================================================
+             EWF IMPACT
+        ================================================================ -->
+        <Card Shadow="Card.ShadowSize.Large">
+            <ChildContent>
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h2 class="text-lg font-bold">EWF Impact</h2>
+                        <p class="text-xs text-gray-500">
+                            Essential Questions and Indicators with data elements not yet mapped to any
+                            technical implementation.
+                        </p>
+                    </div>
+                    <div class="badge badge-outline text-xs">
+                        @_report.Rows.Count(r => !r.IsMappedToAny) elements unmapped to either
+                    </div>
+                </div>
+
+                @{
+                    var impactGroups = BuildImpactGroups();
+                }
+
+                @if (!impactGroups.Any())
+                {
+                    <div class="text-sm text-success flex items-center gap-2">
+                        <i class="fas fa-check-circle"></i> All data elements are mapped to at least one implementation.
+                    </div>
+                }
+                else
+                {
+                    <div class="join join-vertical border border-gray-300 rounded-lg w-full">
+                        @foreach (var qGroup in impactGroups)
+                        {
+                            <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                                <input type="checkbox" />
+                                <div class="collapse-title font-semibold text-sm">
+                                    <span class="text-gray-500 mr-2">#@qGroup.QuestionNumber</span>
+                                    @qGroup.Question
+                                    <span class="ml-2 badge badge-warning badge-sm">
+                                        @qGroup.UnmappedCount unmapped
+                                    </span>
+                                </div>
+                                <div class="collapse-content text-sm">
+                                    @foreach (var ind in qGroup.AffectedIndicators)
+                                    {
+                                        <div class="mb-2">
+                                            <div class="font-semibold text-xs text-gray-600 mb-1">@ind.IndicatorCode</div>
+                                            <div class="flex flex-wrap gap-1">
+                                                @foreach (var de in ind.UnmappedElements)
+                                                {
+                                                    <span class="badge badge-outline badge-sm">@de</span>
+                                                }
+                                            </div>
                                         </div>
                                     }
-                                }
-                            </div>
-                        }
-
-                        @if (!FilteredCategories.Any())
-                        {
-                            <div class="p-8 text-center text-gray-500">
-                                <i class="fas fa-search text-3xl mb-2"></i>
-                                <div>No data elements match your filters</div>
+                                </div>
                             </div>
                         }
                     </div>
-                </div>
-            </div>
-        </ChildContent>
-    </Card>
+                }
+            </ChildContent>
+        </Card>
 
-    <!-- ================================================================
-         EWF IMPACT  — which questions / indicators are affected
-    ================================================================ -->
-    <Card Shadow="Card.ShadowSize.Large">
-        <ChildContent>
-            <div class="flex items-center justify-between mb-3">
-                <div>
-                    <h2 class="text-lg font-bold">EWF Impact</h2>
-                    <p class="text-xs text-gray-500">
-                        Essential Questions and Indicators affected by coverage gaps in the selected standard.
-                    </p>
-                </div>
-                <div class="badge badge-outline text-xs">@GapRows.Count() unmapped elements</div>
-            </div>
-
-            @{
-                var impactGroups = BuildImpactGroups();
-            }
-
-            @if (!impactGroups.Any())
-            {
-                <div class="text-sm text-success flex items-center gap-2">
-                    <i class="fas fa-check-circle"></i> No coverage gaps for the selected standard.
-                </div>
-            }
-            else
-            {
-                <div class="join join-vertical border border-gray-300 rounded-lg w-full">
-                    @foreach (var qGroup in impactGroups)
-                    {
-                        <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                            <input type="checkbox" />
-                            <div class="collapse-title font-semibold text-sm">
-                                <span class="text-gray-500 mr-2">#@qGroup.QuestionNumber</span>
-                                @qGroup.Question
-                                <span class="ml-2 badge badge-error badge-sm">
-                                    @qGroup.GapCount gap@(qGroup.GapCount != 1 ? "s" : "")
-                                </span>
-                            </div>
-                            <div class="collapse-content text-sm">
-                                @foreach (var ind in qGroup.AffectedIndicators)
-                                {
-                                    <div class="mb-2">
-                                        <div class="font-semibold text-xs text-gray-600 mb-1">@ind.IndicatorCode</div>
-                                        <div class="flex flex-wrap gap-1">
-                                            @foreach (var de in ind.MissingElements)
-                                            {
-                                                <span class="badge badge-outline badge-sm">@de</span>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-        </ChildContent>
-    </Card>
-
+    </div>
 </div>
 
 @code {
     // -----------------------------------------------------------------------
+    // Types
+    // -----------------------------------------------------------------------
+    private enum ShowFilter { All, Mapped, Unmapped }
+
+    private record ImpactIndicator(string IndicatorCode, List<string> UnmappedElements);
+    private record ImpactQuestion(int QuestionNumber, string Question, int UnmappedCount, List<ImpactIndicator> AffectedIndicators);
+
+    // -----------------------------------------------------------------------
     // State
     // -----------------------------------------------------------------------
     private StandardCoverageReport _report = new();
-    private CoverageStandard? _selectedStandard = null;
     private string _searchQuery = string.Empty;
-    private string _coverageFilter = "All";
+    private ShowFilter _showFilter = ShowFilter.All;
     private bool _groupByCluster = true;
     private bool _allExpanded = false;
     private HashSet<string> _expandedCategories = new();
@@ -320,45 +270,24 @@
     }
 
     // -----------------------------------------------------------------------
-    // Derived / computed
+    // Filtered categories
     // -----------------------------------------------------------------------
-    private int _bothCount => _report.Rows.Count(r => r.IsMappedToAll);
-    private int _neitherCount => _report.Rows.Count(r => !r.IsMappedToAny);
-
-    private string RowGridClass => (_selectedStandard == null)
-        ? "grid-cols-[1fr_160px_160px]"
-        : "grid-cols-[1fr_160px]";
-
-    private IEnumerable<DataElementCoverageRow> GapRows => _report.Rows.Where(r =>
-        _selectedStandard switch
-        {
-            CoverageStandard.EdFi => !r.IsMappedToEdFi,
-            CoverageStandard.Ceds => !r.IsMappedToCeds,
-            _ => !r.IsMappedToAny
-        });
-
     private IEnumerable<KeyValuePair<string, List<DataElementCoverageRow>>> FilteredCategories
     {
         get
         {
             var rows = _report.Rows.AsEnumerable();
 
-            // Search
             if (!string.IsNullOrWhiteSpace(_searchQuery))
             {
                 var q = _searchQuery.ToLowerInvariant();
                 rows = rows.Where(r => r.DataElementName.ToLowerInvariant().Contains(q));
             }
 
-            // Coverage filter
-            rows = _coverageFilter switch
+            rows = _showFilter switch
             {
-                "MappedEdFi" => rows.Where(r => r.IsMappedToEdFi),
-                "MappedCeds" => rows.Where(r => r.IsMappedToCeds),
-                "MappedBoth" => rows.Where(r => r.IsMappedToAll),
-                "GapEdFi" => rows.Where(r => !r.IsMappedToEdFi),
-                "GapCeds" => rows.Where(r => !r.IsMappedToCeds),
-                "GapNeither" => rows.Where(r => !r.IsMappedToAny),
+                ShowFilter.Mapped => rows.Where(r => r.IsMappedToAny),
+                ShowFilter.Unmapped => rows.Where(r => !r.IsMappedToAny),
                 _ => rows
             };
 
@@ -370,16 +299,16 @@
     }
 
     // -----------------------------------------------------------------------
-    // EWF Impact helpers
+    // EWF Impact — elements unmapped to any implementation
     // -----------------------------------------------------------------------
-    private record ImpactIndicator(string IndicatorCode, List<string> MissingElements);
-    private record ImpactQuestion(int QuestionNumber, string Question, int GapCount, List<ImpactIndicator> AffectedIndicators);
-
     private List<ImpactQuestion> BuildImpactGroups()
     {
-        // Build set of gap element names for the current standard selection
-        var gapNames = GapRows.Select(r => r.DataElementName).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (gapNames.Count == 0) return [];
+        var unmappedNames = _report.Rows
+            .Where(r => !r.IsMappedToAny)
+            .Select(r => r.DataElementName)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (unmappedNames.Count == 0) return [];
 
         var results = new List<ImpactQuestion>();
 
@@ -392,32 +321,28 @@
                 if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
                     continue;
 
-                var missing = indicator.DataElementNames
-                    .Where(de => gapNames.Contains(de))
+                var unmapped = indicator.DataElementNames
+                    .Where(de => unmappedNames.Contains(de))
                     .ToList();
 
-                if (missing.Any())
-                    affectedIndicators.Add(new ImpactIndicator(indicatorName, missing));
+                if (unmapped.Any())
+                    affectedIndicators.Add(new ImpactIndicator(indicatorName, unmapped));
             }
 
             if (affectedIndicators.Any())
-            {
                 results.Add(new ImpactQuestion(
                     question.QuestionNumber,
                     question.Question,
-                    affectedIndicators.Sum(i => i.MissingElements.Count),
+                    affectedIndicators.Sum(i => i.UnmappedElements.Count),
                     affectedIndicators));
-            }
         }
 
-        return results.OrderByDescending(q => q.GapCount).ToList();
+        return results.OrderByDescending(q => q.UnmappedCount).ToList();
     }
 
     // -----------------------------------------------------------------------
     // UI helpers
     // -----------------------------------------------------------------------
-    private void SetStandard(CoverageStandard? standard) => _selectedStandard = standard;
-
     private void OnExpandedChanged(bool expanded)
     {
         _allExpanded = expanded;
@@ -434,7 +359,7 @@
 
     private bool IsCategoryExpanded(string name) => _expandedCategories.Contains(name);
 
-    private RenderFragment MappingBadge(StandardElementMapping? mapping, CoverageStandard std) => __builder =>
+    private RenderFragment MappingBadge(StandardElementMapping? mapping) => __builder =>
     {
         if (mapping is not null)
         {
