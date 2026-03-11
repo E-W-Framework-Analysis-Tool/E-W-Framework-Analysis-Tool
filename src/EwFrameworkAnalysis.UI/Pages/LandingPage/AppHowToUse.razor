@@ -1,0 +1,188 @@
+@using EwFrameworkAnalysis.UI.Components
+<section class="py-24 bg-gray-100/60 inset-shadow-sm border-b border-t border-gray-300/40">
+    <div class="container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full md:w-10/12 lg:w-10/12 xl:w-10/12 px-4 justify-center">
+            <h2 class="font-semibold text-4xl text-secondary pb-4 text-center">
+                How To Use the E-W Analysis Tool
+            </h2>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto px-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="font-bold text-white bg-gray-400 rounded-lg py-18 mb-2">Data Input Illustration</h3>
+                <p class="font-semibold">Input Your Data Inventory</p>
+                <p class="text-sm text-gray-600">
+                    Provide details about your current data sources and elements through manual or automated methods.
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="font-bold text-white bg-gray-400 rounded-lg py-18 mb-2">Readiness Scores Chart</h3>
+                <p class="font-semibold">View Readiness Scores</p>
+                <p class="text-sm text-gray-600">
+                    See instant feedback and visualize how well your data currently supports the E-W Framework's indicators.
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="font-bold text-white bg-gray-400 rounded-lg py-18 mb-2">Roadmap Planning</h3>
+                <p class="font-semibold">Plan your roadmap</p>
+                <p class="text-sm text-gray-600">
+                    Use the insights to understand gaps and prioritize efforts.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full max-w-6xl lg:w-8/12* px-6">
+            <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
+                Input your Data Inventory
+            </h2>
+
+            <CollapsibleSection Title="Navigate to the Dashboard"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Select and automatically interrogate an Ed-Fi ODS"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>The E-W Analysis Tool can securely interrogate an Ed-Fi ODS through an API connection.</li>
+                    <li>Select <strong>Ed-Fi ODS</strong> as a Data Source.</li>
+                    <li>Input the appropriate connection details for your ODS.</li>
+                    <li>Click <strong>"Interrogate Data"</strong> to check data availability.</li>
+                    <li>View record counts and updated readiness results in Quick View.</li>
+                    <li>Provide extra info or manual scoring in the Details view.</li>
+                    <li>Supports multiple historical versions of this data source.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Select and automatically interrogate a CEDS Data Warehouse"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Download the CEDS DW SQL Interrogation Scripts.</li>
+                    <li>Run the scripts in your environment to interrogate CEDS DW tables.</li>
+                    <li>Scripts generate a Results File you can save to your computer.</li>
+                    <li>Upload the Results File into the E-W Analysis Tool.</li>
+                    <li>View record counts and readiness results in Quick View.</li>
+                    <li>Supports multiple historical versions of this data source.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Create Data Sources for manual input"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Create additional Data Sources for repositories not automatically interrogated.</li>
+                    <li>Input descriptions (e.g., Student Assessments, Postsecondary Statistics).</li>
+                    <li>Navigate to each data element to provide scoring and notes.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Download your results"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Choose <strong>Save My Work</strong> to download your inventory results anytime.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Upload previous results"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Choose <strong>Upload My Work</strong> to re-use previously saved results.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Configure which Data Sources to analyze"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Mark Data Sources you want to analyze as <strong>Active</strong>.</li>
+                    <li>Select <strong>Run Analysis</strong> to generate reports.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="View quick results on the Dashboard"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Summary results for multiple measures appear on the Dashboard.</li>
+                    <li>Quick view of essential questions is also available.</li>
+                </ul>
+            </CollapsibleSection>
+        </div>
+    </div>
+
+    <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full max-w-6xl px-4">
+            <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
+                View Readiness Scores and Plan your Roadmap
+            </h2>
+
+            <CollapsibleSection Title="Navigate to the Reports and Analysis page for detailed insight into your E-W data readiness"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Select Reports &amp; Analysis from the top of the website.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="View Overall Summary Scores of Data Readiness"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The Analysis Tool takes the results of the Data Source Inventory and runs an analysis
+                    of data availability against each Essential Question and Indicator, displaying Readiness
+                    Scores and enabling you to drill down to the data element level.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="View Essential Question readiness scoring"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Each Essential Question (EQ) will be listed with a readiness score based on the availability and quality of data in your inventory.</li>
+                    <li>Click on an EQ to see a more detailed breakdown of data readiness by the associated Indicators.</li>
+                    <li>Click on an Indicator to see a more detailed breakdown by the associated data elements.</li>
+                    <li>EQs can be sorted by various factors.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="View Indicator readiness scoring"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Each Indicator will be listed with a readiness score based on the availability and quality of data in your inventory.</li>
+                    <li>Click on an Indicator to see a more detailed breakdown by the associated data elements.</li>
+                    <li>Indicators can be sorted by various factors.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Print a one-page summary to use in discussions with stakeholders"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The Analysis Tool generates various Readiness and Benchmarking reports to help support
+                    discussions at the Data, Policy, or Agency level.
+                </p>
+            </CollapsibleSection>
+        </div>
+    </div>
+</section>
+
+@code {
+    private const string SectionCss = "collapse-arrow border-b rounded-none";
+    private const string TitleCss   = "text-lg font-semibold transition";
+}

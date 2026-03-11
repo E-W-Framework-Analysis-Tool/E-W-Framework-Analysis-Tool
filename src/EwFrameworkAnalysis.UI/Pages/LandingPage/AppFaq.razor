@@ -1,0 +1,137 @@
+@using EwFrameworkAnalysis.UI.Components
+<section id="faq" class="relative pt-12 items-center flex">
+    <div class="container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full xl:w-11/12 px-4 sm:px-0">
+            <h2 class="font-semibold text-4xl text-secondary mb-12">
+                Frequently Asked Questions
+            </h2>
+            <div class="my-8"></div>
+
+            <CollapsibleSection Title="How do I automatically interrogate my Ed-Fi ODS?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-4">
+                    <li>Select Ed-Fi ODS as a Data Source.</li>
+                    <li>Input the appropriate connection details for your ODS.</li>
+                    <li>Click "Interrogate Data" to have the E-W Analysis Tool connect to and interrogate your ODS for E-W data availability.</li>
+                    <li>Upon successful completion, you will see statistics such as the count of records found, and updated readiness results will immediately display in the Quick View.</li>
+                    <li>You can provide additional information about each data element by clicking into the Details and manually scoring each data element and providing additional notes.</li>
+                    <li>Multiple historical versions of this data source can be supported.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Is the automatic interrogation of my Ed-Fi ODS safe and secure?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The interaction with the API will be between the user's browser and their API — the E-W Analysis Tool
+                    server will never receive the entered credentials nor sit in the middle of the API traffic. The server
+                    will only receive results metadata: the fields for which data exists and some profiling of the nature
+                    of that data.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if I have a non-standard implementation of an Ed-Fi ODS?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    Any modifications made to the standard implementation of an Ed-Fi ODS may disrupt the automated
+                    interrogation of the API call.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if my Ed-Fi ODS uses a different version of Ed-Fi than version 5 of the data standard and version 7 of the API?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The tool is developed and tested against Ed-Fi ODS API version 7.3 (Data Standard v5).
+                    Because many of the Ed-Fi API specifications overlap across versions, some checks may still work
+                    with other versions, but compatibility is not guaranteed.
+                </p>
+                <p class="mt-4">
+                    If a check produces an inaccurate or missing result due to version differences, you can override
+                    the result within the tool or provide the needed information as a Custom data source.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="How do I automatically interrogate my CEDS Data Warehouse?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-4">
+                    <li>Download the CEDS DW SQL Interrogation Scripts.</li>
+                    <li>Run the scripts in your own environment. They are designed to interrogate the standard CEDS DW tables mapped to E-W Indicators and Essential Questions.</li>
+                    <li>Once complete, the scripts will generate a Results File you can save to your computer.</li>
+                    <li>Upload the Results File to the E-W Analysis Tool.</li>
+                    <li>Upon successful upload, you will see record counts and updated readiness results in the Quick View.</li>
+                    <li>Multiple historical versions of this data source can be supported.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Is the automatic interrogation of my CEDS Data Warehouse safe and secure?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The E-W Analysis Tool provides SQL scripts for you to execute locally. Results can be exported
+                    to a plaintext file that you can review for sensitive data before uploading to the application.
+                    This method maintains user control, aligns with security best practices, and accommodates
+                    air-gapped systems isolated from the public Internet.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if my CEDS Data Warehouse is different from Version 11?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>[Answer pending]</p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What data does the E-W Analysis Tool collect and store?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-4">
+                    <li>Results of a user's browser session are only stored for the duration of the session.</li>
+                    <li>The server will only receive results metadata from automated interrogations: the fields for which data exists and some profiling of the nature of that data.</li>
+                    <li>User input is limited to similar metadata descriptions, such as additional scoring criteria and data source notes.</li>
+                    <li>The tool does not have the capacity to store sensitive information.</li>
+                    <li>Data inventory results can be saved to a file on your computer and re-uploaded at any time.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="How does your Data Readiness scoring work?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-4">
+                    <li>The automated interrogation process queries each database for the presence of data in standard tables mapped to E-W Framework Indicators and Metrics. In addition to record counts, the tool checks other quality indicators, such as non-numeric values in numeric fields.</li>
+                    <li>The manual input process allows you to score each data element for Availability, Accessibility, and Quality, and to supplement or override automated results.</li>
+                    <li>Scores roll up from data elements to Indicators, and from Indicators to Essential Questions.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="How can I use the results I generate?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The E-W Framework is thorough but can be overwhelming. The Analysis Tool helps bridge its
+                    research-backed components to the practical realities of your data's availability, location,
+                    and quality.
+                </p>
+                <p class="mt-4">States and LEAs typically arrive with existing systems at varied levels of maturity. The tool helps answer questions like:</p>
+                <ul class="list-[square] pl-6 space-y-2 my-4">
+                    <li>What research questions do I need to answer to demonstrate the value of a P20W system?</li>
+                    <li>What data elements are already collected statewide, and do I have access to them?</li>
+                    <li>How should I prioritize Essential Questions and Indicators to start with?</li>
+                    <li>What can I do to bring more data into the system over time?</li>
+                </ul>
+                <p>
+                    The tool is a free and simple way to guide internal discussions, prioritize data work, and
+                    build a roadmap of short- and long-term goals.
+                </p>
+            </CollapsibleSection>
+
+        </div>
+    </div>
+</section>
+
+@code {
+    private const string SectionCss = "collapse-arrow collapse-left pb-4 rounded-lg";
+    private const string TitleCss   = "bg-gray-100 rounded-lg font-semibold text-secondary/80 text-xl hover:cursor-pointer transition";
+}

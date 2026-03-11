@@ -3777,9 +3777,6 @@
   .text-green {
     color: var(--color-green);
   }
-  .text-green-700 {
-    color: var(--color-green-700);
-  }
   .text-primary {
     color: var(--color-primary);
   }
@@ -4060,11 +4057,6 @@
   }
   .radio-primary {
     --input-color: var(--color-primary);
-  }
-  .peer-checked\:text-primary {
-    &:is(:where(.peer):checked ~ *) {
-      color: var(--color-primary);
-    }
   }
   .last\:border-b-0 {
     &:last-child {

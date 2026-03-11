@@ -1,0 +1,32 @@
+@using EwFrameworkAnalysis.UI.Services
+@inject ScrollService ScrollService
+
+<section class="bg-base-100 pt-6 pb-4 shadow">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
+        <div class="flex flex-wrap justify-center gap-4 mb-4 ">
+            <!-- Get Started -->
+            <a href="@AppRoutes.Dashboard"
+               class="btn  btn-primary px-6 text-semibold text-lg rounded-sm">
+                Get Started
+            </a>
+
+            <!-- Continue My Work -->
+            <a href="@AppRoutes.Dashboard"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Continue My Work
+            </a>
+
+            <!-- Learn About the E-W Framework -->
+            <a @onclick="@(() => ScrollService.ScrollToAsync("framework"))"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Learn About the E-W Framework
+            </a>
+
+            <!-- Learn How To Use This Tool -->
+            <a onclick="@(() => ScrollService.ScrollToAsync("faq"))"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Learn How To Use This Tool
+            </a>
+        </div>
+    </div>
+</section>
