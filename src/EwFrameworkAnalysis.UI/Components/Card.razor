@@ -1,4 +1,4 @@
-<div class="@GetCardClasses()">
+<div class="@GetCardClasses()" @attributes="AdditionalAttributes">
     @if (!string.IsNullOrWhiteSpace(Title))
     {
         <div class="@GetHeaderClasses()">
@@ -19,6 +19,8 @@
     [Parameter] public RenderFragment? HeaderActions { get; set; }
     [Parameter] public string AdditionalClasses { get; set; } = string.Empty;
     [Parameter] public bool NoPadding { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Granular visual parameters
     [Parameter] public ShadowSize Shadow { get; set; } = ShadowSize.Default;

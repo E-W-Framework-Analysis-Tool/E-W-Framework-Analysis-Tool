@@ -1,0 +1,94 @@
+@using EwFrameworkAnalysis.UI.Services
+@inject WalkthroughService Walkthrough
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@implements IDisposable
+
+@if (Walkthrough.IsActive && Walkthrough.CurrentStep is { } step)
+{
+    <div class="walkthrough-backdrop" @onclick="Walkthrough.Stop">
+        <div class="walkthrough-spotlight" style="@_spotlightStyle" @onclick:stopPropagation="true" />
+    </div>
+    <div class="walkthrough-tooltip" style="@_tooltipStyle">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-gray-400">@(Walkthrough.CurrentStepIndex + 1) of @Walkthrough.TotalSteps</span>
+            <button class="btn btn-xs btn-ghost" @onclick="Walkthrough.Stop">✕</button>
+        </div>
+        <h3 class="font-title font-bold text-blue text-lg mb-1">@step.Title</h3>
+        <p class="text-sm text-gray-600 mb-4">@step.Body</p>
+        <div class="flex justify-between">
+            @if (Walkthrough.CurrentStepIndex > 0)
+            {
+                <button class="btn btn-sm btn-ghost" @onclick="Walkthrough.Previous">Back</button>
+            }
+            else
+            {
+                <span />
+            }
+            <button class="btn btn-sm btn-primary" @onclick="Walkthrough.Next">
+                @(Walkthrough.CurrentStepIndex == Walkthrough.TotalSteps - 1 ? "Finish" : "Next")
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private string _spotlightStyle = "";
+    private string _tooltipStyle = "";
+    private const int Pad = 8;
+    private const int TooltipWidth = 320;
+    private const int TooltipOffset = 12;
+
+    protected override void OnInitialized() => Walkthrough.Changed += OnChanged;
+
+    private async void OnChanged()
+    {
+        if (!Walkthrough.IsActive)
+            await JS.InvokeVoidAsync("Walkthrough.stop");
+        else
+            await JS.InvokeVoidAsync("Walkthrough.start");
+
+        await PositionOverlayAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task PositionOverlayAsync()
+    {
+        var step = Walkthrough.CurrentStep;
+        if (step is null) return;
+
+        if (step.RequiredRoute is not null && !Nav.Uri.EndsWith(step.RequiredRoute))
+        {
+            Nav.NavigateTo(step.RequiredRoute);
+            await Task.Delay(200); // let the page render
+        }
+
+        await JS.InvokeVoidAsync("Walkthrough.scrollIntoView", step.StepId);
+        await Task.Delay(100); // let scroll settle
+
+        var rect = await JS.InvokeAsync<BoundingRect?>("Walkthrough.getRect", step.StepId);
+        if (rect is null) return;
+
+        _spotlightStyle = $"left:{rect.X - Pad}px; top:{rect.Y - Pad}px; " +
+                          $"width:{rect.Width + Pad * 2}px; height:{rect.Height + Pad * 2}px;";
+
+        _tooltipStyle = ComputeTooltipStyle(rect, step.Position);
+    }
+
+    private string ComputeTooltipStyle(BoundingRect r, TooltipPosition pos) => pos switch
+    {
+        TooltipPosition.Bottom => $"left:{Math.Max(8, r.X)}px; top:{r.Bottom + TooltipOffset}px; width:{TooltipWidth}px;",
+        TooltipPosition.Top => $"left:{Math.Max(8, r.X)}px; top:{r.Y - TooltipOffset}px; width:{TooltipWidth}px; transform:translateY(-100%);",
+        TooltipPosition.Right => $"left:{r.Right + TooltipOffset}px; top:{r.Y}px; width:{TooltipWidth}px;",
+        TooltipPosition.Left => $"left:{r.X - TooltipWidth - TooltipOffset}px; top:{r.Y}px; width:{TooltipWidth}px;",
+        _ => ""
+    };
+
+    public void Dispose()
+    {
+        Walkthrough.Changed -= OnChanged;
+        JS.InvokeVoidAsync("Walkthrough.stop");
+    }
+
+    private record BoundingRect(double X, double Y, double Width, double Height, double Bottom, double Right);
+}

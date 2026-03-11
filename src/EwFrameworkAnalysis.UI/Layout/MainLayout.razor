@@ -1,7 +1,10 @@
+@using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
+@using EwFrameworkAnalysis.UI.Services
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
 @inherits LayoutComponentBase
+@inject WalkthroughService Walkthrough
 @inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
 
 <div class="min-h-screen flex flex-col">
@@ -21,6 +24,7 @@
                     <li><a class="link link-hover">About</a></li>
                     <li><a class="link link-hover">Framework</a></li>
                     <li><a class="link link-hover">Contact</a></li>
+                    <li><button class="btn btn-xs btn-outline btn-accent" @onclick="Walkthrough.Start">Tour</button></li>
                 </ul>
             </div>
         </div>
@@ -100,6 +104,8 @@
         </div>
     </footer>
 </div>
+
+<WalkthroughOverlay />
 
 @code {
     protected override void OnInitialized()
