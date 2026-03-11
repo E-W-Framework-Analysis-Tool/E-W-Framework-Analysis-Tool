@@ -9,6 +9,7 @@ public static class AppRoutes
     public const string Dashboard = "/dashboard";
     public const string Analysis = "/analysis";
     public const string Framework = "/framework";
+    public const string StandardCoverage = "/standard-coverage";
 
     public static class DataSourceDetails
     {

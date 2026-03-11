@@ -1,4 +1,5 @@
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
+using EwFrameworkAnalysis.Common.Mapping;
 using EwFrameworkAnalysis.Common.Models.Scoring;
 using EwFrameworkAnalysis.Common.Scoring;
 using EwFrameworkAnalysis.Common.Services;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<EcsStateDataParser>();
 builder.Services.AddSingleton<EcsStateDataProvider>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 builder.Services.AddScoped<PdfReportService>();
+builder.Services.AddSingleton<StandardCoverageService>();
 
 // Register Scoring Rules
 builder.Services.AddSingleton<DataElementScoringService>();
