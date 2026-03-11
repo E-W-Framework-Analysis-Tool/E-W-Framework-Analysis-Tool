@@ -145,8 +145,8 @@
     </div>
 
     <!-- Scrollable Data Element Categories -->
-    <div class="flex-1 overflow-y-scroll mt-2">
-        <div class="bg-white border border-gray-200 rounded-lg shadow @ContainerClass">
+    <div class="flex-1 overflow-y-auto mt-2 rounded-lg border-1 border-gray-300 shadow-inner">
+        <div class="bg-white divide-y divide-gray-200 @ContainerClass">
             @foreach (var category in GetFilteredCategories())
             {
                 <div class="border-b border-gray-200 last:border-b-0">
