@@ -35,7 +35,7 @@ builder.Services.AddScoped<EcsStateDataParser>();
 builder.Services.AddSingleton<EcsStateDataProvider>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 builder.Services.AddScoped<PdfReportService>();
-builder.Services.AddSingleton<StandardCoverageService>();
+builder.Services.AddSingleton<AssessorMappingService>();
 
 // Register Scoring Rules
 builder.Services.AddSingleton<DataElementScoringService>();
