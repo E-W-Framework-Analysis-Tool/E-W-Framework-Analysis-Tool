@@ -5,7 +5,7 @@
 
 <div class="flex flex-col h-full">
     <!-- Fixed Filter / Control Area -->
-    <div class="sticky top-0 flex-shrink-0 space-y-2 pb-0 @(ShowFilterPadding ? "p-4" : "p-0")">
+    <div class="sticky bg-white top-0 flex-shrink-0 space-y-2 pb-0 @(ShowFilterPadding ? "p-4" : "p-0")">
 
         <!-- Search Row -->
         <label class="input input-bordered flex items-center gap-2 w-full">
@@ -79,8 +79,8 @@
     </div>
 
     <!-- Scrollable Data Element Categories -->
-    <div class="flex-1 overflow-y-scroll mt-2">
-        <div class="bg-white border border-gray-200 rounded-lg shadow @ContainerClass">
+    <div class="flex-1 overflow-y-scroll mt-2 @ContainerClass">
+        <div class="bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
             @foreach (var category in GetFilteredCategories())
             {
                 <div class="border-b border-gray-200 last:border-b-0">
