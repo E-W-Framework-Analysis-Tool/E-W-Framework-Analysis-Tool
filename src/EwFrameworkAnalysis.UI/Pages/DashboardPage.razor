@@ -137,27 +137,17 @@
         var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
 
         if (!assessments.Any())
-            return GetNeverRunSummary(dataSource.Type);
+            return "Latest inventory: N/A";
 
         var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
-        var timeAgo = GetTimeAgo(latest.ConductedAt);
-        var elementCount = latest.DataElementAssessments?.Count ?? 0;
-
-        return $"Last run: {timeAgo} | {elementCount} elements assessed";
+        return $"Latest inventory: {GetTimeAgo(latest.ConductedAt)}";
     }
-
-    private string GetNeverRunSummary(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "Never run • ~127 potential elements",
-        DataSourceType.CedsDw => "Never run • Upload CSV results",
-        DataSourceType.Custom => "Never run • Manual checklist items",
-        _ => "Never run"
-    };
 
     private string GetTimeAgo(DateTimeOffset dateTime)
     {
         var timeSpan = DateTimeOffset.Now - dateTime;
-        return timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
+        return timeSpan.TotalMinutes < 2 ? "just now"
+             : timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
              : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
              : $"{(int)timeSpan.TotalDays} days ago";
     }

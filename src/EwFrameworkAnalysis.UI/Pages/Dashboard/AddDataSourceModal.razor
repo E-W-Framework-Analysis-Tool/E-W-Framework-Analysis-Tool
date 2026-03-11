@@ -1,4 +1,5 @@
 @using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
 
 @if (IsOpen)
 {
@@ -28,9 +29,7 @@
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
                                    focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-green/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-list-check text-green-700"></i>
-                        </div>
+                        <DataSourceIcon Type="DataSourceType.Custom" />
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">Manual Assessment</h4>
                             <p class="mt-1 text-xs text-gray">Add a data source that does not have automated connections and manually create an inventory</p>
@@ -44,9 +43,7 @@
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
                                    focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-network-wired text-blue"></i>
-                        </div>
+                        <DataSourceIcon Type="DataSourceType.EdFiApi" />
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">Ed-Fi ODS API</h4>
                             <p class="mt-1 text-xs text-gray">Automated discovery & analysis via API connection</p>
@@ -60,9 +57,7 @@
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
                                    focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-warehouse text-blue"></i>
-                        </div>
+                        <DataSourceIcon Type="DataSourceType.CedsDw" />
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">CEDS Data Warehouse</h4>
                             <p class="mt-1 text-xs text-gray">Discovery & analysis of CEDS DW via SQL scripts and file upload</p>
@@ -76,9 +71,7 @@
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
                                    focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue/20 rounded-lg grid place-items-center">
-                            <i class="fas fa-map text-blue"></i>
-                        </div>
+                        <DataSourceIcon Type="DataSourceType.EcsState" />
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-blue">ECS State Data</h4>
                             <p class="mt-1 text-xs text-gray">Add a state-specific inventory of available data as researched by Education Commission of the States</p>
