@@ -1,0 +1,18 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+
+<div class="w-10 h-10 bg-blue rounded-lg flex items-center justify-center">
+    <i class="@IconClass text-white"></i>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public DataSourceType Type { get; set; }
+
+    private string IconClass => Type switch
+    {
+        DataSourceType.EdFiApi => "fas fa-network-wired",
+        DataSourceType.CedsDw => "fas fa-warehouse",
+        DataSourceType.Custom => "fas fa-list-check",
+        DataSourceType.EcsState => "fas fa-map",
+        _ => "fas fa-database"
+    };
+}

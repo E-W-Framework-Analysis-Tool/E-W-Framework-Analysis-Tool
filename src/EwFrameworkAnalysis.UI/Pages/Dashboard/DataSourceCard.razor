@@ -1,14 +1,12 @@
 @using EwFrameworkAnalysis.Common.Models.Project
-
+@using EwFrameworkAnalysis.UI.Components
 <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer"
      @onclick="OnClick">
     <div class="card-body p-4">
         <div class="flex items-center justify-between w-full">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-blue rounded-lg flex items-center justify-center">
-                        <i class="@GetSourceIcon(DataSource.Type) text-white"></i>
-                    </div>
+                    <DataSourceIcon Type="DataSource.Type" />
                 </div>
                 <div class="text-left">
                     <h4 class="text-sm font-semibold text-blue">@DataSource.Name</h4>
@@ -25,23 +23,22 @@
                 }
                 @if (DataSource.Enabled)
                 {
-                    @if (HasRecentAssessment)
-                    {
+                    <div class="relative">
                         <div class="badge badge-accent gap-1">
-                            <i class="fas fa-check-circle"></i>Active
+                            <i class="fas fa-toggle-on"></i>Enabled
                         </div>
-                    }
-                    else
-                    {
-                        <div class="badge badge-warning gap-1">
-                            <i class="fas fa-clock"></i>Pending
-                        </div>
-                    }
+                        @if (!HasRecentAssessment)
+                        {
+                            <span class="absolute top-full right-0 mt-0.5 whitespace-nowrap text-[10px] font-medium text-red-700 flex items-center gap-1">
+                                <i class="fas fa-triangle-exclamation text-[9px]"></i>No Assessments Yet
+                            </span>
+                        }
+                    </div>
                 }
                 else
                 {
                     <div class="badge badge-error gap-1">
-                        <i class="fas fa-times-circle"></i>Disabled
+                        <i class="fas fa-toggle-off"></i>Disabled
                     </div>
                 }
                 <i class="fas fa-chevron-right text-gray ml-2"></i>
@@ -49,19 +46,10 @@
         </div>
     </div>
 </div>
-
 @code {
     [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public bool IsNewlyAdded { get; set; }
     [Parameter] public bool HasRecentAssessment { get; set; }
     [Parameter] public string AssessmentSummary { get; set; } = "";
-
-    private string GetSourceIcon(DataSourceType type) => type switch
-    {
-        DataSourceType.EdFiApi => "fas fa-network-wired",
-        DataSourceType.CedsDw => "fas fa-warehouse",
-        DataSourceType.Custom => "fas fa-list-check",
-        _ => "fas fa-database"
-    };
 }
