@@ -2401,9 +2401,6 @@
       }
     }
   }
-  .my-4 {
-    margin-block: calc(var(--spacing) * 4);
-  }
   .my-8 {
     margin-block: calc(var(--spacing) * 8);
   }
@@ -3001,9 +2998,6 @@
   }
   .list-inside {
     list-style-position: inside;
-  }
-  .list-\[square\] {
-    list-style-type: square;
   }
   .list-decimal {
     list-style-type: decimal;

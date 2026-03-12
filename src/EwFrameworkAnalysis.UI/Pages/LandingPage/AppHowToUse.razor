@@ -1,4 +1,5 @@
 @using EwFrameworkAnalysis.UI.Components
+
 <section class="py-24 bg-gray-100/60 inset-shadow-sm border-b border-t border-gray-300/40">
     <div class="container mx-auto items-center flex flex-wrap justify-center">
         <div class="w-full md:w-10/12 lg:w-10/12 xl:w-10/12 px-4 justify-center">
@@ -44,138 +45,345 @@
                 Input your Data Inventory
             </h2>
 
-            <CollapsibleSection Title="Navigate to the Dashboard"
+            <CollapsibleSection Title="Navigate to the Dashboard to create an E-W data readiness inventory"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Create an E-W data readiness inventory directly from the dashboard.</li>
-                </ul>
+                <p>
+                    Create an E-W data readiness inventory directly from the dashboard.
+                </p>
             </CollapsibleSection>
 
             <CollapsibleSection Title="Select and automatically interrogate an Ed-Fi ODS"
                                 SectionClasses="@SectionCss"
-                                TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>The E-W Analysis Tool can securely interrogate an Ed-Fi ODS through an API connection.</li>
-                    <li>Select <strong>Ed-Fi ODS</strong> as a Data Source.</li>
-                    <li>Input the appropriate connection details for your ODS.</li>
-                    <li>Click <strong>"Interrogate Data"</strong> to check data availability.</li>
-                    <li>View record counts and updated readiness results in Quick View.</li>
-                    <li>Provide extra info or manual scoring in the Details view.</li>
-                    <li>Supports multiple historical versions of this data source.</li>
-                </ul>
+                                TitleClasses="@TitleCss"
+                                id="howto-edfi-ods" >
+                <p class="mb-4">The E-W Analysis Tool can automatically and securely interrogate an Ed-Fi ODS through an API connection.</p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li>Select <strong>+ Add Data Source</strong>.</li>
+                    <li>Select <strong>Ed-Fi ODS API</strong> as a Data Source.</li>
+                    <li>Ed-Fi ODS API will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
+                    <li>Select <strong>Run New Assessment</strong> to make a connection to your Ed-Fi ODS through a browser-based API connection.</li>
+                    <li>Input the appropriate connection details for your ODS and then select <strong>Start Assessment</strong>. Your browser will connect to your Ed-Fi ODS and will interrogate the database to bring back metadata about available data that aligns with the E-W Framework.
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> A demo Ed-Fi API is available for testing and generating sample results. To use the sample data, select <strong>Use Demo API</strong> and you will see the sample credentials automatically filled in. Select <strong>Start Assessment</strong>. If the assessment fails initially, close the modal and wait a minute or so to allow the system to initialize. Then try the process again.</li></ul>
+                    </li>
+                    <li>With a successful connection, you will see a real-time progress update as the ODS is interrogated for data availability. You can check log messages to see what data was found and the metadata created for each data element.</li>
+                    <li>
+                        Upon successful completion of the interrogation, select <strong>Save Results</strong> to save the assessment results to your project.
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical versions or Assessments of this data source can be supported. If your ODS has additional data loaded into it at a particular time (e.g., at end of year), you can run a new assessment. It will automatically be set as the Active Assessment and will be Enabled by default, so that the tool will utilize its results to calculate data readiness.</li></ul>
+                    </li>
+                    <li>Back on the Data Source page for Ed-Fi ODS, you can click into any of the data elements to see record counts and characteristics identified by the metadata retrieved.</li>
+                </ol>
             </CollapsibleSection>
 
             <CollapsibleSection Title="Select and automatically interrogate a CEDS Data Warehouse"
                                 SectionClasses="@SectionCss"
-                                TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Download the CEDS DW SQL Interrogation Scripts.</li>
-                    <li>Run the scripts in your environment to interrogate CEDS DW tables.</li>
-                    <li>Scripts generate a Results File you can save to your computer.</li>
-                    <li>Upload the Results File into the E-W Analysis Tool.</li>
-                    <li>View record counts and readiness results in Quick View.</li>
-                    <li>Supports multiple historical versions of this data source.</li>
-                </ul>
+                                TitleClasses="@TitleCss"
+                                id="howto-ceds-dw">
+                <p class="mb-4">
+                    The E-W Analysis Tool can securely interrogate CEDS Data Warehouse through a set of SQL queries that can be downloaded and run within your own system environment. The results file that is generated from these queries can then be uploaded to the E-W Analysis Tool. The metadata provided by the results file will show EWF data readiness for your CEDS Data Warehouse.
+                </p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li>Select <strong>+ Add Data Source</strong>.</li>
+                    <li>Select <strong>CEDS Data Warehouse</strong> as a Data Source.</li>
+                    <li>CEDS Data Warehouse will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
+                    <li>Select <strong>Run New Assessment</strong> to access the SQL assessment script.</li>
+                    <li>
+                        Download the SQL assessment script and save the file locally. Run the script on your CEDS Data Warehouse database. Once the script has run, Export the results as CSV (instructions to do so are in the script). Then Upload Results CSV to the E-W Analysis Tool and select <strong>Process CSV</strong>.
+                        <ul class="list-disc pl-6 mt-1">
+                            <li><strong>Note:</strong> You can inspect the SQL script prior to running it within your system to ensure its safety and that it will not capture any sensitive data. You can also inspect the results CSV prior to uploading back to the E-W Analysis Tool.</li>
+                            <li><strong>Note:</strong> The current version of the E-W Analysis Tool supports version 13 of the CEDS Data Warehouse. If future versions are supported in the future, there will be an option to select which version you are using.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        As the system processes your results file, you will see a preview of the results. You can choose to <strong>Save Results</strong> or <strong>Discard</strong> them.
+
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical versions or Assessments of this data source can be supported. If your CEDS DW has additional data loaded into it at a particular time (e.g., at end of year), you can run a new assessment. It will automatically be set as the Active Assessment and will be Enabled by default, so that the tool will utilize its results to calculate data readiness.</li></ul>
+                    </li>
+                    <li>Upon saving your results, you will be returned to the Data Source details page and can click into any of the data elements to see record counts and characteristics identified by the metadata retrieved.</li>
+                </ol>
             </CollapsibleSection>
 
             <CollapsibleSection Title="Create Data Sources for manual input"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Create additional Data Sources for repositories not automatically interrogated.</li>
-                    <li>Input descriptions (e.g., Student Assessments, Postsecondary Statistics).</li>
-                    <li>Navigate to each data element to provide scoring and notes.</li>
+                <p class="mb-4">You can create additional Data Sources for any other data repositories you have that the Tool cannot automatically interrogate.</p>
+                <ol class="list-decimal pl-6 space-y-2">
+                    <li>Select <strong>+ Add Data Source</strong>.</li>
+                    <li>Select <strong>Manual Assessment</strong> as a Data Source.</li>
+                    <li>Manual Assessment will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
+                    <li>Select <strong>Run New Assessment</strong> to access the Manual Data Inventory Assessment page. From this page, you can identify the availability status of all 266 data elements that are mapped to the EWF.</li>
+                    <li>Select the Categorization of data elements that works best for you — either by Data Analyst, EWF categories, or CEDS categories.</li>
+                    <li>Search for particular data elements using the search bar.</li>
+                    <li>Input Availability status either at the data element level or at the Category level (which marks all data elements within that category as the same status you select).</li>
+                </ol>
+                <p class="mt-4">Mark each Category or Data element using the following:</p>
+                <ul class="list-disc pl-6 space-y-2 mt-2">
+                    <li><strong>Available</strong> — Indicates this data element is readily available from this data source.</li>
+                    <li><strong>Partially Available</strong> — Indicates this data element is available from this data source, but may not be complete (e.g., is missing for some schools) or may have some issues with data quality.</li>
+                    <li><strong>Not Available</strong> — Indicates this data element is not available from this data source.</li>
                 </ul>
+                <p class="mt-4">
+                    Back on the Data Source Details page, you can see the results of your Manual Inventory. You can set the Assessment as Active or Inactive, and can Enable or Disable the Data Source from this page.
+                </p>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="Download your results"
+            <CollapsibleSection Title="Save your results for future use or Load previous results"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Choose <strong>Save My Work</strong> to download your inventory results anytime.</li>
-                </ul>
+                <p>
+                    At any point, navigate to the Dashboard and Select <strong>Save</strong> to download your project results as a JSON file to your local environment. You can share your results with others by sending them this file, or simply <strong>Load</strong> it in the future to continue your work. Your browser will also save your progress and you can pick up where you left off the next time you return to the website, unless you clear your cookies.
+                </p>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="Upload previous results"
+            <CollapsibleSection Title="Configure which Data Sources you wish to analyze"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Choose <strong>Upload My Work</strong> to re-use previously saved results.</li>
-                </ul>
-            </CollapsibleSection>
-
-            <CollapsibleSection Title="Configure which Data Sources to analyze"
-                                SectionClasses="@SectionCss"
-                                TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Mark Data Sources you want to analyze as <strong>Active</strong>.</li>
-                    <li>Select <strong>Run Analysis</strong> to generate reports.</li>
-                </ul>
+                <p>
+                    Review all Data Sources you have created and make sure each one you want to analyze is configured as <strong>Enabled</strong>. Select <strong>Reports &amp; Analysis</strong> at the top of the website to view E-W data readiness analysis and reports.
+                </p>
             </CollapsibleSection>
 
             <CollapsibleSection Title="View quick results on the Dashboard"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Summary results for multiple measures appear on the Dashboard.</li>
-                    <li>Quick view of essential questions is also available.</li>
-                </ul>
+                <p>
+                    Summary results for various measures of your data inventory will show up on the Dashboard.
+                </p>
             </CollapsibleSection>
         </div>
     </div>
 
     <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
-        <div class="w-full max-w-6xl px-4">
+        <div class="w-full max-w-6xl px-6">
             <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
-                View Readiness Scores and Plan your Roadmap
+                View Readiness Scores
             </h2>
 
-            <CollapsibleSection Title="Navigate to the Reports and Analysis page for detailed insight into your E-W data readiness"
+            <CollapsibleSection Title="Navigate to the Reports &amp; Analysis page for detailed insight into your E-W data readiness"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Select Reports &amp; Analysis from the top of the website.</li>
-                </ul>
+                <p>Select <strong>Reports &amp; Analysis</strong> from the top of the website.</p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Download a summary to use in discussions with stakeholders"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    Select <strong>Download Report</strong> to download or print a comprehensive PDF report of your project findings. This report can be used in various ways to help support discussions at the Data / Policy / Agency level.
+                </p>
             </CollapsibleSection>
 
             <CollapsibleSection Title="View Overall Summary Scores of Data Readiness"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
-                <p>
-                    The Analysis Tool takes the results of the Data Source Inventory and runs an analysis
-                    of data availability against each Essential Question and Indicator, displaying Readiness
-                    Scores and enabling you to drill down to the data element level.
+                <p class="mb-4">
+                    The Analysis Tool takes the results of all Enabled Data Sources and runs an analysis of data availability against each Data Element, Indicator, and Essential Question.
                 </p>
+                <p class="mb-2">Overall Readiness Scores are calculated based on the following formula:</p>
+                <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
+                    ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
+                </p>
+                <p class="mb-2 font-semibold">Readiness Comparison</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Custom Manual</strong> — Shows results for all custom Manual Data Sources that are currently Enabled</li>
+                    <li><strong>Automated (Ed-Fi &amp; CEDS)</strong> — Shows results for all automated Data Sources that are currently Enabled</li>
+                    <li><strong>Public Data (ECS)</strong> — Shows results based on Education Commission of the States Data Collected or Data Reported if currently Enabled</li>
+                    <li><strong>Combined Readiness (All Data Sources)</strong> — Overall results taking the most favorable result for each Data Element by Data Source. For example, if three data sources each have a result for a Staff FTE status but only one source shows Available, then that data element will score as Available.</li>
+                    <li><strong>Sector Breakdown</strong> — Shows data readiness broken down by the four Sectors.</li>
+                </ul>
             </CollapsibleSection>
 
             <CollapsibleSection Title="View Essential Question readiness scoring"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    Each Essential Question will be listed, with a readiness score based on the availability in your Enabled Data Sources.
+                </p>
+                <p class="mb-2">Readiness Scores are calculated for each EQ based on the following formula:</p>
+                <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
+                    ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
+                </p>
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Each Essential Question (EQ) will be listed with a readiness score based on the availability and quality of data in your inventory.</li>
-                    <li>Click on an EQ to see a more detailed breakdown of data readiness by the associated Indicators.</li>
-                    <li>Click on an Indicator to see a more detailed breakdown by the associated data elements.</li>
-                    <li>EQs can be sorted by various factors.</li>
+                    <li>Click the Expand arrow to view a more detailed breakdown of data readiness for an EQ by the associated Indicators.</li>
+                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
+                    <li>EQ's can be sorted by Score (default highest to lowest) or EQ number.</li>
+                    <li>Use the Search bar to quickly narrow down to a particular focal point.</li>
+                    <li>Filter by Sector to view EQ's associated with a particular Sector.</li>
                 </ul>
             </CollapsibleSection>
 
             <CollapsibleSection Title="View Indicator readiness scoring"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    Similar to the Essential Question view, select Indicators to view a list of all Indicators, with a readiness score based on the availability in your Enabled Data Sources.
+                </p>
+                <p class="mb-2">Readiness Scores are calculated for each Indicator based on the following formula:</p>
+                <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
+                    ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
+                </p>
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Each Indicator will be listed with a readiness score based on the availability and quality of data in your inventory.</li>
-                    <li>Click on an Indicator to see a more detailed breakdown by the associated data elements.</li>
-                    <li>Indicators can be sorted by various factors.</li>
+                    <li>Click the Expand arrow to view a more detailed breakdown of data readiness for an Indicator by the underlying Data Elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
                 </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="Print a one-page summary to use in discussions with stakeholders"
+            <CollapsibleSection Title="View Disaggregates"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    The Analysis Tool generates various Readiness and Benchmarking reports to help support
-                    discussions at the Data, Policy, or Agency level.
+                    Select <strong>Disaggregates</strong> to view a list of all Disaggregates, with an indication of whether they are Available within each relevant Sector.
+                </p>
+            </CollapsibleSection>
+        </div>
+    </div>
+
+    <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full max-w-6xl px-6">
+            <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
+                Plan Your Roadmap
+            </h2>
+
+            <CollapsibleSection Title="How can I use the results I generate from the E-W Analysis Tool?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The E-W Framework is thorough and presents an incredibly rich set of findings. However, it is voluminous and may be overwhelming to many potential users who could benefit greatly from its content. Additionally, each user of the E-W Framework must make their own effort to bridge its research-backed components to the practical realities of the availability, location, and quality of their data.
+                </p>
+                <p class="mb-4">
+                    States do not start their P20W+ infrastructure from zero. At the time they decide to move toward a P20W+, states have existing data systems at varied levels of data maturity that overlap in whole or in part with the 4 sectors of the E-W Framework. Similarly, Local Education Agencies (LEAs) also have existing systems in place when exploring systems integration and expansion of their P12+ infrastructure. When introduced to the E-W Framework, we anticipate States, LEAs, and their supporting vendors will have questions such as:
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-4">
+                    <li>What research questions do I need to answer to demonstrate the value of a P20W system to the state?</li>
+                    <li>What data elements are already collected statewide that can answer those questions (and do I have access to them)?</li>
+                    <li>How should I prioritize essential questions and indicators to start with?</li>
+                    <li>What can I do to get more data into the system in the future to answer the essential questions I'm most interested in?</li>
+                </ul>
+                <p>
+                    The E-W Analysis Tool is a free and simple way to analyze an end-user's (e.g., state education agency, local education agency) own data preparedness and guide their own internal discussions around which Essential Questions they should be prioritizing. This will lead to prioritizing their own data work to build infrastructure to answer those questions, and enabling these organizations to build a roadmap for short-term goals to implement early and for longer-term goals to start discussions around.
+                </p>
+                <p class="mt-4">
+                    In addition to the online results available in the Reports &amp; Analysis section, you can download a PDF report that can be easily printed or shared with other stakeholders.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Pick a Priority Question for your organization to focus on"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-2">Criteria that can be used to prioritize:</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Importance to organizational goals</li>
+                    <li>Identified areas of inequity</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Investigate the drivers of data readiness"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Is the data available at all? Is it currently collected and stored somewhere? Or would processes need to be created to generate data collection?</li>
+                    <li>Is the data accessible to those who need to use it? Are there data governance issues that need to be addressed to break down barriers between availability and access?</li>
+                    <li>Is the data of high quality? Or does work need to be done to improve the quality of data so that the resulting analysis is actually meaningful?</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Ways that the output of the Analysis Tool can help with the prioritization"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-4">
+                    <li>
+                        <strong>Easy Wins</strong>
+                        <ul class="list-disc pl-6 space-y-1 mt-1">
+                            <li>Questions that have most or all of the required data elements readily available, accessible, and of high quality</li>
+                            <li>Build reporting tools to create reporting outputs to show progress along Indicators</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Minor Gaps</strong>
+                        <ul class="list-disc pl-6 space-y-1 mt-1">
+                            <li>Questions that have a majority of the required data elements readily available, accessible, and of reasonable quality</li>
+                            <li>Focus on filling the gaps in data availability and quality</li>
+                            <li>Prioritize Indicators and Metrics that are cross cutting and useful for answering multiple questions</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Building Bridges</strong>
+                        <ul class="list-disc pl-6 space-y-1 mt-1">
+                            <li>Questions where data is available but may not be accessible, e.g., due to data governance barriers</li>
+                            <li>Work with other stakeholders/agencies to bridge the accessibility gap</li>
+                            <li>This will require discussion with decision makers, an alignment of priorities and objectives, and may require policy changes</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Future Investments</strong>
+                        <ul class="list-disc pl-6 space-y-1 mt-1">
+                            <li>Questions of high importance to you and your stakeholders, but for which there is little data availability, access, and/or quality</li>
+                            <li>These areas will require an alignment of interest and resources over the long haul</li>
+                            <li>You may want to tee up discussions with stakeholders who are already aligned and see if you can build a consensus and united front before bringing in other stakeholders who are not in alignment.</li>
+                            <li>Use the Essential Questions to highlight areas of uncertainty and areas of potential. Build toward common goals, set timelines, and celebrate victories along the way.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Review Disaggregates"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    In addition to Indicator data readiness, it is important to analyze your readiness to break down Indicators and Essential Questions by Disaggregates to help uncover disparities and make informed decisions that can lead to greater equity.
+                </p>
+                <p>
+                    For instance, even if you have some Easy Wins identified, if you do not have the Disaggregate data to perform deeper analyses, you will be limited in the types of equity conclusions you can draw and disparities you can identify. This may lead to additional prioritizations of certain Disaggregate data.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Look Deeper"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The Analysis Tool can help you identify gaps in data types and Indicators, but it does not explore the next level of data quality.
+                </p>
+                <p>
+                    For instance, you may find that you have data on whether students are on track in early grades, but you might not have access to quality, culturally responsive curricula. This type of data is not widely available, and there are no existing recommended metrics. Areas like this should be explored and may be in need of prioritization.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Target specific Sectors"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Look at the differences in data readiness between Sectors</li>
+                    <li>Most groups have greater data readiness in the K-12 sector, followed by Early childhood and Postsecondary. Workforce tends to have the least amount of data ready for powering Indicators to show progress on Essential Questions.</li>
+                    <li>This can help guide your prioritization of breaking down the barriers between sectors.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Prioritize Indicators for your organization to focus on"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Based on the Priority Questions you have identified, this should guide you to the Indicators you need to focus on to adequately answer the questions.</li>
+                    <li>Focus on the Data Readiness of each of these Indicators to develop a game plan for powering each of them.</li>
+                    <li>Similar to the prioritization of the Questions, you can immediately begin work on Easy Wins, Minor Gaps, while planning approaches for Building Bridges and Future Investments.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - Leverage the E-W Framework resources to guide your exploration of the Questions and Indicators"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Incorporate the Data Equity Principles into your work</li>
+                    <li>Incorporate analysis of disparities using the Disaggregates to dive into differences in outcomes</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Building a Roadmap - How can I visualize the data within the E-W Framework?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The next step many organizations want to take is toward computation and visualization of the data. To support this, Power BI visualizations have been created to show how several Essential Questions and their related Indicators can be answered by data. Below is information about how to download, install, and use the Power BI visualizations. You can download and use the sample CEDS Data Warehouse that has been created, or you can connect your own CEDS Data Warehouse (or modify to fit your unique database) to power the visualizations.
+                </p>
+                <p>
+                    Visit the Dashboard Visualization page for examples and further information.
                 </p>
             </CollapsibleSection>
         </div>
@@ -184,5 +392,5 @@
 
 @code {
     private const string SectionCss = "collapse-arrow border-b rounded-none";
-    private const string TitleCss   = "text-lg font-semibold transition";
+    private const string TitleCss = "text-lg font-semibold transition";
 }
