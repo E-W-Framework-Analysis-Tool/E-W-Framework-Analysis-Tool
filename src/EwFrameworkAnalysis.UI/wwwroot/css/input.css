@@ -66,7 +66,7 @@
 }
 
 .font-title {
-  font-family: 'Zilla Slab', serif !important;
+    font-family: 'Zilla Slab', serif !important;
 }
 
 .walkthrough-backdrop {
@@ -83,6 +83,14 @@
     pointer-events: none;
     transition: all 0.25s ease;
 }
+
+    .walkthrough-spotlight.is-scrolling {
+        left: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        opacity: 0.15;
+    }
 
 .walkthrough-tooltip {
     position: fixed;
@@ -120,4 +128,3 @@
             cursor: not-allowed;
         }
 }
-

@@ -63,26 +63,82 @@
             await Task.Delay(200); // let the page render
         }
 
+        // awaits the JS Promise — returns only after scroll finishes (or 500ms fallback)
         await JS.InvokeVoidAsync("Walkthrough.scrollIntoView", step.StepId);
-        await Task.Delay(100); // let scroll settle
 
+        // No arbitrary delay needed here anymore
         var rect = await JS.InvokeAsync<BoundingRect?>("Walkthrough.getRect", step.StepId);
         if (rect is null) return;
 
         _spotlightStyle = $"left:{rect.X - Pad}px; top:{rect.Y - Pad}px; " +
                           $"width:{rect.Width + Pad * 2}px; height:{rect.Height + Pad * 2}px;";
-
         _tooltipStyle = ComputeTooltipStyle(rect, step.Position);
     }
 
-    private string ComputeTooltipStyle(BoundingRect r, TooltipPosition pos) => pos switch
+    private string ComputeTooltipStyle(BoundingRect r, TooltipPosition preferred)
     {
-        TooltipPosition.Bottom => $"left:{Math.Max(8, r.X)}px; top:{r.Bottom + TooltipOffset}px; width:{TooltipWidth}px;",
-        TooltipPosition.Top => $"left:{Math.Max(8, r.X)}px; top:{r.Y - TooltipOffset}px; width:{TooltipWidth}px; transform:translateY(-100%);",
-        TooltipPosition.Right => $"left:{r.Right + TooltipOffset}px; top:{r.Y}px; width:{TooltipWidth}px;",
-        TooltipPosition.Left => $"left:{r.X - TooltipWidth - TooltipOffset}px; top:{r.Y}px; width:{TooltipWidth}px;",
-        _ => ""
-    };
+        const int tooltipHeight = 200; // conservative estimate
+
+        // Space available on each side
+        double spaceBottom = r.Vh - r.Bottom;
+        double spaceTop = r.Y;
+        double spaceRight = r.Vw - r.Right;
+        double spaceLeft = r.X;
+
+        bool fits(TooltipPosition p) => p switch
+        {
+            TooltipPosition.Bottom => spaceBottom >= tooltipHeight + TooltipOffset,
+            TooltipPosition.Top => spaceTop >= tooltipHeight + TooltipOffset,
+            TooltipPosition.Right => spaceRight >= TooltipWidth + TooltipOffset,
+            TooltipPosition.Left => spaceLeft >= TooltipWidth + TooltipOffset,
+            _ => false
+        };
+
+        // Use preferred if it fits, otherwise pick the side with the most room
+        var pos = fits(preferred) ? preferred : new[]
+        {
+        (TooltipPosition.Bottom, spaceBottom),
+        (TooltipPosition.Top,    spaceTop),
+        (TooltipPosition.Right,  spaceRight),
+        (TooltipPosition.Left,   spaceLeft),
+    }
+        .OrderByDescending(t => t.Item2)
+        .First().Item1;
+
+        // Compute raw position then clamp to viewport with an 8px margin
+        const int margin = 8;
+        double left, top;
+
+        switch (pos)
+        {
+            case TooltipPosition.Bottom:
+                left = r.X;
+                top = r.Bottom + TooltipOffset;
+                break;
+            case TooltipPosition.Top:
+                left = r.X;
+                top = r.Y - TooltipOffset - tooltipHeight;
+                break;
+            case TooltipPosition.Right:
+                left = r.Right + TooltipOffset;
+                top = r.Y;
+                break;
+            case TooltipPosition.Left:
+                left = r.X - TooltipWidth - TooltipOffset;
+                top = r.Y;
+                break;
+            default:
+                left = r.X;
+                top = r.Bottom + TooltipOffset;
+                break;
+        }
+
+        // Clamp so tooltip never bleeds off screen
+        left = Math.Clamp(left, margin, r.Vw - TooltipWidth - margin);
+        top = Math.Clamp(top, margin, r.Vh - tooltipHeight - margin);
+
+        return $"left:{left}px; top:{top}px; width:{TooltipWidth}px;";
+    }
 
     public void Dispose()
     {
@@ -90,5 +146,8 @@
         JS.InvokeVoidAsync("Walkthrough.stop");
     }
 
-    private record BoundingRect(double X, double Y, double Width, double Height, double Bottom, double Right);
+    private record BoundingRect(
+        double X, double Y, double Width, double Height,
+        double Bottom, double Right,
+        double Vw, double Vh);
 }
