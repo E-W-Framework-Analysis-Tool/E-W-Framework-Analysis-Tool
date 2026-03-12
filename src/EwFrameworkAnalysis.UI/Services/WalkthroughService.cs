@@ -1,3 +1,6 @@
+using System.Net.Http.Json;
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.UI.Services;
 
 public class WalkthroughService
@@ -9,13 +12,50 @@ public class WalkthroughService
     public int TotalSteps => _steps.Count;
 
     private readonly List<WalkthroughStepDefinition> _steps = [.. WalkthroughSteps.All];
+    private readonly AnalysisProjectService _projectSvc;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     public event Action? Changed;
 
-    public void Start() { IsActive = true; CurrentStepIndex = 0; Changed?.Invoke(); }
-    public void Next() { if (CurrentStepIndex < _steps.Count - 1) CurrentStepIndex++; else Stop(); Changed?.Invoke(); }
-    public void Previous() { if (CurrentStepIndex > 0) CurrentStepIndex--; Changed?.Invoke(); }
-    public void Stop() { IsActive = false; Changed?.Invoke(); }
+    public WalkthroughService(AnalysisProjectService projectSvc, IHttpClientFactory httpClientFactory)
+    {
+        _projectSvc = projectSvc;
+        _httpClientFactory = httpClientFactory;
+    }
+
+    public async Task StartAsync()
+    {
+        using var http = _httpClientFactory.CreateClient();
+        var demoProject = await DemoProject.LoadAsync(http);
+        await _projectSvc.ActivateDemoProjectAsync(demoProject ?? new AnalysisProject());
+        IsActive = true;
+        CurrentStepIndex = 0;
+        Changed?.Invoke();
+    }
+
+    public async Task StopAsync()
+    {
+        IsActive = false;
+        await _projectSvc.DeactivateDemoProjectAsync();
+        Changed?.Invoke();
+    }
+    public async Task NextAsync()
+    {
+        if (CurrentStepIndex < _steps.Count - 1)
+            CurrentStepIndex++;
+        else
+            await StopAsync();
+        Changed?.Invoke();
+    }
+
+    public Task PreviousAsync()
+    {
+        if (CurrentStepIndex > 0)
+            CurrentStepIndex--;
+        Changed?.Invoke();
+
+        return Task.CompletedTask;
+    }
 }
 
 public record WalkthroughStepDefinition(
@@ -53,4 +93,12 @@ public static class WalkthroughSteps
             Position: TooltipPosition.Right
         )
     ];
+}
+
+public static class DemoProject
+{
+    public static async Task<AnalysisProject?> LoadAsync(HttpClient http)
+    {
+        return await http.GetFromJsonAsync<AnalysisProject>("Walkthrough_Demo.json");
+    }
 }

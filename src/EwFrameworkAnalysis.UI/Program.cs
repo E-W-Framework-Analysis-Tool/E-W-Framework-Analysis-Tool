@@ -26,7 +26,6 @@ var deploymentInfoOptions = new DeploymentInfoOptions();
 builder.Configuration.GetSection("DeploymentInfo").Bind(deploymentInfoOptions);
 builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
@@ -36,6 +35,13 @@ builder.Services.AddSingleton<AnalysisProjectService>();
 builder.Services.AddScoped<PdfReportService>();
 builder.Services.AddSingleton<WalkthroughService>();
 builder.Services.AddScoped<ScrollService>();
+
+// Use HttpClient in scoped situations, use IHttpClientFactory pattern for Singletons
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddHttpClient(string.Empty, client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
 
 // Register Scoring Rules
 builder.Services.AddSingleton<DataElementScoringService>();
