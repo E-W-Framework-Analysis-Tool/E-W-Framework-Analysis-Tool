@@ -1,9 +1,10 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
 @inject NavigationManager Nav
 
 <div class="lg:col-span-2" id="data-sources">
-    <Card Shadow="Card.ShadowSize.XLarge" data-walkthrough="data-sources-list">
+    <Card Shadow="Card.ShadowSize.XLarge" data-walkthrough="@WalkthroughSteps.StepIds.DataSourcesList">
         <ChildContent>
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-title font-semibold text-blue">Data Sources</h3>

@@ -6,6 +6,7 @@
 @inherits LayoutComponentBase
 @inject WalkthroughService Walkthrough
 @inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
+@inject IJSRuntime JS
 
 <div class="min-h-screen flex flex-col">
 
@@ -20,8 +21,20 @@
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="@AppRoutes.Dashboard" class="link link-hover">Dashboard</a></li>
-                    <li><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
-                    <li><button class="btn btn-xs btn-outline btn-accent" @onclick="Walkthrough.StartAsync">Tour</button></li>
+                    <li data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink"><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
+                    <li class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="link link-hover" id="learn-dropdown">
+                            Learn ▾
+                        </div>
+                        <ul tabindex="0" class="dropdown-content menu bg-secondary rounded-box z-50 w-48 p-2 shadow-lg border border-white/10">
+                            <li>
+                                <button class="link link-hover bg-transparent border-none cursor-pointer"
+                                        @onclick="HandleTakeATour">
+                                    Take a Tour
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -105,7 +118,9 @@
 <WalkthroughOverlay />
 
 @code {
-    protected override void OnInitialized()
+    private async Task HandleTakeATour()
     {
+        await JS.InvokeVoidAsync("eval", "document.activeElement.blur()");
+        await Walkthrough.StartAsync();
     }
 }

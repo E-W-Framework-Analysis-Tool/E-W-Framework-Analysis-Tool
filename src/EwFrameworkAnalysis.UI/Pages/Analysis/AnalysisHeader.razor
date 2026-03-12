@@ -1,4 +1,5 @@
 @using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
 
 <Card Overflow Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
@@ -17,7 +18,7 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center space-x-3 flex-shrink-0">
-                    <button class="btn btn-primary gap-2" @onclick="DownloadReportAsync" disabled="@_isGenerating">
+                    <button class="btn btn-primary gap-2" @onclick="DownloadReportAsync" disabled="@_isGenerating" data-walkthrough="@WalkthroughSteps.StepIds.DownloadReportButton">
                         @if (_isGenerating)
                         {
                             <span class="loading loading-spinner loading-sm"></span>

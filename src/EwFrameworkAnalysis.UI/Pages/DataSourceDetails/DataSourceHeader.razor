@@ -1,5 +1,6 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@using static EwFrameworkAnalysis.UI.Services.WalkthroughSteps
 
 <Card Overflow Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
@@ -53,7 +54,7 @@
                 <div class="flex items-center space-x-3 flex-shrink-0">
                     @if (DataSource.Type == DataSourceType.EdFiApi || DataSource.Type == DataSourceType.CedsDw || DataSource.Type == DataSourceType.Custom || DataSource.Type == DataSourceType.EcsState)
                     {
-                        <button class="btn btn-primary gap-2" @onclick="OnRunAssessment">
+                        <button class="btn btn-primary gap-2" @onclick="OnRunAssessment" data-walkthrough="@StepIds.RunAssessmentButton">
                             <i class="fas fa-play"></i>
                             @(DataSource.Type == DataSourceType.EcsState ? "Add ECS State Data" : "Run New Assessment")
                         </button>

@@ -18,6 +18,7 @@ public class AnalysisProjectService
     public Guid? NewlyAddedDataSourceId { get; private set; }
     public Guid? NewlyAddedAssessmentId { get; private set; }
     public bool IsDemoActive { get; private set; }
+    private bool _initialized = false;
 
     public event Action? Changed;
 
@@ -32,6 +33,8 @@ public class AnalysisProjectService
     /// </summary>
     public async Task InitializeAsync()
     {
+        if (_initialized) return;
+
         try
         {
             // If a backup exists, a walkthrough crashed — restore it unconditionally
@@ -60,6 +63,7 @@ public class AnalysisProjectService
             Project = new AnalysisProject();
         }
 
+        _initialized = true;
         Notify();
     }
 

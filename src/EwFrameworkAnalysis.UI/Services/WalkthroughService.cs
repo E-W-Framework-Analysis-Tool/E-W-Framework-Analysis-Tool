@@ -70,10 +70,13 @@ public enum TooltipPosition { Top, Bottom, Left, Right }
 
 public static class WalkthroughSteps
 {
+    private static readonly string _dataSourceRoute =
+        AppRoutes.DataSourceDetails.ForDataSource(new Guid("f33342b7-8bcd-4fe2-9b61-4fadb9298a45"));
+
     public static readonly List<WalkthroughStepDefinition> All =
     [
         new WalkthroughStepDefinition(
-            StepId: "project-file-ops",
+            StepId: StepIds.ProjectFileOperations,
             Title: "Your Project Lives in a File",
             Body: "New, Save, and Load let you manage your project file. " +
                   "Everything in this tool — your data sources, assessments, and results — " +
@@ -84,15 +87,94 @@ public static class WalkthroughSteps
             Position: TooltipPosition.Bottom
         ),
         new WalkthroughStepDefinition(
-            StepId: "data-sources-list",
+            StepId: StepIds.DataSourcesList,
             Title: "Add Your Data Sources",
-            Body: "Data sources represent the systems you want to analyze for framework coverage — " +
+            Body: "Data sources represent the systems you want to analyze for Framework coverage — " +
                   "such as an Ed-Fi API or a CEDS data warehouse. " +
                   "Add one or more here, then run an assessment on each to discover what data elements are present.",
             RequiredRoute: "/dashboard",
             Position: TooltipPosition.Right
-        )
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.DataSourceItem,
+            Title: "View Data Source Details",
+            Body: "Click a Data Source here to navigate to the Data Source details page.",
+            RequiredRoute: "/dashboard",
+            Position: TooltipPosition.Right
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.RunAssessmentButton,
+            Title: "Run an Assessment",
+            Body: "In the Data Source details page, run an automated assessment or update a checklist to inventory the data elements " +
+                  "present in your system. This process inspects your source and maps what it finds " +
+                  "against the Framework's expected elements.",
+            RequiredRoute: _dataSourceRoute,
+            Position: TooltipPosition.Bottom
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.DataSourceAssessmentHistory,
+            Title: "Assessment History",
+            Body: "Each time you run an assessment, a snapshot is saved here. " +
+                  "You can compare results over time to track how your data coverage changes " +
+                  "as your systems evolve.",
+            RequiredRoute: _dataSourceRoute,
+            Position: TooltipPosition.Right
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.DataSourceAssessmentDetails,
+            Title: "Assessment Details",
+            Body: "Drill into an individual assessment to see exactly which data elements were found, " +
+                  "which were missing, and any issues encountered during the inventory.",
+            RequiredRoute: _dataSourceRoute,
+            Position: TooltipPosition.Right
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.AnalysisNavLink,
+            Title: "Analysis Page",
+            Body: "Navigate to the Reports & Analysis page after adding data sources to view Framework insights.",
+            RequiredRoute: _dataSourceRoute,
+            Position: TooltipPosition.Right
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.EssentialQuestionsScoreGrid,
+            Title: "Essential Questions Coverage",
+            Body: "This grid shows how well your data sources collectively support each of the " +
+                  "Framework's Essential Questions — the high-level outcomes the Framework is designed to answer.",
+            RequiredRoute: AppRoutes.Analysis,
+            Position: TooltipPosition.Top
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.ScoreGridSelector,
+            Title: "Filter the Score Grid",
+            Body: "Switch between views to explore coverage by Essential Question, Indicator, or Disaggregate. " +
+                  "Use this to identify where gaps are concentrated.",
+            RequiredRoute: AppRoutes.Analysis,
+            Position: TooltipPosition.Bottom
+        ),
+        new WalkthroughStepDefinition(
+            StepId: StepIds.DownloadReportButton,
+            Title: "Download Your Report",
+            Body: "Export a full analysis report summarizing your Framework coverage across all " +
+                  "data sources. Share this with stakeholders or use it to guide your data improvement efforts.",
+            RequiredRoute: AppRoutes.Analysis,
+            Position: TooltipPosition.Bottom
+        ),
     ];
+
+    public static class StepIds
+    {
+        public const string ProjectFileOperations = "project-file-ops";
+        public const string DataSourcesList = "data-sources-list";
+        public const string RunAssessmentButton = "run-assessment";
+        public const string DataSourceAssessmentHistory = "data-source-assessment-history";
+        public const string DataSourceAssessmentDetails = "data-source-assessment-details";
+        public const string DownloadReportButton = "analysis-report-download";
+        public const string EssentialQuestionsScoreGrid = "eq-score-grid";
+        public const string ScoreGridSelector = "score-grid-selector";
+        public const string DashboardNavLink = "dashboard-link";
+        public const string AnalysisNavLink = "analysis-link";
+        public const string DataSourceItem = "data-source-item";
+    }
 }
 
 public static class DemoProject

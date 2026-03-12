@@ -27,7 +27,8 @@ window.Walkthrough = {
 
       if (alreadyVisible) { resolve(); return; }
 
-      // Blur the spotlight while scrolling
+      const block = r.height > window.innerHeight ? 'start' : 'center';
+
       document.querySelector('.walkthrough-spotlight')?.classList.add('is-scrolling');
 
       const fallback = setTimeout(() => {
@@ -44,7 +45,7 @@ window.Walkthrough = {
       window.addEventListener('scrollend', onScrollEnd, { once: true });
       document.addEventListener('scrollend', onScrollEnd, { once: true });
 
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.scrollIntoView({ behavior: 'smooth', block });
     });
-  }
+  },
 };

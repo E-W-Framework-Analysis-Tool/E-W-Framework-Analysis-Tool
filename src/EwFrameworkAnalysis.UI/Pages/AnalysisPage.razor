@@ -26,7 +26,7 @@
     <div class="tabs tabs-border !rounded-none">
 
         <!-- Essential Questions Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked"/>
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked" data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector"/>
         <EssentialQuestionGrid QuestionScores="_questionScores"/>
 
         <!-- Indicators Grid -->
@@ -68,8 +68,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ProjectSvc.Changed += OnProjectChanged;
         await ProjectSvc.InitializeAsync();
         CalculateScores();
+    }
+
+    public void Dispose()
+    {
+        ProjectSvc.Changed -= OnProjectChanged;
+    }
+
+    private void OnProjectChanged()
+    {
+        CalculateScores();
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task GenerateReportAsync()
