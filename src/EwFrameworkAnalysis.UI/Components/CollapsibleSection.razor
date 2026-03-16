@@ -1,5 +1,9 @@
 <div class="collapse collapse-arrow @SectionClasses @AdditionalClasses" @attributes="AdditionalAttributes">
-    <input type="checkbox" class="peer" checked="@IsExpanded" @onchange="OnToggle" />
+    <input type="checkbox" class="peer"
+           checked="@IsExpanded"
+           @onchange="OnToggle"
+           aria-label="@(AriaLabel ?? Title ?? "Toggle section")" />
+
     <div class="collapse-title @TitleClasses">
         @if (TitleContent != null)
         {
@@ -33,6 +37,9 @@
     /// </summary>
     [Parameter]
     public RenderFragment? TitleContent { get; set; }
+
+    [Parameter]
+    public string? AriaLabel { get; set; }
 
     /// <summary>
     /// Whether the section starts expanded
