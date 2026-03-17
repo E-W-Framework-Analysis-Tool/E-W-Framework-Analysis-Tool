@@ -3,9 +3,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// <summary>
 /// Comprehensive version that also includes completeness of BirthDate
 /// </summary>
-public class StudentAgeCedsDWAssessor : ICedsDWAssessor
+public class AgeCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Student Age";
+    public string DataElementName => "Age";
 
     public string Query => $@"
 WITH PeopleStats AS (
