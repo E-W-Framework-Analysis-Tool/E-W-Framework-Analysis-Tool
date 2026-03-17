@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI.Services;
 
-public record CustomDataSourceScore(string Name, double Score);
+public record DataSourceScore(string Name, double Score);
 
 public class PdfReportService(IJSRuntime jsRuntime)
 {
@@ -13,11 +13,10 @@ public class PdfReportService(IJSRuntime jsRuntime)
         List<QuestionScore> questionScores,
         List<SectorReadinessResult> sectorReadinessScores,
         OverallReadinessResults overallReadinessScores,
-        List<DataSource> activeDataSources,
         string? projectTitle,
-        List<CustomDataSourceScore> customSourceScores)
+        List<DataSourceScore> dataSourceScores,
+        List<IndicatorScore> indicatorScores)
     {
-        var ecsActive = activeDataSources.Any(ds => ds.Type == DataSourceType.EcsState);
 
         var eqBands = new[]
         {
@@ -92,6 +91,23 @@ public class PdfReportService(IJSRuntime jsRuntime)
             })
             .ToArray();
 
+        var roiItems = indicatorScores
+            .DistinctBy(i => i.IndicatorCode)
+            .SelectMany(i => i.DataElementScores
+                .Where(de => de.QualityScore < 1.0m)
+                .Select(de => new { i.IndicatorCode, DataElement = de }))
+            .GroupBy(x => x.DataElement.DataElementName)
+            .Select(g => new
+            {
+                name = g.Key,
+                indicators = g.Select(x => x.IndicatorCode).Distinct().OrderBy(x => x).ToList(),
+                potentialImpact = (double)g.Sum(x => 1.0m - x.DataElement.QualityScore),
+            })
+            .OrderByDescending(x => x.potentialImpact)
+            .ThenByDescending(x => x.indicators.Count)
+            .Take(5)
+            .ToArray();
+
         var reportData = new
         {
             projectTitle = projectTitle ?? string.Empty,
@@ -99,15 +115,17 @@ public class PdfReportService(IJSRuntime jsRuntime)
             {
                 eqBands,
                 sectorReadiness,
-                dataSourceReadiness = new
-                {
-                    customSources = customSourceScores
-                        .Select(cs => new { name = cs.Name, score = cs.Score })
-                        .ToArray(),
-                    automated = (double)overallReadinessScores.AutomatedDataSourceReadiness,
-                    ecs = (double)overallReadinessScores.EcsReadiness,
-                    ecsActive,
-                },
+                dataSourceReadiness = dataSourceScores
+                    .Select(ds => new { name = ds.Name, score = ds.Score })
+                    .ToArray(),
+            },
+            overallReadiness = new
+            {
+                manual = (double)overallReadinessScores.CustomDataSourceReadiness,
+                automated = (double)overallReadinessScores.AutomatedDataSourceReadiness,
+                ecs = (double)overallReadinessScores.EcsReadiness,
+                combined = (double)overallReadinessScores.CombinedReadiness,
+                roiItems,
             },
             questions,
         };

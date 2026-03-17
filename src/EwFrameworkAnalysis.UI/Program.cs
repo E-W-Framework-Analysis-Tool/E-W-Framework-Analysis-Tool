@@ -1,4 +1,5 @@
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
+using EwFrameworkAnalysis.Common.Mapping;
 using EwFrameworkAnalysis.Common.Models.Scoring;
 using EwFrameworkAnalysis.Common.Scoring;
 using EwFrameworkAnalysis.Common.Services;
@@ -27,12 +28,14 @@ builder.Configuration.GetSection("DeploymentInfo").Bind(deploymentInfoOptions);
 builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
+builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddScoped<EcsStateDataParser>();
 builder.Services.AddSingleton<EcsStateDataProvider>();
 builder.Services.AddSingleton<AnalysisProjectService>();
 builder.Services.AddScoped<PdfReportService>();
+builder.Services.AddSingleton<AssessorMappingService>();
 builder.Services.AddSingleton<WalkthroughService>();
 builder.Services.AddScoped<ScrollService>();
 

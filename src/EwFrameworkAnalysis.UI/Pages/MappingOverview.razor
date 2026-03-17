@@ -1,0 +1,407 @@
+@page "/mapping-overview"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Mapping
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.Common.Models.Mapping
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@inject AssessorMappingService MappingService
+
+<PageTitle>Mapping Overview | E-W Framework Analysis Tool</PageTitle>
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+    <div class="flex flex-col gap-6">
+
+        <!-- Page Title -->
+        <Card Shadow="Card.ShadowSize.Small">
+            <ChildContent>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h1 class="text-2xl font-bold">Mapping Overview</h1>
+                        <p class="text-sm text-gray-500 mt-0.5">
+                            The tool includes automated profiling for two data standards: the
+                            <span class="font-medium text-gray-600">Ed-Fi ODS API (v7.2)</span> and the
+                            <span class="font-medium text-gray-600">CEDS Data Warehouse (v13)</span>.
+                            Each standard covers different parts of the E-W Framework — this page shows
+                            which data elements the automated profiling can reach through each one.
+                        </p>
+                    </div>
+                    <div class="flex gap-4 text-sm text-gray-500">
+                        <span>
+                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.2</span>
+                            — @_report.EdFiMappedCount / @_report.TotalElements
+                            <span class="text-gray-400">(@_report.EdFiCoveragePercent%)</span>
+                        </span>
+                        <span class="text-gray-300">|</span>
+                        <span>
+                            <span class="font-semibold text-purple-600">CEDS DW v13</span>
+                            — @_report.CedsMappedCount / @_report.TotalElements
+                            <span class="text-gray-400">(@_report.CedsCoveragePercent%)</span>
+                        </span>
+                    </div>
+                </div>
+            </ChildContent>
+        </Card>
+
+        <!-- Coverage by Data Element -->
+        <Card Shadow="Card.ShadowSize.XLarge">
+            <ChildContent>
+                <div class="flex flex-col h-full">
+
+                    <!-- Card title -->
+                    <div class="mb-3">
+                        <h2 class="text-lg font-bold">Coverage by Data Element</h2>
+                        <p class="text-xs text-gray-500">
+                            Each data element used in automated profiling, grouped by category,
+                            with mapping status for each implementation.
+                        </p>
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div class="sticky bg-white top-0 flex-shrink-0 flex items-center gap-2 pb-3">
+                        <label class="input input-bordered input-sm flex items-center gap-2 flex-1">
+                            <i class="fas fa-search opacity-50"></i>
+                            <input type="search"
+                                   placeholder="Search data elements..."
+                                   class="grow"
+                                   @bind="_searchQuery"
+                                   @bind:event="oninput" />
+                        </label>
+
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+                        <div class="flex flex-col items-center gap-0.5">
+                            <span class="text-[10px] font-semibold text-gray-500 leading-none">Show</span>
+                            <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.All ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.All">
+                                    All
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.Mapped ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.Mapped">
+                                    Mapped
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(_showFilter == ShowFilter.Unmapped ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _showFilter = ShowFilter.Unmapped">
+                                    Unmapped
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+                        <div class="flex flex-col items-center gap-0.5">
+                            <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
+                            <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                                <button class="btn btn-xs btn-ghost @(_groupByCluster ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _groupByCluster = true">
+                                    E-W Clusters
+                                </button>
+                                <button class="btn btn-xs btn-ghost @(!_groupByCluster ? "font-bold underline" : "opacity-50")"
+                                        @onclick="() => _groupByCluster = false">
+                                    Data Categories
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+                        <ExpandCollapseAllToggle IsExpanded="@_allExpanded" IsExpandedChanged="OnExpandedChanged" />
+                    </div>
+
+                    <!-- Category list -->
+                    <div class="flex-1 overflow-y-auto rounded-lg border border-gray-300 shadow-inner">
+                        <div class="bg-white divide-y divide-gray-200">
+
+                            @foreach (var category in FilteredCategories)
+                            {
+                                var catRows = category.Value;
+                                var catEdFi = catRows.Count(r => r.IsMappedToEdFi);
+                                var catCeds = catRows.Count(r => r.IsMappedToCeds);
+
+                                <div class="border-b border-gray-200 last:border-b-0">
+                                    <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
+                                         @onclick="() => ToggleCategory(category.Key)">
+                                        <i class="fas @(IsCategoryExpanded(category.Key) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
+                                        <span class="font-semibold text-blue flex-1">@category.Key</span>
+                                        <div class="flex items-center gap-1 text-xs text-blue-600 w-36"
+                                             title="Ed-Fi ODS API: @catEdFi of @catRows.Count">
+                                            <span class="w-14 text-right font-mono">@catEdFi/@catRows.Count</span>
+                                            <progress class="progress progress-info flex-1 h-2"
+                                                      value="@catEdFi" max="@catRows.Count"></progress>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-xs text-purple-600 w-36"
+                                             title="CEDS DW: @catCeds of @catRows.Count">
+                                            <span class="w-14 text-right font-mono">@catCeds/@catRows.Count</span>
+                                            <progress class="progress progress-secondary flex-1 h-2"
+                                                      value="@catCeds" max="@catRows.Count"></progress>
+                                        </div>
+                                    </div>
+
+                                    @if (IsCategoryExpanded(category.Key))
+                                    {
+                                        <div class="grid grid-cols-[1fr_160px_160px] gap-2 px-3 py-1 pl-10 bg-gray-50 border-t border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                            <span>Data Element</span>
+                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.2</span>
+                                            <span class="text-center text-purple-500">CEDS DW v13</span>
+                                        </div>
+
+                                        @foreach (var row in catRows)
+                                        {
+                                            <div class="grid grid-cols-[1fr_160px_160px] gap-2 items-center p-3 pl-10 border-t border-gray-200 hover:bg-gray-50 text-sm">
+                                                <span class="font-medium text-gray-800">@row.DataElementName</span>
+                                                <div class="flex justify-center">
+                                                    @if (row.EdFiMapping is not null)
+                                                    {
+                                                        var tip = row.EdFiMapping.AssessmentDescription
+                                                        + (row.EdFiMapping.MappedEndpoints.Any() ? "\n\nEndpoints: " + string.Join(", ", row.EdFiMapping.MappedEndpoints) : "");
+                                                        <div class="tooltip tooltip-left" data-tip="@tip">
+                                                            <span class="badge badge-success badge-sm gap-1 cursor-default">
+                                                                <i class="fas fa-check text-[10px]"></i> Mapped
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-ghost badge-sm text-gray-400 cursor-default">— Not Mapped</span>
+                                                    }
+                                                </div>
+                                                <div class="flex justify-center">
+                                                    @if (row.CedsMapping is not null)
+                                                    {
+                                                        var tip = row.CedsMapping.AssessmentDescription
+                                                        + (row.CedsMapping.MappedEndpoints.Any() ? "\n\nEndpoints: " + string.Join(", ", row.CedsMapping.MappedEndpoints) : "");
+                                                        <div class="tooltip tooltip-left" data-tip="@tip">
+                                                            <span class="badge badge-success badge-sm gap-1 cursor-default">
+                                                                <i class="fas fa-check text-[10px]"></i> Mapped
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-ghost badge-sm text-gray-400 cursor-default">— Not Mapped</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            @if (!FilteredCategories.Any())
+                            {
+                                <div class="p-8 text-center text-gray-500">
+                                    <i class="fas fa-search text-3xl mb-2"></i>
+                                    <div>No data elements match your filters</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </ChildContent>
+        </Card>
+
+        <!-- Coverage By Question -->
+        <Card Shadow="Card.ShadowSize.Large">
+            <ChildContent>
+                <div class="flex items-start justify-between flex-wrap gap-2 mb-3">
+                    <div>
+                        <h2 class="text-lg font-bold">Coverage by Essential Question</h2>
+                        <p class="text-xs text-gray-500">
+                            Essential Questions and their Indicators, showing which associated
+                            data elements are not yet reachable through each implementation.
+                        </p>
+                    </div>
+                    <div class="badge badge-warning badge-outline text-xs self-start mt-1">
+                        @_report.Rows.Count(r => !r.IsMappedToAny) data elements unmapped to either
+                    </div>
+                </div>
+
+                @{
+                    var impactGroups = BuildImpactGroups();
+                }
+
+                @if (!impactGroups.Any())
+                {
+                    <div class="text-sm text-success flex items-center gap-2">
+                        <i class="fas fa-check-circle"></i> All data elements are mapped to at least one implementation.
+                    </div>
+                }
+                else
+                {
+                    <div class="join join-vertical border border-gray-300 rounded-lg w-full">
+                        @foreach (var qGroup in impactGroups)
+                        {
+                            <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                                <input type="checkbox" />
+                                <div class="collapse-title font-semibold text-sm">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-gray-500">#@qGroup.QuestionNumber</span>
+                                        <span>@qGroup.Question</span>
+                                    </div>
+                                </div>
+                                <div class="collapse-content text-sm space-y-4">
+                                    @foreach (var ind in qGroup.AffectedIndicators)
+                                    {
+                                        <div>
+                                            <div class="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-2">
+                                                @ind.IndicatorCode
+                                            </div>
+                                            <div class="grid grid-cols-[1fr_90px_90px] gap-2 px-2 py-1 bg-gray-50 rounded-t border border-b-0 border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                                <span>Data Element</span>
+                                                <span class="text-center text-blue-500">Ed-Fi</span>
+                                                <span class="text-center text-purple-500">CEDS</span>
+                                            </div>
+                                            <div class="border border-gray-200 rounded-b divide-y divide-gray-100">
+                                                @foreach (var el in ind.Elements)
+                                                {
+                                                    <div class="grid grid-cols-[1fr_90px_90px] gap-2 items-center px-2 py-1.5 text-xs hover:bg-gray-50">
+                                                        <span class="font-medium text-gray-700">@el.DataElementName</span>
+                                                        <div class="flex justify-center">
+                                                            @if (el.MappedToEdFi)
+                                                            {
+                                                                <span class="badge badge-success badge-xs gap-0.5 cursor-default">
+                                                                    <i class="fas fa-check text-[9px]"></i> Yes
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-ghost badge-xs text-gray-400 cursor-default">— No</span>
+                                                            }
+                                                        </div>
+                                                        <div class="flex justify-center">
+                                                            @if (el.MappedToCeds)
+                                                            {
+                                                                <span class="badge badge-success badge-xs gap-0.5 cursor-default">
+                                                                    <i class="fas fa-check text-[9px]"></i> Yes
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-ghost badge-xs text-gray-400 cursor-default">— No</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </ChildContent>
+        </Card>
+
+    </div>
+</div>
+
+@code {
+    private enum ShowFilter { All, Mapped, Unmapped }
+
+    private record ImpactElement(string DataElementName, bool MappedToEdFi, bool MappedToCeds);
+    private record ImpactIndicator(string IndicatorCode, List<ImpactElement> Elements);
+    private record ImpactQuestion(int QuestionNumber, string Question, int UnmappedCount, List<ImpactIndicator> AffectedIndicators);
+
+    private AssessorMappingReport _report = new();
+    private string _searchQuery = string.Empty;
+    private ShowFilter _showFilter = ShowFilter.All;
+    private bool _groupByCluster = true;
+    private bool _allExpanded = false;
+    private HashSet<string> _expandedCategories = new();
+
+    protected override void OnInitialized()
+    {
+        _report = MappingService.GetReport();
+    }
+
+    private IEnumerable<KeyValuePair<string, List<DataElementMappingRow>>> FilteredCategories
+    {
+        get
+        {
+            var rows = _report.Rows.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(_searchQuery))
+            {
+                var q = _searchQuery.ToLowerInvariant();
+                rows = rows.Where(r => r.DataElementName.ToLowerInvariant().Contains(q));
+            }
+
+            rows = _showFilter switch
+            {
+                ShowFilter.Mapped => rows.Where(r => r.IsMappedToAny),
+                ShowFilter.Unmapped => rows.Where(r => !r.IsMappedToAny),
+                _ => rows
+            };
+
+            return rows
+                .GroupBy(r => _groupByCluster ? r.ClusterCategory : r.DataElementCategory)
+                .OrderBy(g => g.Key)
+                .Select(g => KeyValuePair.Create(g.Key, g.ToList()));
+        }
+    }
+
+    private List<ImpactQuestion> BuildImpactGroups()
+    {
+        var coverageIndex = _report.Rows
+            .ToDictionary(r => r.DataElementName, r => r, StringComparer.OrdinalIgnoreCase);
+
+        var results = new List<ImpactQuestion>();
+
+        foreach (var question in EwFrameworkEssentialQuestions.Questions)
+        {
+            var affectedIndicators = new List<ImpactIndicator>();
+
+            foreach (var indicatorName in question.RelatedIndicatorNames)
+            {
+                if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
+                    continue;
+
+                var elements = indicator.DataElementNames
+                    .Where(de => coverageIndex.TryGetValue(de, out var row) && !row.IsMappedToAll)
+                    .Select(de =>
+                    {
+                        var row = coverageIndex[de];
+                        return new ImpactElement(de, row.IsMappedToEdFi, row.IsMappedToCeds);
+                    })
+                    .ToList();
+
+                if (elements.Any())
+                    affectedIndicators.Add(new ImpactIndicator(indicatorName, elements));
+            }
+
+            if (affectedIndicators.Any())
+            {
+                var unmappedCount = affectedIndicators
+                    .SelectMany(i => i.Elements)
+                    .Count(e => !e.MappedToEdFi || !e.MappedToCeds);
+
+                results.Add(new ImpactQuestion(
+                    question.QuestionNumber,
+                    question.Question,
+                    unmappedCount,
+                    affectedIndicators));
+            }
+        }
+
+        return results.OrderByDescending(q => q.UnmappedCount).ToList();
+    }
+    
+    private void OnExpandedChanged(bool expanded)
+    {
+        _allExpanded = expanded;
+        _expandedCategories = expanded
+            ? FilteredCategories.Select(c => c.Key).ToHashSet()
+            : [];
+    }
+
+    private void ToggleCategory(string name)
+    {
+        if (!_expandedCategories.Add(name))
+            _expandedCategories.Remove(name);
+    }
+
+    private bool IsCategoryExpanded(string name) => _expandedCategories.Contains(name);
+}

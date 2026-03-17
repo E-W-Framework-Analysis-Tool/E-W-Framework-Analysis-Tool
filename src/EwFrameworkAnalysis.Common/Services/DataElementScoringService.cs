@@ -133,32 +133,28 @@ public class DataElementScoringService
             .OrderBy(r => r.Sector)];
     }
 
+    public decimal CalculateReadinessForAssessments(List<DataSourceAssessmentWithSource> assessments)
+    {
+        if (assessments.Count == 0) return 0;
+
+        var scores = CalculateScoresForActiveData(assessments)
+            .SelectMany(q => q.IndicatorScores)
+            .Select(i => i.ReadinessScore)
+            .ToList();
+
+        return scores.Count == 0 ? 0 : Math.Round(scores.Average(), 2);
+    }
+
     public OverallReadinessResults CalculateOverallReadinessScores(List<DataSourceAssessmentWithSource> assessments)
     {
-        // For each source type, consolidate all its assessments into one combined view
-        // (the scoring rule picks the best available score per DE across all runs),
-        // then compute the average indicator readiness against the full EW Framework.
-        decimal ScoreForGroup(IEnumerable<DataSourceAssessmentWithSource> group)
-        {
-            var groupList = group.ToList();
-            if (groupList.Count == 0) return 0;
-
-            var scores = CalculateScoresForActiveData(groupList)
-                .SelectMany(q => q.IndicatorScores)
-                .Select(i => i.ReadinessScore)
-                .ToList();
-
-            return scores.Count == 0 ? 0 : Math.Round(scores.Average(), 2);
-        }
-
         var active = assessments.Where(a => a.Active == true).ToList();
 
         return new OverallReadinessResults
         {
-            CustomDataSourceReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.Custom)),
-            AutomatedDataSourceReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EdFiApi || a.DataSourceType == DataSourceType.CedsDw)),
-            EcsReadiness = ScoreForGroup(active.Where(a => a.DataSourceType == DataSourceType.EcsState)),
-            CombinedReadiness = ScoreForGroup(active),
+            CustomDataSourceReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.Custom)]),
+            AutomatedDataSourceReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.EdFiApi || a.DataSourceType == DataSourceType.CedsDw)]),
+            EcsReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.EcsState)]),
+            CombinedReadiness = CalculateReadinessForAssessments(active),
         };
     }
 }

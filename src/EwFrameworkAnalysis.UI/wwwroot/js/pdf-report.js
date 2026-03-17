@@ -230,11 +230,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     const leftFinalY = doc.lastAutoTable.finalY;
 
     // Right: Data Source table
-    const dsRows = (summary.dataSourceReadiness.customSources || []).map(cs => [cs.name, (cs.score * 100).toFixed(1) + '%']);
-    dsRows.push(['Automated (Ed-Fi & CEDS)', (summary.dataSourceReadiness.automated * 100).toFixed(1) + '%']);
-    if (summary.dataSourceReadiness.ecsActive) {
-        dsRows.push(['ECS State Data', (summary.dataSourceReadiness.ecs * 100).toFixed(1) + '%']);
-    }
+    const dsRows = (summary.dataSourceReadiness || []).map(ds => [ds.name, (ds.score * 100).toFixed(1) + '%']);
 
     doc.autoTable({
         startY: sectorTableStartY,
@@ -247,7 +243,130 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         tableWidth: halfWidth,
     });
 
-    ctx.y = Math.max(leftFinalY, doc.lastAutoTable.finalY) + 10;
+    ctx.y = Math.max(leftFinalY, doc.lastAutoTable.finalY) + 20;
+}
+
+// ── Overall Readiness ────────────────────────────────────────────────────────────
+function drawOverallReadiness(ctx, overallReadiness) {
+    const doc = ctx.doc;
+    const margin = ctx.margin;
+    const contentWidth = ctx.contentWidth;
+    const brandBlue = ctx.brandBlue;
+
+    if (ctx.y + 60 > ctx.pageHeight) {
+        doc.addPage();
+        ctx.y = 20;
+    }
+
+    const halfWidth = (contentWidth - 6) / 2;
+    const rightX = margin + halfWidth + 6;
+
+    // ── Left column: Overall Readiness scores ────────────────────────────────
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Overall Readiness', margin, ctx.y);
+
+    // Right column title at same height
+    doc.text('Highest ROI Data Elements', rightX, ctx.y);
+    ctx.y += 8;
+
+    const rows = [
+        { label: 'Custom Manual', value: overallReadiness.manual },
+        { label: 'Automated (Ed-Fi & CEDS)', value: overallReadiness.automated },
+        { label: 'Public Data (ECS)', value: overallReadiness.ecs },
+        { label: 'Combined (All Data Sources)', value: overallReadiness.combined },
+    ];
+
+    const barH = 4;
+    const rowH = 14;
+    const barWidth = halfWidth - 4;
+    const leftStartY = ctx.y;
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const pct = row.value * 100;
+        const rowY = leftStartY + i * rowH;
+
+        // Label (left) and percentage (right)
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor.apply(doc, THEME.black);
+        doc.text(row.label, margin, rowY + 4);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        const pctColor = scoreColor(pct);
+        doc.setTextColor(pctColor[0], pctColor[1], pctColor[2]);
+        doc.text(pct.toFixed(1) + '%', margin + halfWidth - 2, rowY + 4, { align: 'right' });
+
+        // Progress bar track
+        const barY = rowY + 6;
+        doc.setFillColor.apply(doc, THEME.grayLight);
+        doc.roundedRect(margin, barY, barWidth, barH, 1, 1, 'F');
+
+        // Colored fill
+        if (pct > 0) {
+            const fillW = barWidth * pct / 100;
+            doc.setFillColor(pctColor[0], pctColor[1], pctColor[2]);
+            if (fillW >= 2) {
+                doc.roundedRect(margin, barY, fillW, barH, 1, 1, 'F');
+            } else {
+                doc.rect(margin, barY, fillW, barH, 'F');
+            }
+        }
+    }
+
+    // ── Right column: ROI Data Elements ──────────────────────────────────────
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor.apply(doc, THEME.black);
+    doc.text('Data elements whose availability would improve the most indicators', rightX, leftStartY - 1);
+
+    const roiItems = overallReadiness.roiItems || [];
+
+    if (roiItems.length === 0) {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.text('No unscored data elements found.', rightX, leftStartY + 8);
+    } else {
+        const nameX = rightX + 6;
+        const maxNameW = halfWidth - 40;
+        const nameLineH = 3.5;
+        let roiY = leftStartY + 6;
+
+        for (let ri = 0; ri < roiItems.length; ri++) {
+            const item = roiItems[ri];
+
+            // Number
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor.apply(doc, THEME.black);
+            doc.text((ri + 1) + '.', rightX, roiY);
+
+            // Data element name — wrap to multiple lines
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            const nameLines = doc.splitTextToSize(item.name, maxNameW);
+            doc.text(nameLines, nameX, roiY);
+
+            // Indicator count badge — aligned to first line
+            const badgeText = item.indicators.length + ' indicator' + (item.indicators.length !== 1 ? 's' : '');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            const badgeW = doc.getTextWidth(badgeText) + 4;
+            const badgeX = margin + contentWidth - badgeW;
+            const badgeY = roiY - 3.5;
+            doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
+            doc.roundedRect(badgeX, badgeY, badgeW, 5, 2.5, 2.5, 'F');
+            doc.setTextColor.apply(doc, THEME.white);
+            doc.text(badgeText, badgeX + 2, roiY - 0.2);
+            doc.setTextColor.apply(doc, THEME.black);
+
+            roiY += Math.max(nameLines.length, 1) * nameLineH + 6.5;
+        }
+    }
+
+    ctx.y = leftStartY + rows.length * rowH + 8;
 }
 
 // ── Essential Questions Table ───────────────────────────────────────────────────
@@ -257,10 +376,8 @@ function drawEssentialQuestionsTable(ctx, questions) {
     const contentWidth = ctx.contentWidth;
     const brandBlue = ctx.brandBlue;
 
-    if (ctx.y + 20 > ctx.pageHeight) {
-        doc.addPage();
-        ctx.y = 20;
-    }
+    doc.addPage();
+    ctx.y = 10;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
@@ -290,10 +407,10 @@ function drawEssentialQuestionsTable(ctx, questions) {
         styles: { fontSize: 9, valign: 'middle' },
         headStyles: { fillColor: brandBlue },
         columnStyles: {
-            0: { cellWidth: 12, halign: 'center' },
-            2: { cellWidth: 24, halign: 'center' },
+            0: { cellWidth: 10, halign: 'center' },
+            2: { cellWidth: 28, halign: 'center' },
             3: { cellWidth: 42, halign: 'center' },
-            4: { cellWidth: 20, halign: 'right' },
+            4: { cellWidth: 18, halign: 'right' },
         },
         tableWidth: contentWidth,
         didParseCell: function (data) {
@@ -367,7 +484,7 @@ function drawQuestionDetailPage(ctx, q) {
 
     doc.addPage();
     ctx.questionPageMap[q.number] = doc.internal.getCurrentPageInfo().pageNumber;
-    let y = 6;
+    let y = 0;
 
     // Section Header
     doc.setFillColor(brandBlue[0], brandBlue[1], brandBlue[2]);
@@ -658,6 +775,7 @@ window.generatePdfReport = function (reportData) {
 
     drawHeaderBanner(ctx, reportData.projectTitle);
     drawEqReadinessSummary(ctx, reportData.summary, reportData.questions);
+    drawOverallReadiness(ctx, reportData.overallReadiness);
     drawEssentialQuestionsTable(ctx, reportData.questions);
 
     const orderedQuestions = reportData.questions.slice().sort((a, b) => a.number - b.number);

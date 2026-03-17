@@ -6,6 +6,7 @@ public static class AppRoutes
     public const string Home = "/";
     public const string Dashboard = "/dashboard";
     public const string Analysis = "/analysis";
+    public const string MappingOverview = "/mapping-overview";
 
     public static class DataSourceDetails
     {
