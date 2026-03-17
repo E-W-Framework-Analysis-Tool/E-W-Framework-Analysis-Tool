@@ -9,22 +9,28 @@ namespace EwFrameworkAnalysis.Common.Services;
 public class EdFiAssessmentOrchestrator
 {
     private readonly IEnumerable<IEdFiAssessor> _assessors;
+    private readonly EdFiStudentDemographicsProvider? _demographicsProvider;
     private readonly int _maxDegreeOfParallelism;
 
     /// <summary>
     /// Initializes a new instance of the orchestrator.
     /// </summary>
     /// <param name="assessors">Collection of all available Ed-Fi assessors to run.</param>
+    /// <param name="demographicsProvider">
+    /// Optional shared demographics provider whose cache is cleared at the start of each run.
+    /// </param>
     /// <param name="maxDegreeOfParallelism">
-    /// Maximum number of assessors to run concurrently. 
+    /// Maximum number of assessors to run concurrently.
     /// Default is 4, which balances throughput with API rate limiting concerns.
     /// Use 1 for sequential execution.
     /// </param>
     public EdFiAssessmentOrchestrator(
         IEnumerable<IEdFiAssessor> assessors,
+        EdFiStudentDemographicsProvider? demographicsProvider = null,
         int maxDegreeOfParallelism = 4)
     {
         _assessors = assessors ?? throw new ArgumentNullException(nameof(assessors));
+        _demographicsProvider = demographicsProvider;
 
         if (maxDegreeOfParallelism < 1)
             throw new ArgumentOutOfRangeException(nameof(maxDegreeOfParallelism), "Must be at least 1");
@@ -77,6 +83,9 @@ public class EdFiAssessmentOrchestrator
             throw new ArgumentNullException(nameof(httpClient));
         if (dataSource == null)
             throw new ArgumentNullException(nameof(dataSource));
+
+        // Clear cached data from previous runs so assessors fetch fresh data
+        _demographicsProvider?.ClearCache();
 
         var assessment = new DataSourceAssessment
         {

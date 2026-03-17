@@ -29,6 +29,7 @@ builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
+builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddScoped<EcsStateDataParser>();
