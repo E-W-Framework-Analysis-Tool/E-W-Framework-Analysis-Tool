@@ -1,0 +1,33 @@
+@using EwFrameworkAnalysis.UI.Services
+@inject ScrollService ScrollService
+@inject WalkthroughService Walkthrough
+
+<section class="bg-base-100 pt-6 pb-4 shadow">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col items-center text-center">
+        <div class="flex flex-wrap justify-center gap-4 mb-4 ">
+            <!-- Get Started -->
+            <button @onclick="@Walkthrough.StartAsync"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Take a Tour
+            </button>
+
+            <!-- Learn About the E-W Framework -->
+            <button @onclick="@(() => ScrollService.ScrollToAsync("framework"))"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Learn About the E-W Framework
+            </button>
+
+            <!-- Learn How To Use This Tool -->
+            <button @onclick="@(() => ScrollService.ScrollToAsync("how-to-use"))"
+                    class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Learn How To Use This Tool
+            </button>
+
+            <!-- FAQ -->
+            <button @onclick="@(() => ScrollService.ScrollToAsync("faq"))"
+               class="btn btn-primary px-6 text-semibold text-lg rounded-sm">
+                Frequently Asked Questions
+            </button>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,153 @@
+@using EwFrameworkAnalysis.UI.Services
+@inject WalkthroughService Walkthrough
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@implements IDisposable
+
+@if (Walkthrough.IsActive && Walkthrough.CurrentStep is { } step)
+{
+    <div class="walkthrough-backdrop" @onclick="Walkthrough.StopAsync">
+        <div class="walkthrough-spotlight" style="@_spotlightStyle" @onclick:stopPropagation="true" />
+    </div>
+    <div class="walkthrough-tooltip" style="@_tooltipStyle">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-gray-400">@(Walkthrough.CurrentStepIndex + 1) of @Walkthrough.TotalSteps</span>
+            <button class="btn btn-xs btn-ghost" @onclick="Walkthrough.StopAsync">✕</button>
+        </div>
+        <h3 class="font-title font-bold text-blue text-lg mb-1">@step.Title</h3>
+        <p class="text-sm text-gray-600 mb-4">@step.Body</p>
+        <div class="flex justify-between">
+            @if (Walkthrough.CurrentStepIndex > 0)
+            {
+                <button class="btn btn-sm btn-ghost" @onclick="Walkthrough.PreviousAsync">Back</button>
+            }
+            else
+            {
+                <span />
+            }
+            <button class="btn btn-sm btn-primary" @onclick="Walkthrough.NextAsync">
+                @(Walkthrough.CurrentStepIndex == Walkthrough.TotalSteps - 1 ? "Finish" : "Next")
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private string _spotlightStyle = "";
+    private string _tooltipStyle = "";
+    private const int Pad = 8;
+    private const int TooltipWidth = 320;
+    private const int TooltipOffset = 12;
+
+    protected override void OnInitialized() => Walkthrough.Changed += OnChanged;
+
+    private async void OnChanged()
+    {
+        if (!Walkthrough.IsActive)
+            await JS.InvokeVoidAsync("Walkthrough.stop");
+        else
+            await JS.InvokeVoidAsync("Walkthrough.start");
+
+        await PositionOverlayAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task PositionOverlayAsync()
+    {
+        var step = Walkthrough.CurrentStep;
+        if (step is null) return;
+
+        if (step.RequiredRoute is not null && !Nav.Uri.EndsWith(step.RequiredRoute))
+        {
+            Nav.NavigateTo(step.RequiredRoute);
+            await Task.Delay(200); // let the page render
+        }
+
+        // awaits the JS Promise — returns only after scroll finishes (or 500ms fallback)
+        await JS.InvokeVoidAsync("Walkthrough.scrollIntoView", step.StepId);
+
+        // No arbitrary delay needed here anymore
+        var rect = await JS.InvokeAsync<BoundingRect?>("Walkthrough.getRect", step.StepId);
+        if (rect is null) return;
+
+        _spotlightStyle = $"left:{rect.X - Pad}px; top:{rect.Y - Pad}px; " +
+                          $"width:{rect.Width + Pad * 2}px; height:{rect.Height + Pad * 2}px;";
+        _tooltipStyle = ComputeTooltipStyle(rect, step.Position);
+    }
+
+    private string ComputeTooltipStyle(BoundingRect r, TooltipPosition preferred)
+    {
+        const int tooltipHeight = 200; // conservative estimate
+
+        // Space available on each side
+        double spaceBottom = r.Vh - r.Bottom;
+        double spaceTop = r.Y;
+        double spaceRight = r.Vw - r.Right;
+        double spaceLeft = r.X;
+
+        bool fits(TooltipPosition p) => p switch
+        {
+            TooltipPosition.Bottom => spaceBottom >= tooltipHeight + TooltipOffset,
+            TooltipPosition.Top => spaceTop >= tooltipHeight + TooltipOffset,
+            TooltipPosition.Right => spaceRight >= TooltipWidth + TooltipOffset,
+            TooltipPosition.Left => spaceLeft >= TooltipWidth + TooltipOffset,
+            _ => false
+        };
+
+        // Use preferred if it fits, otherwise pick the side with the most room
+        var pos = fits(preferred) ? preferred : new[]
+        {
+        (TooltipPosition.Bottom, spaceBottom),
+        (TooltipPosition.Top,    spaceTop),
+        (TooltipPosition.Right,  spaceRight),
+        (TooltipPosition.Left,   spaceLeft),
+    }
+        .OrderByDescending(t => t.Item2)
+        .First().Item1;
+
+        // Compute raw position then clamp to viewport with an 8px margin
+        const int margin = 8;
+        double left, top;
+
+        switch (pos)
+        {
+            case TooltipPosition.Bottom:
+                left = r.X;
+                top = r.Bottom + TooltipOffset;
+                break;
+            case TooltipPosition.Top:
+                left = r.X;
+                top = r.Y - TooltipOffset - tooltipHeight;
+                break;
+            case TooltipPosition.Right:
+                left = r.Right + TooltipOffset;
+                top = r.Y;
+                break;
+            case TooltipPosition.Left:
+                left = r.X - TooltipWidth - TooltipOffset;
+                top = r.Y;
+                break;
+            default:
+                left = r.X;
+                top = r.Bottom + TooltipOffset;
+                break;
+        }
+
+        // Clamp so tooltip never bleeds off screen
+        left = Math.Clamp(left, margin, r.Vw - TooltipWidth - margin);
+        top = Math.Clamp(top, margin, r.Vh - tooltipHeight - margin);
+
+        return $"left:{left}px; top:{top}px; width:{TooltipWidth}px;";
+    }
+
+    public void Dispose()
+    {
+        Walkthrough.Changed -= OnChanged;
+        JS.InvokeVoidAsync("Walkthrough.stop");
+    }
+
+    private record BoundingRect(
+        double X, double Y, double Width, double Height,
+        double Bottom, double Right,
+        double Vw, double Vh);
+}

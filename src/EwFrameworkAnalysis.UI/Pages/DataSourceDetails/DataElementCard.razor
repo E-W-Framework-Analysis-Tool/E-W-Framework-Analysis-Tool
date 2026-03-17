@@ -2,7 +2,7 @@
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
 
-<CollapsibleSection IsExpanded="@IsExpanded" AdditionalClasses="shadow-md hover:shadow-lg transition-shadow duration-200">
+<CollapsibleSection IsExpanded="@IsExpanded" AdditionalClasses="shadow-md hover:shadow-lg transition-shadow duration-200" AriaLabel="@($"Expand to view details for {Element.DataElementName} Data Element")">
     <TitleContent>
         <div class="flex-1 min-w-0">
             <h5 class="font-semibold text-blue">@Element.DataElementName</h5>

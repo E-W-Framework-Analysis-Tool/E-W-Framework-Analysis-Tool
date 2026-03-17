@@ -1,12 +1,16 @@
+@using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
+@using EwFrameworkAnalysis.UI.Services
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
 @inherits LayoutComponentBase
+@inject WalkthroughService Walkthrough
 @inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
+@inject IJSRuntime JS
 
 <div class="min-h-screen flex flex-col">
 
-    <div class="navbar bg-secondary text-secondary-content justify-center">
+    <div class="navbar bg-secondary text-secondary-content justify-center p-0">
         <div class="w-full max-w-7xl flex justify-center">
             <div class="flex-1 align-middle">
                 <a href="@AppRoutes.Home" class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none font-semibold ">
@@ -17,8 +21,21 @@
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="@AppRoutes.Dashboard" class="link link-hover">Dashboard</a></li>
-                    <li><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
-                    <li><a href="@AppRoutes.MappingOverview" class="link link-hover">Mapping Overview</a></li>
+                    <li data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink"><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
+                    <li class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="link link-hover" id="learn-dropdown">
+                            Learn ▾
+                        </div>
+                        <ul tabindex="0" class="dropdown-content menu bg-white text-gray-700 rounded-none z-50 w-48 p-2 shadow-xl border border-gray-100">
+                            <li>
+                                <button class="link link-hover cursor-pointer"
+                                        @onclick="HandleTakeATour">
+                                    Take a Tour
+                                </button>
+                            </li>
+                            <li><a href="@AppRoutes.MappingOverview" class="link link-hover">Mapping Overview</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -99,8 +116,12 @@
     </footer>
 </div>
 
+<WalkthroughOverlay />
+
 @code {
-    protected override void OnInitialized()
+    private async Task HandleTakeATour()
     {
+        await JS.InvokeVoidAsync("eval", "document.activeElement.blur()");
+        await Walkthrough.StartAsync();
     }
 }

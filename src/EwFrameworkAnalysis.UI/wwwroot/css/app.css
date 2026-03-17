@@ -2000,6 +2000,70 @@
       opacity: 20%;
     }
   }
+  .rating {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+    & input {
+      border: none;
+      appearance: none;
+    }
+    :where(*) {
+      height: calc(0.25rem * 6);
+      width: calc(0.25rem * 6);
+      border-radius: 0;
+      background-color: var(--color-base-content);
+      opacity: 20%;
+      @media (prefers-reduced-motion: no-preference) {
+        animation: rating 0.25s ease-out;
+      }
+      &:is(input) {
+        cursor: pointer;
+      }
+    }
+    & .rating-hidden {
+      width: calc(0.25rem * 2);
+      background-color: transparent;
+    }
+    input[type="radio"]:checked {
+      background-image: none;
+    }
+    * {
+      &:checked, &[aria-checked="true"], &[aria-current="true"], &:has(~ *:checked, ~ *[aria-checked="true"], ~ *[aria-current="true"]) {
+        opacity: 100%;
+      }
+      &:focus-visible {
+        scale: 1.1;
+        @media (prefers-reduced-motion: no-preference) {
+          transition: scale 0.2s ease-out;
+        }
+      }
+    }
+    & *:active:focus {
+      animation: none;
+      scale: 1.1;
+    }
+    &.rating-xs :where(*:not(.rating-hidden)) {
+      width: calc(0.25rem * 4);
+      height: calc(0.25rem * 4);
+    }
+    &.rating-sm :where(*:not(.rating-hidden)) {
+      width: calc(0.25rem * 5);
+      height: calc(0.25rem * 5);
+    }
+    &.rating-md :where(*:not(.rating-hidden)) {
+      width: calc(0.25rem * 6);
+      height: calc(0.25rem * 6);
+    }
+    &.rating-lg :where(*:not(.rating-hidden)) {
+      width: calc(0.25rem * 7);
+      height: calc(0.25rem * 7);
+    }
+    &.rating-xl :where(*:not(.rating-hidden)) {
+      width: calc(0.25rem * 8);
+      height: calc(0.25rem * 8);
+    }
+  }
   .progress {
     position: relative;
     height: calc(0.25rem * 2);
@@ -2415,9 +2479,6 @@
         margin-inline-end: calc(0.25rem * -3);
       }
     }
-  }
-  .my-4 {
-    margin-block: calc(var(--spacing) * 4);
   }
   .my-8 {
     margin-block: calc(var(--spacing) * 8);
@@ -2940,6 +3001,9 @@
   .w-36 {
     width: calc(var(--spacing) * 36);
   }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
+  }
   .w-52 {
     width: calc(var(--spacing) * 52);
   }
@@ -3025,9 +3089,6 @@
   }
   .list-inside {
     list-style-position: inside;
-  }
-  .list-\[square\] {
-    list-style-type: square;
   }
   .list-decimal {
     list-style-type: decimal;
@@ -3349,17 +3410,14 @@
   .border-gray {
     border-color: var(--color-gray);
   }
+  .border-gray-100 {
+    border-color: var(--color-gray-100);
+  }
   .border-gray-200 {
     border-color: var(--color-gray-200);
   }
   .border-gray-300 {
     border-color: var(--color-gray-300);
-  }
-  .border-gray-300\/40 {
-    border-color: color-mix(in srgb, oklch(87.2% 0.01 258.338) 40%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-gray-300) 40%, transparent);
-    }
   }
   .border-green {
     border-color: var(--color-green);
@@ -3432,12 +3490,6 @@
   }
   .bg-gray-100 {
     background-color: var(--color-gray-100);
-  }
-  .bg-gray-100\/60 {
-    background-color: color-mix(in srgb, oklch(96.7% 0.003 264.542) 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-gray-100) 60%, transparent);
-    }
   }
   .bg-gray-200 {
     background-color: var(--color-gray-200);
@@ -3852,9 +3904,6 @@
   .text-green {
     color: var(--color-green);
   }
-  .text-green-700 {
-    color: var(--color-green-700);
-  }
   .text-primary {
     color: var(--color-primary);
   }
@@ -4137,11 +4186,6 @@
   }
   .radio-primary {
     --input-color: var(--color-primary);
-  }
-  .peer-checked\:text-primary {
-    &:is(:where(.peer):checked ~ *) {
-      color: var(--color-primary);
-    }
   }
   .last\:border-b-0 {
     &:last-child {
@@ -4535,6 +4579,36 @@
 }
 .font-title {
   font-family: 'Zilla Slab', serif !important;
+}
+.walkthrough-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: all;
+}
+.walkthrough-spotlight {
+  position: absolute;
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+.walkthrough-spotlight.is-scrolling {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  opacity: 0.15;
+}
+.walkthrough-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  pointer-events: all;
+  transition: left 0.25s ease, top 0.25s ease, width 0.25s ease;
 }
 @layer base {
   button, [type='button'], [type='submit'], [type='reset'], a[href], label[for], select, .btn, .link, [role='button'], input[type='checkbox'], input[type='radio'] {

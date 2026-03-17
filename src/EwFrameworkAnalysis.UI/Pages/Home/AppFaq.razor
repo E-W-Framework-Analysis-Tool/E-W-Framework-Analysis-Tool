@@ -1,0 +1,133 @@
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
+@inject ScrollService ScrollService
+
+<section id="faq" class="relative pt-12 items-center flex">
+    <div class="container mx-auto items-center flex flex-wrap justify-center">
+        <div class="w-full xl:w-11/12 px-4 sm:px-0">
+            <h2 class="font-semibold text-4xl text-secondary mb-12">
+                Frequently Asked Questions
+            </h2>
+            <div class="my-8"></div>
+
+            <CollapsibleSection Title="How do I automatically interrogate my Ed-Fi ODS?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><a href="javascript:void(0)" class="text-primary underline" @onclick='() => ScrollService.ScrollToAsync("howto-edfi-ods")'>Refer to this section above.</a></li>
+                    <li>Multiple historical versions of this data source can be supported. This allows you to query the ODS at various times of the year, when more or less data may be in the system.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Is the automatic interrogation of my Ed-Fi ODS safe and secure?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    The interaction with the API will be between the user's browser and their API, and the E-W Analysis Tool website server will never receive the entered credentials nor will it be in the middle of the API traffic. The E-W Analysis Tool website server will only receive the results metadata, to include the fields for which data exists and some profiling of the nature of that data.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if I have a non-standard implementation of an Ed-Fi ODS?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p>
+                    Any modifications made to the standard implementation of an Ed-Fi ODS will cause non-standardized data to be missed in the interrogation and may disrupt the automated interrogation of the API call.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if my Ed-Fi ODS uses a different version of Ed-Fi than version 5 of the data standard and version 7 of the API?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The tool is not limited to a specific version of the Ed-Fi Data Standard or API. It is designed to operate using a consistent set of standardized data points that are present across all versions of Ed-Fi.
+                </p>
+                <p class="mb-4">
+                    In situations where certain data elements may not be available in a given version of the ODS/API, the tool provides the ability for users to manually override or supply those values as needed. This ensures that the tool remains compatible and functional regardless of the version of the Ed-Fi Data Standard or API in use.
+                </p>
+                <p>
+                    As newer versions of Ed-Fi are released, the open source nature of the E-W Analysis Tool will enable updates to be made by the community.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="How do I automatically interrogate my CEDS Data Warehouse?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><a href="javascript:void(0)" class="text-primary underline" @onclick='() => ScrollService.ScrollToAsync("howto-ceds-dw")'>Refer to this section above.</a></li>
+                    <li>Multiple historical versions of this data source can be supported. This allows you to query the CEDS Data Warehouse at various times of the year, when more or less data may be in the system.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="Is the automatic interrogation of my CEDS Data Warehouse safe and secure?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The E-W Analysis Tool provides SQL scripts for the user to execute locally. Results can be exported to a plaintext file that can be reviewed for sensitive data before uploading to the publicly hosted application. This method maintains user control, aligns with security best practices, and accommodates air-gapped systems isolated from the public Internet.
+                </p>
+                <p>
+                    By decoupling data profiling from the hosted application, the tool ensures compliance with security and accessibility standards without compromising functionality or ease of use.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What if my CEDS Data Warehouse is different from Version 13?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    Due to the differences in how data is organized within various versions of CEDS, instances that use a different version of CEDS will not be entirely aligned with Version 13. Data that is in alignment should still be pulled into the results of the queries, but any non-aligned data would not show as being Available in the results.
+                </p>
+                <p>
+                    As newer versions of Ed-Fi are released, the open source nature of the E-W Analysis Tool will enable updates to be made by the community.
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What data does the E-W Analysis Tool collect and store?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Results of a user's browser session are only stored for the duration of the session.</li>
+                    <li>The E-W Analysis Tool website server will only receive results metadata from automated data system interrogations, to include the fields for which data exists and some profiling of the nature of that data.</li>
+                    <li>The E-W Analysis Tool has not been designed to store any other types of data such as sensitive information.</li>
+                    <li>Data inventory results can be saved to a file on the user's computer, and can be subsequently re-uploaded.</li>
+                </ul>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="How does your Data Readiness scoring work?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    The automated data interrogation process (i.e., Ed-Fi ODS API and CEDS DW SQL queries) queries the respective databases about the presence of particular data in the standard tables that have been mapped to E-W Framework Indicators and Metrics. In addition to Counts of records, the tool looks at other characteristics that may indicate quality of data, such as checking for non-Numeric values where the data element is of Numeric type. If data counts appear low (e.g., relative to the count of student enrollment records) then the resulting status may be set as Partially Available.
+                </p>
+                <p class="mb-4">
+                    The manual data input process allows the user to add additional data sources or to amplify the results of automated data interrogations. Part of the input process enables the user to score each data element for Available (does the data exist), Partially Available (is the data accessible to the parties that need it), or Not Available (the data does not exist in this system).
+                </p>
+                <p class="mb-4">
+                    The E-W Analysis Tool takes the results of the automated data interrogation and manual inputs and applies a scoring rubric to each data element. Each data element then rolls up into one or more Indicators as a necessary component of readiness, and each Indicator then rolls up to one or more Essential Question as a necessary component of readiness.
+                </p>
+                <p class="mb-2">Readiness Scores are calculated for each Indicator based on the following algorithm:</p>
+                <p class="font-mono bg-gray-100 px-4 py-2 rounded">
+                    ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
+                </p>
+            </CollapsibleSection>
+
+            <CollapsibleSection Title="What is the difference between Active, Enabled, and Disabled Data Sources?"
+                                SectionClasses="@SectionCss"
+                                TitleClasses="@TitleCss">
+                <p class="mb-4">
+                    Within each Data Source you can store multiple versions or Assessments of the data source. This may be especially useful if the database contains different data at different points in the year (such as more data at End of School Year in an Ed-Fi ODS). Only one Assessment can be Active at any one time. Only the Active Assessment will be utilized by the data readiness scoring mechanism. To make an Assessment version Active, access the Data Source detail page from the Dashboard, then select the Assessment version you want to activate, and then click on the three dots and select <strong>Set as Active</strong>.
+                </p>
+                <p class="mb-4">
+                    The data readiness scoring mechanism will only calculate the results of Data Sources that are Enabled. It will only use the Active Assessment within an Enabled Data Source. To Enable a Data Source, access the Data Source detail page from the Dashboard, then select <strong>Enable Data Source</strong>.
+                </p>
+                <p>
+                    If you want to see your data readiness without a particular Data Source, simply Disable that Data Source. To Disable a Data Source that is already Enabled, access the Data Source detail page from the Dashboard, then select <strong>Disable Data Source</strong>.
+                </p>
+            </CollapsibleSection>
+
+        </div>
+    </div>
+</section>
+
+@code {
+    private const string SectionCss = "collapse-arrow collapse-left pb-4 rounded-lg";
+    private const string TitleCss = "bg-gray-100 rounded-lg font-semibold text-secondary/80 text-xl hover:cursor-pointer transition";
+}
