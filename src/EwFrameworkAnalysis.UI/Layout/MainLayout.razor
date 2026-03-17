@@ -21,7 +21,6 @@
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="@AppRoutes.Dashboard" class="link link-hover">Dashboard</a></li>
-                    <li><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
                     <li data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink"><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
                     <li class="dropdown dropdown-end">
                         <div tabindex="0" role="button" class="link link-hover" id="learn-dropdown">
@@ -29,7 +28,7 @@
                         </div>
                         <ul tabindex="0" class="dropdown-content menu bg-white text-gray-700 rounded-none z-50 w-48 p-2 shadow-xl border border-gray-100">
                             <li>
-                                <button class="link link-hover bg-transparent border-none cursor-pointer"
+                                <button class="link link-hover cursor-pointer"
                                         @onclick="HandleTakeATour">
                                     Take a Tour
                                 </button>
