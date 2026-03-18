@@ -50,6 +50,7 @@ public class DataElementSourceScore
 {
     public Guid AssessmentId { get; set; }
     public string SourceType { get; set; } = string.Empty;
+    public string DataSourceName { get; set; } = string.Empty;
 
     public AvailabilityJudgment AvailabilityScore { get; set; }
     public decimal QualityScore { get; set; }
@@ -74,6 +75,7 @@ public class DataElementAssessmentContext
     public Guid AssessmentId { get; init; }
     public string? AssessmentName { get; init; }
     public DataSourceType DataSourceType { get; init; }
+    public string DataSourceName { get; init; } = string.Empty;
     public DataElementAssessment Assessment { get; init; } = null!;
 }
 
