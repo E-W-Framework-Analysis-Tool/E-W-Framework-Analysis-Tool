@@ -117,7 +117,7 @@ else
             <h3 class="font-bold text-lg text-blue font-title">Delete Data Source</h3>
             <p class="py-4 text-gray">
                 Are you sure you want to delete "<span class="font-semibold text-blue">@_dataSource?.Name</span>"?
-                This action cannot be undone. Note that assessments will remain in the project history.
+                This action cannot be undone. Note that profiles will remain in the project history.
             </p>
             <div class="modal-action">
                 <button class="btn btn-ghost" @onclick="CancelDelete">Cancel</button>
@@ -192,7 +192,7 @@ else
 
         _selectedAssessment = assessment;
         LoadDataSource();
-        ShowNotification("Assessment completed and saved");
+        ShowNotification("Profile completed and saved");
     }
 
     private async Task ToggleEnabled()
@@ -272,7 +272,7 @@ else
         
         await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment.Id);
         LoadDataSource();
-        ShowNotification("Assessment set as active successfully");
+        ShowNotification("Profile set as active successfully");
     }
 
     private async Task HandleRenameAssessment(string newName)
@@ -282,7 +282,7 @@ else
         _selectedAssessment.Name = newName;
         await ProjectSvc.UpdateAssessmentAsync(_selectedAssessment);
         LoadDataSource();
-        ShowNotification("Assessment renamed successfully");
+        ShowNotification("Profile renamed successfully");
     }
 
     private async Task HandleDeleteAssessment()
@@ -303,7 +303,7 @@ else
             _selectedAssessment = null;
         }
 
-        ShowNotification("Assessment deleted successfully");
+        ShowNotification("Profile deleted successfully");
     }
 
     public void Dispose()

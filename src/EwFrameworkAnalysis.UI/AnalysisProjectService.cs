@@ -223,7 +223,7 @@ public class AnalysisProjectService
 
         if (string.IsNullOrWhiteSpace(assessment.Name))
         {
-            assessment.Name = $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
+            assessment.Name = $"Data Profile {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
         }
 
         dataSource.Assessments.Insert(0, assessment);

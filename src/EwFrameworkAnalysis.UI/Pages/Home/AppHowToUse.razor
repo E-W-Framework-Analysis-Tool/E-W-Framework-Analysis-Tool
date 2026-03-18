@@ -14,17 +14,17 @@
             <div class="card-body text-center">
                 <img src="/images/ew-data-sources.jpg" alt="Data Input Illustration"
                      class="rounded-lg mb-2 w-full object-cover h-56 shadow-md" />
-                <p class="font-semibold">Input Your Data Inventory</p>
+                <p class="font-semibold">Profile Your Data Sources</p>
                 <p class="text-sm text-gray-600">
-                    Provide details about your current data sources and elements through manual or automated methods.
+                    Profile your data sources through automated scans, manual entry, or reference profiles.
                 </p>
             </div>
         </div>
         <div class="card">
             <div class="card-body text-center">
-                <img src="/images/ew-analysis.jpg" alt="Readiness Score Charts"
+                <img src="/images/ew-analysis.jpg" alt="Coverage Score Charts"
                      class="rounded-lg mb-2 w-full object-cover h-56 shadow-md" />
-                <p class="font-semibold">View Readiness Scores</p>
+                <p class="font-semibold">View Coverage Scores</p>
                 <p class="text-sm text-gray-600">
                     See instant feedback and visualize how well your data currently supports the E-W Framework's indicators.
                 </p>
@@ -45,34 +45,34 @@
     <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
         <div class="w-full max-w-6xl lg:w-8/12* px-6">
             <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
-                Input your Data Inventory
+                Profile Your Data Sources
             </h2>
 
-            <CollapsibleSection Title="Navigate to the Dashboard to create an E-W data readiness inventory"
+            <CollapsibleSection Title="Navigate to the Dashboard to begin profiling your data sources"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    Create an E-W data readiness inventory directly from the dashboard.
+                    Profile your data sources directly from the dashboard.
                 </p>
             </CollapsibleSection>
 
             <CollapsibleSection Title="Select and automatically interrogate an Ed-Fi ODS"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss"
-                                id="howto-edfi-ods" >
+                                id="howto-edfi-ods">
                 <p class="mb-4">The E-W Analysis Tool can automatically and securely interrogate an Ed-Fi ODS through an API connection.</p>
                 <ol class="list-decimal pl-6 space-y-2">
                     <li>Select <strong>+ Add Data Source</strong>.</li>
                     <li>Select <strong>Ed-Fi ODS API</strong> as a Data Source.</li>
                     <li>Ed-Fi ODS API will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
-                    <li>Select <strong>Run New Assessment</strong> to make a connection to your Ed-Fi ODS through a browser-based API connection.</li>
-                    <li>Input the appropriate connection details for your ODS and then select <strong>Start Assessment</strong>. Your browser will connect to your Ed-Fi ODS and will interrogate the database to bring back metadata about available data that aligns with the E-W Framework.
-                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> A demo Ed-Fi API is available for testing and generating sample results. To use the sample data, select <strong>Use Demo API</strong> and you will see the sample credentials automatically filled in. Select <strong>Start Assessment</strong>. If the assessment fails initially, close the modal and wait a minute or so to allow the system to initialize. Then try the process again.</li></ul>
+                    <li>Select <strong>New Automated Scan</strong> to make a connection to your Ed-Fi ODS through a browser-based API connection.</li>
+                    <li>Input the appropriate connection details for your ODS and then select <strong>Start Scan</strong>. Your browser will connect to your Ed-Fi ODS and will interrogate the database to bring back metadata about available data that aligns with the E-W Framework.
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> A demo Ed-Fi API is available for testing and generating sample results. To use the sample data, select <strong>Use Demo API</strong> and you will see the sample credentials automatically filled in. Select <strong>Start Scan</strong>. If the scan fails initially, close the modal and wait a minute or so to allow the system to initialize. Then try the process again.</li></ul>
                     </li>
                     <li>With a successful connection, you will see a real-time progress update as the ODS is interrogated for data availability. You can check log messages to see what data was found and the metadata created for each data element.</li>
                     <li>
-                        Upon successful completion of the interrogation, select <strong>Save Results</strong> to save the assessment results to your project.
-                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical versions or Assessments of this data source can be supported. If your ODS has additional data loaded into it at a particular time (e.g., at end of year), you can run a new assessment. It will automatically be set as the Active Assessment and will be Enabled by default, so that the tool will utilize its results to calculate data readiness.</li></ul>
+                        Upon successful completion of the interrogation, select <strong>Save</strong> to save the data profile to your project.
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical data profiles are supported. If your ODS has additional data loaded into it at a particular time (e.g., at end of year), you can run a new scan. It will automatically be set as the active data profile and will be Enabled by default, so that the tool will utilize its results to calculate framework coverage.</li></ul>
                     </li>
                     <li>Back on the Data Source page for Ed-Fi ODS, you can click into any of the data elements to see record counts and characteristics identified by the metadata retrieved.</li>
                 </ol>
@@ -83,24 +83,23 @@
                                 TitleClasses="@TitleCss"
                                 id="howto-ceds-dw">
                 <p class="mb-4">
-                    The E-W Analysis Tool can securely interrogate CEDS Data Warehouse through a set of SQL queries that can be downloaded and run within your own system environment. The results file that is generated from these queries can then be uploaded to the E-W Analysis Tool. The metadata provided by the results file will show EWF data readiness for your CEDS Data Warehouse.
+                    The E-W Analysis Tool can securely interrogate CEDS Data Warehouse through a set of SQL queries that can be downloaded and run within your own system environment. The results file that is generated from these queries can then be uploaded to the E-W Analysis Tool. The metadata provided by the results file will show E-W framework coverage for your CEDS Data Warehouse.
                 </p>
                 <ol class="list-decimal pl-6 space-y-2">
                     <li>Select <strong>+ Add Data Source</strong>.</li>
                     <li>Select <strong>CEDS Data Warehouse</strong> as a Data Source.</li>
                     <li>CEDS Data Warehouse will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
-                    <li>Select <strong>Run New Assessment</strong> to access the SQL assessment script.</li>
+                    <li>Select <strong>New Automated Scan</strong> to access the SQL profiling script.</li>
                     <li>
-                        Download the SQL assessment script and save the file locally. Run the script on your CEDS Data Warehouse database. Once the script has run, Export the results as CSV (instructions to do so are in the script). Then Upload Results CSV to the E-W Analysis Tool and select <strong>Process CSV</strong>.
+                        Download the SQL profiling script and save the file locally. Run the script on your CEDS Data Warehouse database. Once the script has run, export the results as CSV (instructions to do so are in the script). Then upload the results CSV to the E-W Analysis Tool and select <strong>Process CSV</strong>.
                         <ul class="list-disc pl-6 mt-1">
                             <li><strong>Note:</strong> You can inspect the SQL script prior to running it within your system to ensure its safety and that it will not capture any sensitive data. You can also inspect the results CSV prior to uploading back to the E-W Analysis Tool.</li>
                             <li><strong>Note:</strong> The current version of the E-W Analysis Tool supports version 13 of the CEDS Data Warehouse. If future versions are supported in the future, there will be an option to select which version you are using.</li>
                         </ul>
                     </li>
                     <li>
-                        As the system processes your results file, you will see a preview of the results. You can choose to <strong>Save Results</strong> or <strong>Discard</strong> them.
-
-                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical versions or Assessments of this data source can be supported. If your CEDS DW has additional data loaded into it at a particular time (e.g., at end of year), you can run a new assessment. It will automatically be set as the Active Assessment and will be Enabled by default, so that the tool will utilize its results to calculate data readiness.</li></ul>
+                        As the system processes your results file, you will see a preview of the results. You can choose to <strong>Save</strong> or <strong>Discard</strong> them.
+                        <ul class="list-disc pl-6 mt-1"><li><strong>Note:</strong> Multiple historical data profiles are supported. If your CEDS DW has additional data loaded into it at a particular time (e.g., at end of year), you can run a new scan. It will automatically be set as the active data profile and will be Enabled by default, so that the tool will utilize its results to calculate framework coverage.</li></ul>
                     </li>
                     <li>Upon saving your results, you will be returned to the Data Source details page and can click into any of the data elements to see record counts and characteristics identified by the metadata retrieved.</li>
                 </ol>
@@ -112,9 +111,9 @@
                 <p class="mb-4">You can create additional Data Sources for any other data repositories you have that the Tool cannot automatically interrogate.</p>
                 <ol class="list-decimal pl-6 space-y-2">
                     <li>Select <strong>+ Add Data Source</strong>.</li>
-                    <li>Select <strong>Manual Assessment</strong> as a Data Source.</li>
-                    <li>Manual Assessment will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
-                    <li>Select <strong>Run New Assessment</strong> to access the Manual Data Inventory Assessment page. From this page, you can identify the availability status of all 266 data elements that are mapped to the EWF.</li>
+                    <li>Select <strong>Manual Entry</strong> as a Data Source.</li>
+                    <li>Manual Entry will now show up as a new Data Source on the Dashboard. Click on it to access the detailed Data Source page.</li>
+                    <li>Select <strong>Update Manual Entry</strong> to access the manual entry page. From this page, you can identify the availability status of all 266 data elements that are mapped to the EWF.</li>
                     <li>Select the Categorization of data elements that works best for you — either by Data Analyst, EWF categories, or CEDS categories.</li>
                     <li>Search for particular data elements using the search bar.</li>
                     <li>Input Availability status either at the data element level or at the Category level (which marks all data elements within that category as the same status you select).</li>
@@ -126,7 +125,7 @@
                     <li><strong>Not Available</strong> — Indicates this data element is not available from this data source.</li>
                 </ul>
                 <p class="mt-4">
-                    Back on the Data Source Details page, you can see the results of your Manual Inventory. You can set the Assessment as Active or Inactive, and can Enable or Disable the Data Source from this page.
+                    Back on the Data Source Details page, you can see the results of your manual entry. You can set the data profile as Active or Inactive, and can Enable or Disable the Data Source from this page.
                 </p>
             </CollapsibleSection>
 
@@ -142,7 +141,7 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    Review all Data Sources you have created and make sure each one you want to analyze is configured as <strong>Enabled</strong>. Select <strong>Reports &amp; Analysis</strong> at the top of the website to view E-W data readiness analysis and reports.
+                    Review all Data Sources you have created and make sure each one you want to analyze is configured as <strong>Enabled</strong>. Select <strong>Reports &amp; Analysis</strong> at the top of the website to view E-W framework coverage analysis and reports.
                 </p>
             </CollapsibleSection>
 
@@ -150,7 +149,7 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    Summary results for various measures of your data inventory will show up on the Dashboard.
+                    Summary coverage results for your enabled data sources will show up on the Dashboard.
                 </p>
             </CollapsibleSection>
         </div>
@@ -159,10 +158,10 @@
     <div class="pt-24 container mx-auto items-center flex flex-wrap justify-center">
         <div class="w-full max-w-6xl px-6">
             <h2 class="font-semibold text-3xl text-secondary font-bold mb-10">
-                View Readiness Scores
+                View Coverage Scores
             </h2>
 
-            <CollapsibleSection Title="Navigate to the Reports &amp; Analysis page for detailed insight into your E-W data readiness"
+            <CollapsibleSection Title="Navigate to the Reports &amp; Analysis page for detailed insight into your E-W framework coverage"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>Select <strong>Reports &amp; Analysis</strong> from the top of the website.</p>
@@ -172,61 +171,61 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    Select <strong>Download Report</strong> to download or print a comprehensive PDF report of your project findings. This report can be used in various ways to help support discussions at the Data / Policy / Agency level.
+                    Select <strong>Download PDF Report</strong> to download or print a comprehensive PDF report of your project findings. This report can be used in various ways to help support discussions at the Data / Policy / Agency level.
                 </p>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="View Overall Summary Scores of Data Readiness"
+            <CollapsibleSection Title="View Overall Coverage Summary Scores"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    The Analysis Tool takes the results of all Enabled Data Sources and runs an analysis of data availability against each Data Element, Indicator, and Essential Question.
+                    The Analysis Tool takes the results of all Enabled Data Sources and calculates coverage of data availability against each Data Element, Indicator, and Essential Question.
                 </p>
-                <p class="mb-2">Overall Readiness Scores are calculated based on the following formula:</p>
+                <p class="mb-2">Overall Coverage Scores are calculated based on the following formula:</p>
                 <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
                     ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
                 </p>
-                <p class="mb-2 font-semibold">Readiness Comparison</p>
+                <p class="mb-2 font-semibold">Coverage Comparison</p>
                 <ul class="list-disc pl-6 space-y-2">
                     <li><strong>Custom Manual</strong> — Shows results for all custom Manual Data Sources that are currently Enabled</li>
                     <li><strong>Automated (Ed-Fi &amp; CEDS)</strong> — Shows results for all automated Data Sources that are currently Enabled</li>
                     <li><strong>Public Data (ECS)</strong> — Shows results based on Education Commission of the States Data Collected or Data Reported if currently Enabled</li>
-                    <li><strong>Combined Readiness (All Data Sources)</strong> — Overall results taking the most favorable result for each Data Element by Data Source. For example, if three data sources each have a result for a Staff FTE status but only one source shows Available, then that data element will score as Available.</li>
-                    <li><strong>Sector Breakdown</strong> — Shows data readiness broken down by the four Sectors.</li>
+                    <li><strong>Combined Coverage (All Data Sources)</strong> — Overall results taking the most favorable result for each Data Element by Data Source. For example, if three data sources each have a result for a Staff FTE status but only one source shows Available, then that data element will score as Available.</li>
+                    <li><strong>Sector Breakdown</strong> — Shows coverage broken down by the four Sectors.</li>
                 </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="View Essential Question readiness scoring"
+            <CollapsibleSection Title="View Essential Question coverage scoring"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    Each Essential Question will be listed, with a readiness score based on the availability in your Enabled Data Sources.
+                    Each Essential Question will be listed, with a coverage score based on the availability in your Enabled Data Sources.
                 </p>
-                <p class="mb-2">Readiness Scores are calculated for each EQ based on the following formula:</p>
+                <p class="mb-2">Coverage scores are calculated for each EQ based on the following formula:</p>
                 <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
                     ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
                 </p>
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Click the Expand arrow to view a more detailed breakdown of data readiness for an EQ by the associated Indicators.</li>
-                    <li>Click on an Indicator to see a more detailed breakdown of data readiness by the associated data elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
+                    <li>Click the Expand arrow to view a more detailed breakdown of coverage for an EQ by the associated Indicators.</li>
+                    <li>Click on an Indicator to see a more detailed breakdown of coverage by the associated data elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
                     <li>EQ's can be sorted by Score (default highest to lowest) or EQ number.</li>
                     <li>Use the Search bar to quickly narrow down to a particular focal point.</li>
                     <li>Filter by Sector to view EQ's associated with a particular Sector.</li>
                 </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="View Indicator readiness scoring"
+            <CollapsibleSection Title="View Indicator coverage scoring"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    Similar to the Essential Question view, select Indicators to view a list of all Indicators, with a readiness score based on the availability in your Enabled Data Sources.
+                    Similar to the Essential Question view, select Indicators to view a list of all Indicators, with a coverage score based on the availability in your Enabled Data Sources.
                 </p>
-                <p class="mb-2">Readiness Scores are calculated for each Indicator based on the following formula:</p>
+                <p class="mb-2">Coverage scores are calculated for each Indicator based on the following formula:</p>
                 <p class="font-mono bg-gray-100 px-4 py-2 rounded mb-4">
                     ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
                 </p>
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Click the Expand arrow to view a more detailed breakdown of data readiness for an Indicator by the underlying Data Elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
+                    <li>Click the Expand arrow to view a more detailed breakdown of coverage for an Indicator by the underlying Data Elements, as well as additional metadata from the Education-to-Workforce Framework.</li>
                 </ul>
             </CollapsibleSection>
 
@@ -279,7 +278,7 @@
                 </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="Building a Roadmap - Investigate the drivers of data readiness"
+            <CollapsibleSection Title="Building a Roadmap - Investigate the drivers of data coverage"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
@@ -332,7 +331,7 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    In addition to Indicator data readiness, it is important to analyze your readiness to break down Indicators and Essential Questions by Disaggregates to help uncover disparities and make informed decisions that can lead to greater equity.
+                    In addition to Indicator coverage, it is important to analyze your ability to break down Indicators and Essential Questions by Disaggregates to help uncover disparities and make informed decisions that can lead to greater equity.
                 </p>
                 <p>
                     For instance, even if you have some Easy Wins identified, if you do not have the Disaggregate data to perform deeper analyses, you will be limited in the types of equity conclusions you can draw and disparities you can identify. This may lead to additional prioritizations of certain Disaggregate data.
@@ -354,8 +353,8 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Look at the differences in data readiness between Sectors</li>
-                    <li>Most groups have greater data readiness in the K-12 sector, followed by Early childhood and Postsecondary. Workforce tends to have the least amount of data ready for powering Indicators to show progress on Essential Questions.</li>
+                    <li>Look at the differences in coverage between Sectors</li>
+                    <li>Most groups have greater coverage in the K-12 sector, followed by Early childhood and Postsecondary. Workforce tends to have the least amount of data ready for powering Indicators to show progress on Essential Questions.</li>
                     <li>This can help guide your prioritization of breaking down the barriers between sectors.</li>
                 </ul>
             </CollapsibleSection>
@@ -365,7 +364,7 @@
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
                     <li>Based on the Priority Questions you have identified, this should guide you to the Indicators you need to focus on to adequately answer the questions.</li>
-                    <li>Focus on the Data Readiness of each of these Indicators to develop a game plan for powering each of them.</li>
+                    <li>Focus on the coverage score of each of these Indicators to develop a game plan for powering each of them.</li>
                     <li>Similar to the prioritization of the Questions, you can immediately begin work on Easy Wins, Minor Gaps, while planning approaches for Building Bridges and Future Investments.</li>
                 </ul>
             </CollapsibleSection>

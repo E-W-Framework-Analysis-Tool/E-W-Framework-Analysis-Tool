@@ -7,7 +7,7 @@
     <ChildContent>
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
-                <h3 class="text-lg font-title font-semibold text-blue">Assessment Details</h3>
+                <h3 class="text-lg font-title font-semibold text-blue">Data Profile Details</h3>
                 @if (Version > 0)
                 {
                     <span class="badge badge-secondary">Version @Version</span>
@@ -33,7 +33,7 @@
                             </button>
                             <button @onclick="ShowDeleteConfirmation" class="text-error">
                                 <i class="fas fa-trash"></i>
-                                Delete Assessment
+                                Delete Data Profile
                             </button>
                         </li>
                     </ul>
@@ -47,12 +47,12 @@
                 <div class="bg-white rounded-lg p-4">
                     <div class="text-xs text-gray uppercase tracking-wide mb-1">Name</div>
                     <EditableField Value="@Assessment.Name"
-                                   Placeholder="Enter assessment name"
+                                   Placeholder="Enter data profile name"
                                    Variant="EditableField.FieldVariant.Text"
                                    OnSave="@HandleNameSave" />
                 </div>
                 <div class="bg-white rounded-lg p-4">
-                    <div class="text-xs text-gray uppercase tracking-wide">Conducted</div>
+                    <div class="text-xs text-gray uppercase tracking-wide">Profiled at</div>
                     <div class="text-sm font-semibold text-blue">@Assessment.ConductedAt.ToLocalTime().ToString("g")</div>
                 </div>
                 <div class="bg-white rounded-lg p-4">
@@ -131,7 +131,7 @@
             {
                 <div class="text-center py-4 text-gray border border-tan rounded-lg bg-tan bg-opacity-50">
                     <i class="fas fa-exclamation-triangle text-blue mb-2"></i>
-                    <p class="text-sm">No detailed data elements in this assessment.</p>
+                    <p class="text-sm">No detailed data elements in this data profile.</p>
                 </div>
             }
         }
@@ -139,7 +139,7 @@
         {
             <div class="text-center py-8 text-gray">
                 <i class="fas fa-mouse-pointer text-4xl mb-4 opacity-50"></i>
-                <p class="text-sm">Click on an assessment above to view detailed information.</p>
+                <p class="text-sm">Click on a data profile above to view detailed information.</p>
             </div>
         }
     </ChildContent>
@@ -162,7 +162,7 @@
                         <i class="fas fa-trash text-red-500 text-xl"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-title text-lg font-semibold text-blue">Delete Assessment</h3>
+                        <h3 class="font-title text-lg font-semibold text-blue">Delete Data Profile</h3>
                         <p class="mt-1 text-sm text-gray">This action cannot be undone.</p>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
             <!-- Body -->
             <div class="px-6 pb-6">
                 <p class="text-sm text-gray">
-                    Are you sure you want to delete assessment "<span class="font-semibold text-blue">@Assessment.Name</span>"?
+                    Are you sure you want to delete data profile "<span class="font-semibold text-blue">@Assessment.Name</span>"?
                 </p>
             </div>
 
@@ -190,7 +190,7 @@
                                                        bg-red-500 px-4 py-2 text-sm font-medium text-white
                                                        hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <i class="fas fa-trash mr-2"></i>
-                        Delete Assessment
+                        Delete Data Profile
                     </button>
                 </div>
             </div>

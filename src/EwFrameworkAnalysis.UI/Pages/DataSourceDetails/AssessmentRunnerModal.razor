@@ -44,10 +44,10 @@
                 else if (ShowResults)
                 {
                     <button class="btn btn-ghost" @onclick="HandleDiscard">
-                        <i class="fas fa-times mr-2"></i>Discard Results
+                        <i class="fas fa-times mr-2"></i>Discard
                     </button>
                     <button class="btn btn-primary" @onclick="HandleSave">
-                        <i class="fas fa-save mr-2"></i>Save Results
+                        <i class="fas fa-save mr-2"></i>Save
                     </button>
                 }
                 else
@@ -67,7 +67,7 @@
         <div class="modal-box">
             <h3 class="font-bold text-lg text-blue font-title">Discard Results?</h3>
             <p class="py-4 text-gray">
-                Are you sure you want to discard these assessment results? This action cannot be undone.
+                Are you sure you want to discard this data profile? This action cannot be undone.
             </p>
             <div class="modal-action">
                 <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
@@ -82,7 +82,7 @@
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
-    [Parameter] public string Title { get; set; } = "Run Assessment";
+    [Parameter] public string Title { get; set; } = "Run Data Profiler";
 
     [Parameter] public bool IsRunning { get; set; }
     [Parameter] public bool ShowProgress { get; set; }

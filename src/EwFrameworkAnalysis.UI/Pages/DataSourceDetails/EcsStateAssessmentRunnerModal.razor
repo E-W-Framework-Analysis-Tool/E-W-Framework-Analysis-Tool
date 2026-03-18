@@ -8,15 +8,14 @@
 {
     <div class="modal modal-open">
         <div class="modal-box max-h-5/6 @(_assessmentResult != null ? "min-w-3/4" : "") pb-0">
-            <h3 class="font-bold text-lg mb-4">ECS State Data</h3>
+            <h3 class="font-bold text-lg mb-4">ECS State Reference Profile</h3>
 
             @if (_assessmentResult == null)
             {
                 <!-- Step 1: Select State & Column -->
                 <div class="space-y-4">
                     <p class="text-sm">
-                        Select your state and a data column to import state-level data readiness 
-                        as researched by Education Commission of the States.
+                        Select your state and a data column to load a state-level reference profile compiled by the Education Commission of the States.
                     </p>
 
                     <div class="form-control">
@@ -39,30 +38,21 @@
                         <div class="space-y-4 space-x-4">
                             <label class="label cursor-pointer justify-start gap-3">
                                 <input type="radio" name="dataColumn" class="radio radio-primary"
-                                       checked="@(_selectedDataColumn == EcsDataColumn.Collected && !_importBoth)"
-                                       @onchange="@(() => { _selectedDataColumn = EcsDataColumn.Collected; _importBoth = false; })" />
-                                <div>
+                                       checked="@(_selectedDataColumn == EcsDataColumn.Collected)"
+                                       @onchange="@(() => _selectedDataColumn = EcsDataColumn.Collected)" />
+                                <span class="flex flex-col">
                                     <span class="label-text font-medium">Collected</span>
-                                    <span class="label-text text-xs text-gray block">Data collected by the state</span>
-                                </div>
+                                    <span class="label-text text-xs text-gray">Data collected by the state</span>
+                                </span>
                             </label>
                             <label class="label cursor-pointer justify-start gap-3">
                                 <input type="radio" name="dataColumn" class="radio radio-primary"
-                                       checked="@(_selectedDataColumn == EcsDataColumn.Reported && !_importBoth)"
-                                       @onchange="@(() => { _selectedDataColumn = EcsDataColumn.Reported; _importBoth = false; })" />
-                                <div>
+                                       checked="@(_selectedDataColumn == EcsDataColumn.Reported)"
+                                       @onchange="@(() => _selectedDataColumn = EcsDataColumn.Reported)" />
+                                <span class="flex flex-col">
                                     <span class="label-text font-medium">Reported</span>
-                                    <span class="label-text text-xs text-gray block">Data reported publicly by the state</span>
-                                </div>
-                            </label>
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="dataColumn" class="radio radio-primary"
-                                       checked="@_importBoth"
-                                       @onchange="@(() => _importBoth = true)" />
-                                <div>
-                                    <span class="label-text font-medium">Both</span>
-                                    <span class="label-text text-xs text-gray block">Create two assessments, one for each column</span>
-                                </div>
+                                    <span class="label-text text-xs text-gray">Data reported publicly by the state</span>
+                                </span>
                             </label>
                         </div>
                     </div>
@@ -156,7 +146,7 @@
 
                     <div class="bg-white border border-gray-200 rounded-lg shadow">
                         <div class="px-4 py-3 border-b border-gray-200">
-                            <h3 class="font-semibold text-blue">Assessment Results Preview</h3>
+                            <h3 class="font-semibold text-blue">Reference Profile Results Preview</h3>
                         </div>
                         <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                             @foreach (var element in _assessmentResult.DataElementAssessments.OrderBy(e => e.DataElementName))
@@ -196,7 +186,7 @@
                     <div class="alert alert-success">
                         <i class="fas fa-check-circle"></i>
                         <div>
-                            <h3 class="font-bold">Assessment Processed Successfully</h3>
+                            <h3 class="font-bold">Reference Profile Loaded</h3>
                             <div class="text-sm">Review the results above and save to add to your project</div>
                         </div>
                     </div>
@@ -218,17 +208,17 @@
                         else
                         {
                             <i class="fas fa-cogs mr-2"></i>
-                            <span>Run Assessment</span>
+                            <span>Load Reference Profile</span>
                         }
                     </button>
                 }
                 else
                 {
                     <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
-                        <i class="fas fa-times mr-2"></i>Discard Results
+                        <i class="fas fa-times mr-2"></i>Discard
                     </button>
                     <button class="btn btn-primary" @onclick="SaveResults">
-                        <i class="fas fa-save mr-2"></i>Save Results
+                        <i class="fas fa-save mr-2"></i>Save
                     </button>
                 }
             </div>
@@ -241,9 +231,9 @@
 {
     <div class="modal modal-open" style="z-index: 1001;">
         <div class="modal-box">
-            <h3 class="font-bold text-lg text-blue font-title">Discard Assessment Results?</h3>
+            <h3 class="font-bold text-lg text-blue font-title">Discard Reference Profile?</h3>
             <p class="py-4 text-gray">
-                Are you sure you want to discard these assessment results? This action cannot be undone.
+                Are you sure you want to discard this reference profile?
             </p>
             <div class="modal-action">
                 <button class="btn btn-ghost" @onclick="CancelDiscard">Keep Results</button>
@@ -263,7 +253,6 @@
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
     private DataSourceAssessment? _assessmentResult;
-    private DataSourceAssessment? _secondAssessmentResult;
     private EcsParsingStats? _parsingStats;
     private string? _error;
     private bool _isProcessing;
@@ -293,29 +282,12 @@
         {
             var records = StateDataProvider.GetStateData(_selectedState);
 
-            if (_importBoth)
-            {
-                var (assessment1, stats1) = Parser.ProcessStateData(records, EcsDataColumn.Collected);
-                assessment1.Name = $"{_selectedState} - Collected";
-                assessment1.ConductedAt = DateTimeOffset.Now;
+            var (assessment, stats) = Parser.ProcessStateData(records, _selectedDataColumn);
+            assessment.Name = $"{_selectedState} - {_selectedDataColumn}";
+            assessment.ConductedAt = DateTimeOffset.Now;
 
-                var (assessment2, _) = Parser.ProcessStateData(records, EcsDataColumn.Reported);
-                assessment2.Name = $"{_selectedState} - Reported";
-                assessment2.ConductedAt = DateTimeOffset.Now;
-
-                _assessmentResult = assessment1;
-                _secondAssessmentResult = assessment2;
-                _parsingStats = stats1;
-            }
-            else
-            {
-                var (assessment, stats) = Parser.ProcessStateData(records, _selectedDataColumn);
-                assessment.Name = $"{_selectedState} - {_selectedDataColumn}";
-                assessment.ConductedAt = DateTimeOffset.Now;
-
-                _assessmentResult = assessment;
-                _parsingStats = stats;
-            }
+            _assessmentResult = assessment;
+            _parsingStats = stats;
         }
         catch (Exception ex)
         {
@@ -336,11 +308,6 @@
 
         await OnAssessmentComplete.InvokeAsync(_assessmentResult);
 
-        if (_secondAssessmentResult != null)
-        {
-            await OnAssessmentComplete.InvokeAsync(_secondAssessmentResult);
-        }
-
         await Close();
     }
 
@@ -358,7 +325,6 @@
     {
         _showDiscardModal = false;
         _assessmentResult = null;
-        _secondAssessmentResult = null;
         _parsingStats = null;
         await Close();
     }
@@ -369,7 +335,6 @@
         await IsOpenChanged.InvokeAsync(IsOpen);
 
         _assessmentResult = null;
-        _secondAssessmentResult = null;
         _parsingStats = null;
         _error = null;
         _isProcessing = false;
