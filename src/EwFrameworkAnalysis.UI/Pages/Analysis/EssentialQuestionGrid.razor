@@ -39,7 +39,7 @@
                         </div>
                         <div class="flex col-span-4 justify-center items-center text-center" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">Indicators Aligned</div>
                         <div class="flex col-span-2 justify-center items-center text-center px-4 gap-4 cursor-pointer" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">
-                            Framework Coverage Score
+                            Coverage Score
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(eqContext.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(eqContext.IsActive(SortColumnNames.Score, false) ? "" : "opacity-50")"></i>

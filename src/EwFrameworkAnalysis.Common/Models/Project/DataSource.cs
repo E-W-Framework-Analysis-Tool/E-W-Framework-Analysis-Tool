@@ -27,6 +27,6 @@ public enum DataSourceType
     [Display(Name = "Manual Entry", Description = "Flexible checklist for manual review")]
     Custom,
 
-    [Display(Name = "ECS State Reference Profile", Description = "State-specific inventory of data as collected by ECS or reported by the state")]
+    [Display(Name = "ECS State Reference Profile", Description = "State-specific data that research shows is collected and/or reported by the state")]
     EcsState
 }
