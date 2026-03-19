@@ -28,6 +28,7 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
             {
                 AssessmentId = match.AssessmentId,
                 SourceType = match.DataSourceType.ToString(),
+                DataSourceName = match.DataSourceName,
                 IsAvailable = availability == AvailabilityJudgment.Available || availability == AvailabilityJudgment.PartiallyAvailable,
                 AvailabilityScore = availability,
                 QualityScore = 0,
@@ -57,6 +58,7 @@ public class ReportedAndCountScoringRule : IDataElementScoringRule
             AvailabilityScore = selected?.AvailabilityScore ?? AvailabilityJudgment.NotAvailable,
             QualityScore = selected?.QualityScore ?? 0,
             IsAvailable = selected?.IsAvailable ?? false,
+            Source = selected?.DataSourceName,
             SelectedSource = selected?.SourceType.ToString() ?? "None",
 
             SourceScores = sourceScores

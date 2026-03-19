@@ -93,6 +93,7 @@ public class DataElementScoringService
                 AssessmentId = x.Assessment.Id,
                 AssessmentName = x.Assessment.Name,
                 DataSourceType = x.Assessment.DataSourceType,
+                DataSourceName = x.Assessment.DataSourceName,
                 Assessment = x.DataElement
             })
             .ToList();
