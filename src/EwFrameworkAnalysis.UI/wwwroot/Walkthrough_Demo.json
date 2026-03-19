@@ -6,8 +6,8 @@
   "dataSources": [
     {
       "id": "bec29aea-49d5-4d4f-b038-346c8175522e",
-      "name": "ECS State Data",
-      "description": "State-specific inventory of data as collected by ECS or reported by the state",
+      "name": "ECS State Reference Profile",
+      "description": "State-specific data that research shows is collected and/or reported by the state",
       "enabled": true,
       "type": 3,
       "assessments": [
@@ -4042,7 +4042,7 @@
       "assessments": [
         {
           "id": "52d8405c-28e3-45fe-8eb0-bdc7c46d7976",
-          "name": "Assessment from CEDS_Sample_Results_20260305_101911.csv",
+          "name": "Data profile from CEDS_Sample_Results_20260305_101911.csv",
           "conductedAt": "2026-03-12T13:31:45.01-04:00",
           "notes": null,
           "active": true,
@@ -4177,14 +4177,14 @@
     },
     {
       "id": "f33342b7-8bcd-4fe2-9b61-4fadb9298a45",
-      "name": "Manual Assessment",
+      "name": "Manual Entry",
       "description": "Flexible checklist for manual review",
       "enabled": true,
       "type": 2,
       "assessments": [
         {
           "id": "140b2300-f983-4b01-8e25-165859f55c13",
-          "name": "Manual Inventory - Mar 12, 2026 1:38 PM",
+          "name": "Manual Entry - Mar 12, 2026 1:38 PM",
           "conductedAt": "2026-03-12T13:38:14.117-04:00",
           "notes": null,
           "active": true,
@@ -8353,7 +8353,7 @@
         },
         {
           "id": "178e1584-137a-4c5d-97d1-e254baf70882",
-          "name": "Manual Inventory - Mar 12, 2026 1:31 PM",
+          "name": "Manual Entry - Mar 12, 2026 1:31 PM",
           "conductedAt": "2026-03-12T13:31:25.352-04:00",
           "notes": null,
           "active": false,

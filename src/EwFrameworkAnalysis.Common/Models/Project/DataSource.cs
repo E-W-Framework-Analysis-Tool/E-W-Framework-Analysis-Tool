@@ -24,9 +24,9 @@ public enum DataSourceType
     [Display(Name = "CEDS Data Warehouse", Description = "Upload SQL result sets from CEDS DW")]
     CedsDw,
 
-    [Display(Name = "Manual Assessment", Description = "Flexible checklist for manual review")]
+    [Display(Name = "Manual Entry", Description = "Flexible checklist for manual review")]
     Custom,
 
-    [Display(Name = "ECS State Data", Description = "State-specific inventory of data as collected by ECS or reported by the state")]
+    [Display(Name = "ECS State Reference Profile", Description = "State-specific data that research shows is collected and/or reported by the state")]
     EcsState
 }

@@ -39,34 +39,52 @@ function buildCtx() {
 
 // ── Header Banner ───────────────────────────────────────────────────────────────
 function drawHeaderBanner(ctx, projectTitle) {
-    const doc = ctx.doc;
-    const bb = ctx.brandBlue;
-    const hasProject = typeof projectTitle === 'string' && projectTitle.length > 0;
-    const bannerH = hasProject ? 32 : 28;
+  const doc = ctx.doc;
+  const bb = ctx.brandBlue;
+  const hasProject = typeof projectTitle === 'string' && projectTitle.length > 0;
+  const bannerH = hasProject ? 42 : 36;
+  const cx = ctx.pageWidth / 2;
 
-    doc.setFillColor(bb[0], bb[1], bb[2]);
-    doc.rect(0, 0, ctx.pageWidth, bannerH, 'F');
+  doc.setFillColor(bb[0], bb[1], bb[2]);
+  doc.rect(0, 0, ctx.pageWidth, bannerH, 'F');
+  doc.setTextColor.apply(doc, THEME.white);
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.setTextColor.apply(doc, THEME.white);
-    doc.text('E-W Framework Readiness Report', ctx.margin, hasProject ? 11 : 13);
+  // Tool name — small, normal, centered, slightly dimmed
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(180, 200, 220);
+  doc.text('E-W Framework Analysis Tool', cx, 9, { align: 'center' });
 
-    if (hasProject) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.text(projectTitle, ctx.margin, 20);
-    }
+  // Report title — large, bold, centered, white
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor.apply(doc, THEME.white);
+  doc.text('COVERAGE REPORT', cx, 18, { align: 'center' });
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    const dateStr = new Date().toLocaleDateString('en-US', {
-        month: 'numeric', day: 'numeric', year: 'numeric'
-    });
-    doc.text('Generated: ' + dateStr, ctx.margin, hasProject ? 27 : 22);
+  // Thin rule
+  const ruleY = hasProject ? 23 : 22;
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.2);
+  doc.setGState(doc.GState({ opacity: 0.3 }));
+  doc.line(ctx.margin, ruleY, ctx.pageWidth - ctx.margin, ruleY);
+  doc.setGState(doc.GState({ opacity: 1 }));
 
-    doc.setTextColor.apply(doc, THEME.black);
-    ctx.y = hasProject ? 40 : 36;
+  // Project title and date — small, normal, centered
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor.apply(doc, THEME.white);
+
+  if (hasProject) {
+    doc.text(projectTitle, cx, ruleY + 6, { align: 'center' });
+  }
+
+  const dateStr = new Date().toLocaleDateString('en-US', {
+    month: 'numeric', day: 'numeric', year: 'numeric'
+  });
+  doc.text('Generated: ' + dateStr, cx, ruleY + (hasProject ? 13 : 7), { align: 'center' });
+
+  doc.setTextColor.apply(doc, THEME.black);
+  ctx.y = bannerH + 6;
 }
 
 // ── EQ Readiness Summary ────────────────────────────────────────────────────────
@@ -78,7 +96,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
-    doc.text('EQ Readiness Summary', margin, ctx.y);
+    doc.text('Essential Question (EQ) Coverage Summary', margin, ctx.y);
     ctx.y += 7;
 
     const halfWidth = (contentWidth - 6) / 2;
@@ -86,7 +104,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('Readiness Score Distribution', margin, ctx.y);
+    doc.text('Essential Questions by Score', margin, ctx.y);
     doc.text('Score Distribution', chartX, ctx.y);
     ctx.y += 3;
 
@@ -209,8 +227,8 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('Readiness by Sector', margin, ctx.y);
-    doc.text('Readiness by Data Source', margin + halfWidth + 6, ctx.y);
+    doc.text('Coverage by Sector', margin, ctx.y);
+    doc.text('Coverage by Data Source', margin + halfWidth + 6, ctx.y);
     ctx.y += 3;
 
     const sectorTableStartY = ctx.y;
@@ -264,7 +282,7 @@ function drawOverallReadiness(ctx, overallReadiness) {
     // ── Left column: Overall Readiness scores ────────────────────────────────
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
-    doc.text('Overall Readiness', margin, ctx.y);
+    doc.text('Coverage By Data Source Type', margin, ctx.y);
 
     // Right column title at same height
     doc.text('Highest ROI Data Elements', rightX, ctx.y);

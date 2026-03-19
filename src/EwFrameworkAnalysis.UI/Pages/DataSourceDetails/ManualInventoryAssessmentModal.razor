@@ -11,7 +11,7 @@
         <div class="modal-box max-w-6xl mx-auto max-h-[80vh] p-0 flex flex-col">
             <!-- HEADER -->
             <div class="flex-shrink-0 p-4 pb-0 bg-base-100 space-y-2">
-                <h3 class="font-bold text-lg">Manual Data Inventory Assessment</h3>
+                <h3 class="font-bold text-lg">Manual Entry</h3>
 
                 <p class="text-sm text-gray-600">
                     Review your data inventory and mark the availability of each data element.
@@ -55,10 +55,10 @@
             <!-- FOOTER -->
             <div class="flex flex-shrink-0 flex-wrap bg-base-100 p-2 px-4 border-t border-gray-200 justify-end gap-2">
                 <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
-                    <i class="fas fa-times"></i>Discard Results
+                    <i class="fas fa-times"></i>Discard
                 </button>
                 <button class="btn btn-primary" @onclick="SaveResults">
-                    <i class="fas fa-save"></i>Save Results
+                    <i class="fas fa-save"></i>Save
                 </button>
             </div>
         </div>
@@ -70,9 +70,9 @@
 {
     <div class="modal modal-open">
         <div class="modal-box">
-            <h3 class="font-bold text-lg text-blue">Discard Assessment?</h3>
+            <h3 class="font-bold text-lg text-blue">Discard Manual Entry Changes?</h3>
             <p class="py-4 text-gray">
-                Are you sure you want to discard this assessment? All marked availability judgments will be lost.
+                Are you sure you want to discard this manual entry update? All reported availabilities will be lost.
             </p>
             <div class="modal-action">
                 <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
@@ -159,7 +159,7 @@
             var assessment = new DataSourceAssessment
             {
                 Id = Guid.NewGuid(),
-                Name = $"Manual Inventory - {DateTimeOffset.Now:MMM d, yyyy h:mm tt}",
+                Name = $"Manual Entry - {DateTimeOffset.Now:MMM d, yyyy h:mm tt}",
                 ConductedAt = DateTimeOffset.Now,
                 DataElementAssessments = new List<DataElementAssessment>()
             };
@@ -182,7 +182,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Failed to create assessment: {ex.Message}";
+            _error = $"Failed to create data profile: {ex.Message}";
         }
     }
 

@@ -4,7 +4,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Overall Score -->
-    <StatCard Label="Overall Framework Score"
+    <StatCard Label="Overall Framework Coverage Score"
               Value="@($"{(OverallScore * 100):F0}%")"
               Shadow="Card.ShadowSize.XLarge"
               IconClass="fas fa-chart-line">
@@ -25,7 +25,7 @@
     </StatCard>
     
     <!-- Last Analysis -->
-    <StatCard Label="Last Analysis Run"
+    <StatCard Label="Last Profiling Run"
               Value="@LastAnalysisTime"
               Shadow="Card.ShadowSize.XLarge"
               IconClass="fas fa-clock">

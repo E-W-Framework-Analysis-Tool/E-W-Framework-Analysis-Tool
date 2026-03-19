@@ -79,7 +79,7 @@ public static class WalkthroughSteps
             StepId: StepIds.ProjectFileOperations,
             Title: "Your Project Lives in a File",
             Body: "New, Save, and Load let you manage your project file. " +
-                  "Everything in this tool — your data sources, assessments, and results — " +
+                  "Everything in this tool — your data sources, data profiles, and results — " +
                   "lives in a single JSON file on your machine. " +
                   "Your progress is cached in the browser so you won't lose work if you navigate away, " +
                   "but you should save to file regularly.",
@@ -91,7 +91,7 @@ public static class WalkthroughSteps
             Title: "Add Your Data Sources",
             Body: "Data sources represent the systems you want to analyze for Framework coverage — " +
                   "such as an Ed-Fi API or a CEDS data warehouse. " +
-                  "Add one or more here, then run an assessment on each to discover what data elements are present.",
+                  "Add one or more here, then run a scan or manual entry on each to discover what data elements are present.",
             RequiredRoute: "/dashboard",
             Position: TooltipPosition.Right
         ),
@@ -104,8 +104,8 @@ public static class WalkthroughSteps
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.RunAssessmentButton,
-            Title: "Run an Assessment",
-            Body: "In the Data Source details page, run an automated assessment or update a checklist to inventory the data elements " +
+            Title: "Profile Your Data Source",
+            Body: "In the Data Source details page, run an automated scan or update a manual entry to profile the data elements " +
                   "present in your system. This process inspects your source and maps what it finds " +
                   "against the Framework's expected elements.",
             RequiredRoute: _dataSourceRoute,
@@ -113,18 +113,18 @@ public static class WalkthroughSteps
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.DataSourceAssessmentHistory,
-            Title: "Assessment History",
-            Body: "Each time you run an assessment, a snapshot is saved here. " +
-                  "You can compare results over time to track how your data coverage changes " +
+            Title: "Data Profile History",
+            Body: "Each time you profile a data source, a snapshot is saved here. " +
+                  "You can compare profiles over time to track how your framework coverage changes " +
                   "as your systems evolve.",
             RequiredRoute: _dataSourceRoute,
             Position: TooltipPosition.Right
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.DataSourceAssessmentDetails,
-            Title: "Assessment Details",
-            Body: "Drill into an individual assessment to see exactly which data elements were found, " +
-                  "which were missing, and any issues encountered during the inventory.",
+            Title: "Data Profile Details",
+            Body: "Drill into an individual data profile to see exactly which data elements were found, " +
+                  "which were missing, and any issues encountered during profiling.",
             RequiredRoute: _dataSourceRoute,
             Position: TooltipPosition.Right
         ),

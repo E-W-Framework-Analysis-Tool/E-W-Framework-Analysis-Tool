@@ -15,7 +15,7 @@
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
                     <li><a href="javascript:void(0)" class="text-primary underline" @onclick='() => ScrollService.ScrollToAsync("howto-edfi-ods")'>Refer to this section above.</a></li>
-                    <li>Multiple historical versions of this data source can be supported. This allows you to query the ODS at various times of the year, when more or less data may be in the system.</li>
+                    <li>Multiple historical data profiles of this data source can be supported. This allows you to scan the ODS at various times of the year, when more or less data may be in the system.</li>
                 </ul>
             </CollapsibleSection>
 
@@ -31,7 +31,7 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p>
-                    Any modifications made to the standard implementation of an Ed-Fi ODS will cause non-standardized data to be missed in the interrogation and may disrupt the automated interrogation of the API call.
+                    Any modifications made to the standard implementation of an Ed-Fi ODS will cause non-standardized data to be missed in the interrogation and may disrupt the automated scan of the API.
                 </p>
             </CollapsibleSection>
 
@@ -54,7 +54,7 @@
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
                     <li><a href="javascript:void(0)" class="text-primary underline" @onclick='() => ScrollService.ScrollToAsync("howto-ceds-dw")'>Refer to this section above.</a></li>
-                    <li>Multiple historical versions of this data source can be supported. This allows you to query the CEDS Data Warehouse at various times of the year, when more or less data may be in the system.</li>
+                    <li>Multiple historical data profiles of this data source can be supported. This allows you to scan the CEDS Data Warehouse at various times of the year, when more or less data may be in the system.</li>
                 </ul>
             </CollapsibleSection>
 
@@ -76,7 +76,7 @@
                     Due to the differences in how data is organized within various versions of CEDS, instances that use a different version of CEDS will not be entirely aligned with Version 13. Data that is in alignment should still be pulled into the results of the queries, but any non-aligned data would not show as being Available in the results.
                 </p>
                 <p>
-                    As newer versions of Ed-Fi are released, the open source nature of the E-W Analysis Tool will enable updates to be made by the community.
+                    As newer versions of CEDS are released, the open source nature of the E-W Analysis Tool will enable updates to be made by the community.
                 </p>
             </CollapsibleSection>
 
@@ -85,25 +85,25 @@
                                 TitleClasses="@TitleCss">
                 <ul class="list-disc pl-6 space-y-2">
                     <li>Results of a user's browser session are only stored for the duration of the session.</li>
-                    <li>The E-W Analysis Tool website server will only receive results metadata from automated data system interrogations, to include the fields for which data exists and some profiling of the nature of that data.</li>
+                    <li>The E-W Analysis Tool website server will only receive results metadata from automated data source scans, to include the fields for which data exists and some profiling of the nature of that data.</li>
                     <li>The E-W Analysis Tool has not been designed to store any other types of data such as sensitive information.</li>
-                    <li>Data inventory results can be saved to a file on the user's computer, and can be subsequently re-uploaded.</li>
+                    <li>Data profile results can be saved to a file on the user's computer, and can be subsequently re-uploaded.</li>
                 </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection Title="How does your Data Readiness scoring work?"
+            <CollapsibleSection Title="How does coverage scoring work?"
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    The automated data interrogation process (i.e., Ed-Fi ODS API and CEDS DW SQL queries) queries the respective databases about the presence of particular data in the standard tables that have been mapped to E-W Framework Indicators and Metrics. In addition to Counts of records, the tool looks at other characteristics that may indicate quality of data, such as checking for non-Numeric values where the data element is of Numeric type. If data counts appear low (e.g., relative to the count of student enrollment records) then the resulting status may be set as Partially Available.
+                    The automated scan process (i.e., Ed-Fi ODS API and CEDS DW SQL queries) queries the respective databases about the presence of particular data in the standard tables that have been mapped to E-W Framework Indicators and Metrics. In addition to counts of records, the tool looks at other characteristics that may indicate quality of data, such as checking for non-numeric values where the data element is of numeric type. If data counts appear low (e.g., relative to the count of student enrollment records) then the resulting status may be set as Partially Available.
                 </p>
                 <p class="mb-4">
-                    The manual data input process allows the user to add additional data sources or to amplify the results of automated data interrogations. Part of the input process enables the user to score each data element for Available (does the data exist), Partially Available (is the data accessible to the parties that need it), or Not Available (the data does not exist in this system).
+                    The manual entry process allows the user to add additional data sources or to supplement the results of automated scans. As part of manual entry, the user scores each data element as Available (does the data exist), Partially Available (is the data accessible to the parties that need it), or Not Available (the data does not exist in this system).
                 </p>
                 <p class="mb-4">
-                    The E-W Analysis Tool takes the results of the automated data interrogation and manual inputs and applies a scoring rubric to each data element. Each data element then rolls up into one or more Indicators as a necessary component of readiness, and each Indicator then rolls up to one or more Essential Question as a necessary component of readiness.
+                    The E-W Analysis Tool takes the results of automated scans and manual entries and applies a scoring rubric to each data element. Each data element then rolls up into one or more Indicators as a necessary component of coverage, and each Indicator then rolls up to one or more Essential Questions as a necessary component of coverage.
                 </p>
-                <p class="mb-2">Readiness Scores are calculated for each Indicator based on the following algorithm:</p>
+                <p class="mb-2">Coverage scores are calculated for each Indicator based on the following algorithm:</p>
                 <p class="font-mono bg-gray-100 px-4 py-2 rounded">
                     ( ( # Available Data Elements ) + ( # Partially Available Data Elements * 50% ) ) / Total # Data Elements
                 </p>
@@ -113,13 +113,13 @@
                                 SectionClasses="@SectionCss"
                                 TitleClasses="@TitleCss">
                 <p class="mb-4">
-                    Within each Data Source you can store multiple versions or Assessments of the data source. This may be especially useful if the database contains different data at different points in the year (such as more data at End of School Year in an Ed-Fi ODS). Only one Assessment can be Active at any one time. Only the Active Assessment will be utilized by the data readiness scoring mechanism. To make an Assessment version Active, access the Data Source detail page from the Dashboard, then select the Assessment version you want to activate, and then click on the three dots and select <strong>Set as Active</strong>.
+                    Within each Data Source you can store multiple data profiles. This may be especially useful if the database contains different data at different points in the year (such as more data at End of School Year in an Ed-Fi ODS). Only one data profile can be Active at any one time. Only the active data profile will be utilized by the coverage scoring mechanism. To make a data profile Active, access the Data Source detail page from the Dashboard, then select the data profile you want to activate, and then click on the three dots and select <strong>Set as Active</strong>.
                 </p>
                 <p class="mb-4">
-                    The data readiness scoring mechanism will only calculate the results of Data Sources that are Enabled. It will only use the Active Assessment within an Enabled Data Source. To Enable a Data Source, access the Data Source detail page from the Dashboard, then select <strong>Enable Data Source</strong>.
+                    The coverage scoring mechanism will only calculate the results of Data Sources that are Enabled. It will only use the active data profile within an Enabled Data Source. To Enable a Data Source, access the Data Source detail page from the Dashboard, then select <strong>Enable Data Source</strong>.
                 </p>
                 <p>
-                    If you want to see your data readiness without a particular Data Source, simply Disable that Data Source. To Disable a Data Source that is already Enabled, access the Data Source detail page from the Dashboard, then select <strong>Disable Data Source</strong>.
+                    If you want to see your framework coverage without a particular Data Source, simply Disable that Data Source. To Disable a Data Source that is already Enabled, access the Data Source detail page from the Dashboard, then select <strong>Disable Data Source</strong>.
                 </p>
             </CollapsibleSection>
 

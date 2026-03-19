@@ -56,7 +56,11 @@
                     {
                         <button class="btn btn-primary gap-2" @onclick="OnRunAssessment" data-walkthrough="@StepIds.RunAssessmentButton">
                             <i class="fas fa-play"></i>
-                            @(DataSource.Type == DataSourceType.EcsState ? "Add ECS State Data" : "Run New Assessment")
+                            @(DataSource.Type switch {
+                                DataSourceType.EcsState => "Load Reference Profile",
+                                DataSourceType.Custom => "Edit Manual Entry",
+                                _ => "New Automated Scan"
+                            })
                         </button>
                     }
                 </div>
