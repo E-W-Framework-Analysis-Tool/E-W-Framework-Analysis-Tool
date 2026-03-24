@@ -3,8 +3,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// <summary>
 /// Assesses the Staff FTE status data element from RDS.FactK12StaffEmployments,
 /// joined to RDS.DimPeople_Current. Evaluates record volume, completeness of the
-/// FullTimeEquivalency field, its numeric range, and distribution across FTE
-/// status categories.
+/// FullTimeEquivalency field, and distribution across FTE status categories
+/// derived from FullTimeEquivalency thresholds.
 /// </summary>
 public class StaffFteStatusCedsDWAssessor : ICedsDWAssessor
 {
@@ -17,93 +17,116 @@ public class StaffFteStatusCedsDWAssessor : ICedsDWAssessor
 -- are assessed. If the intent is to scope this assessor to a specific population,
 -- re-add the filter to the CTE and update AssessmentDescription accordingly.
 
+-- NOTE: The Distribution blocks below use derived bands from FullTimeEquivalency
+-- as a proxy for FTE status categories. If a dedicated FTE status dimension column
+-- exists (e.g. FteStatusCode, FteStatusDescription, or similar on a joined
+-- dimension table), replace the CASE expressions with that column and adjust
+-- the category labels to match the CEDS-defined values for this element.
+
+-- NOTE: IntegerRange is not included because FullTimeEquivalency is a decimal/
+-- float column rather than an integer. If a min/max range characteristic is
+-- desired, confirm the column type and implement a custom FloatRange characteristic,
+-- or add it manually once the column type is verified.
+
 WITH BaseData AS (
     SELECT
         f.FullTimeEquivalency
-        -- NOTE: If a categorical FTE status column exists on FactK12StaffEmployments
-        -- or a joined dimension (e.g. DimK12StaffEmployment or similar), replace
-        -- the FullTimeEquivalency references in the Distribution block below with
-        -- that column. Verify the correct column name before running.
     FROM RDS.FactK12StaffEmployments f
     JOIN RDS.DimPeople_Current d ON d.DimPersonId = f.K12Staff_CurrentId
 )
-
 INSERT INTO #EWFProfilerResults
 
 -- RecordCount
 SELECT
-    '{DataElementName}'            AS DataElementName,
-    'RecordCount'                  AS CharacteristicType,
+    '{DataElementName}'             AS DataElementName,
+    'RecordCount'                   AS CharacteristicType,
     CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
-    NULL                           AS SubItemLabel,
-    NULL                           AS Remarks
+    NULL                            AS SubItemLabel,
+    NULL                            AS Remarks
 FROM BaseData
 
 UNION ALL
 
 -- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'            AS DataElementName,
-    'Completeness'                 AS CharacteristicType,
+    '{DataElementName}'             AS DataElementName,
+    'Completeness'                  AS CharacteristicType,
     CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
-    'TotalRecords'                 AS SubItemLabel,
-    NULL                           AS Remarks
+    'TotalRecords'                  AS SubItemLabel,
+    NULL                            AS Remarks
 FROM BaseData
 
 UNION ALL
 
 -- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                                          AS DataElementName,
-    'Completeness'                                              AS CharacteristicType,
-    CAST(COUNT(FullTimeEquivalency) AS NVARCHAR(MAX))           AS Value,
-    'PopulatedRecords'                                          AS SubItemLabel,
-    'Counts rows where FullTimeEquivalency is not NULL'         AS Remarks
+    '{DataElementName}'                              AS DataElementName,
+    'Completeness'                                   AS CharacteristicType,
+    CAST(COUNT(FullTimeEquivalency) AS NVARCHAR(MAX)) AS Value,
+    'PopulatedRecords'                               AS SubItemLabel,
+    NULL                                             AS Remarks
 FROM BaseData
 
 UNION ALL
 
--- Distribution by FTE status category
--- NOTE: The distribution below uses derived bands from FullTimeEquivalency as a
--- proxy for FTE status categories. If a dedicated FTE status dimension column
--- exists (e.g. FteStatusCode, FteStatusDescription, or similar on a joined
--- dimension table), replace this CASE expression with that column and adjust
--- the category labels to match the CEDS-defined values for this element.
--- Verify that all expected CEDS FTE status categories are represented.
+-- Distribution - Full Time (1.0 <= x)
 SELECT
-    '{DataElementName}'                    AS DataElementName,
-    'Distribution'                         AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))        AS Value,
-    CASE
-        WHEN FullTimeEquivalency >= 1.0              THEN 'Full Time (1.0 <= x)'
-        WHEN FullTimeEquivalency >= 0.5
-             AND FullTimeEquivalency < 1.0           THEN 'Part Time (0.5 <= x < 1)'
-        WHEN FullTimeEquivalency > 0.0
-             AND FullTimeEquivalency < 0.5           THEN 'Less Than Half Time (0 < x < 0.5)'
-        WHEN FullTimeEquivalency = 0.0               THEN 'Not Employed'
-        ELSE                                              'Unknown / Not Reported'
-    END                                    AS SubItemLabel,
-    NULL                                   AS Remarks
+    '{DataElementName}'             AS DataElementName,
+    'Distribution'                  AS CharacteristicType,
+    CAST(COUNT(CASE WHEN FullTimeEquivalency >= 1.0 THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'Full Time (1.0 <= x)'          AS SubItemLabel,
+    NULL                            AS Remarks
 FROM BaseData
-WHERE FullTimeEquivalency IS NOT NULL
-GROUP BY
-    CASE
-        WHEN FullTimeEquivalency >= 1.0              THEN 'Full Time (1.0 <= x)'
-        WHEN FullTimeEquivalency >= 0.5
-             AND FullTimeEquivalency < 1.0           THEN 'Part Time (0.5 <= x < 1)'
-        WHEN FullTimeEquivalency > 0.0
-             AND FullTimeEquivalency < 0.5           THEN 'Less Than Half Time (0 < x < 0.5)'
-        WHEN FullTimeEquivalency = 0.0               THEN 'Not Employed'
-        ELSE                                              'Unknown / Not Reported'
-    END
-";
+
+UNION ALL
+
+-- Distribution - Part Time (0.5 <= x < 1.0)
+SELECT
+    '{DataElementName}'             AS DataElementName,
+    'Distribution'                  AS CharacteristicType,
+    CAST(COUNT(CASE WHEN FullTimeEquivalency >= 0.5 AND FullTimeEquivalency < 1.0 THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'Part Time (0.5 <= x < 1.0)'   AS SubItemLabel,
+    NULL                            AS Remarks
+FROM BaseData
+
+UNION ALL
+
+-- Distribution - Less Than Half Time (0 < x < 0.5)
+SELECT
+    '{DataElementName}'                  AS DataElementName,
+    'Distribution'                       AS CharacteristicType,
+    CAST(COUNT(CASE WHEN FullTimeEquivalency > 0.0 AND FullTimeEquivalency < 0.5 THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'Less Than Half Time (0 < x < 0.5)' AS SubItemLabel,
+    NULL                                 AS Remarks
+FROM BaseData
+
+UNION ALL
+
+-- Distribution - Not Employed (0.0)
+SELECT
+    '{DataElementName}'             AS DataElementName,
+    'Distribution'                  AS CharacteristicType,
+    CAST(COUNT(CASE WHEN FullTimeEquivalency = 0.0 THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'Not Employed (0.0)'            AS SubItemLabel,
+    NULL                            AS Remarks
+FROM BaseData
+
+UNION ALL
+
+-- Distribution - Unknown / Not Reported (NULL)
+SELECT
+    '{DataElementName}'             AS DataElementName,
+    'Distribution'                  AS CharacteristicType,
+    CAST(COUNT(CASE WHEN FullTimeEquivalency IS NULL THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'Unknown / Not Reported'        AS SubItemLabel,
+    NULL                            AS Remarks
+FROM BaseData";
 
     public string AssessmentDescription =>
         "Assesses Staff FTE status from RDS.FactK12StaffEmployments joined to " +
         "RDS.DimPeople_Current. Reports total record count, completeness of the " +
-        "FullTimeEquivalency field, its observed minimum and maximum values, and " +
-        "distribution of records across FTE status bands (Full Time, Part Time, " +
-        "Less Than Half Time, Not Employed, Unknown / Not Reported). Distribution " +
-        "categories are derived from FullTimeEquivalency thresholds pending " +
-        "confirmation of a dedicated FTE status dimension column.";
+        "FullTimeEquivalency field, and distribution of records across FTE status " +
+        "bands (Full Time, Part Time, Less Than Half Time, Not Employed, Unknown / " +
+        "Not Reported). Distribution categories are derived from FullTimeEquivalency " +
+        "thresholds pending confirmation of a dedicated FTE status dimension column.";
 }
