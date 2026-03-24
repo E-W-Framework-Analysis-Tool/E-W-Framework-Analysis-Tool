@@ -39,7 +39,7 @@ Counts AS (
     FROM FamilyEngagementBase
 )
 
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 
 -- RecordCount
 SELECT

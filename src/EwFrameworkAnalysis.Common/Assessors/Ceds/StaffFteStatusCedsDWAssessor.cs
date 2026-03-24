@@ -28,7 +28,7 @@ WITH BaseData AS (
     JOIN RDS.DimPeople_Current d ON d.DimPersonId = f.K12Staff_CurrentId
 )
 
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 
 -- RecordCount
 SELECT

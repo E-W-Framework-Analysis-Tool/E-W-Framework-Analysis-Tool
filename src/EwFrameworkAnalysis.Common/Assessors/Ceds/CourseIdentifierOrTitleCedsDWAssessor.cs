@@ -1,75 +1,71 @@
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
-/// Assesses the "Course identifier or title" data element from RDS.FactK12StudentCourseSections
-/// joined to RDS.DimK12Courses. Evaluates record count and completeness of the course
-/// identifier and title fields.
+/// Profiles course identifier and title data from RDS.FactK12StudentCourseSections
+/// joined to RDS.DimK12Courses. Assesses record count and completeness of both
+/// the CourseIdentifier and CourseTitle fields.
 /// </summary>
 public class CourseIdentifierOrTitleCedsDWAssessor : ICedsDWAssessor
 {
     public string DataElementName => "Course identifier or title";
 
     public string Query => $@"
-WITH CourseCTE AS (
+WITH CourseCte AS (
     SELECT
-        f.DimK12CourseId,
-        -- NOTE: Verify the correct column name for course title in RDS.DimK12Courses.
-        --       Replace 'CourseTitle' below with the actual column name before running.
+        c.CourseIdentifier,
         c.CourseTitle
     FROM RDS.FactK12StudentCourseSections f
-    -- NOTE: The original query joined f.StateK12CourseId = c.DimK12CourseId, which appears
-    --       to compare a state-issued identifier to a surrogate DW key. This has been
-    --       corrected to f.DimK12CourseId = c.DimK12CourseId. Verify this is the intended
-    --       join key before running.
-    JOIN RDS.DimK12Courses c ON f.DimK12CourseId = c.DimK12CourseId
+    JOIN RDS.DimK12Courses c
+        ON f.StateK12CourseId = c.DimK12CourseId
 )
-
-INSERT INTO #Results
-
 -- RecordCount
+INSERT INTO #EWFProfilerResults
 SELECT
-    '{DataElementName}'            AS DataElementName,
-    'RecordCount'                  AS CharacteristicType,
-    CAST(COUNT(DISTINCT DimK12CourseId) AS NVARCHAR(MAX)) AS Value,
-    NULL                           AS SubItemLabel,
-    NULL                           AS Remarks
-FROM CourseCTE
-
+    '{DataElementName}'             AS DataElementName,
+    'RecordCount'                   AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
+    NULL                            AS SubItemLabel,
+    NULL                            AS Remarks
+FROM CourseCte
 UNION ALL
-
--- Completeness - TotalRecords
+-- Completeness - TotalRecords (CourseIdentifier)
 SELECT
-    '{DataElementName}'            AS DataElementName,
-    'Completeness'                 AS CharacteristicType,
-    CAST(COUNT(DISTINCT DimK12CourseId) AS NVARCHAR(MAX)) AS Value,
-    'TotalRecords'                 AS SubItemLabel,
-    NULL                           AS Remarks
-FROM CourseCTE
-
+    '{DataElementName}'                 AS DataElementName,
+    'Completeness'                      AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX))     AS Value,
+    'TotalRecords'                      AS SubItemLabel,
+    'CourseIdentifier'                  AS Remarks
+FROM CourseCte
 UNION ALL
-
--- Completeness - PopulatedRecords
--- NOTE: This measures how many distinct course records have a non-NULL, non-empty
---       CourseTitle value. Verify the column name 'CourseTitle' against the actual
---       schema of RDS.DimK12Courses before running.
+-- Completeness - PopulatedRecords (CourseIdentifier)
 SELECT
-    '{DataElementName}'            AS DataElementName,
-    'Completeness'                 AS CharacteristicType,
-    CAST(
-        COUNT(DISTINCT CASE
-            WHEN CourseTitle IS NOT NULL
-             AND LTRIM(RTRIM(CourseTitle)) <> ''
-            THEN DimK12CourseId
-        END)
-    AS NVARCHAR(MAX))              AS Value,
-    'PopulatedRecords'             AS SubItemLabel,
-    NULL                           AS Remarks
-FROM CourseCTE
-";
+    '{DataElementName}'                         AS DataElementName,
+    'Completeness'                              AS CharacteristicType,
+    CAST(COUNT(CASE WHEN CourseIdentifier <> '' THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'PopulatedRecords'                                                        AS SubItemLabel,
+    'CourseIdentifier'                                                        AS Remarks
+FROM CourseCte
+UNION ALL
+-- Completeness - TotalRecords (CourseTitle)
+SELECT
+    '{DataElementName}'                 AS DataElementName,
+    'Completeness'                      AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX))     AS Value,
+    'TotalRecords'                      AS SubItemLabel,
+    'CourseTitle'                       AS Remarks
+FROM CourseCte
+UNION ALL
+-- Completeness - PopulatedRecords (CourseTitle)
+SELECT
+    '{DataElementName}'                      AS DataElementName,
+    'Completeness'                           AS CharacteristicType,
+    CAST(COUNT(CASE WHEN CourseTitle <> '' THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'PopulatedRecords'                                                    AS SubItemLabel,
+    'CourseTitle'                                                         AS Remarks
+FROM CourseCte";
 
     public string AssessmentDescription =>
-        "Assesses 'Course identifier or title' from RDS.FactK12StudentCourseSections joined " +
-        "to RDS.DimK12Courses. Reports the distinct count of course records (RecordCount) and " +
-        "the completeness of the course title field, comparing total distinct courses to those " +
-        "with a non-null, non-empty title value (Completeness).";
+        "Profiles course identifier and title data from RDS.FactK12StudentCourseSections joined to " +
+        "RDS.DimK12Courses on StateK12CourseId. Assesses total record count and completeness, where a " +
+        "record is considered populated if either CourseIdentifier or CourseTitle is non-empty.";
 }

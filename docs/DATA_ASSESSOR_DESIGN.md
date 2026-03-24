@@ -51,39 +51,39 @@ Key features:
 - SQL queries designed for CEDS Data Warehouse schema
 - Air-gapped assessment workflow: generate script → execute in SSMS → import CSV results
 - Automatic discovery via reflection — any class implementing `ICedsDWAssessor` is included
-- All assessor queries insert into a shared `#Results` temp table; a final `SELECT` returns the combined result set
+- All assessor queries insert into a shared `#EWFProfilerResults` temp table; a final `SELECT` returns the combined result set
 
 #### Query Structure Contract
 
 Each assessor's `Query` property is emitted verbatim into the generated script. The orchestrator:
 
-1. Creates the shared `#Results` temp table
+1. Creates the shared `#EWFProfilerResults` temp table
 2. Appends each assessor's `Query` followed by a `;`
-3. Selects all rows from `#Results` at the end
+3. Selects all rows from `#EWFProfilerResults` at the end
 
 Because of this, every `Query` must:
 
-- **Insert its own rows** into `#Results` using `INSERT INTO #Results`
+- **Insert its own rows** into `#EWFProfilerResults` using `INSERT INTO #EWFProfilerResults`
 - **Not end with a semicolon** — the orchestrator adds one
-- **Not reference or create `#Results`** — the orchestrator owns the table definition
+- **Not reference or create `#EWFProfilerResults`** — the orchestrator owns the table definition
 
 For queries **without a CTE**:
 
 ```sql
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 SELECT ...
 UNION ALL
 SELECT ...
 ```
 
-For queries **with a CTE**, `WITH` must open the statement and `INSERT INTO #Results` must follow the CTE
+For queries **with a CTE**, `WITH` must open the statement and `INSERT INTO #EWFProfilerResults` must follow the CTE
 definition, before the `SELECT`:
 
 ```sql
 WITH MyCte AS (
     SELECT ... FROM RDS.SomeTable
 )
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 SELECT ... FROM MyCte
 UNION ALL
 SELECT ... FROM MyCte
@@ -110,7 +110,7 @@ hardcoded as a separate literal — so that refactoring the property updates the
 public string DataElementName => "Suspensions and Expulsions (K-12)";
 
 public string Query => $@"
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 SELECT
     '{DataElementName}' AS DataElementName,
     ...
@@ -237,16 +237,18 @@ SELECT
     'Completeness'      AS CharacteristicType,
     CAST(TotalCount AS NVARCHAR(MAX)) AS Value,
     'TotalRecords'      AS SubItemLabel,
-    NULL                AS Remarks
+    NULL AS Remarks
 UNION ALL
 -- Completeness - PopulatedRecords
 SELECT
     '{DataElementName}' AS DataElementName,
     'Completeness'      AS CharacteristicType,
-    CAST(PopulatedCount AS NVARCHAR(MAX)) AS Value,
+    CAST(COUNT(CASE WHEN SomeColumn IS NOT NULL AND SomeColumn <> '' THEN 1 END) AS NVARCHAR(MAX)) AS Value,
     'PopulatedRecords'  AS SubItemLabel,
-    NULL                AS Remarks
+    NULL AS Remarks
 ```
+
+> **Populated records:** Count rows where the relevant field has a meaningful value. For text fields, exclude both NULLs and empty strings (`IS NOT NULL AND <> ''`). For nullable non-text fields, `COUNT(col)` (which excludes NULLs) is sufficient. When the data element name covers multiple fields (e.g., "identifier or title"), use a single `CASE` combining them with `OR` rather than producing separate `Completeness` blocks per field.
 
 **C# output:**
 

@@ -5,7 +5,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// E-W Framework data element.
 /// <para>
 /// Each implementation provides a SQL query that inserts profiling rows into the
-/// shared <c>#Results</c> temp table created by <see cref="CedsDWAssessmentOrchestrator"/>.
+/// shared <c>#EWFProfilerResults</c> temp table created by <see cref="CedsDWAssessmentOrchestrator"/>.
 /// The orchestrator combines all discovered assessors into a single executable script
 /// for the air-gapped assessment workflow (generate → execute in SSMS → import results).
 /// </para>
@@ -24,7 +24,7 @@ public interface ICedsDWAssessor
     string DataElementName { get; }
 
     /// <summary>
-    /// The SQL statement that inserts this assessor's profiling rows into <c>#Results</c>.
+    /// The SQL statement that inserts this assessor's profiling rows into <c>#EWFProfilerResults</c>.
     /// Must follow the query structure contract in <c>docs/DATA_ASSESSOR_DESIGN.md</c>.
     /// Do not end with a semicolon — the orchestrator adds one.
     /// </summary>

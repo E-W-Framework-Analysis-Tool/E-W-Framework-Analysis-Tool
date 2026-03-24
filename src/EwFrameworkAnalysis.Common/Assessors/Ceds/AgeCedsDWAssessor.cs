@@ -29,7 +29,7 @@ WITH PeopleStats AS (
     FROM RDS.DimPeople
 )
 
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 
 -- Completeness - PopulatedRecords
 SELECT

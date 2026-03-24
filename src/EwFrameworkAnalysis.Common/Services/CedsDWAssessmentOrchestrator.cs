@@ -31,8 +31,8 @@ public class CedsDWAssessmentOrchestrator
 
     /// <summary>
     /// Generates a temp-table-based assessment script from the provided assessors.
-    /// Creates #Results, runs each assessor's Query verbatim, then selects all rows.
-    /// Each assessor is responsible for inserting its own rows via INSERT INTO #Results.
+    /// Creates #EWFProfilerResults, runs each assessor's Query verbatim, then selects all rows.
+    /// Each assessor is responsible for inserting its own rows via INSERT INTO #EWFProfilerResults.
     /// </summary>
     public string GenerateAssessmentScript(List<ICedsDWAssessor> assessors)
     {
@@ -60,7 +60,9 @@ public class CedsDWAssessmentOrchestrator
 
     private static void AppendTempTableCreation(StringBuilder sb)
     {
-        sb.AppendLine("CREATE TABLE #Results");
+        sb.AppendLine("DROP TABLE IF EXISTS #EWFProfilerResults;");
+        sb.AppendLine();
+        sb.AppendLine("CREATE TABLE #EWFProfilerResults");
         sb.AppendLine("(");
         sb.AppendLine("    DataElementName    NVARCHAR(MAX),");
         sb.AppendLine("    CharacteristicType NVARCHAR(MAX),");
@@ -79,7 +81,7 @@ public class CedsDWAssessmentOrchestrator
         sb.AppendLine("    Value,");
         sb.AppendLine("    SubItemLabel,");
         sb.AppendLine("    Remarks");
-        sb.AppendLine("FROM #Results");
+        sb.AppendLine("FROM #EWFProfilerResults");
         sb.AppendLine("ORDER BY DataElementName, CharacteristicType, SubItemLabel;");
     }
 
@@ -101,11 +103,11 @@ public class CedsDWAssessmentOrchestrator
         sb.AppendLine("5. Import the CSV file back into the application");
         sb.AppendLine();
         sb.AppendLine("NOTES:");
-        sb.AppendLine("  - This script creates a session-scoped temporary table (#Results) that is");
+        sb.AppendLine("  - This script creates a session-scoped temporary table (#EWFProfilerResults) that is");
         sb.AppendLine("    automatically dropped when the SSMS connection is closed.");
         sb.AppendLine("  - No permanent objects are created and no source data is modified.");
         sb.AppendLine("  - If you need to re-run the script in the same session, disconnect and");
-        sb.AppendLine("    reconnect first, or add DROP TABLE IF EXISTS #Results; at the top.");
+        sb.AppendLine("    reconnect first, or add DROP TABLE IF EXISTS #EWFProfilerResults; at the top.");
         sb.AppendLine();
         sb.AppendLine("EXPECTED CSV FORMAT:");
         sb.AppendLine("The script produces 5 columns:");

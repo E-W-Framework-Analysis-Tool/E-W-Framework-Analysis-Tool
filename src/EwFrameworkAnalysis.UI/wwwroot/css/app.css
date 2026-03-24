@@ -3852,9 +3852,6 @@
   .text-green {
     color: var(--color-green);
   }
-  .text-green-700 {
-    color: var(--color-green-700);
-  }
   .text-primary {
     color: var(--color-primary);
   }

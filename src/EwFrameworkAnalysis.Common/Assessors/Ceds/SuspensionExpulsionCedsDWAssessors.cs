@@ -4,7 +4,7 @@ public class SuspensionExpulsionGrades1and2CedsDWAssessor : ICedsDWAssessor
 {
     public string DataElementName => "Suspensions and Expulsions (Grades 1 and 2)";
     public string Query => $@"
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 SELECT
     '{DataElementName}' AS DataElementName,
     'RecordCount' AS CharacteristicType,
@@ -34,7 +34,7 @@ public class SuspensionExpulsionK12CedsDWAssessor : ICedsDWAssessor
 {
     public string DataElementName => "Suspensions and Expulsions (K-12)";
     public string Query => $@"
-INSERT INTO #Results
+INSERT INTO #EWFProfilerResults
 SELECT
     '{DataElementName}' AS DataElementName,
     'RecordCount' AS CharacteristicType,
