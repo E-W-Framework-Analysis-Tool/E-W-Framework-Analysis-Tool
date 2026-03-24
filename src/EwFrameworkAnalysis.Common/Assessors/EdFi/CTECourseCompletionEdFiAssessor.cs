@@ -5,34 +5,56 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class CTECourseCompletionEdFiAssessor : IEdFiAssessor
 {
+    private readonly EdFiCTEProgramProvider _cteProgramProvider;
+
+    public CTECourseCompletionEdFiAssessor(EdFiCTEProgramProvider cteProgramProvider)
+    {
+        _cteProgramProvider = cteProgramProvider;
+    }
+
     public string DataElementName => "CTE course completion";
 
     public string AssessmentDescription =>
-        "Count of studentCTEProgramAssociations representing CTE course completions";
+        "Analyzes studentCTEProgramAssociations for CTE course completions by reason exited";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.Log($"Starting assessment: {DataElementName}");
-        context.ReportProgress(0, "Initializing...");
+        context.ReportProgress(0, "Loading CTE program associations...");
 
-        context.Log("Fetching CTE course completion count from Ed-Fi API");
-        context.ReportProgress(25, "Querying API for total count...");
+        var data = await _cteProgramProvider.GetDataAsync(httpClient, context);
 
-        var count = await EdFiApiPatterns.CountFromHeaderAsync(
-            httpClient,
-            "ed-fi/studentCTEProgramAssociations"
-        );
+        var totalRecords = data.Count;
+        var recordsWithEndDate = 0;
+        var reasonExitedDistribution = new Dictionary<string, int>();
 
-        context.Log($"Found {count:N0} CTE program associations");
+        foreach (var association in data)
+        {
+            if (association.EndDate != null)
+            {
+                recordsWithEndDate++;
+            }
+
+            var reason = EdFiDescriptorHelper.ParseDescriptorValue(association.ReasonExitedDescriptor);
+            if (!reasonExitedDistribution.ContainsKey(reason))
+                reasonExitedDistribution[reason] = 0;
+            reasonExitedDistribution[reason]++;
+        }
+
+        context.Log($"Found {recordsWithEndDate:N0} of {totalRecords:N0} records with EndDate (completed)");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics = [new RecordCount(count)],
+            Characteristics =
+            [
+                new RecordCount(totalRecords),
+                new Distribution(reasonExitedDistribution, "Reason Exited"),
+                new Completeness(totalRecords, recordsWithEndDate, "EndDate")
+            ],
             Remarks = AssessmentDescription
         };
     }

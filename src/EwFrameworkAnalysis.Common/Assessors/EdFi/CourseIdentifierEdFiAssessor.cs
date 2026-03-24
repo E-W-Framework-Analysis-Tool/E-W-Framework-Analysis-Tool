@@ -5,34 +5,60 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class CourseIdentifierEdFiAssessor : IEdFiAssessor
 {
+    private readonly EdFiCourseProvider _courseProvider;
+
+    public CourseIdentifierEdFiAssessor(EdFiCourseProvider courseProvider)
+    {
+        _courseProvider = courseProvider;
+    }
+
     public string DataElementName => "Course identifier or title";
 
     public string AssessmentDescription =>
-        "Count of courses available in the Ed-Fi API";
+        "Analyzes courses for academic subject distribution and title completeness";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.Log($"Starting assessment: {DataElementName}");
-        context.ReportProgress(0, "Initializing...");
+        context.ReportProgress(0, "Loading courses...");
 
-        context.Log("Fetching course count from Ed-Fi API");
-        context.ReportProgress(25, "Querying API for total count...");
+        var data = await _courseProvider.GetDataAsync(httpClient, context);
 
-        var count = await EdFiApiPatterns.CountFromHeaderAsync(
-            httpClient,
-            "ed-fi/courses"
-        );
+        var totalRecords = data.Count;
+        var recordsWithTitle = 0;
+        var subjectDistribution = new Dictionary<string, int>();
 
-        context.Log($"Found {count:N0} courses");
+        foreach (var course in data)
+        {
+            if (!string.IsNullOrWhiteSpace(course.CourseTitle))
+                recordsWithTitle++;
+
+            if (course.AcademicSubjects != null)
+            {
+                foreach (var subject in course.AcademicSubjects)
+                {
+                    var subjectValue = EdFiDescriptorHelper.ParseDescriptorValue(subject.AcademicSubjectDescriptor);
+                    if (!subjectDistribution.ContainsKey(subjectValue))
+                        subjectDistribution[subjectValue] = 0;
+                    subjectDistribution[subjectValue]++;
+                }
+            }
+        }
+
+        context.Log($"Found {recordsWithTitle:N0} of {totalRecords:N0} courses with titles");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics = [new RecordCount(count)],
+            Characteristics =
+            [
+                new RecordCount(totalRecords),
+                new Distribution(subjectDistribution, "Academic Subject"),
+                new Completeness(totalRecords, recordsWithTitle, "CourseTitle")
+            ],
             Remarks = AssessmentDescription
         };
     }

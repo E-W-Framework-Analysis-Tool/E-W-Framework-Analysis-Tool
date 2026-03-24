@@ -5,34 +5,65 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class CTEPathwayEdFiAssessor : IEdFiAssessor
 {
+    private readonly EdFiCTEProgramProvider _cteProgramProvider;
+
+    public CTEPathwayEdFiAssessor(EdFiCTEProgramProvider cteProgramProvider)
+    {
+        _cteProgramProvider = cteProgramProvider;
+    }
+
     public string DataElementName => "CTE pathway or career cluster associated with CTE course";
 
     public string AssessmentDescription =>
-        "Count of studentCTEProgramAssociations with pathway or career cluster data";
+        "Analyzes studentCTEProgramAssociations for pathway and career cluster data";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.Log($"Starting assessment: {DataElementName}");
-        context.ReportProgress(0, "Initializing...");
+        context.ReportProgress(0, "Loading CTE program associations...");
 
-        context.Log("Fetching CTE pathway count from Ed-Fi API");
-        context.ReportProgress(25, "Querying API for total count...");
+        var data = await _cteProgramProvider.GetDataAsync(httpClient, context);
 
-        var count = await EdFiApiPatterns.CountFromHeaderAsync(
-            httpClient,
-            "ed-fi/studentCTEProgramAssociations"
-        );
+        var totalRecords = data.Count;
+        var recordsWithServices = 0;
+        var programDistribution = new Dictionary<string, int>();
+        var serviceDistribution = new Dictionary<string, int>();
 
-        context.Log($"Found {count:N0} CTE program associations");
+        foreach (var association in data)
+        {
+            var programName = association.ProgramReference?.ProgramName ?? "Unknown";
+            if (!programDistribution.ContainsKey(programName))
+                programDistribution[programName] = 0;
+            programDistribution[programName]++;
+
+            if (association.CteProgramServices != null && association.CteProgramServices.Count > 0)
+            {
+                recordsWithServices++;
+                foreach (var service in association.CteProgramServices)
+                {
+                    var serviceValue = EdFiDescriptorHelper.ParseDescriptorValue(service.CteProgramServiceDescriptor);
+                    if (!serviceDistribution.ContainsKey(serviceValue))
+                        serviceDistribution[serviceValue] = 0;
+                    serviceDistribution[serviceValue]++;
+                }
+            }
+        }
+
+        context.Log($"Found {recordsWithServices:N0} of {totalRecords:N0} records with CTE program services");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics = [new RecordCount(count)],
+            Characteristics =
+            [
+                new RecordCount(totalRecords),
+                new Distribution(programDistribution, "CTE Program"),
+                new Distribution(serviceDistribution, "CTE Program Service"),
+                new Completeness(totalRecords, recordsWithServices, "CteProgramServices")
+            ],
             Remarks = AssessmentDescription
         };
     }

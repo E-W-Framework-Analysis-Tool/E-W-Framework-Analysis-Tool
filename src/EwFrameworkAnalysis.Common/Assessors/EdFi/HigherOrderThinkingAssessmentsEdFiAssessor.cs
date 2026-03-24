@@ -5,10 +5,17 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class HigherOrderThinkingAssessmentsEdFiAssessor : IEdFiAssessor
 {
+    private readonly EdFiStudentAssessmentProvider _assessmentProvider;
+
+    public HigherOrderThinkingAssessmentsEdFiAssessor(EdFiStudentAssessmentProvider assessmentProvider)
+    {
+        _assessmentProvider = assessmentProvider;
+    }
+
     public string DataElementName => "Higher-order thinking skills performance assessments (K-12)";
 
     public string AssessmentDescription =>
-        "Count of studentAssessments as a baseline proxy for higher-order thinking skills assessments. " +
+        "Analyzes studentAssessments as a baseline proxy for higher-order thinking skills assessments. " +
         "Ed-Fi has no standard descriptor for higher-order thinking assessment categories.";
 
     public async Task<DataElementAssessment> AssessAsync(
@@ -16,24 +23,25 @@ public class HigherOrderThinkingAssessmentsEdFiAssessor : IEdFiAssessor
         DataSource dataSource,
         AssessorContext context)
     {
-        context.Log($"Starting assessment: {DataElementName}");
-        context.ReportProgress(0, "Initializing...");
+        context.ReportProgress(0, "Loading student assessments...");
 
-        context.Log("Fetching student assessment count from Ed-Fi API");
-        context.ReportProgress(25, "Querying API for total count...");
+        var data = await _assessmentProvider.GetDataAsync(httpClient, context);
 
-        var count = await EdFiApiPatterns.CountFromHeaderAsync(
-            httpClient,
-            "ed-fi/studentAssessments"
-        );
+        var result = StudentAssessmentAnalyzer.Analyze(data);
 
-        context.Log($"Found {count:N0} student assessments");
+        context.Log($"Found {result.RecordsWithScores:N0} of {result.TotalRecords:N0} assessments with score results");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics = [new RecordCount(count)],
+            Characteristics =
+            [
+                new RecordCount(result.TotalRecords),
+                new Distribution(result.GradeLevelDistribution, "Grade Level Assessed"),
+                new Distribution(result.PerformanceLevelDistribution, "Performance Level"),
+                new Completeness(result.TotalRecords, result.RecordsWithScores, "ScoreResults")
+            ],
             Remarks = AssessmentDescription
         };
     }
