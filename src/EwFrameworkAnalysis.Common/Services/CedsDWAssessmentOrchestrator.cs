@@ -82,7 +82,7 @@ public class CedsDWAssessmentOrchestrator
         sb.AppendLine("    SubItemLabel,");
         sb.AppendLine("    Remarks");
         sb.AppendLine("FROM #EWFProfilerResults");
-        sb.AppendLine("ORDER BY DataElementName, CharacteristicType, SubItemLabel;");
+        sb.AppendLine("ORDER BY DataElementName, CharacteristicType;");
     }
 
     private static void AppendHeader(StringBuilder sb, int assessorCount)
