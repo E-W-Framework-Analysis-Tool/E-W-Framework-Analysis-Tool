@@ -28,6 +28,9 @@ WITH PeopleStats AS (
             END) as MaxAge
     FROM RDS.DimPeople
 )
+
+INSERT INTO #Results
+
 -- Completeness - PopulatedRecords
 SELECT
     '{DataElementName}' AS DataElementName,

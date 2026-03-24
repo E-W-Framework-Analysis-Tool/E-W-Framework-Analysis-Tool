@@ -325,7 +325,7 @@
     {
         try
         {
-            var script = Orchestrator.GenerateUnionedQuery();
+            var script = Orchestrator.GenerateAssessmentScript();
             var fileName = $"CEDS_Assessment_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
 
             await JSRuntime.InvokeVoidAsync(

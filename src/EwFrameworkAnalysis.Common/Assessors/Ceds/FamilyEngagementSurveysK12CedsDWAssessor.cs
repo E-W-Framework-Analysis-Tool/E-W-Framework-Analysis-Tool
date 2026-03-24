@@ -39,6 +39,8 @@ Counts AS (
     FROM FamilyEngagementBase
 )
 
+INSERT INTO #Results
+
 -- RecordCount
 SELECT
     '{DataElementName}'     AS DataElementName,
