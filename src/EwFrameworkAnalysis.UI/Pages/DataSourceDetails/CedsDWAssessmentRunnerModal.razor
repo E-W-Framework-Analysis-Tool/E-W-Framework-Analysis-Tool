@@ -317,8 +317,7 @@
 
     protected override void OnInitialized()
     {
-        var assessors = Orchestrator.DiscoverAssessors();
-        _assessorCount = assessors.Count;
+        _assessorCount = Orchestrator.AssessorCount;
     }
 
     private async Task DownloadScript()

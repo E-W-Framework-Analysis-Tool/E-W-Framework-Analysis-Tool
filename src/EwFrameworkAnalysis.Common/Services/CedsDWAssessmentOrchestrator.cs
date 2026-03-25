@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using EwFrameworkAnalysis.Common.Assessors.Ceds;
 
@@ -6,38 +5,24 @@ namespace EwFrameworkAnalysis.Common.Services;
 
 public class CedsDWAssessmentOrchestrator
 {
-    /// <summary>
-    /// Discovers all ICedsDWAssessor implementations via reflection
-    /// </summary>
-    public List<ICedsDWAssessor> DiscoverAssessors()
+    private readonly IEnumerable<ICedsDWAssessor> _assessors;
+
+    public CedsDWAssessmentOrchestrator(IEnumerable<ICedsDWAssessor> assessors)
     {
-        var assessorType = typeof(ICedsDWAssessor);
-        var assessors = Assembly.GetAssembly(assessorType)!
-            .GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && assessorType.IsAssignableFrom(t))
-            .Select(t => (ICedsDWAssessor)Activator.CreateInstance(t)!)
-            .ToList();
-        return assessors;
+        _assessors = assessors;
     }
 
     /// <summary>
-    /// Generates a temp-table-based script combining all discovered assessors
-    /// </summary>
-    public string GenerateAssessmentScript()
-    {
-        var assessors = DiscoverAssessors();
-        return GenerateAssessmentScript(assessors);
-    }
-
-    /// <summary>
-    /// Generates a temp-table-based assessment script from the provided assessors.
+    /// Generates a temp-table-based assessment script from all registered assessors.
     /// Creates #EWFProfilerResults, runs each assessor's Query verbatim, then selects all rows.
     /// Each assessor is responsible for inserting its own rows via INSERT INTO #EWFProfilerResults.
     /// </summary>
-    public string GenerateAssessmentScript(List<ICedsDWAssessor> assessors)
+    public string GenerateAssessmentScript()
     {
+        var assessors = _assessors.ToList();
+
         if (assessors.Count == 0)
-            throw new InvalidOperationException("No ICedsDWAssessor implementations provided");
+            throw new InvalidOperationException("No ICedsDWAssessor implementations are registered.");
 
         var sb = new StringBuilder();
 
@@ -57,6 +42,8 @@ public class CedsDWAssessmentOrchestrator
 
         return sb.ToString();
     }
+
+    public int AssessorCount => _assessors.Count();
 
     private static void AppendTempTableCreation(StringBuilder sb)
     {

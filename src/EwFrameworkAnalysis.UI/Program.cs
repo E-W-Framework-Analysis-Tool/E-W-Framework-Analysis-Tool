@@ -1,3 +1,4 @@
+using EwFrameworkAnalysis.Common.Assessors.Ceds;
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
 using EwFrameworkAnalysis.Common.Mapping;
 using EwFrameworkAnalysis.Common.Models.Scoring;
@@ -46,14 +47,24 @@ builder.Services.AddSingleton(sp =>
     return new DataElementScoringRuleRegistry(rules);
 });
 
+// Register Ed-Fi assessors
 var assessorAssembly = typeof(IEdFiAssessor).Assembly;
-var assessorImplementations = assessorAssembly
+
+var edFiImplementations = assessorAssembly
     .GetTypes()
     .Where(t => typeof(IEdFiAssessor).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
-
-foreach (var implementation in assessorImplementations)
+foreach (var implementation in edFiImplementations)
 {
     builder.Services.AddScoped(typeof(IEdFiAssessor), implementation);
+}
+
+// Register CEDS assessors
+var cedsImplementations = assessorAssembly
+    .GetTypes()
+    .Where(t => typeof(ICedsDWAssessor).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+foreach (var implementation in cedsImplementations)
+{
+    builder.Services.AddScoped(typeof(ICedsDWAssessor), implementation);
 }
 
 var host = builder.Build();
@@ -61,5 +72,4 @@ var host = builder.Build();
 // Initialize the project service after the app is built (JSRuntime is now available)
 var projectService = host.Services.GetRequiredService<AnalysisProjectService>();
 await projectService.InitializeAsync();
-
 await host.RunAsync();
