@@ -1,0 +1,33 @@
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Data Elements Profiled" Shadow="Card.ShadowSize.XLarge" NoPadding>
+
+    <div class="space-y-2 px-5 pb-5">
+        @if (DataSourceCounts?.Any() == true)
+        {
+            @foreach (var item in DataSourceCounts)
+            {
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 truncate">@item.DataSourceName</span>
+                    <span class="font-semibold text-blue ml-2">@item.ElementCount</span>
+                </div>
+            }
+            <div class="border-t border-gray-100 pt-2 mt-2 flex justify-between text-sm font-semibold">
+                <span>Total</span>
+                <span class="text-blue">@DataSourceCounts.Sum(x => x.ElementCount)</span>
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-gray-400">No profiling data available.</p>
+        }
+    </div>
+</Card>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<DataSourceElementCount> DataSourceCounts { get; set; }
+        = Array.Empty<DataSourceElementCount>();
+
+    public record DataSourceElementCount(string DataSourceName, int ElementCount);
+}

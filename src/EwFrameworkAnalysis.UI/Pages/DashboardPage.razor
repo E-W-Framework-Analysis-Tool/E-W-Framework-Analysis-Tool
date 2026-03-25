@@ -11,32 +11,23 @@
     <ProjectHeader ActiveSourceCount="@ActiveSourceCount" />
 
     <!-- Dashboard Overview -->
-    <DashboardOverview OverallScore="@overallScore"
-                       TotalDataSources="@TotalDataSources"
-                       EdFiSourceCount="@EdFiSourceCount"
-                       CedsSourceCount="@CedsSourceCount"
-                       ManualSourceCount="@ManualSourceCount"
-                       ActiveSourceCount="@ActiveSourceCount"
-                       DisabledSourceCount="@DisabledSourceCount"
-                       LastAnalysisTime="@GetLastAnalysisTime()" />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <DataSourcesStatCard TotalDataSources="@TotalDataSources"
+                             EdFiSourceCount="@EdFiSourceCount"
+                             CedsSourceCount="@CedsSourceCount"
+                             ManualSourceCount="@ManualSourceCount"
+                             EnabledSourceCount="@ActiveSourceCount"
+                             DisabledSourceCount="@DisabledSourceCount" />
+        <DataElementStatCard DataSourceCounts="@GetDataElementCounts()" />
+        <LastProfilingCard LatestProfileAt="@GetLatestProfileTime()" />
+    </div>
 
     <!-- Main Content Area -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    <div class="mt-6">
         <!-- Data Sources Panel -->
         <DataSourcesList DataSources="@ProjectSvc.DataSources"
                          DataSourceItems="@GetDataSourceItems()"
                          OnAddDataSource="@(() => _isModalOpen = true)" />
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-            <!-- Essential Questions Summary -->
-            <EssentialQuestionsSummary QuestionScores="@questionScores" />
-
-            <!-- Data Coverage -->
-            <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
-                                 TotalCharacteristics="@GetTotalCharacteristics()"
-                                 UniqueCharacteristics="@GetUniqueCharacteristics()" />
-        </div>
     </div>
 </div>
 
@@ -48,7 +39,6 @@
 @code {
     // State variables
     private List<QuestionScore> questionScores = new();
-    private decimal overallScore = 0.74m;
     private bool _isModalOpen = false;
 
     // Computed properties
@@ -99,23 +89,11 @@
         Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(createdDataSourceId));
     }
 
-    private string GetLastAnalysisTime()
+    private DateTimeOffset? GetLatestProfileTime()
     {
-        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
-            return "Never";
-
-        var latestAssessment = ProjectSvc.Assessments
+        return ProjectSvc.Assessments
             .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault();
-
-        if (latestAssessment == null) return "Never";
-
-        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
-        return timeSpan.TotalHours < 1
-            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-            : timeSpan.TotalDays < 1
-                ? $"{(int)timeSpan.TotalHours} hours ago"
-                : $"{(int)timeSpan.TotalDays} days ago";
+            .FirstOrDefault()?.ConductedAt;
     }
 
     private IReadOnlyList<DataSourcesList.DataSourceListItem> GetDataSourceItems()
@@ -177,5 +155,22 @@
             .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
             .Distinct()
             .Count() ?? 0;
+    }
+
+    private IReadOnlyList<DataElementStatCard.DataSourceElementCount> GetDataElementCounts()
+    {
+        if (ProjectSvc.DataSources == null)
+            return Array.Empty<DataElementStatCard.DataSourceElementCount>();
+
+        return ProjectSvc.DataSources
+            .Where(ds => ds.Enabled)
+            .Select(ds => new DataElementStatCard.DataSourceElementCount(
+                DataSourceName: ds.Name,
+                ElementCount: ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                    .OrderByDescending(a => a.ConductedAt)
+                    .FirstOrDefault()
+                    ?.DataElementAssessments.Count ?? 0
+            ))
+            .ToList();
     }
 }

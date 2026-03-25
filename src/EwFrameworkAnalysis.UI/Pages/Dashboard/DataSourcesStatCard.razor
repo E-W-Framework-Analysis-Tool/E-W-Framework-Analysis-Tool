@@ -1,0 +1,17 @@
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Data Sources" Shadow="Card.ShadowSize.XLarge" NoPadding>
+    <div class="text-sm text-gray space-y-1 px-5 pb-5">
+        <div>@EdFiSourceCount Ed-Fi, @CedsSourceCount CEDS, @ManualSourceCount Manual</div>
+        <div class="text-xs">(@EnabledSourceCount enabled, @DisabledSourceCount disabled)</div>
+    </div>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public int TotalDataSources { get; set; }
+    [Parameter, EditorRequired] public int EdFiSourceCount { get; set; }
+    [Parameter, EditorRequired] public int CedsSourceCount { get; set; }
+    [Parameter, EditorRequired] public int ManualSourceCount { get; set; }
+    [Parameter, EditorRequired] public int EnabledSourceCount { get; set; }
+    [Parameter, EditorRequired] public int DisabledSourceCount { get; set; }
+}
