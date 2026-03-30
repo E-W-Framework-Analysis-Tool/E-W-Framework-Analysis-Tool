@@ -6,10 +6,14 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// and overall scores (AssessmentSubtestId = -1). Assesses record count,
 /// completeness of the scale score field, and the integer range of observed scores.
 ///
-/// NOTE: The assessment type filter (AssessmentTypeAdministeredDescription LIKE '%observation%')
-/// is a non-standardized placeholder. DimAssessments values vary by state implementation.
-/// Before deploying, verify the correct AssessmentTypeAdministeredDescription value(s)
-/// used in the target state's CEDS Data Warehouse and update the WHERE clause accordingly.
+/// NOTE: The CEDS Assessment Type option set is primarily designed for student assessments.
+/// 'Observation' is defined as "Developmental observation" in CEDS, which typically refers
+/// to early childhood student assessments rather than educator performance observations.
+/// A 'StaffEvaluation' type exists in some CEDS implementations but is inconsistently
+/// populated. The filter below combines an exact code match and a description LIKE match
+/// as a best-effort approach — verify against the target state's DimAssessments values
+/// before relying on this assessor:
+///   SELECT DISTINCT AssessmentTypeCode, AssessmentTypeDescription FROM RDS.DimAssessments ORDER BY 1
 /// </summary>
 public class OverallTeacherObservationScoreCedsDWAssessor : ICedsDWAssessor
 {
@@ -21,13 +25,8 @@ WITH ObservationBase AS (
         f.AssessmentResultScoreValueScaleScore
     FROM RDS.FactK12StaffAssessments f
     JOIN RDS.DimAssessments d ON f.AssessmentId = d.DimAssessmentId
-    -- !! NOTE: The filter below is a non-standardized placeholder !!
-    -- AssessmentTypeAdministeredDescription values are not standardized across state
-    -- CEDS Data Warehouse implementations. Before deploying, query DimAssessments in
-    -- the target environment to identify the correct value(s) for educator observations:
-    --   SELECT DISTINCT AssessmentTypeAdministeredDescription FROM RDS.DimAssessments ORDER BY 1
-    -- Then replace the LIKE condition below with an exact match (=) for the confirmed value(s).
-      AND d.AssessmentTypeAdministeredDescription LIKE '%observation%'
+    WHERE (d.AssessmentTypeCode = 'Observation' OR d.AssessmentTypeCode = 'StaffEvaluation'
+           OR d.AssessmentTypeDescription LIKE '%observation%')
       AND f.AssessmentSubtestId = -1
 )
 INSERT INTO #EWFProfilerResults
@@ -77,9 +76,10 @@ SELECT
 FROM ObservationBase";
 
     public string AssessmentDescription =>
-        "Assesses overall teacher observation scores for K-12 staff, drawn from observation-type " +
-        "assessments (filtered by AssessmentTypeAdministeredDescription) at the overall score level " +
-        "(AssessmentSubtestId = -1). Reports total record count, completeness of the scale score " +
+        "Assesses overall teacher observation scores for K-12 staff using AssessmentTypeCode " +
+        "= 'Observation' or 'StaffEvaluation', or AssessmentTypeDescription LIKE '%observation%'. " +
+        "Note: CEDS assessment type codes are primarily student-oriented; educator observation " +
+        "scores may be inconsistently mapped across state implementations. " +
         "The scale score field is stored as NVARCHAR(70); IntegerRange uses TRY_CAST to DECIMAL " +
         "for correct numeric min/max — unparseable values are silently excluded from the range.";
 }
