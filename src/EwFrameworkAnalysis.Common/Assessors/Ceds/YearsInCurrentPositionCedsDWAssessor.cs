@@ -78,5 +78,7 @@ FROM LeaderBase";
         "Assesses years in current position for K-12 school leaders, calculated from " +
         "AssignmentStartDate to the current date. Reports total record count, completeness " +
         "of the assignment start date, and the minimum and maximum tenure in years. " +
-        "School leader classification filter requires confirmation before use in production.";
+        "School leader classification filter uses partial string matching on K12StaffClassificationCode " +
+        "(LIKE '%Principal%', '%Leader%', '%Administrator%') as a placeholder — exact code values require " +
+        "confirmation against RDS.DimK12StaffCategories before use in production.";
 }
