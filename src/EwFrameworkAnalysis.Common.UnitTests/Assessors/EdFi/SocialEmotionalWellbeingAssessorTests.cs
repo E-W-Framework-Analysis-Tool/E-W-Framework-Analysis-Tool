@@ -27,7 +27,7 @@ public class SocialEmotionalWellbeingAssessorTests
     [
         // Kindergarten Readiness
         new ReportedKindergartenReadinessSocialEmotionalEdFiAssessor(provider),
-        new TeacherReportsSocialEmotionalEdFiAssessor(provider),
+        new TeacherReportsSocialEmotionalEdFiAssessor(),
         new DirectChildAssessmentsExecutiveFunctionEdFiAssessor(provider),
         new ReportedKindergartenReadinessBehavioralEdFiAssessor(provider),
         new TeacherReportsExecutiveFunctionEdFiAssessor(provider),
@@ -49,22 +49,13 @@ public class SocialEmotionalWellbeingAssessorTests
         new CivicEngagementSurveysPostsecondaryEdFiAssessor(provider),
         new SocialCapitalSurveysPostsecondaryEdFiAssessor(provider),
         new CulturalCompetencyAssessmentsPostsecondaryEdFiAssessor(provider),
-        // Workforce SEL
-        new SelfManagementSurveysWorkforceEdFiAssessor(provider),
-        new GrowthMindsetSurveysWorkforceEdFiAssessor(provider),
-        new SelfEfficacySurveysWorkforceEdFiAssessor(provider),
-        new SocialProficiencyAssessmentsWorkforceEdFiAssessor(provider),
-        new CivicEngagementSurveysWorkforceEdFiAssessor(provider),
-        new SocialCapitalSurveysWorkforceEdFiAssessor(provider),
-        new CulturalCompetencyAssessmentsWorkforceEdFiAssessor(provider),
         // Health & Wellness
         new DevelopmentalScreeningResultsEdFiAssessor(provider),
         new MentalEmotionalWellBeingAssessmentsEdFiAssessor(provider),
         new UniversalScreeningResultsEdFiAssessor(provider),
         new HealthRelatedQualityOfLifeEdFiAssessor(provider),
         new PhysicalHealthSurveysK12EdFiAssessor(provider),
-        new PhysicalHealthSurveysPostsecondaryEdFiAssessor(provider),
-        new PhysicalHealthSurveysWorkforceEdFiAssessor(provider)
+        new PhysicalHealthSurveysPostsecondaryEdFiAssessor(provider)
     ];
 
     [Fact]
@@ -165,7 +156,7 @@ public class SocialEmotionalWellbeingAssessorTests
 
     [Theory]
     [InlineData(typeof(ReportedKindergartenReadinessSocialEmotionalEdFiAssessor), "Reported kindergarten readiness (social-emotional skills)")]
-    [InlineData(typeof(TeacherReportsSocialEmotionalEdFiAssessor), "Teacher reports of social-emotional development")]
+    // TeacherReportsSocialEmotionalEdFiAssessor excluded — queries Survey API directly, not StudentAssessments
     [InlineData(typeof(DirectChildAssessmentsExecutiveFunctionEdFiAssessor), "Direct child assessments of executive function")]
     [InlineData(typeof(ReportedKindergartenReadinessBehavioralEdFiAssessor), "Reported kindergarten readiness (behavioral skills)")]
     [InlineData(typeof(TeacherReportsExecutiveFunctionEdFiAssessor), "Teacher reports of executive function")]
@@ -184,7 +175,6 @@ public class SocialEmotionalWellbeingAssessorTests
     [InlineData(typeof(HealthRelatedQualityOfLifeEdFiAssessor), "Health-Related Quality of Life Scale scores")]
     [InlineData(typeof(PhysicalHealthSurveysK12EdFiAssessor), "Physical health surveys (K-12)")]
     [InlineData(typeof(PhysicalHealthSurveysPostsecondaryEdFiAssessor), "Physical health surveys (Postsecondary)")]
-    [InlineData(typeof(PhysicalHealthSurveysWorkforceEdFiAssessor), "Physical health surveys (Workforce)")]
     public async Task Should_ReturnCorrectDataElementName_When_Assessed(Type assessorType, string expectedName)
     {
         var provider = CreateAssessmentProviderWithData([]);
