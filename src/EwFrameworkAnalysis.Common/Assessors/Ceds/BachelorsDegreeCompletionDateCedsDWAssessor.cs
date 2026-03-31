@@ -23,7 +23,7 @@ WITH BachelorsBase AS (
 INSERT INTO #EWFProfilerResults
 -- RecordCount
 SELECT
-    '{DataElementName}'             AS DataElementName,
+    '{DataElementName.EscapeForQuery()}'             AS DataElementName,
     'RecordCount'                   AS CharacteristicType,
     CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
     NULL                            AS SubItemLabel,
