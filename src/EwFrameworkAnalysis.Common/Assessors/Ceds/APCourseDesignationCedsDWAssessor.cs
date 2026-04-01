@@ -9,7 +9,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// distinct courses. If StateK12CourseId is not populated by the target state,
 /// substitute K12CourseSectionId as a fallback course identifier.
 /// </summary>
-public class ApCourseDesignationCedsDWAssessor : ICedsDWAssessor
+public class APCourseDesignationCedsDWAssessor : ICedsDWAssessor
 {
     public string DataElementName => "AP course designation";
 
