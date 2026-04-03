@@ -42,16 +42,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Numerical age as of point in time, or birth date"
             },
-        ["Age group"] =
-            new DataElement
-            {
-                Name = "Age group",
-                ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Demographics",
-                RelatedSectors = [Sector.PS, Sector.WF],
-                AdditionalNotes = "Generalized category of age, e.g. adult or minor"
-            },
-        ["AP course designation"] =
+        ["AP course designation"] = // Should this be combined with IB and Dual Credit similar to the following element?
             new DataElement
             {
                 Name = "AP course designation",
@@ -114,7 +105,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Bachelor's degree completion date"] =
+        ["Bachelor's degree completion date"] = // should this just be "credential attainment date"?
             new DataElement
             {
                 Name = "Bachelor's degree completion date",
@@ -321,7 +312,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "For example, completion, failure, passage"
             },
-        ["Course performance (English and Math)"] =
+        ["Course performance (English and Math)"] = // Is "(English and Math)" reasonable or should this be "Course performance by subject area"
             new DataElement
             {
                 Name = "Course performance (English and Math)",
@@ -330,7 +321,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
-        ["Credential or certification type"] =
+        ["Credential or certification type"] = // maybe more specifically "teacher credential", similar to "Teacher qualification or certification type"
             new DataElement
             {
                 Name = "Credential or certification type",
@@ -348,7 +339,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Credits earned in first year"] =
+        ["Credits earned in first year"] = // is "first year" appropriate here? or just "PS credits by year"?
             new DataElement
             {
                 Name = "Credits earned in first year",
@@ -357,7 +348,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["CTE course completion"] =
+        ["CTE course completion"] = // Similar to "Course outcome", just a specific variety of course
             new DataElement
             {
                 Name = "CTE course completion",
@@ -366,7 +357,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["CTE course ID or course title"] =
+        ["CTE course ID or course title"] = // similar to "Course identifier or title" just for CTE... maybe this should be CTE course indicator?
             new DataElement
             {
                 Name = "CTE course ID or course title",
@@ -465,7 +456,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Diploma or credential award date"] =
+        ["Diploma or credential award date"] = // related to High school graduation date, which we already have -- this seems to be exclusively about ACGR metric for HS, skipping
             new DataElement
             {
                 Name = "Diploma or credential award date",
@@ -528,7 +519,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Dual credit course designation"] =
+        ["Dual credit course designation"] = // May want to combine with AP / IB
             new DataElement
             {
                 Name = "Dual credit course designation",
@@ -582,7 +573,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employee income level"] =
+        ["Employee income level"] = // This one is similar to "Earnings" but is more about diversity in a workplace
             new DataElement
             {
                 Name = "Employee income level",
@@ -591,7 +582,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employee race/ethnicity"] =
+        ["Employee race/ethnicity"] = // This one is similar to Staff race/ethnicity... but more oriented around workplace rather than school employees
             new DataElement
             {
                 Name = "Employee race/ethnicity",
@@ -600,7 +591,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employment date"] =
+        ["Employment date"] = // specifically in the context of someone in the workforce, not staff
             new DataElement
             {
                 Name = "Employment date",
@@ -609,7 +600,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employment status"] =
+        ["Employment status"] = // specifically in the context of someone in the workforce, not staff
             new DataElement
             {
                 Name = "Employment status",
