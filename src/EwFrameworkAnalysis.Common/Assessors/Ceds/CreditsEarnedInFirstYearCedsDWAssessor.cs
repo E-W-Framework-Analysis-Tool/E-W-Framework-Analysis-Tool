@@ -17,7 +17,7 @@ WITH Base AS (
     SELECT
         f.InstructionalActivityHoursCompletedCredit,
         sy.SchoolYear
-    FROM RDS.FactPsStudentAcademicRecord f
+    FROM RDS.FactPsStudentAcademicRecords f
     JOIN RDS.DimSchoolYears sy
         ON f.SchoolYearId = sy.DimSchoolYearId
 ),
