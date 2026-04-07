@@ -780,7 +780,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Gender"] =
+        ["Gender"] = // Should this be split up by sector similar to other elements with "(K-12)" type sucffixes in the names?
             new DataElement
             {
                 Name = "Gender",
@@ -789,7 +789,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Geographical indicator"] =
+        ["Geographical indicator"] = // Should this be Student place of residence? The goal is for this to be relatable to census data for racial/ethnic diversity
             new DataElement
             {
                 Name = "Geographical indicator",
