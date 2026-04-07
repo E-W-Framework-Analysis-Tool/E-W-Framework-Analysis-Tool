@@ -5,7 +5,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactK12StudentAssessments joined to RDS.DimAssessments, filtered to
 /// CCRA+ (or assessment of similar degree) by matching AssessmentTitle,
 /// AssessmentShortName, or AssessmentIdentifierState. Reports record count,
-/// completeness of Raw/Scale score values, and numeric range for both score types.
+/// completeness of Raw/Scale score values, and a single combined numeric range
+/// spanning both score types.
 /// </summary>
 public class CommunicationSkillsPerformanceAssessmentsK12CedsDWAssessor : ICedsDWAssessor
 {
@@ -19,8 +20,8 @@ WITH AssessmentBase AS (
     FROM RDS.FactK12StudentAssessments f
     JOIN RDS.DimAssessments d
         ON f.AssessmentId = d.DimAssessmentId
-    -- NOTE: The CEDS spec names the CCRA+ as the reference assessment with
-    -- or an assessment of similar degree as a fallback. The LIKE patterns
+    -- NOTE: The CEDS spec names the CCRA+ as the reference assessment, with
+    -- an assessment of similar degree as a fallback. The LIKE patterns
     -- below cast a wide net across title, short name, and state identifier.
     -- Confirm actual values in DimAssessments and tighten or extend as needed.
     WHERE d.AssessmentTitle LIKE '%College and Career Readiness%'
@@ -28,92 +29,72 @@ WITH AssessmentBase AS (
        OR d.AssessmentShortName LIKE '%CCRA%'
        OR d.AssessmentIdentifierState LIKE '%CCRA%'
 ),
-Counts AS(
+Counts AS (
     SELECT
         COUNT(*) AS TotalRecords,
         COUNT(CASE
             WHEN (AssessmentResultScoreValueRawScore IS NOT NULL
-                  AND AssessmentResultScoreValueRawScore<> '')
-              OR(AssessmentResultScoreValueScaleScore IS NOT NULL
-                  AND AssessmentResultScoreValueScaleScore  <> '')
+                  AND AssessmentResultScoreValueRawScore <> '')
+              OR (AssessmentResultScoreValueScaleScore IS NOT NULL
+                  AND AssessmentResultScoreValueScaleScore <> '')
             THEN 1
-        END)                                            AS PopulatedRecords
+        END) AS PopulatedRecords
     FROM AssessmentBase
 ),
-RangeCalc AS(
+RangeCalc AS (
     SELECT
         MIN(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MinRaw,
-        MAX(TRY_CAST(AssessmentResultScoreValueRawScore   AS FLOAT)) AS MaxRaw,
-        MIN(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MinScale,
-        MAX(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MaxScale
+        MAX(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MaxRaw
     FROM AssessmentBase
 )
 INSERT INTO #EWFProfilerResults
 -- RecordCount
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'RecordCount'                               AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    NULL                                        AS SubItemLabel,
-    NULL                                        AS Remarks
+    '{DataElementName}'                     AS DataElementName,
+    'RecordCount'                           AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))     AS Value,
+    NULL                                    AS SubItemLabel,
+    NULL                                    AS Remarks
 FROM Counts
 UNION ALL
 -- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    'TotalRecords'                              AS SubItemLabel,
-    NULL                                        AS Remarks
+    '{DataElementName}'                     AS DataElementName,
+    'Completeness'                          AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))     AS Value,
+    'TotalRecords'                          AS SubItemLabel,
+    NULL                                    AS Remarks
 FROM Counts
 UNION ALL
 -- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))     AS Value,
-    'PopulatedRecords'                          AS SubItemLabel,
+    '{DataElementName}'                     AS DataElementName,
+    'Completeness'                          AS CharacteristicType,
+    CAST(PopulatedRecords AS NVARCHAR(MAX)) AS Value,
+    'PopulatedRecords'                      AS SubItemLabel,
     'Populated = RawScore or ScaleScore is non-NULL and non-empty' AS Remarks
 FROM Counts
 UNION ALL
--- IntegerRange - RawScore Minimum
+-- IntegerRange - Minimum
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MinRaw AS NVARCHAR(MAX))               AS Value,
-    'Minimum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
+    '{DataElementName}'                     AS DataElementName,
+    'IntegerRange'                          AS CharacteristicType,
+    CAST(MinRaw AS NVARCHAR(MAX))           AS Value,
+    'Minimum'                               AS SubItemLabel,
+    'RawScore' AS Remarks
 FROM RangeCalc
 UNION ALL
--- IntegerRange - RawScore Maximum
+-- IntegerRange - Maximum
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MaxRaw AS NVARCHAR(MAX))               AS Value,
-    'Maximum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Minimum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MinScale AS NVARCHAR(MAX))             AS Value,
-    'Minimum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Maximum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MaxScale AS NVARCHAR(MAX))             AS Value,
-    'Maximum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
+    '{DataElementName}'                     AS DataElementName,
+    'IntegerRange'                          AS CharacteristicType,
+    CAST(MaxRaw AS NVARCHAR(MAX))           AS Value,
+    'Maximum'                               AS SubItemLabel,
+    'RawScore'                              AS Remarks
 FROM RangeCalc";
 
     public string AssessmentDescription =>
         "Assesses K-12 communication skills performance assessment records for CCRA+ or equivalent assessments, " +
         "matched by title, short name, or state identifier. Reports total record count, completeness of Raw or " +
-        "Scale score values per the CEDS spec, and min/max numeric range for both Raw Score and Scale Score.";
+        "Scale score values, and a single min/max numeric range spanning both Raw Score and Scale Score values.";
 }
