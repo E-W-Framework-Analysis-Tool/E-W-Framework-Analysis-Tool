@@ -636,7 +636,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Enrollment date"] =
+        ["Enrollment date"] = // Related to other enrollment dates, pre-K, kindergarten, postsecondary, graduate program, etc., where this is defined in the metrics too it seems "Cohort year" is actually more precise
             new DataElement
             {
                 Name = "Enrollment date",
@@ -672,7 +672,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Enrollment status (current and prior years)"] =
+        ["Enrollment status (current and prior years)"] = // should this be split into K-12 vs PS? Indicator for question 15 seems to be PS oriented specifically, there are separate tables for enrollment
             new DataElement
             {
                 Name = "Enrollment status (current and prior years)",
@@ -753,7 +753,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["First-time 9th grade student status"] =
+        ["First-time 9th grade student status"] = // can't find this
             new DataElement
             {
                 Name = "First-time 9th grade student status",
