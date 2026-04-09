@@ -330,53 +330,6 @@ public class CareerReadinessAssessorTests
     // --- Student Assessment Assessor Tests ---
 
     [Fact]
-    public async Task Should_ProduceGradeLevelDistribution_When_StudentAssessmentAssessed()
-    {
-        var assessmentRef = new EdFiAssessmentReference("ASSESS1", "uri://ed-fi.org");
-        var data = new List<EdFiStudentAssessment>
-        {
-            new(assessmentReference: assessmentRef,
-                studentAssessmentIdentifier: "SA1",
-                studentReference: new EdFiStudentReference("student1"),
-                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade",
-                performanceLevels:
-                [
-                    new EdFiStudentAssessmentPerformanceLevel("uri://ed-fi.org/AssessmentReportingMethodDescriptor#Scale score",
-                        performanceLevelDescriptor: "uri://ed-fi.org/PerformanceLevelDescriptor#Proficient")
-                ],
-                scoreResults:
-                [
-                    new EdFiStudentAssessmentScoreResult("uri://ed-fi.org/AssessmentReportingMethodDescriptor#Scale score",
-                        result: "85", resultDatatypeTypeDescriptor: "uri://ed-fi.org/ResultDatatypeTypeDescriptor#Integer")
-                ]),
-            new(assessmentReference: assessmentRef,
-                studentAssessmentIdentifier: "SA2",
-                studentReference: new EdFiStudentReference("student2"),
-                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade")
-        };
-
-        var provider = CreateAssessmentProviderWithData(data);
-
-        // Test all three assessment assessors produce the same structure
-        var digitalAssessor = new DigitalSkillsAssessmentsEdFiAssessor(provider);
-        var result = await digitalAssessor.AssessAsync(_httpClient, _dataSource, _context);
-
-        result.DataElementName.Should().Be("Digital skills assessments (K-12)");
-        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
-
-        var gradeDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Grade Level Assessed");
-        gradeDist.Counts["Ninth grade"].Should().Be(1);
-        gradeDist.Counts["Tenth grade"].Should().Be(1);
-
-        var perfDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Performance Level");
-        perfDist.Counts["Proficient"].Should().Be(1);
-
-        var completeness = result.Characteristics.OfType<Completeness>().First();
-        completeness.PopulatedRecords.Should().Be(1);
-        completeness.TotalRecords.Should().Be(2);
-    }
-
-    [Fact]
     public async Task Should_ReturnCorrectDataElementName_When_HigherOrderThinkingAssessed()
     {
         var provider = CreateAssessmentProviderWithData([]);
@@ -477,7 +430,6 @@ public class CareerReadinessAssessorTests
             new IndustryCredentialEdFiAssessor(),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
-            new DigitalSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
             new CommunicationSkillsAssessmentsEdFiAssessor(),
             new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
         };
@@ -508,7 +460,6 @@ public class CareerReadinessAssessorTests
             new IndustryCredentialEdFiAssessor(),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
-            new DigitalSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
             new CommunicationSkillsAssessmentsEdFiAssessor(),
             new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
         };
