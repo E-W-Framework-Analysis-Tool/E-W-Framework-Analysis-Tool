@@ -281,7 +281,7 @@ public class CareerReadinessAssessorTests
     }
 
     [Fact]
-    public async Task Should_ProduceDiplomaTypeDistribution_When_GraduationDateAssessed()
+    public async Task Should_ProduceAwardYearDistribution_When_GraduationDateAssessed()
     {
         var testData = new List<EdFiStudentAcademicRecord>
         {
@@ -298,6 +298,16 @@ public class CareerReadinessAssessorTests
             new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
                 schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
                 studentReference: new EdFiStudentReference("student2"),
+                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
+                diplomas:
+                [
+                    new EdFiStudentAcademicRecordDiploma(
+                        diplomaAwardDate: new DateOnly(2023, 6, 10),
+                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#Regular diploma")
+                ]),
+            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
+                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
+                studentReference: new EdFiStudentReference("student3"),
                 termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester")
         };
 
@@ -309,12 +319,12 @@ public class CareerReadinessAssessorTests
         result.DataElementName.Should().Be("High school graduation date");
         result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
 
-        var diplomaDist = result.Characteristics.OfType<Distribution>().First();
-        diplomaDist.Counts["Regular diploma"].Should().Be(1);
+        var yearDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Diploma Award Year");
+        yearDist.Counts["2024"].Should().Be(1);
+        yearDist.Counts["2023"].Should().Be(1);
 
-        var completeness = result.Characteristics.OfType<Completeness>().First();
-        completeness.PopulatedRecords.Should().Be(1);
-        completeness.TotalRecords.Should().Be(2);
+        var typeDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Diploma Type");
+        typeDist.Counts["Regular diploma"].Should().Be(2);
     }
 
     // --- Higher-Order Thinking (CCRA+/CLA+/CAE) Assessor Tests ---

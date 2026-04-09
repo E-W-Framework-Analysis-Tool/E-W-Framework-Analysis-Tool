@@ -9,7 +9,8 @@ public class HighSchoolGraduationDateEdFiAssessor : IEdFiAssessor
     public string DataElementName => "High school graduation date";
 
     public string AssessmentDescription =>
-        "Analyzes studentAcademicRecords for diploma types and CTE completers";
+        "Counts diploma award dates from studentAcademicRecords and shows their year distribution " +
+        "to verify graduation dates are populated with reasonable values.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
@@ -18,8 +19,8 @@ public class HighSchoolGraduationDateEdFiAssessor : IEdFiAssessor
     {
         context.ReportProgress(0, "Loading student academic records...");
 
-        var totalRecords = 0;
-        var recordsWithDiplomas = 0;
+        var diplomaCount = 0;
+        var awardYearDistribution = new Dictionary<string, int>();
         var diplomaTypeDistribution = new Dictionary<string, int>();
 
         await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentAcademicRecord>(
@@ -27,24 +28,28 @@ public class HighSchoolGraduationDateEdFiAssessor : IEdFiAssessor
             "ed-fi/studentAcademicRecords",
             record =>
             {
-                totalRecords++;
+                if (record.Diplomas == null)
+                    return;
 
-                if (record.Diplomas != null && record.Diplomas.Count > 0)
+                foreach (var diploma in record.Diplomas)
                 {
-                    recordsWithDiplomas++;
-                    foreach (var diploma in record.Diplomas)
-                    {
-                        var diplomaType = EdFiDescriptorHelper.ParseDescriptorValue(diploma.DiplomaTypeDescriptor);
-                        if (!diplomaTypeDistribution.ContainsKey(diplomaType))
-                            diplomaTypeDistribution[diplomaType] = 0;
-                        diplomaTypeDistribution[diplomaType]++;
-                    }
+                    diplomaCount++;
+
+                    var year = diploma.DiplomaAwardDate.Year.ToString();
+                    if (!awardYearDistribution.ContainsKey(year))
+                        awardYearDistribution[year] = 0;
+                    awardYearDistribution[year]++;
+
+                    var diplomaType = EdFiDescriptorHelper.ParseDescriptorValue(diploma.DiplomaTypeDescriptor);
+                    if (!diplomaTypeDistribution.ContainsKey(diplomaType))
+                        diplomaTypeDistribution[diplomaType] = 0;
+                    diplomaTypeDistribution[diplomaType]++;
                 }
             },
             context
         );
 
-        context.Log($"Found {recordsWithDiplomas:N0} of {totalRecords:N0} academic records with diplomas");
+        context.Log($"Found {diplomaCount:N0} diploma award dates");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -52,9 +57,9 @@ public class HighSchoolGraduationDateEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalRecords),
-                new Distribution(diplomaTypeDistribution, "Diploma Type"),
-                new Completeness(totalRecords, recordsWithDiplomas, "Diplomas")
+                new RecordCount(diplomaCount),
+                new Distribution(awardYearDistribution, "Diploma Award Year"),
+                new Distribution(diplomaTypeDistribution, "Diploma Type")
             ],
             Remarks = AssessmentDescription
         };
