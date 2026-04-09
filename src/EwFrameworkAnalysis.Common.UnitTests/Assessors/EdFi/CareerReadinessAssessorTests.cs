@@ -38,16 +38,6 @@ public class CareerReadinessAssessorTests
         return provider;
     }
 
-    private static EdFiStudentAssessmentProvider CreateAssessmentProviderWithData(
-        List<EdFiStudentAssessment> data)
-    {
-        var provider = new EdFiStudentAssessmentProvider();
-        var field = typeof(EdFiStudentAssessmentProvider)
-            .GetField("_cachedData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        field.SetValue(provider, data);
-        return provider;
-    }
-
     // --- CTE Assessor Tests ---
 
     [Fact]
@@ -327,17 +317,75 @@ public class CareerReadinessAssessorTests
         completeness.TotalRecords.Should().Be(2);
     }
 
-    // --- Student Assessment Assessor Tests ---
+    // --- Higher-Order Thinking (CCRA+/CLA+/CAE) Assessor Tests ---
 
     [Fact]
-    public async Task Should_ReturnCorrectDataElementName_When_HigherOrderThinkingAssessed()
+    public async Task Should_FilterByAssessmentTitle_When_HigherOrderThinkingAssessed()
     {
-        var provider = CreateAssessmentProviderWithData([]);
-        var assessor = new HigherOrderThinkingAssessmentsEdFiAssessor(provider);
+        var claAssessment = new EdFiAssessment(
+            assessmentIdentifier: "CLA-PLUS-2024",
+            assessmentTitle: "Collegiate Learning Assessment (CLA+)",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
+        var unrelatedAssessment = new EdFiAssessment(
+            assessmentIdentifier: "STATE-MATH-2024",
+            assessmentTitle: "State Mathematics Assessment",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
 
-        var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
+        var claRef = new EdFiAssessmentReference("CLA-PLUS-2024", "uri://ed-fi.org");
+        var studentAssessments = new List<EdFiStudentAssessment>
+        {
+            new(assessmentReference: claRef,
+                studentAssessmentIdentifier: "SA1",
+                studentReference: new EdFiStudentReference("student1"),
+                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade",
+                scoreResults:
+                [
+                    new EdFiStudentAssessmentScoreResult("uri://ed-fi.org/AssessmentReportingMethodDescriptor#Scale score",
+                        result: "1150", resultDatatypeTypeDescriptor: "uri://ed-fi.org/ResultDatatypeTypeDescriptor#Integer")
+                ]),
+            new(assessmentReference: claRef,
+                studentAssessmentIdentifier: "SA2",
+                studentReference: new EdFiStudentReference("student2"),
+                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade")
+        };
+
+        using var httpClient = CreateCcraHttpClient(
+            [claAssessment, unrelatedAssessment], studentAssessments);
+        var assessor = new HigherOrderThinkingAssessmentsEdFiAssessor();
+
+        var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
 
         result.DataElementName.Should().Be("Higher-order thinking skills performance assessments (K-12)");
+        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
+
+        var gradeDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Grade Level Assessed");
+        gradeDist.Counts["Eleventh grade"].Should().Be(1);
+        gradeDist.Counts["Twelfth grade"].Should().Be(1);
+
+        var completeness = result.Characteristics.OfType<Completeness>().First();
+        completeness.PopulatedRecords.Should().Be(1);
+        completeness.TotalRecords.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Should_ReturnZeroRecords_When_NoHigherOrderThinkingAssessmentsExist()
+    {
+        var otherAssessment = new EdFiAssessment(
+            assessmentIdentifier: "STATE-MATH-2024",
+            assessmentTitle: "State Mathematics Assessment",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
+
+        using var httpClient = CreateCcraHttpClient([otherAssessment], []);
+        var assessor = new HigherOrderThinkingAssessmentsEdFiAssessor();
+
+        var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
+
+        result.DataElementName.Should().Be("Higher-order thinking skills performance assessments (K-12)");
+        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(0);
+        result.Remarks.Should().Contain("No assessments matching");
     }
 
     // --- Communication Skills (CCRA+) Assessor Tests ---
@@ -418,8 +466,6 @@ public class CareerReadinessAssessorTests
     {
         var emptyCteProvider = CreateCTEProviderWithData([]);
         var emptyCourseProvider = CreateCourseProviderWithData([]);
-        var emptyAssessmentProvider = CreateAssessmentProviderWithData([]);
-
         var assessors = new IEdFiAssessor[]
         {
             new StudentCourseEnrollmentEdFiAssessor(),
@@ -431,7 +477,7 @@ public class CareerReadinessAssessorTests
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new CommunicationSkillsAssessmentsEdFiAssessor(),
-            new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
+            new HigherOrderThinkingAssessmentsEdFiAssessor()
         };
 
         var frameworkElements = EwFrameworkDataElements.Elements;
@@ -448,8 +494,6 @@ public class CareerReadinessAssessorTests
     {
         var emptyCteProvider = CreateCTEProviderWithData([]);
         var emptyCourseProvider = CreateCourseProviderWithData([]);
-        var emptyAssessmentProvider = CreateAssessmentProviderWithData([]);
-
         var assessors = new IEdFiAssessor[]
         {
             new StudentCourseEnrollmentEdFiAssessor(),
@@ -461,7 +505,7 @@ public class CareerReadinessAssessorTests
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new CommunicationSkillsAssessmentsEdFiAssessor(),
-            new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
+            new HigherOrderThinkingAssessmentsEdFiAssessor()
         };
 
         foreach (var assessor in assessors)
