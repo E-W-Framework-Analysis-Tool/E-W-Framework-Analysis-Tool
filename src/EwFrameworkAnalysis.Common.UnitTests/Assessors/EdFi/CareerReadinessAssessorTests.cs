@@ -246,21 +246,43 @@ public class CareerReadinessAssessorTests
     }
 
     [Fact]
-    public async Task Should_ProduceCredentialTypeDistribution_When_IndustryCredentialAssessed()
+    public async Task Should_FindCteCompletersAndAchievementCategories_When_IndustryCredentialAssessed()
     {
-        var testData = new List<EdFiCredential>
+        var testData = new List<EdFiStudentAcademicRecord>
         {
-            new(credentialIdentifier: "CRED1",
-                stateOfIssueStateAbbreviationDescriptor: "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
-                credentialTypeDescriptor: "uri://ed-fi.org/CredentialTypeDescriptor#Certification",
-                issuanceDate: new DateOnly(2024, 1, 1),
-                varNamespace: "uri://ed-fi.org",
-                credentialFieldDescriptor: "uri://ed-fi.org/CredentialFieldDescriptor#Welding"),
-            new(credentialIdentifier: "CRED2",
-                stateOfIssueStateAbbreviationDescriptor: "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
-                credentialTypeDescriptor: "uri://ed-fi.org/CredentialTypeDescriptor#Endorsement",
-                issuanceDate: new DateOnly(2024, 1, 1),
-                varNamespace: "uri://ed-fi.org")
+            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
+                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
+                studentReference: new EdFiStudentReference("student1"),
+                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
+                diplomas:
+                [
+                    new EdFiStudentAcademicRecordDiploma(
+                        diplomaAwardDate: new DateOnly(2024, 5, 25),
+                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#CTE certificate",
+                        cteCompleter: true)
+                ]),
+            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
+                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
+                studentReference: new EdFiStudentReference("student2"),
+                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
+                diplomas:
+                [
+                    new EdFiStudentAcademicRecordDiploma(
+                        diplomaAwardDate: new DateOnly(2024, 5, 25),
+                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#Vocational certificate",
+                        achievementCategoryDescriptor:
+                            "uri://ed-fi.org/AchievementCategoryDescriptor#Industry-recognized certification")
+                ]),
+            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
+                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
+                studentReference: new EdFiStudentReference("student3"),
+                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
+                diplomas:
+                [
+                    new EdFiStudentAcademicRecordDiploma(
+                        diplomaAwardDate: new DateOnly(2024, 5, 25),
+                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#Regular diploma")
+                ])
         };
 
         using var httpClient = CreateHttpClientWithJsonResponse(testData);
@@ -269,15 +291,18 @@ public class CareerReadinessAssessorTests
         var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
 
         result.DataElementName.Should().Be("Industry-recognized credential attainment");
+
+        // Only the CTE completer and achievement-category diploma should be counted (not the regular diploma)
         result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
 
-        var typeDist = result.Characteristics.OfType<Distribution>().First();
-        typeDist.Counts["Certification"].Should().Be(1);
-        typeDist.Counts["Endorsement"].Should().Be(1);
+        var achievementDist = result.Characteristics.OfType<Distribution>()
+            .First(d => d.Label == "Achievement Category");
+        achievementDist.Counts["Industry-recognized certification"].Should().Be(1);
 
-        var completeness = result.Characteristics.OfType<Completeness>().First();
-        completeness.PopulatedRecords.Should().Be(1);
-        completeness.TotalRecords.Should().Be(2);
+        var typeDist = result.Characteristics.OfType<Distribution>()
+            .First(d => d.Label == "Diploma Type");
+        typeDist.Counts["CTE certificate"].Should().Be(1);
+        typeDist.Counts["Vocational certificate"].Should().Be(1);
     }
 
     [Fact]

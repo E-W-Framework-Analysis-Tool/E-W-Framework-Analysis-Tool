@@ -9,50 +9,83 @@ public class IndustryCredentialEdFiAssessor : IEdFiAssessor
     public string DataElementName => "Industry-recognized credential attainment";
 
     public string AssessmentDescription =>
-        "Analyzes credentials for type distribution and field completeness";
+        "Searches studentAcademicRecords for diplomas where cteCompleter is true or " +
+        "achievementCategoryDescriptor is populated, indicating vocational or " +
+        "industry-recognized credentials earned by CTE students.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Loading credentials...");
+        context.ReportProgress(0, "Loading student academic records for industry credentials...");
 
-        var totalRecords = 0;
-        var recordsWithField = 0;
-        var typeDistribution = new Dictionary<string, int>();
+        var cteCompleterCount = 0;
+        var achievementCategoryDistribution = new Dictionary<string, int>();
+        var diplomaTypeDistribution = new Dictionary<string, int>();
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiCredential>(
+        await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentAcademicRecord>(
             httpClient,
-            "ed-fi/credentials",
-            credential =>
+            "ed-fi/studentAcademicRecords",
+            record =>
             {
-                totalRecords++;
+                if (record.Diplomas == null)
+                    return;
 
-                var credType = EdFiDescriptorHelper.ParseDescriptorValue(credential.CredentialTypeDescriptor);
-                if (!typeDistribution.ContainsKey(credType))
-                    typeDistribution[credType] = 0;
-                typeDistribution[credType]++;
+                foreach (var diploma in record.Diplomas)
+                {
+                    if (diploma.CteCompleter == true)
+                        cteCompleterCount++;
 
-                if (!string.IsNullOrWhiteSpace(credential.CredentialFieldDescriptor))
-                    recordsWithField++;
+                    if (!string.IsNullOrWhiteSpace(diploma.AchievementCategoryDescriptor))
+                    {
+                        var category = EdFiDescriptorHelper.ParseDescriptorValue(
+                            diploma.AchievementCategoryDescriptor);
+                        if (!achievementCategoryDistribution.ContainsKey(category))
+                            achievementCategoryDistribution[category] = 0;
+                        achievementCategoryDistribution[category]++;
+                    }
+
+                    if (diploma.CteCompleter == true ||
+                        !string.IsNullOrWhiteSpace(diploma.AchievementCategoryDescriptor))
+                    {
+                        var diplomaType = EdFiDescriptorHelper.ParseDescriptorValue(
+                            diploma.DiplomaTypeDescriptor);
+                        if (!diplomaTypeDistribution.ContainsKey(diplomaType))
+                            diplomaTypeDistribution[diplomaType] = 0;
+                        diplomaTypeDistribution[diplomaType]++;
+                    }
+                }
             },
             context
         );
 
-        context.Log($"Found {recordsWithField:N0} of {totalRecords:N0} credentials with CredentialFieldDescriptor");
+        var totalCredentials = cteCompleterCount + achievementCategoryDistribution.Values.Sum();
+        // Avoid double-counting diplomas that are both CTE completers AND have an achievement category
+        var uniqueCredentials = diplomaTypeDistribution.Values.Sum();
+
+        context.Log(
+            $"Found {cteCompleterCount:N0} CTE completers and " +
+            $"{achievementCategoryDistribution.Values.Sum():N0} diplomas with achievement categories");
         context.ReportProgress(100, "Complete");
+
+        var characteristics = new List<DataCharacteristicBase>
+        {
+            new RecordCount(uniqueCredentials)
+        };
+
+        if (achievementCategoryDistribution.Count > 0)
+            characteristics.Add(new Distribution(achievementCategoryDistribution, "Achievement Category"));
+
+        if (diplomaTypeDistribution.Count > 0)
+            characteristics.Add(new Distribution(diplomaTypeDistribution, "Diploma Type"));
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics =
-            [
-                new RecordCount(totalRecords),
-                new Distribution(typeDistribution, "Credential Type"),
-                new Completeness(totalRecords, recordsWithField, "CredentialFieldDescriptor")
-            ],
-            Remarks = AssessmentDescription
+            Characteristics = characteristics,
+            Remarks = AssessmentDescription +
+                $" CTE completers: {cteCompleterCount:N0}."
         };
     }
 }
