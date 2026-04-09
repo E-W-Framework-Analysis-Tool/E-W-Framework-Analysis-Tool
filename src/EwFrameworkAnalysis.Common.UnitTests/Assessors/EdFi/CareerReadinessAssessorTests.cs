@@ -377,17 +377,6 @@ public class CareerReadinessAssessorTests
     }
 
     [Fact]
-    public async Task Should_ReturnCorrectDataElementName_When_CommunicationSkillsAssessed()
-    {
-        var provider = CreateAssessmentProviderWithData([]);
-        var assessor = new CommunicationSkillsAssessmentsEdFiAssessor(provider);
-
-        var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
-
-        result.DataElementName.Should().Be("Communication skills performance assessments (K-12)");
-    }
-
-    [Fact]
     public async Task Should_ReturnCorrectDataElementName_When_HigherOrderThinkingAssessed()
     {
         var provider = CreateAssessmentProviderWithData([]);
@@ -396,6 +385,77 @@ public class CareerReadinessAssessorTests
         var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
 
         result.DataElementName.Should().Be("Higher-order thinking skills performance assessments (K-12)");
+    }
+
+    // --- Communication Skills (CCRA+) Assessor Tests ---
+
+    [Fact]
+    public async Task Should_FilterByCcraTitle_When_CommunicationSkillsAssessed()
+    {
+        var ccraAssessment = new EdFiAssessment(
+            assessmentIdentifier: "CCRA-PLUS-2024",
+            assessmentTitle: "The College and Career Readiness Assessment (CCRA+)",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
+        var otherAssessment = new EdFiAssessment(
+            assessmentIdentifier: "STATE-MATH-2024",
+            assessmentTitle: "State Mathematics Assessment",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
+
+        var ccraRef = new EdFiAssessmentReference("CCRA-PLUS-2024", "uri://ed-fi.org");
+        var studentAssessments = new List<EdFiStudentAssessment>
+        {
+            new(assessmentReference: ccraRef,
+                studentAssessmentIdentifier: "SA1",
+                studentReference: new EdFiStudentReference("student1"),
+                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade",
+                scoreResults:
+                [
+                    new EdFiStudentAssessmentScoreResult("uri://ed-fi.org/AssessmentReportingMethodDescriptor#Scale score",
+                        result: "92", resultDatatypeTypeDescriptor: "uri://ed-fi.org/ResultDatatypeTypeDescriptor#Integer")
+                ]),
+            new(assessmentReference: ccraRef,
+                studentAssessmentIdentifier: "SA2",
+                studentReference: new EdFiStudentReference("student2"),
+                whenAssessedGradeLevelDescriptor: "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade")
+        };
+
+        using var httpClient = CreateCcraHttpClient(
+            [ccraAssessment, otherAssessment], studentAssessments);
+        var assessor = new CommunicationSkillsAssessmentsEdFiAssessor();
+
+        var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
+
+        result.DataElementName.Should().Be("Communication skills performance assessments (K-12)");
+        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
+
+        var gradeDist = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Grade Level Assessed");
+        gradeDist.Counts["Eleventh grade"].Should().Be(1);
+        gradeDist.Counts["Twelfth grade"].Should().Be(1);
+
+        var completeness = result.Characteristics.OfType<Completeness>().First();
+        completeness.PopulatedRecords.Should().Be(1);
+        completeness.TotalRecords.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Should_ReturnZeroRecords_When_NoCcraAssessmentsExist()
+    {
+        var otherAssessment = new EdFiAssessment(
+            assessmentIdentifier: "STATE-MATH-2024",
+            assessmentTitle: "State Mathematics Assessment",
+            varNamespace: "uri://ed-fi.org",
+            academicSubjects: []);
+
+        using var httpClient = CreateCcraHttpClient([otherAssessment], []);
+        var assessor = new CommunicationSkillsAssessmentsEdFiAssessor();
+
+        var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
+
+        result.DataElementName.Should().Be("Communication skills performance assessments (K-12)");
+        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(0);
+        result.Remarks.Should().Contain("No assessments matching");
     }
 
     // --- Framework Validation ---
@@ -418,7 +478,7 @@ public class CareerReadinessAssessorTests
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new DigitalSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
-            new CommunicationSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
+            new CommunicationSkillsAssessmentsEdFiAssessor(),
             new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
         };
 
@@ -449,7 +509,7 @@ public class CareerReadinessAssessorTests
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new DigitalSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
-            new CommunicationSkillsAssessmentsEdFiAssessor(emptyAssessmentProvider),
+            new CommunicationSkillsAssessmentsEdFiAssessor(),
             new HigherOrderThinkingAssessmentsEdFiAssessor(emptyAssessmentProvider)
         };
 
@@ -476,6 +536,47 @@ public class CareerReadinessAssessorTests
             numberOfParts: 1,
             academicSubjects: academicSubjects!,
             careerPathwayDescriptor: careerPathwayDescriptor!);
+    }
+
+    private static HttpClient CreateCcraHttpClient(
+        List<EdFiAssessment> assessments, List<EdFiStudentAssessment> studentAssessments)
+    {
+        var handler = new FakeHttpMessageHandler(request =>
+        {
+            var uri = request.RequestUri!;
+            var isStudentAssessmentsEndpoint = uri.AbsolutePath.Contains("studentAssessments");
+            var isCountOnly = uri.Query.Contains("totalCount=true") && !uri.Query.Contains("limit=");
+
+            if (isCountOnly)
+            {
+                var count = isStudentAssessmentsEndpoint ? studentAssessments.Count : assessments.Count;
+                var countResponse = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("[]", Encoding.UTF8, "application/json")
+                };
+                countResponse.Headers.Add("total-count", count.ToString());
+                return countResponse;
+            }
+
+            if (uri.Query.Contains("offset=0") || !uri.Query.Contains("offset"))
+            {
+                var data = isStudentAssessmentsEndpoint
+                    ? (object)studentAssessments
+                    : assessments;
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(
+                        JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
+                };
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("[]", Encoding.UTF8, "application/json")
+            };
+        });
+
+        return new HttpClient(handler) { BaseAddress = new Uri("https://api.test.com/") };
     }
 
     private static HttpClient CreateHttpClientWithJsonResponse<T>(List<T> data)
