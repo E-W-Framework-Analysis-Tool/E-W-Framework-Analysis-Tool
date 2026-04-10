@@ -134,6 +134,19 @@
     private bool LoadProjectModalIsOpen { get; set; }
 
     private ElementReference _fileInput;
+    private string? _importError;
+
+    private async Task OnFileSelected(ChangeEventArgs e)
+    {
+        _importError = null;
+        var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
+        if (!string.IsNullOrWhiteSpace(file))
+        {
+            var result = await ProjectSvc.ImportProjectAsync(file);
+            if (!result.Success)
+                _importError = result.ErrorMessage;
+        }
+    }
 
     private async Task HandleTitleSave(string? title)
     {
@@ -175,15 +188,6 @@
         finally
         {
             await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.resetFileInput", _fileInput);
-        }
-    }
-
-    private async Task OnFileSelected(ChangeEventArgs e)
-    {
-        var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
-        if (!string.IsNullOrWhiteSpace(file))
-        {
-            await ProjectSvc.ImportProjectAsync(file);
         }
     }
 

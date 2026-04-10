@@ -97,12 +97,12 @@ Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the foll
     }
 
     [Fact]
-    public void ParseAssessmentStream_WithIntegerRange_ShouldParseCorrectly()
+    public void ParseAssessmentStream_WithNumericalRange_ShouldParseCorrectly()
     {
         // Arrange
         var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
-Student Age Range,IntegerRange,5,Minimum,Age of enrolled students
-Student Age Range,IntegerRange,21,Maximum,";
+Student Age Range,NumericalRange,5,Minimum,Age of enrolled students
+Student Age Range,NumericalRange,21,Maximum,";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
@@ -119,14 +119,14 @@ Student Age Range,IntegerRange,21,Maximum,";
         var element = assessment.DataElementAssessments.First();
         Assert.Equal("Student Age Range", element.DataElementName);
 
-        var range = element.Characteristics.OfType<IntegerRange>().FirstOrDefault();
+        var range = element.Characteristics.OfType<NumericalRange>().FirstOrDefault();
         Assert.NotNull(range);
         Assert.Equal(5, range.Minimum);
         Assert.Equal(21, range.Maximum);
         Assert.Equal("Age of enrolled students", range.Label);
         Assert.Equal("Age of enrolled students", range.Remarks);
 
-        _output.WriteLine($"Parsed IntegerRange: {range.Minimum} to {range.Maximum} ({range.Label})");
+        _output.WriteLine($"Parsed NumericalRange: {range.Minimum} to {range.Maximum} ({range.Label})");
     }
 
     [Fact]
@@ -293,8 +293,8 @@ Suspensions (K-12),Completeness,1020,TotalRecords,";
         // Arrange - Kitchen sink test with all characteristic types
         var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
 Student Demographics,RecordCount,15420,,Total student records
-Student Demographics,IntegerRange,5,Minimum,Student Age Range
-Student Demographics,IntegerRange,21,Maximum,
+Student Demographics,NumericalRange,5,Minimum,Student Age Range
+Student Demographics,NumericalRange,21,Maximum,
 Student Contact Info,Completeness,12500,PopulatedRecords,ElectronicMailAddress
 Student Contact Info,Completeness,15420,TotalRecords,
 Discipline Types,Distribution,5200,In-School Suspension,Distribution of discipline actions
@@ -318,9 +318,9 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
         // Verify RecordCount
         var demographics = assessment.DataElementAssessments
             .First(a => a.DataElementName == "Student Demographics");
-        Assert.Equal(2, demographics.Characteristics.Count); // RecordCount + IntegerRange
+        Assert.Equal(2, demographics.Characteristics.Count); // RecordCount + NumericalRange
         Assert.NotNull(demographics.Characteristics.OfType<RecordCount>().FirstOrDefault());
-        Assert.NotNull(demographics.Characteristics.OfType<IntegerRange>().FirstOrDefault());
+        Assert.NotNull(demographics.Characteristics.OfType<NumericalRange>().FirstOrDefault());
 
         // Verify Completeness
         var contactInfo = assessment.DataElementAssessments
@@ -352,8 +352,8 @@ Special Programs,ReportedAvailability,Available,,Sufficient data for reporting";
 Student Age,RecordCount,100,,Valid record count
 Student Age,Completeness,NULL,PopulatedRecords,BirthDate
 Student Age,Completeness,NULL,TotalRecords,
-Student Age,IntegerRange,NULL,Minimum,Age Range
-Student Age,IntegerRange,NULL,Maximum,
+Student Age,NumericalRange,NULL,Minimum,Age Range
+Student Age,NumericalRange,NULL,Maximum,
 Suspensions,RecordCount,0,,Zero records is valid";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
@@ -369,7 +369,7 @@ Suspensions,RecordCount,0,,Zero records is valid";
         Assert.Equal(2, stats.DataElementsProcessed);
         Assert.Equal(0, stats.DataElementsSkipped); // Student Age has RecordCount, so not skipped
         Assert.Equal(2, stats.CharacteristicsProcessed); // Only the 2 RecordCounts
-        Assert.Equal(2, stats.CharacteristicsSkipped); // Completeness and IntegerRange
+        Assert.Equal(2, stats.CharacteristicsSkipped); // Completeness and NumericalRange
 
         // Student Age should have only RecordCount
         var studentAge = assessment.DataElementAssessments
@@ -381,7 +381,7 @@ Suspensions,RecordCount,0,,Zero records is valid";
         // Verify stats has skip reasons
         Assert.True(stats.HasWarnings);
         Assert.Contains(stats.SkippedReasons, r => r.Contains("Student Age") && r.Contains("Completeness"));
-        Assert.Contains(stats.SkippedReasons, r => r.Contains("Student Age") && r.Contains("IntegerRange"));
+        Assert.Contains(stats.SkippedReasons, r => r.Contains("Student Age") && r.Contains("NumericalRange"));
 
         _output.WriteLine($"Stats: {stats.CharacteristicsProcessed} processed, {stats.CharacteristicsSkipped} skipped");
         _output.WriteLine("Skip reasons:");
@@ -398,8 +398,8 @@ Suspensions,RecordCount,0,,Zero records is valid";
         var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
 Student Age,Completeness,NULL,PopulatedRecords,BirthDate
 Student Age,Completeness,NULL,TotalRecords,
-Student Age,IntegerRange,NULL,Minimum,Age Range
-Student Age,IntegerRange,NULL,Maximum,
+Student Age,NumericalRange,NULL,Minimum,Age Range
+Student Age,NumericalRange,NULL,Maximum,
 Valid Element,RecordCount,100,,This one is fine";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
@@ -462,11 +462,11 @@ Discipline Types,Distribution,125,Expulsion,";
     }
 
     [Fact]
-    public void ParseAssessmentStream_WithInvalidIntegerRange_ShouldThrowException()
+    public void ParseAssessmentStream_WithInvalidNumericalRange_ShouldThrowException()
     {
         // Arrange - Missing Maximum row
         var csvContent = @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
-Student Age Range,IntegerRange,5,Minimum,Age of enrolled students";
+Student Age Range,NumericalRange,5,Minimum,Age of enrolled students";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
 
@@ -475,7 +475,7 @@ Student Age Range,IntegerRange,5,Minimum,Age of enrolled students";
             _parser.ParseAssessmentStream(stream, hasHeaderRow: true)
         );
 
-        Assert.Contains("IntegerRange requires exactly 2 rows", exception.Message);
+        Assert.Contains("NumericalRange requires exactly 2 rows", exception.Message);
         _output.WriteLine($"Correctly threw exception: {exception.Message}");
     }
 
@@ -560,8 +560,8 @@ Element1,RecordCount,100,,
 Element2,RecordCount,NULL,,
 Element2,Completeness,50,PopulatedRecords,
 Element2,Completeness,100,TotalRecords,
-Element3,IntegerRange,NULL,Minimum,
-Element3,IntegerRange,NULL,Maximum,
+Element3,NumericalRange,NULL,Minimum,
+Element3,NumericalRange,NULL,Maximum,
 Element4,ReportedAvailability,Available,,";
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvContent));
@@ -578,7 +578,7 @@ Element4,ReportedAvailability,Available,,";
         Assert.Equal(3, stats.DataElementsProcessed); // Element1, Element2, Element4
         Assert.Equal(1, stats.DataElementsSkipped); // Element3 (no valid characteristics)
         Assert.Equal(3, stats.CharacteristicsProcessed); // Element1 RecordCount, Element2 Completeness, Element4 Availability
-        Assert.Equal(2, stats.CharacteristicsSkipped); // Element2 RecordCount (NULL), Element3 IntegerRange (NULL)
+        Assert.Equal(2, stats.CharacteristicsSkipped); // Element2 RecordCount (NULL), Element3 NumericalRange (NULL)
         Assert.True(stats.HasWarnings);
         Assert.Single(stats.SkippedDataElements);
         Assert.Contains("Element3", stats.SkippedDataElements);

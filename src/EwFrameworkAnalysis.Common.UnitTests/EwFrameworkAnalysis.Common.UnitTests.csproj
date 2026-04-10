@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fixtures\Migrations\project_v1.json" />
+    <None Remove="Fixtures\Migrations\project_v2.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fixtures\Migrations\project_v1.json" />
+    <EmbeddedResource Include="Fixtures\Migrations\project_v2.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="FakeItEasy" Version="8.3.0" />
     <PackageReference Include="FluentAssertions" Version="8.7.1" />

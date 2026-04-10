@@ -216,7 +216,7 @@
                                                         <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
                                                     </div>
                                                 }
-                                                else if (characteristic is IntegerRange ir)
+                                                else if (characteristic is NumericalRange ir)
                                                 {
                                                     <div class="text-xs text-gray-700">
                                                         <span class="font-medium">@ir.Label:</span> @ir.Minimum - @ir.Maximum
@@ -454,8 +454,8 @@
         return @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
 Suspensions and Expulsions (Grades 1 and 2),RecordCount,5,,
 Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the following grades: 10,11,12""
-Student Age Range,IntegerRange,5,Minimum,Age of enrolled students
-Student Age Range,IntegerRange,21,Maximum,
+Student Age Range,NumericalRange,5,Minimum,Age of enrolled students
+Student Age Range,NumericalRange,21,Maximum,
 Student Contact Information,Completeness,850,PopulatedRecords,ElectronicMailAddress
 Student Contact Information,Completeness,1000,TotalRecords,
 Discipline Action Types,Distribution,450,In-School Suspension,Distribution of disciplinary actions taken

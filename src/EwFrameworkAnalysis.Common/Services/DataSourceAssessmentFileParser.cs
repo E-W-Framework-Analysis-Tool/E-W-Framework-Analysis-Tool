@@ -351,12 +351,12 @@ public class DataSourceAssessmentFileParser
         {
             "RecordCount" => ParseRecordCount(firstRow, stats),
             "ReportedAvailability" => ParseReportedAvailability(firstRow, stats),
-            "IntegerRange" => ParseIntegerRange(rows, stats),
+            "NumericalRange" => ParseNumericalRange(rows, stats),
             "Completeness" => ParseCompleteness(rows, stats),
             "Distribution" => ParseDistribution(rows, stats),
             _ => throw new NotSupportedException(
                 $"Unknown CharacteristicType: '{type}'. " +
-                $"Supported types: RecordCount, ReportedAvailability, IntegerRange, Completeness, Distribution")
+                $"Supported types: RecordCount, ReportedAvailability, NumericalRange, Completeness, Distribution")
         };
     }
 
@@ -395,12 +395,12 @@ public class DataSourceAssessmentFileParser
         return new ReportedAvailability(judgment) { Remarks = row.Remarks };
     }
 
-    private IntegerRange? ParseIntegerRange(List<AssessmentResultRow> rows, AssessmentParsingStats stats)
+    private NumericalRange? ParseNumericalRange(List<AssessmentResultRow> rows, AssessmentParsingStats stats)
     {
         if (rows.Count != 2)
         {
             throw new FormatException(
-                $"IntegerRange requires exactly 2 rows (Minimum and Maximum), but found {rows.Count} for '{rows[0].DataElementName}'.");
+                $"NumericalRange requires exactly 2 rows (Minimum and Maximum), but found {rows.Count} for '{rows[0].DataElementName}'.");
         }
 
         var minRow = rows.FirstOrDefault(r => r.SubItemLabel?.Equals("Minimum", StringComparison.OrdinalIgnoreCase) == true);
@@ -409,33 +409,33 @@ public class DataSourceAssessmentFileParser
         if (minRow == null || maxRow == null)
         {
             throw new FormatException(
-                $"IntegerRange requires rows with SubItemLabel 'Minimum' and 'Maximum' for '{rows[0].DataElementName}'.");
+                $"NumericalRange requires rows with SubItemLabel 'Minimum' and 'Maximum' for '{rows[0].DataElementName}'.");
         }
 
         // Skip if either value is NULL/empty
         if (string.IsNullOrWhiteSpace(minRow.Value) || string.IsNullOrWhiteSpace(maxRow.Value))
         {
             stats.CharacteristicsSkipped++;
-            stats.SkippedReasons.Add($"{rows[0].DataElementName} (IntegerRange): Missing Minimum or Maximum value");
+            stats.SkippedReasons.Add($"{rows[0].DataElementName} (NumericalRange): Missing Minimum or Maximum value");
             return null;
         }
 
         if (!int.TryParse(minRow.Value, out var minimum))
         {
             throw new FormatException(
-                $"Invalid Minimum value for '{rows[0].DataElementName}': '{minRow.Value}'. Expected integer.");
+                $"Invalid Minimum value for '{rows[0].DataElementName}': '{minRow.Value}'. Expected number.");
         }
 
         if (!int.TryParse(maxRow.Value, out var maximum))
         {
             throw new FormatException(
-                $"Invalid Maximum value for '{rows[0].DataElementName}': '{maxRow.Value}'. Expected integer.");
+                $"Invalid Maximum value for '{rows[0].DataElementName}': '{maxRow.Value}'. Expected number.");
         }
 
         // Use the label from Remarks, or default to the data element name
         var label = minRow.Remarks ?? maxRow.Remarks ?? rows[0].DataElementName;
 
-        return new IntegerRange(minimum, maximum, label)
+        return new NumericalRange(minimum, maximum, label)
         {
             Remarks = string.IsNullOrWhiteSpace(minRow.Remarks) ? maxRow.Remarks : minRow.Remarks
         };
