@@ -76,19 +76,19 @@ SELECT
     'Populated = QuarterlyEarnings is non-NULL' AS Remarks
 FROM Counts
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MinEarnings AS NVARCHAR(MAX))          AS Value,
     'Minimum'                                   AS SubItemLabel,
     'QuarterlyEarnings (decimal); metric threshold ~$8,750/quarter ($35,000/year)' AS Remarks
 FROM RangeCalc
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MaxEarnings AS NVARCHAR(MAX))          AS Value,
     'Maximum'                                   AS SubItemLabel,
     'QuarterlyEarnings (decimal); metric threshold ~$8,750/quarter ($35,000/year)' AS Remarks

@@ -57,19 +57,19 @@ SELECT
     NULL                                                                               AS Remarks
 FROM ObservationBase
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                                                                    AS DataElementName,
-    'IntegerRange'                                                                         AS CharacteristicType,
+    'NumericalRange'                                                                       AS CharacteristicType,
     CAST(MIN(TRY_CAST(AssessmentResultScoreValueScaleScore AS DECIMAL(18,2))) AS NVARCHAR(MAX)) AS Value,
     'Minimum'                                                                              AS SubItemLabel,
     NULL                                                                                   AS Remarks
 FROM ObservationBase
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                                                                    AS DataElementName,
-    'IntegerRange'                                                                         AS CharacteristicType,
+    'NumericalRange'                                                                       AS CharacteristicType,
     CAST(MAX(TRY_CAST(AssessmentResultScoreValueScaleScore AS DECIMAL(18,2))) AS NVARCHAR(MAX)) AS Value,
     'Maximum'                                                                              AS SubItemLabel,
     NULL                                                                                   AS Remarks
@@ -80,6 +80,6 @@ FROM ObservationBase";
         "= 'Observation' or 'StaffEvaluation', or AssessmentTypeDescription LIKE '%observation%'. " +
         "Note: CEDS assessment type codes are primarily student-oriented; educator observation " +
         "scores may be inconsistently mapped across state implementations. " +
-        "The scale score field is stored as NVARCHAR(70); IntegerRange uses TRY_CAST to DECIMAL " +
+        "The scale score field is stored as NVARCHAR(70); NumericalRange uses TRY_CAST to DECIMAL " +
         "for correct numeric min/max — unparseable values are silently excluded from the range.";
 }

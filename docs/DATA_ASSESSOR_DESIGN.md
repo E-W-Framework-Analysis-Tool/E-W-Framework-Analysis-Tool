@@ -145,7 +145,7 @@ characteristics.
 
 | Element Type                                                        | Suggested Characteristics                                            |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Numeric** (age, grade level, score, count)                        | `RecordCount`, `Completeness`, `IntegerRange`                        |
+| **Numeric** (age, grade level, score, count)                        | `RecordCount`, `Completeness`, `NumericalRange`                        |
 | **Categorical** (race/ethnicity, program type, disability category) | `RecordCount`, `Completeness`, `Distribution`                        |
 | **Boolean / Flag** (enrolled, active, indicator)                    | `RecordCount`, `Completeness`, `Distribution` (`'True'` / `'False'`) |
 | **Date** (birth date, enrollment date, exit date)                   | `RecordCount`, `Completeness`                                        |
@@ -193,25 +193,25 @@ Subjective, user-driven judgment about data availability. Used in manual assessm
 new ReportedAvailability(AvailabilityJudgment.Available)
 ```
 
-### IntegerRange
+### NumericalRange
 
 Minimum and maximum values for a numeric data element. Produces exactly 2 rows.
 
 **Query output:**
 
 ```sql
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}' AS DataElementName,
-    'IntegerRange'      AS CharacteristicType,
+    'NumericalRange'      AS CharacteristicType,
     CAST(MinValue AS NVARCHAR(MAX)) AS Value,
     'Minimum'           AS SubItemLabel,
     NULL                AS Remarks
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}' AS DataElementName,
-    'IntegerRange'      AS CharacteristicType,
+    'NumericalRange'      AS CharacteristicType,
     CAST(MaxValue AS NVARCHAR(MAX)) AS Value,
     'Maximum'           AS SubItemLabel,
     NULL                AS Remarks
@@ -220,7 +220,7 @@ SELECT
 **C# output:**
 
 ```csharp
-new IntegerRange(minValue, maxValue, "Age Range")
+new NumericalRange(minValue, maxValue, "Age Range")
 ```
 
 ### Completeness

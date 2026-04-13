@@ -46,19 +46,19 @@ SELECT
     NULL                                                 AS Remarks
 FROM CreditsBase
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                                  AS DataElementName,
-    'IntegerRange'                                       AS CharacteristicType,
+    'NumericalRange'                                     AS CharacteristicType,
     CAST(MIN(NumberOfCreditsEarned) AS NVARCHAR(MAX))    AS Value,
     'Minimum'                                            AS SubItemLabel,
     NULL                                                 AS Remarks
 FROM CreditsBase
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                                  AS DataElementName,
-    'IntegerRange'                                       AS CharacteristicType,
+    'NumericalRange'                                     AS CharacteristicType,
     CAST(MAX(NumberOfCreditsEarned) AS NVARCHAR(MAX))    AS Value,
     'Maximum'                                            AS SubItemLabel,
     NULL                                                 AS Remarks

@@ -15,15 +15,22 @@ public class YearsInCurrentPositionCedsDWAssessor : ICedsDWAssessor
 
     public string Query => $@"
 WITH LeaderBase AS (
-    SELECT
-        -- NOTE: Replace the LIKE filter below with the confirmed K12StaffClassificationCode
+SELECT
+          -- NOTE: Replace the LIKE filter below with the confirmed K12StaffClassificationCode
         -- value(s) that identify school leaders in RDS.DimK12StaffCategories.
         -- Example values might be 'Principal', 'SchoolLeader', 'Administrator', etc.
-        -- Until confirmed, this placeholder captures likely candidates.
-        DATEDIFF(year, d.DateValue, GETDATE()) AS TenureYears
-    FROM RDS.FactK12StaffAssignments f
+        -- Until confirmed, this placeholder captures likely can
+    CAST(DATEDIFF(day, 
+        startDate.DateValue, 
+        CASE 
+            WHEN f.AssignmentEndDateId = -1 THEN GETDATE() 
+            ELSE endDate.DateValue 
+        END
+    ) / 365 AS  INT) AS TenureYears
+	 FROM RDS.FactK12StaffAssignments f
     JOIN RDS.DimK12StaffCategories c ON f.K12StaffCategoryId = c.DimK12StaffCategoryId
-    JOIN RDS.DimDates               d ON f.AssignmentStartDateId = d.DimDateId
+    JOIN RDS.DimDates startDate ON f.AssignmentStartDateId = startDate.DimDateId
+	JOIN RDS.DimDates endDate ON f.AssignmentEndDateId = endDate.DimDateId
     WHERE c.K12StaffClassificationCode LIKE '%Principal%'
        OR c.K12StaffClassificationCode LIKE '%Leader%'
        OR c.K12StaffClassificationCode LIKE '%Administrator%'
@@ -56,19 +63,19 @@ SELECT
     NULL                                                                   AS Remarks
 FROM LeaderBase
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                      AS DataElementName,
-    'IntegerRange'                           AS CharacteristicType,
+    'NumericalRange'                         AS CharacteristicType,
     CAST(MIN(TenureYears) AS NVARCHAR(MAX))  AS Value,
     'Minimum'                                AS SubItemLabel,
     NULL                                     AS Remarks
 FROM LeaderBase
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                      AS DataElementName,
-    'IntegerRange'                           AS CharacteristicType,
+    'NumericalRange'                         AS CharacteristicType,
     CAST(MAX(TenureYears) AS NVARCHAR(MAX))  AS Value,
     'Maximum'                                AS SubItemLabel,
     NULL                                     AS Remarks

@@ -19,10 +19,11 @@ relevant schema and resubmit with it included in the prompt to resolve them.
    `CharacteristicType`, `Value`, `SubItemLabel`, `Remarks`.
 3. **CAST usage** — Every `Value` is `CAST(... AS NVARCHAR(MAX))`.
 4. **CharacteristicType validity** — Every type is one of: `RecordCount`, `ReportedAvailability`,
-   `IntegerRange`, `Completeness`, `Distribution`.
-5. **Row counts** — `IntegerRange` and `Completeness` produce exactly 2 rows each; `RecordCount` and
-   `ReportedAvailability` produce exactly 1; `Distribution` produces 1 per category.
-6. **SubItemLabel correctness** — `'Minimum'`/`'Maximum'` for `IntegerRange`; `'TotalRecords'`/
+   `NumericalRange`, `Completeness`, `Distribution`.
+5. **Row counts** — `NumericalRange` and `Completeness` produce exactly 2 rows each; `RecordCount` and
+   `ReportedAvailability` produce exactly 1; `Distribution` produces 1 per category. Do not include multiple
+   sets of rows for any single data element (except for Distribution)
+6. **SubItemLabel correctness** — `'Minimum'`/`'Maximum'` for `NumericalRange`; `'TotalRecords'`/
    `'PopulatedRecords'` for `Completeness`; category name for `Distribution`; `NULL` otherwise.
 7. **CTE usage** — A CTE is used when multiple characteristics share the same source data.
 8. **UNION ALL structure** — Blocks are separated by `UNION ALL` with identifying comments; no trailing

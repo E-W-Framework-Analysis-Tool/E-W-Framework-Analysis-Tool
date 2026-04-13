@@ -4,7 +4,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// Profiles K-12 digital skills assessment records from RDS.FactK12StudentAssessments
 /// joined to RDS.DimAssessments, filtered by known instrument names and broad title
 /// matching. Reports record count, completeness of Raw/Scale score values, and numeric
-/// range for both score types.
+/// range for raw score values.
 /// NOTE: The CEDS framework explicitly states no validated K-12 digital skills
 /// assessment instrument is currently available. The two instruments previously
 /// referenced in literature — the Instant Digital Competence Assessment (iDCA) and
@@ -56,10 +56,8 @@ Counts AS (
 ),
 RangeCalc AS (
     SELECT
-        MIN(TRY_CAST(AssessmentResultScoreValueRawScore   AS FLOAT)) AS MinRaw,
-        MAX(TRY_CAST(AssessmentResultScoreValueRawScore   AS FLOAT)) AS MaxRaw,
-        MIN(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MinScale,
-        MAX(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MaxScale
+        MIN(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MinRaw,
+        MAX(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MaxRaw
     FROM AssessmentBase
 )
 INSERT INTO #EWFProfilerResults
@@ -90,46 +88,28 @@ SELECT
     'Populated = RawScore or ScaleScore is non-NULL and non-empty' AS Remarks
 FROM Counts
 UNION ALL
--- IntegerRange - RawScore Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MinRaw AS NVARCHAR(MAX))               AS Value,
     'Minimum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
+    NULL                                        AS Remarks
 FROM RangeCalc
 UNION ALL
--- IntegerRange - RawScore Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MaxRaw AS NVARCHAR(MAX))               AS Value,
     'Maximum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Minimum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MinScale AS NVARCHAR(MAX))             AS Value,
-    'Minimum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Maximum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MaxScale AS NVARCHAR(MAX))             AS Value,
-    'Maximum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
+    NULL                                        AS Remarks
 FROM RangeCalc";
 
     public string AssessmentDescription =>
         "Assesses K-12 digital skills assessment records matched by known instrument names (iDCA, ST2L) " +
         "and broad digital skills title patterns. Reports total record count, completeness of Raw or Scale " +
-        "score values, and min/max numeric range for both score types. Note: no validated K-12 digital " +
+        "score values, and min/max numeric range for raw score values. Note: no validated K-12 digital " +
         "skills instrument is currently available per CEDS; this assessor is expected to return zero or " +
         "near-zero records in most implementations but is included to surface locally-adopted instruments.";
 }

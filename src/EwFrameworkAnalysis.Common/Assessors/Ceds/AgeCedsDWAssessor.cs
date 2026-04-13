@@ -53,10 +53,10 @@ FROM PeopleStats
 
 UNION ALL
 
--- NumberRange - Minimum Age
+-- NumericalRange - Minimum Age
 SELECT
     '{DataElementName}' AS DataElementName,
-    'NumberRange' AS CharacteristicType,
+    'NumericalRange' AS CharacteristicType,
     CAST(MinAge AS NVARCHAR(MAX)) AS Value,
     'Minimum' AS SubItemLabel,
     'Age Range (from BirthDate)' AS Remarks
@@ -64,10 +64,10 @@ FROM PeopleStats
 
 UNION ALL
 
--- NumberRange - Maximum Age
+-- NumericalRange - Maximum Age
 SELECT
     '{DataElementName}' AS DataElementName,
-    'NumberRange' AS CharacteristicType,
+    'NumericalRange' AS CharacteristicType,
     CAST(MaxAge AS NVARCHAR(MAX)) AS Value,
     'Maximum' AS SubItemLabel,
     NULL AS Remarks

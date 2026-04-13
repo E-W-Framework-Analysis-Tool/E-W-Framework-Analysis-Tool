@@ -5,7 +5,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactK12StudentAssessments joined to RDS.DimAssessments, filtered to
 /// known cultural competency assessments by title, short name, or state identifier.
 /// Reports record count, completeness of Raw/Scale score values, and numeric range
-/// for both score types.
+/// for raw score values.
 /// NOTE: The CEDS framework does not recommend a specific K-12 measurement tool for
 /// cultural competency, citing a lack of developed instruments for youth. The
 /// HEIghten Outcomes Assessment for Intercultural Competency and Diversity and the
@@ -54,10 +54,8 @@ Counts AS (
 ),
 RangeCalc AS (
     SELECT
-        MIN(TRY_CAST(AssessmentResultScoreValueRawScore   AS FLOAT)) AS MinRaw,
-        MAX(TRY_CAST(AssessmentResultScoreValueRawScore   AS FLOAT)) AS MaxRaw,
-        MIN(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MinScale,
-        MAX(TRY_CAST(AssessmentResultScoreValueScaleScore AS FLOAT)) AS MaxScale
+        MIN(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MinRaw,
+        MAX(TRY_CAST(AssessmentResultScoreValueRawScore AS FLOAT)) AS MaxRaw
     FROM AssessmentBase
 )
 INSERT INTO #EWFProfilerResults
@@ -88,46 +86,28 @@ SELECT
     'Populated = RawScore or ScaleScore is non-NULL and non-empty' AS Remarks
 FROM Counts
 UNION ALL
--- IntegerRange - RawScore Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MinRaw AS NVARCHAR(MAX))               AS Value,
     'Minimum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
+    NULL                                        AS Remarks
 FROM RangeCalc
 UNION ALL
--- IntegerRange - RawScore Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
+    'NumericalRange'                            AS CharacteristicType,
     CAST(MaxRaw AS NVARCHAR(MAX))               AS Value,
     'Maximum'                                   AS SubItemLabel,
-    'RawScore'                                  AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Minimum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MinScale AS NVARCHAR(MAX))             AS Value,
-    'Minimum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
-FROM RangeCalc
-UNION ALL
--- IntegerRange - ScaleScore Maximum
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'IntegerRange'                              AS CharacteristicType,
-    CAST(MaxScale AS NVARCHAR(MAX))             AS Value,
-    'Maximum'                                   AS SubItemLabel,
-    'ScaleScore'                                AS Remarks
+    NULL                                        AS Remarks
 FROM RangeCalc";
 
     public string AssessmentDescription =>
         "Assesses K-12 cultural competency assessment records matched by title, short name, or state " +
         "identifier against known instruments (HEIghten, IDI) and similar titles. Reports total record " +
-        "count, completeness of Raw or Scale score values, and min/max numeric range for both score types. " +
+        "count, completeness of Raw or Scale score values, and min/max numeric range for raw score values. " +
         "Note: no validated K-12 cultural competency instrument has been formally recommended by CEDS; " +
         "referenced assessments are adult proxy tools.";
 }

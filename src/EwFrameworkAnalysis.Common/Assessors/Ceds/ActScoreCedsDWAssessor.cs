@@ -56,19 +56,19 @@ SELECT
     NULL                                                         AS Remarks
 FROM ActBase
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                                          AS DataElementName,
-    'IntegerRange'                                               AS CharacteristicType,
+    'NumericalRange'                                             AS CharacteristicType,
     CAST(MIN(ACTScoreNumeric) AS NVARCHAR(MAX))                  AS Value,
     'Minimum'                                                    AS SubItemLabel,
     NULL                                                         AS Remarks
 FROM ActBase
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                                          AS DataElementName,
-    'IntegerRange'                                               AS CharacteristicType,
+    'NumericalRange'                                             AS CharacteristicType,
     CAST(MAX(ACTScoreNumeric) AS NVARCHAR(MAX))                  AS Value,
     'Maximum'                                                    AS SubItemLabel,
     NULL                                                         AS Remarks

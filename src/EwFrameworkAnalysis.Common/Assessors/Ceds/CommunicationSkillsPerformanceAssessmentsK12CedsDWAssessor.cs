@@ -5,8 +5,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactK12StudentAssessments joined to RDS.DimAssessments, filtered to
 /// CCRA+ (or assessment of similar degree) by matching AssessmentTitle,
 /// AssessmentShortName, or AssessmentIdentifierState. Reports record count,
-/// completeness of Raw/Scale score values, and a single combined numeric range
-/// spanning both score types.
+/// completeness of Raw/Scale score values, and numeric range for raw score values.
 /// </summary>
 public class CommunicationSkillsPerformanceAssessmentsK12CedsDWAssessor : ICedsDWAssessor
 {
@@ -75,26 +74,26 @@ SELECT
     'Populated = RawScore or ScaleScore is non-NULL and non-empty' AS Remarks
 FROM Counts
 UNION ALL
--- IntegerRange - Minimum
+-- NumericalRange - Minimum
 SELECT
     '{DataElementName}'                     AS DataElementName,
-    'IntegerRange'                          AS CharacteristicType,
+    'NumericalRange'                        AS CharacteristicType,
     CAST(MinRaw AS NVARCHAR(MAX))           AS Value,
     'Minimum'                               AS SubItemLabel,
-    'RawScore' AS Remarks
+    NULL                                    AS Remarks
 FROM RangeCalc
 UNION ALL
--- IntegerRange - Maximum
+-- NumericalRange - Maximum
 SELECT
     '{DataElementName}'                     AS DataElementName,
-    'IntegerRange'                          AS CharacteristicType,
+    'NumericalRange'                        AS CharacteristicType,
     CAST(MaxRaw AS NVARCHAR(MAX))           AS Value,
     'Maximum'                               AS SubItemLabel,
-    'RawScore'                              AS Remarks
+    NULL                                    AS Remarks
 FROM RangeCalc";
 
     public string AssessmentDescription =>
         "Assesses K-12 communication skills performance assessment records for CCRA+ or equivalent assessments, " +
         "matched by title, short name, or state identifier. Reports total record count, completeness of Raw or " +
-        "Scale score values, and a single min/max numeric range spanning both Raw Score and Scale Score values.";
+        "Scale score values, and min/max numeric range for raw score values.";
 }
