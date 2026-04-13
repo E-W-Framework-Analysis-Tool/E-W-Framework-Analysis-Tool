@@ -17,7 +17,7 @@ public class CedsDWAssessmentOrchestrator
     /// Creates #EWFProfilerResults, runs each assessor's Query verbatim, then selects all rows.
     /// Each assessor is responsible for inserting its own rows via INSERT INTO #EWFProfilerResults.
     /// </summary>
-    public string GenerateAssessmentScript()
+    public string GenerateProfilerScript()
     {
         var assessors = _assessors.ToList();
 

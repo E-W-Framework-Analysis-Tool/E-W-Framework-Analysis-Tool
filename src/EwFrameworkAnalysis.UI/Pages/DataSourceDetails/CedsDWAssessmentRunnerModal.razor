@@ -324,7 +324,7 @@
     {
         try
         {
-            var script = Orchestrator.GenerateAssessmentScript();
+            var script = Orchestrator.GenerateProfilerScript();
             var fileName = $"CEDS_Profiler_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
 
             await JSRuntime.InvokeVoidAsync(
