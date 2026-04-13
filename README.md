@@ -32,8 +32,15 @@ LEAs in identifying priority indicators, assessing gaps, and planning improvemen
 
 ## Documentation
 
-Documentation which is intrinsically technical or relevant to development can be found in this repository under
-[/docs/](./docs/).
+Technical and development-focused documentation can be found in this repository under [/docs/](./docs/).
+
+## Tools
+
+Standalone utilities for working with application data can be found under [/tools/](./tools/).
+
+| Script                                                           | Description                                                                         |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [Merge-AnalysisProjects.ps1](./tools/Merge-AnalysisProjects.ps1) | Merges two or more Analysis Project JSON files into a single combined project file. |
 
 ## Contributing
 

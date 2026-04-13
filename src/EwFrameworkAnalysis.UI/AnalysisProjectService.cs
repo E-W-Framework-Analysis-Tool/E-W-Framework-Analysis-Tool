@@ -1,6 +1,6 @@
 using System.Text.Json;
 using EwFrameworkAnalysis.Common.Models.Project;
-using EwFrameworkAnalysis.Common.Scoring;
+using EwFrameworkAnalysis.Common.Services;
 using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI;
@@ -9,7 +9,7 @@ public class AnalysisProjectService
 {
     private readonly IJSRuntime _jsRuntime;
     private const string STORAGE_KEY = "ewframework_analysis_project";
-    private readonly DataElementScoringRuleRegistry _ruleRegistry;
+    private const string WALKTHROUGH_BACKUP_KEY = "ewframework_analysis_project_backup";
 
     public AnalysisProject Project { get; private set; } = new();
     public IReadOnlyList<DataSource> DataSources => Project.DataSources;
@@ -18,13 +18,29 @@ public class AnalysisProjectService
     // Track newly added items for UI highlighting
     public Guid? NewlyAddedDataSourceId { get; private set; }
     public Guid? NewlyAddedAssessmentId { get; private set; }
+    public bool IsDemoActive { get; private set; }
+    private bool _initialized = false;
 
     public event Action? Changed;
 
-    public AnalysisProjectService(IJSRuntime jsRuntime, DataElementScoringRuleRegistry ruleRegistry)
+    public AnalysisProjectService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
-        _ruleRegistry = ruleRegistry;
+    }
+
+    private AnalysisProject? DeserializeProject(string json)
+    {
+        var migration = AnalysisProjectMigrator.MigrateIfNeeded(json);
+        if (!migration.Success)
+        {
+            Console.WriteLine($"Migration failed: {migration.ErrorMessage}");
+            return null;
+        }
+
+        if (migration.MigrationsApplied > 0)
+            Console.WriteLine($"Applied {migration.MigrationsApplied} migration(s) before deserializing.");
+
+        return JsonSerializer.Deserialize<AnalysisProject>(migration.Json!, GetJsonOptions());
     }
 
     /// <summary>
@@ -33,12 +49,23 @@ public class AnalysisProjectService
     /// </summary>
     public async Task InitializeAsync()
     {
+        if (_initialized) return;
+
         try
         {
+            // If a backup exists, a walkthrough crashed — restore it unconditionally
+            var backup = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", WALKTHROUGH_BACKUP_KEY);
+            if (!string.IsNullOrEmpty(backup))
+            {
+                Console.WriteLine("Walkthrough backup detected, restoring real project.");
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", STORAGE_KEY, backup);
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", WALKTHROUGH_BACKUP_KEY);
+            }
+
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", STORAGE_KEY);
             if (!string.IsNullOrEmpty(json))
             {
-                var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
+                var project = DeserializeProject(json);
                 Project = project ?? new AnalysisProject();
             }
             else
@@ -52,24 +79,8 @@ public class AnalysisProjectService
             Project = new AnalysisProject();
         }
 
+        _initialized = true;
         Notify();
-    }
-
-    public async Task<bool> LoadProjectAsync(string json)
-    {
-        try
-        {
-            var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
-            if (project != null)
-            {
-                Project = project;
-                await SaveAsync();
-                Notify();
-                return true;
-            }
-        }
-        catch { }
-        return false;
     }
 
     public Task<string> ExportProjectAsync()
@@ -79,6 +90,8 @@ public class AnalysisProjectService
 
     private async Task SaveAsync()
     {
+        // Safe-guard to prevent overwriting during demo walkthrough
+        if (IsDemoActive) return;
         try
         {
             var json = JsonSerializer.Serialize(Project, GetJsonOptions());
@@ -88,6 +101,28 @@ public class AnalysisProjectService
         {
             // Handle save errors gracefully
         }
+    }
+
+    public async Task ActivateDemoProjectAsync(AnalysisProject demoProject)
+    {
+        var realJson = await ExportProjectAsync();
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", WALKTHROUGH_BACKUP_KEY, realJson);
+        IsDemoActive = true;
+        Project = demoProject;
+        Notify();
+    }
+
+    public async Task DeactivateDemoProjectAsync()
+    {
+        var backup = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", WALKTHROUGH_BACKUP_KEY);
+        if (!string.IsNullOrEmpty(backup))
+        {
+            var project = DeserializeProject(backup);
+            Project = project ?? new AnalysisProject();
+            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", WALKTHROUGH_BACKUP_KEY);
+        }
+        IsDemoActive = false;
+        Notify();
     }
 
     #region Data Source Management
@@ -187,7 +222,7 @@ public class AnalysisProjectService
 
         if (string.IsNullOrWhiteSpace(assessment.Name))
         {
-            assessment.Name = $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
+            assessment.Name = $"Data Profile {DateTimeOffset.Now:yyyy-MM-dd HH:mm}";
         }
 
         dataSource.Assessments.Insert(0, assessment);
@@ -291,24 +326,24 @@ public class AnalysisProjectService
     /// <summary>
     /// Import a project from JSON string
     /// </summary>
-    public async Task<bool> ImportProjectAsync(string json)
+    public async Task<ImportProjectResult> ImportProjectAsync(string json)
     {
         try
         {
-            var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
-            if (project != null)
-            {
-                Project = project;
-                await SaveAsync();
-                Notify();
-                return true;
-            }
+            var project = DeserializeProject(json);
+            if (project is null)
+                return ImportProjectResult.Fail("The file could not be read as a project.");
+
+            Project = project;
+            await SaveAsync();
+            Notify();
+            return ImportProjectResult.Ok();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to import project: {ex.Message}");
+            return ImportProjectResult.Fail(ex.Message);
         }
-        return false;
     }
 
     public async Task UpdateProjectDetailsAsync(string? title)
@@ -348,4 +383,19 @@ public class AnalysisProjectService
     }
 
     #endregion
+}
+
+public class ImportProjectResult
+{
+    public bool Success { get; }
+    public string? ErrorMessage { get; }
+
+    private ImportProjectResult(bool success, string? errorMessage)
+    {
+        Success = success;
+        ErrorMessage = errorMessage;
+    }
+
+    public static ImportProjectResult Ok() => new(true, null);
+    public static ImportProjectResult Fail(string errorMessage) => new(false, errorMessage);
 }

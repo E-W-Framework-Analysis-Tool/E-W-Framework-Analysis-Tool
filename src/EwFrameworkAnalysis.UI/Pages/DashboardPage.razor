@@ -137,10 +137,10 @@
         var assessments = ProjectSvc.GetAssessmentsForDataSource(dataSource.Id).ToList();
 
         if (!assessments.Any())
-            return "Latest inventory: N/A";
+            return "Latest profiling: N/A";
 
         var latest = assessments.OrderByDescending(a => a.ConductedAt).First();
-        return $"Latest inventory: {GetTimeAgo(latest.ConductedAt)}";
+        return $"Latest profiling: {GetTimeAgo(latest.ConductedAt)}";
     }
 
     private string GetTimeAgo(DateTimeOffset dateTime)

@@ -1,11 +1,12 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
 
-<Card Shadow="Card.ShadowSize.XLarge">
+<Card Shadow="Card.ShadowSize.XLarge" data-walkthrough="@WalkthroughSteps.StepIds.DataSourceAssessmentHistory">
     <ChildContent>
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-title font-semibold text-blue">
-                @(DataSourceType == DataSourceType.EcsState ? "ECS State Data Snapshots" : "Assessment History")
+                Data Profile History
             </h3>
             @if (DataSourceType != DataSourceType.EcsState)
             {
@@ -28,7 +29,7 @@
                                 <div class="flex-1 min-w-0 pr-2">
                                     <div class="flex items-start gap-2">
                                         <div class="text-sm font-semibold text-blue break-words flex-1 min-w-0">
-                                            @(a.Name ?? "Unnamed Assessment")
+                                            @(a.Name ?? "Unnamed Data Profile")
                                         </div>
 
                                         @if (isViewing)
@@ -48,7 +49,7 @@
                                     <div class="text-xs text-gray mt-1 break-words">@a.ConductedAt.ToString("g")</div>
                                     @if (a.DataElementAssessments?.Any() == true)
                                     {
-                                        <div class="text-xs text-gray mt-1 break-words">@a.DataElementAssessments.Count data elements assessed</div>
+                                        <div class="text-xs text-gray mt-1 break-words">@a.DataElementAssessments.Count data elements profiled</div>
                                     }
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0">
@@ -64,8 +65,8 @@
         {
             <div class="text-center py-8 text-gray">
                 <i class="fas fa-clock text-4xl mb-4 opacity-50"></i>
-                <p class="font-semibold">No assessments yet</p>
-                <p class="text-xs mt-2">Click "Run New Assessment" to get started.</p>
+                <p class="font-semibold">No data profiles yet</p>
+                <p class="text-xs mt-2">Click the button above to get started.</p>
             </div>
         }
     </ChildContent>

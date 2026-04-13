@@ -40,7 +40,7 @@
                             </span>
                         </div>
                         <div class="col-span-6 justify-self-center cursor-pointer" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
-                            Score
+                            Coverage Score
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Score, false) ? "" : "opacity-50")"></i>
@@ -84,10 +84,36 @@
                                         <div class="flex flex-col gap-2">
                                             @foreach (var dataElementName in indicator.DataElementNames.Order())
                                             {
-                                                <p class="text-sm text-gray">
+                                                var deScore = indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
+                                                <div class="text-sm text-gray">
                                                     <i class="@GetDataElementIsAvailableIcon(indicatorScore, dataElementName)"></i>
-                                                    @dataElementName
-                                                </p>
+                                                    @if (deScore is { IsAvailable: true } && !string.IsNullOrEmpty(deScore.Source))
+                                                    {
+                                                        <div class="dropdown dropdown-top dropdown-start inline-block">
+                                                            <span tabindex="0" role="button" class="cursor-pointer hover:font-semibold focus:font-semibold transition-all">
+                                                                @dataElementName
+                                                                <i class="@GetDataSourceTypeIcon(deScore) text-gray-400 ml-1 text-xs"></i>
+                                                            </span>
+                                                            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 w-64 p-2 shadow-lg border border-gray-200">
+                                                                <li class="menu-title text-sm text-gray-600">@dataElementName</li>
+                                                                <li class="menu-title text-sm text-gray-400">Data Sources:</li>
+                                                                @foreach (var source in deScore.SourceScores)
+                                                                {
+                                                                    <li class="menu-title text-sm text-gray-600 @(source.DataSourceName == deScore.Source ? "bg-gray-200 rounded" : "")">
+                                                                        <span class="text-sm">
+                                                                            <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
+                                                                            @source.DataSourceName
+                                                                        </span>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        @dataElementName
+                                                    }
+                                                </div>
                                             }
                                         </div>
 
@@ -219,6 +245,28 @@
         }
 
         return "fas fa-times-circle text-error";
+    }
+
+    private static string GetSourceAvailabilityIcon(AvailabilityJudgment judgment) =>
+        judgment switch
+        {
+            AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+            AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+            AvailabilityJudgment.NotAvailable => "fas fa-times-circle text-error",
+            _ => "fas fa-question-circle text-gray-400"
+        };
+
+    private static string GetDataSourceTypeIcon(DataElementScore score)
+    {
+        var selectedSource = score.SourceScores.FirstOrDefault(s => s.DataSourceName == score.Source);
+        return selectedSource?.SourceType switch
+        {
+            nameof(DataSourceType.EdFiApi) => "fas fa-network-wired",
+            nameof(DataSourceType.CedsDw) => "fas fa-warehouse",
+            nameof(DataSourceType.Custom) => "fas fa-list-check",
+            nameof(DataSourceType.EcsState) => "fas fa-map",
+            _ => "fas fa-database"
+        };
     }
 
     private IEnumerable<EssentialQuestion> GetEssentialQuestionsForIndicator(Indicator indicator) =>

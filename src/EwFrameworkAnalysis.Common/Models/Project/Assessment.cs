@@ -34,4 +34,5 @@ public class DataSourceAssessmentWithSource : DataSourceAssessment
 {
     public Guid DataSourceId { get; set; }
     public DataSourceType DataSourceType { get; set; }
+    public string DataSourceName { get; set; } = string.Empty;
 }

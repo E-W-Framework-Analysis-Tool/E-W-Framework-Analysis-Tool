@@ -1,5 +1,6 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
 @inject IJSRuntime JSRuntime
 
@@ -22,7 +23,7 @@
                 <!-- Right: Actions -->
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <!-- File Operations -->
-                    <div class="flex items-center gap-2 border-l border-gray-300 pl-3">
+                    <div class="flex items-center gap-2 border-l border-gray-300 pl-3" data-walkthrough="@WalkthroughSteps.StepIds.ProjectFileOperations">
                         <button @onclick="HandleNewProject"
                                 class="btn btn-sm btn-ghost gap-1"
                                 title="New Project">
@@ -133,6 +134,19 @@
     private bool LoadProjectModalIsOpen { get; set; }
 
     private ElementReference _fileInput;
+    private string? _importError;
+
+    private async Task OnFileSelected(ChangeEventArgs e)
+    {
+        _importError = null;
+        var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
+        if (!string.IsNullOrWhiteSpace(file))
+        {
+            var result = await ProjectSvc.ImportProjectAsync(file);
+            if (!result.Success)
+                _importError = result.ErrorMessage;
+        }
+    }
 
     private async Task HandleTitleSave(string? title)
     {
@@ -174,15 +188,6 @@
         finally
         {
             await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.resetFileInput", _fileInput);
-        }
-    }
-
-    private async Task OnFileSelected(ChangeEventArgs e)
-    {
-        var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
-        if (!string.IsNullOrWhiteSpace(file))
-        {
-            await ProjectSvc.ImportProjectAsync(file);
         }
     }
 

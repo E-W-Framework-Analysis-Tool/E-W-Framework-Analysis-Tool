@@ -12,7 +12,7 @@
 {
     <div class="modal modal-open">
         <div class="modal-box max-h-5/6 @(_currentProgress != null ? "min-w-3/4" : "") pb-0">
-            <h3 class="font-bold text-lg mb-4">Run Assessment</h3>
+            <h3 class="font-bold text-lg mb-4">Run Automated Scan</h3>
 
             @if (_showAssessmentRunner && DataSource.Type == DataSourceType.EdFiApi)
             {
@@ -64,7 +64,7 @@
                         <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
                     </Card>
                     <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
-                        <h3 class="text-sm text-gray mb-2">Assessors Complete</h3>
+                        <h3 class="text-sm text-gray mb-2">Profilers Complete</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
                     </Card>
                     <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
@@ -88,7 +88,7 @@
 
                 <Card Shadow="Card.ShadowSize.Default" NoPadding AdditionalClasses="mb-4">
                     <div class="px-4 py-3 border-b border-gray-200">
-                        <h3 class="font-semibold text-blue">Assessor Progress</h3>
+                        <h3 class="font-semibold text-blue">Profiler Progress</h3>
                     </div>
                     <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                         @foreach (var assessor in _currentProgress.AssessorProgresses)
@@ -145,7 +145,7 @@
                                                                     <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
                                                                 </div>
                                                             }
-                                                            else if (characteristic is IntegerRange ir)
+                                                            else if (characteristic is NumericalRange ir)
                                                             {
                                                                 <div class="text-xs text-gray-700">
                                                                     <span class="font-medium">@ir.Label:</span> @ir.Minimum - @ir.Maximum
@@ -206,8 +206,8 @@
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <div>
-                        <h3 class="font-bold">Assessment Complete!</h3>
-                        <div class="text-sm">Collected @_assessmentResult.DataElementAssessments.Count assessments with @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics</div>
+                        <h3 class="font-bold">Automated Scan Complete!</h3>
+                        <div class="text-sm">Scanned @_assessmentResult.DataElementAssessments.Count data elements producing @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics</div>
                     </div>
                 </div>
             }
@@ -217,23 +217,23 @@
                 @if (_isRunning)
                 {
                     <button class="btn btn-error" @onclick="CancelAssessment">
-                        <i class="fas fa-stop mr-2"></i>Cancel Assessment
+                        <i class="fas fa-stop mr-2"></i>Cancel Scan
                     </button>
                 }
                 else if (_assessmentResult != null)
                 {
                     <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
-                        <i class="fas fa-times mr-2"></i>Discard Results
+                        <i class="fas fa-times mr-2"></i>Discard
                     </button>
                     <button class="btn btn-primary" @onclick="SaveResults">
-                        <i class="fas fa-save mr-2"></i>Save Results
+                        <i class="fas fa-save mr-2"></i>Save
                     </button>
                 }
                 else
                 {
                     <button class="btn btn-ghost" @onclick="Close">Cancel</button>
                     <button class="btn btn-secondary" @onclick="StartAssessment">
-                        <i class="fas fa-play mr-2"></i>Start Assessment
+                        <i class="fas fa-play mr-2"></i>Start Scan
                     </button>
                 }
             </div>
@@ -244,9 +244,9 @@
     {
         <div class="modal modal-open">
             <div class="modal-box">
-                <h3 class="font-bold text-lg text-blue">Discard Assessment?</h3>
+                <h3 class="font-bold text-lg text-blue">Discard Scan Results?</h3>
                 <p class="py-4 text-gray">
-                    Are you sure you want to discard this assessment? All collected data will be lost.
+                    Are you sure you want to discard these scan results? All collected metadata will be lost.
                 </p>
                 <div class="modal-action">
                     <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
@@ -321,7 +321,7 @@
             _assessmentResult = await Orchestrator.RunAssessmentsAsync(
                 httpClient,
                 DataSource!,
-                $"Assessment {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
+                $"Automated Scan {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
                 progress,
                 true,
                 _cancellationTokenSource.Token
@@ -331,11 +331,11 @@
         }
         catch (OperationCanceledException)
         {
-            _error = "Assessment was cancelled by user.";
+            _error = "Scan was cancelled by user.";
         }
         catch (Exception ex)
         {
-            _error = $"Assessment failed: {ex.Message}";
+            _error = $"Scan failed: {ex.Message}";
         }
         finally
         {

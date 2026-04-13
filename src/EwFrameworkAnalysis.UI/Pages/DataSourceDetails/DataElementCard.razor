@@ -2,7 +2,7 @@
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
 
-<CollapsibleSection IsExpanded="@IsExpanded" AdditionalClasses="shadow-md hover:shadow-lg transition-shadow duration-200">
+<CollapsibleSection IsExpanded="@IsExpanded" AdditionalClasses="shadow-md hover:shadow-lg transition-shadow duration-200" AriaLabel="@($"Expand to view details for {Element.DataElementName} Data Element")">
     <TitleContent>
         <div class="flex-1 min-w-0">
             <h5 class="font-semibold text-blue">@Element.DataElementName</h5>
@@ -60,7 +60,7 @@
                             <div class="text-xs text-gray-600 mt-1">@c.PopulatedRecords.ToString("N0") / @c.TotalRecords.ToString("N0") records</div>
                         </Card>
                     }
-                    else if (characteristic is IntegerRange ir)
+                    else if (characteristic is NumericalRange ir)
                     {
                         <Card Background="Card.BackgroundColor.Tan"
                               Border="new Card.BorderStyle(Card.BorderColor.Tan, Card.BorderPosition.Left)">
@@ -96,7 +96,7 @@
                     }
                 }
             </div>
-            <div class="text-xs text-gray mt-3">Assessed: @Element.AssessedAt.ToString("g")</div>
+            <div class="text-xs text-gray mt-3">Profiled: @Element.AssessedAt.ToString("g")</div>
         }
         else
         {
@@ -114,7 +114,7 @@
         [typeof(RecordCount)] = Card.BorderColor.Blue,
         [typeof(ReportedAvailability)] = Card.BorderColor.Green,
         [typeof(Completeness)] = Card.BorderColor.Yellow,
-        [typeof(IntegerRange)] = Card.BorderColor.Tan,
+        [typeof(NumericalRange)] = Card.BorderColor.Tan,
         [typeof(Distribution)] = Card.BorderColor.Gray
     };
 
