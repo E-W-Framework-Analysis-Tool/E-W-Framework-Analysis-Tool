@@ -6,7 +6,7 @@ namespace EwFrameworkAnalysis.Common.Models.Project;
 // Register all derived types on the abstract base class
 [JsonDerivedType(typeof(RecordCount), typeDiscriminator: nameof(RecordCount))]
 [JsonDerivedType(typeof(ReportedAvailability), typeDiscriminator: nameof(ReportedAvailability))]
-[JsonDerivedType(typeof(IntegerRange), typeDiscriminator: nameof(IntegerRange))]
+[JsonDerivedType(typeof(NumericalRange), typeDiscriminator: nameof(NumericalRange))]
 [JsonDerivedType(typeof(Completeness), typeDiscriminator: nameof(Completeness))]
 [JsonDerivedType(typeof(Distribution), typeDiscriminator: nameof(Distribution))]
 public abstract class DataCharacteristicBase
@@ -48,9 +48,9 @@ public enum AvailabilityJudgment
     InsufficientData
 }
 
-public class IntegerRange : DataCharacteristicBase
+public class NumericalRange : DataCharacteristicBase
 {
-    public IntegerRange(int minimum, int maximum, string label)
+    public NumericalRange(decimal minimum, decimal maximum, string label)
     {
         if (maximum < minimum)
             throw new ArgumentException("Maximum must be greater than or equal to minimum");
@@ -60,8 +60,8 @@ public class IntegerRange : DataCharacteristicBase
         Label = label;
     }
 
-    public int Minimum { get; }
-    public int Maximum { get; }
+    public decimal Minimum { get; }
+    public decimal Maximum { get; }
     public string Label { get; }
 }
 

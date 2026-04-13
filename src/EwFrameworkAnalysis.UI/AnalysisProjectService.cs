@@ -1,5 +1,6 @@
 using System.Text.Json;
 using EwFrameworkAnalysis.Common.Models.Project;
+using EwFrameworkAnalysis.Common.Services;
 using Microsoft.JSInterop;
 
 namespace EwFrameworkAnalysis.UI;
@@ -27,6 +28,21 @@ public class AnalysisProjectService
         _jsRuntime = jsRuntime;
     }
 
+    private AnalysisProject? DeserializeProject(string json)
+    {
+        var migration = AnalysisProjectMigrator.MigrateIfNeeded(json);
+        if (!migration.Success)
+        {
+            Console.WriteLine($"Migration failed: {migration.ErrorMessage}");
+            return null;
+        }
+
+        if (migration.MigrationsApplied > 0)
+            Console.WriteLine($"Applied {migration.MigrationsApplied} migration(s) before deserializing.");
+
+        return JsonSerializer.Deserialize<AnalysisProject>(migration.Json!, GetJsonOptions());
+    }
+
     /// <summary>
     /// Initialize the service - load from localStorage or create new project.
     /// Called once on app startup from Program.cs
@@ -49,7 +65,7 @@ public class AnalysisProjectService
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", STORAGE_KEY);
             if (!string.IsNullOrEmpty(json))
             {
-                var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
+                var project = DeserializeProject(json);
                 Project = project ?? new AnalysisProject();
             }
             else
@@ -65,23 +81,6 @@ public class AnalysisProjectService
 
         _initialized = true;
         Notify();
-    }
-
-    public async Task<bool> LoadProjectAsync(string json)
-    {
-        try
-        {
-            var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
-            if (project != null)
-            {
-                Project = project;
-                await SaveAsync();
-                Notify();
-                return true;
-            }
-        }
-        catch { }
-        return false;
     }
 
     public Task<string> ExportProjectAsync()
@@ -118,7 +117,7 @@ public class AnalysisProjectService
         var backup = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", WALKTHROUGH_BACKUP_KEY);
         if (!string.IsNullOrEmpty(backup))
         {
-            var project = JsonSerializer.Deserialize<AnalysisProject>(backup, GetJsonOptions());
+            var project = DeserializeProject(backup);
             Project = project ?? new AnalysisProject();
             await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", WALKTHROUGH_BACKUP_KEY);
         }
@@ -327,24 +326,24 @@ public class AnalysisProjectService
     /// <summary>
     /// Import a project from JSON string
     /// </summary>
-    public async Task<bool> ImportProjectAsync(string json)
+    public async Task<ImportProjectResult> ImportProjectAsync(string json)
     {
         try
         {
-            var project = JsonSerializer.Deserialize<AnalysisProject>(json, GetJsonOptions());
-            if (project != null)
-            {
-                Project = project;
-                await SaveAsync();
-                Notify();
-                return true;
-            }
+            var project = DeserializeProject(json);
+            if (project is null)
+                return ImportProjectResult.Fail("The file could not be read as a project.");
+
+            Project = project;
+            await SaveAsync();
+            Notify();
+            return ImportProjectResult.Ok();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to import project: {ex.Message}");
+            return ImportProjectResult.Fail(ex.Message);
         }
-        return false;
     }
 
     public async Task UpdateProjectDetailsAsync(string? title)
@@ -384,4 +383,19 @@ public class AnalysisProjectService
     }
 
     #endregion
+}
+
+public class ImportProjectResult
+{
+    public bool Success { get; }
+    public string? ErrorMessage { get; }
+
+    private ImportProjectResult(bool success, string? errorMessage)
+    {
+        Success = success;
+        ErrorMessage = errorMessage;
+    }
+
+    public static ImportProjectResult Ok() => new(true, null);
+    public static ImportProjectResult Fail(string errorMessage) => new(false, errorMessage);
 }

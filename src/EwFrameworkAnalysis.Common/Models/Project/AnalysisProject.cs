@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Services;
+
 namespace EwFrameworkAnalysis.Common.Models.Project;
 
 /// <summary>
@@ -6,6 +8,7 @@ namespace EwFrameworkAnalysis.Common.Models.Project;
 public class AnalysisProject
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
+    public int SchemaVersion { get; set; } = AnalysisProjectMigrator.CurrentSchemaVersion;
     public string? Title { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset LastModifiedAt { get; set; } = DateTimeOffset.Now;

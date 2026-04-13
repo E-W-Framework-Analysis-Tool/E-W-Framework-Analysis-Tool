@@ -53,7 +53,7 @@ public class StudentAgeEdFiAssessor : IEdFiAssessor
 
             context.Log($"Found {totalStudents:N0} students: ages {youngestAge} to {oldestAge} ({studentsWithBirthDate:N0} with birth dates)");
 
-            characteristics.Add(new IntegerRange(youngestAge, oldestAge, "AgeRange"));
+            characteristics.Add(new NumericalRange(youngestAge, oldestAge, "AgeRange"));
         }
         else
         {
