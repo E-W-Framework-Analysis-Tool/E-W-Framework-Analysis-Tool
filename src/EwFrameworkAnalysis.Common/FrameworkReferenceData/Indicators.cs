@@ -655,7 +655,7 @@ public static class EwFrameworkIndicators
                     "Teacher reports of social-emotional development"
                 ]
             },
-        ["Kindergarten readiness: approaches to learning"] =
+        ["Kindergarten readiness: approaches to learning"] = // a.k.a Developmental progress: approaches to learning
             new()
             {
                 Name = "Kindergarten readiness: approaches to learning",
