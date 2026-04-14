@@ -66,7 +66,7 @@ public class SuspensionDaysK12EdFiAssessor : IEdFiAssessor
 
         if (reportedLengthCount > 0)
         {
-            characteristics.Add(new IntegerRange(minDays, maxDays, "Suspension Days"));
+            characteristics.Add(new NumericalRange(minDays, maxDays, "Suspension Days"));
         }
 
         return new DataElementAssessment
