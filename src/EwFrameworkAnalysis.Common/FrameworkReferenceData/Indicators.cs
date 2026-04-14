@@ -635,7 +635,7 @@ public static class EwFrameworkIndicators
                     // "Postsecondary program length"
                 ]
             },
-        ["Kindergarten readiness: social-emotional development"] =
+        ["Kindergarten readiness: social-emotional development"] = // a.k.a Developmental progress: social-emotional development
             new()
             {
                 Name = "Kindergarten readiness: social-emotional development",
