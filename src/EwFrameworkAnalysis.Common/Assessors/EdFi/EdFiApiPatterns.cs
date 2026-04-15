@@ -121,6 +121,7 @@ public static class EdFiApiPatterns
     {
         queryParams ??= [];
         queryParams["totalCount"] = "true";
+        queryParams["limit"] = "0";
 
         var url = endpoint.SetQueryParams(queryParams);
 

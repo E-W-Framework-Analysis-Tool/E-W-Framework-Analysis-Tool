@@ -5,7 +5,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class PreKEnrollmentsEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Pre-K Enrollments";
+    public string DataElementName => "Enrollment in quality public pre-K";
 
     public string AssessmentDescription =>
         "Count of studentSchoolAssociations where gradeLevelDescriptor is Prekindergarten";

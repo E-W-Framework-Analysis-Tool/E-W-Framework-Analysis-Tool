@@ -42,10 +42,7 @@ public class TeacherCredentialsEdFiAssessor : IEdFiAssessor
                     var levelOfEducation = staff.HighestCompletedLevelOfEducationDescriptor ?? "Unknown";
                     var categoryName = levelOfEducation.Split('#').LastOrDefault() ?? levelOfEducation;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },

@@ -8,6 +8,7 @@ public class StudentEnrollmentsK12EdFiAssessor : IEdFiAssessor
 {
     public string DataElementName => "Student Enrollments (K-12)";
 
+    // Student grade level (K-12)
     public string AssessmentDescription =>
         "Distribution of student enrollments across grade levels (PreK-12)";
 
@@ -36,8 +37,7 @@ public class StudentEnrollmentsK12EdFiAssessor : IEdFiAssessor
                 {
                     var displayKey = gradeLevel.ToDisplayString();
 
-                    if (!gradeDistribution.ContainsKey(displayKey))
-                        gradeDistribution[displayKey] = 0;
+                    gradeDistribution.TryAdd(displayKey, 0);
 
                     gradeDistribution[displayKey]++;
                 }

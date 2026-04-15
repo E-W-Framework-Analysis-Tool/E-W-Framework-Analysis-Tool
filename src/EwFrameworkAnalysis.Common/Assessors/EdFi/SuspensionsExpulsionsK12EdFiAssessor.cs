@@ -32,16 +32,15 @@ public class SuspensionsExpulsionsK12EdFiAssessor : IEdFiAssessor
         var count = await EdFiApiPatterns.PageAndCountMatchesAsync<EdFiDisciplineAction>(
             httpClient,
             "ed-fi/disciplineActions",
-            resp => resp.Disciplines?.Any(d =>
-                d.DisciplineDescriptor != null &&
-                _standardDescriptors.Contains(d.DisciplineDescriptor)) ?? false,
+            resp => resp.Disciplines
+                .Any(d => _standardDescriptors.Contains(d.DisciplineDescriptor)),
             context
         );
 
         context.Log($"Assessment complete: Found {count:N0} suspension/expulsion records");
         context.ReportProgress(100, "Complete");
 
-        return new DataElementAssessment()
+        return new DataElementAssessment
         {
             DataElementName = DataElementName,
             Characteristics = [

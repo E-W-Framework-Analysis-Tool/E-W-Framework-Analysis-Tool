@@ -18,7 +18,7 @@ public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AttendanceEventCategoryDescriptor#Unexcused Absence"
     ];
 
-    public string DataElementName => "Student Attendance (K-12)";
+    public string DataElementName => "Student attendance rate (K-12)";
 
     public string AssessmentDescription =>
         "Analysis of student attendance events including category distribution and student coverage";
@@ -64,8 +64,7 @@ public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
 
                 // Full category distribution
                 var category = descriptor.Split('#').LastOrDefault() ?? descriptor;
-                if (!categoryDistribution.ContainsKey(category))
-                    categoryDistribution[category] = 0;
+                categoryDistribution.TryAdd(category, 0);
                 categoryDistribution[category]++;
 
                 // Simplified presence distribution

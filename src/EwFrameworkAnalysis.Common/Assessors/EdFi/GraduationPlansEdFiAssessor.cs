@@ -34,8 +34,7 @@ public class GraduationPlansEdFiAssessor : IEdFiAssessor
 
                 // Full category distribution
                 var category = descriptor.Split('#').LastOrDefault() ?? descriptor;
-                if (!categoryDistribution.ContainsKey(category))
-                    categoryDistribution[category] = 0;
+                categoryDistribution.TryAdd(category, 0);
                 categoryDistribution[category]++;
             },
             context

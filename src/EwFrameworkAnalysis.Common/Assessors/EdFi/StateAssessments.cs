@@ -1,7 +1,8 @@
 using EdFi.OdsApi.Sdk.Models.Ed_Fi;
-using EwFrameworkAnalysis.Common.Assessors.EdFi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
+
+namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 // Early grades on track
 public class EarlyLearningAssessmentsEdFiAssessor : IEdFiAssessor
@@ -90,10 +91,7 @@ public class EarlyLearningAssessmentsEdFiAssessor : IEdFiAssessor
                     var category = assessment.AssessmentCategoryDescriptor ?? "Unknown";
                     var categoryName = category.Split('#').LastOrDefault() ?? category;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },
@@ -133,6 +131,7 @@ public class Grade3MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternate assessment/ELL"
     ];
 
+    // Course performance (English and Math)
     public string DataElementName => "State Assessments - Grade 3 Mathematics";
 
     public string AssessmentDescription =>
@@ -215,10 +214,7 @@ public class Grade3MathStateAssessmentsEdFiAssessor : IEdFiAssessor
                     var category = assessment.AssessmentCategoryDescriptor ?? "Unknown";
                     var categoryName = category.Split('#').LastOrDefault() ?? category;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },
@@ -263,6 +259,7 @@ public class Grade3ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AcademicSubjectDescriptor#English Language Arts"
     ];
 
+    // Course performance (English and Math)
     public string DataElementName => "State Assessments - Grade 3 ELA/Reading";
 
     public string AssessmentDescription =>
@@ -345,10 +342,7 @@ public class Grade3ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
                     var category = assessment.AssessmentCategoryDescriptor ?? "Unknown";
                     var categoryName = category.Split('#').LastOrDefault() ?? category;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },
@@ -387,6 +381,7 @@ public class Grade8MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternate assessment/ELL"
     ];
 
+    // Course performance (English and Math)
     public string DataElementName => "State Assessments - Grade 8 Mathematics";
 
     public string AssessmentDescription =>
@@ -469,10 +464,7 @@ public class Grade8MathStateAssessmentsEdFiAssessor : IEdFiAssessor
                     var category = assessment.AssessmentCategoryDescriptor ?? "Unknown";
                     var categoryName = category.Split('#').LastOrDefault() ?? category;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },
@@ -517,6 +509,7 @@ public class Grade8ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AcademicSubjectDescriptor#English Language Arts"
     ];
 
+    // Course performance (English and Math)
     public string DataElementName => "State Assessments - Grade 8 ELA/Reading";
 
     public string AssessmentDescription =>
@@ -599,10 +592,7 @@ public class Grade8ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
                     var category = assessment.AssessmentCategoryDescriptor ?? "Unknown";
                     var categoryName = category.Split('#').LastOrDefault() ?? category;
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
+                    categoryDistribution.TryAdd(categoryName, 0);
                     categoryDistribution[categoryName]++;
                 }
             },

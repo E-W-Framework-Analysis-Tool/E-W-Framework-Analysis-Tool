@@ -31,35 +31,32 @@ public class TeacherExperienceEdFiAssessor : IEdFiAssessor
             {
                 totalTeachers++;
 
-                if (staff.YearsOfPriorTeachingExperience > 5)
+                switch (staff.YearsOfPriorTeachingExperience)
                 {
-                    var categoryName = "5+ years";
+                    case > 5:
+                        {
+                            const string categoryName = "5+ years";
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
-                    categoryDistribution[categoryName]++;
-                }
-                else if (staff.YearsOfPriorTeachingExperience >= 1)
-                {
-                    var categoryName = "1-5 years";
+                            categoryDistribution.TryAdd(categoryName, 0);
+                            categoryDistribution[categoryName]++;
+                            break;
+                        }
+                    case >= 1:
+                        {
+                            const string categoryName = "1-5 years";
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
-                    categoryDistribution[categoryName]++;
-                }
-                else
-                {
-                    var categoryName = "<1 year";
+                            categoryDistribution.TryAdd(categoryName, 0);
+                            categoryDistribution[categoryName]++;
+                            break;
+                        }
+                    default:
+                        {
+                            const string categoryName = "<1 year";
 
-                    if (!categoryDistribution.ContainsKey(categoryName))
-                    {
-                        categoryDistribution[categoryName] = 0;
-                    }
-                    categoryDistribution[categoryName]++;
+                            categoryDistribution.TryAdd(categoryName, 0);
+                            categoryDistribution[categoryName]++;
+                            break;
+                        }
                 }
             },
             context
