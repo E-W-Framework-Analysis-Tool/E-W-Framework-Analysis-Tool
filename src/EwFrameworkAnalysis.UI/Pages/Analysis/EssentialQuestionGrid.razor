@@ -11,7 +11,7 @@
             @* Search *@
             <label class="input flex-1">
                 <i class="fa-solid fa-magnifying-glass opacity-50"></i>
-                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput"/>
+                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput" />
                 <span class="label">@FilteredQuestions.Count() of @_allQuestions.Count()</span>
             </label>
 
@@ -27,6 +27,8 @@
         @* List *@
         <div class="join join-vertical border-1 border-gray-300 rounded-lg">
             <SortableList List="@FilteredQuestions" Columns="@EssentialQuestionColumnOptions()" DefaultSortColumn="@SortColumnNames.Score" Context="eqContext">
+
+                @* Headers *@
                 <div class="collapse-title font-semibold">
                     <div class="grid grid-cols-24 font-semibold text-lg">
                         <div class="flex col-span-1 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">#</div>
@@ -48,13 +50,16 @@
                     </div>
                 </div>
 
+                @* Add border between header and list *@
                 <div class="join-item border-b border-gray-300"></div>
-                @foreach (var q in PagedQuestions(eqContext.List))
+
+                @* List Items *@
+                @foreach (var q in eqContext.List)
                 {
                     var qs = GetQuestionScoreByNumber(q.QuestionNumber) ?? new QuestionScore();
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                        <input type="checkbox" name="question-check-@q.QuestionNumber"/>
+                        <input type="checkbox" name="question-check-@q.QuestionNumber" />
                         <div class="collapse-title font-semibold">
                             <div class="grid grid-cols-24">
                                 <div class="flex col-span-1 justify-start items-center">@q.QuestionNumber</div>
@@ -76,7 +81,7 @@
                                         <h3 class="flex w-full font-semibold text-lg" @onclick="() => indicatorContext.Toggle(SortColumnNames.Indicators)">
                                             Indicators
                                             <span class="fa-stack fa-xs">
-                                                <i class="fas fa-stack-1x fa-sort-up @(indicatorContext.IsActive    (SortColumnNames.Indicators, true) ? "" : "opacity-50")"></i>
+                                                <i class="fas fa-stack-1x fa-sort-up @(indicatorContext.IsActive(SortColumnNames.Indicators, true) ? "" : "opacity-50")"></i>
                                                 <i class="fas fa-stack-1x fa-sort-down @(indicatorContext.IsActive(SortColumnNames.Indicators, false) ? "" : "opacity-50")"></i>
                                             </span>
                                         </h3>
@@ -101,31 +106,6 @@
             </SortableList>
         </div>
 
-        @if (TotalPages > 1)
-        {
-            <div class="flex justify-center mt-6">
-                <div class="join">
-                    <button class="join-item btn shadow-none @(_currentPage == 1 ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
-                            @onclick="PreviousPage">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-
-                    @for (int page = 1; page <= TotalPages; page++)
-                    {
-                        <!-- capture local copy -->
-                        var p = page;
-                        <button class="join-item btn shadow-none @(_currentPage == p ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
-                                @onclick="@(() => GoToPage(p))">
-                            @(p)
-                        </button>
-                    }
-
-                    <button class="join-item btn shadow-none @(_currentPage == TotalPages ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")" @onclick="NextPage">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        }
     </ChildContent>
 </Card>
 
@@ -133,7 +113,7 @@
 <IndicatorDetailsModal _indicatorScore="@_selectedIndicatorScore"
                        IsOpen="@_showIndicatorDetails"
                        OnClose="HandleModalClosed"
-                       IsOpenChanged="@(x => _showIndicatorDetails = x)"/>
+                       IsOpenChanged="@(x => _showIndicatorDetails = x)" />
 
 @code {
 
@@ -143,9 +123,6 @@
     private List<EssentialQuestion> _allQuestions = [];
     private string _searchQuery = string.Empty;
     private string? _selectedSector = string.Empty;
-
-    private int _pageSize = 20;
-    private int _currentPage = 1;
 
     private bool _showIndicatorDetails = false;
     private IndicatorScore? _selectedIndicatorScore;
@@ -198,8 +175,6 @@
             _ => "bg-gray-200"
         };
 
-    private int TotalPages => (int)Math.Ceiling((double)FilteredQuestions.Count() / _pageSize);
-
     private IEnumerable<EssentialQuestion> FilteredQuestions =>
         _allQuestions
             .Where(q =>
@@ -211,33 +186,6 @@
                 string.IsNullOrWhiteSpace(_selectedSector) ||
                 q.ApplicableSectors.Contains(Enum.Parse<Sector>(_selectedSector))
             );
-
-    private IEnumerable<EssentialQuestion> PagedQuestions(IEnumerable<EssentialQuestion> list) =>
-        list
-            .Skip((_currentPage - 1) * _pageSize)
-            .Take(_pageSize);
-
-    private void ClearSearch()
-    {
-        _searchQuery = string.Empty;
-    }
-
-    private void NextPage()
-    {
-        if (_currentPage < TotalPages)
-            _currentPage++;
-    }
-
-    private void PreviousPage()
-    {
-        if (_currentPage > 1)
-            _currentPage--;
-    }
-
-    private void GoToPage(int page)
-    {
-        _currentPage = page;
-    }
 
     private void ShowIndicatorDetails(IndicatorScore indicatorScore)
     {
