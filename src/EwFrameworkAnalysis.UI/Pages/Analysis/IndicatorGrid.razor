@@ -53,7 +53,7 @@
                 <div class="join-item border-b border-gray-300"></div>
 
                 @* List Items *@                
-                    @foreach (var (indicator, index) in sortedIndicators.List.Select((value, i) => (value, i)))
+                @foreach (var (indicator, index) in sortedIndicators.List.Select((value, i) => (value, i)))
                 {
                     var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
 
