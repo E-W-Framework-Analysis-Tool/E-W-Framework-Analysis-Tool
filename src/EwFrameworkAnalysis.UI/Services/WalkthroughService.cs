@@ -1,6 +1,3 @@
-using System.Net.Http.Json;
-using EwFrameworkAnalysis.Common.Models.Project;
-
 namespace EwFrameworkAnalysis.UI.Services;
 
 public class WalkthroughService
@@ -26,8 +23,8 @@ public class WalkthroughService
     public async Task StartAsync()
     {
         using var http = _httpClientFactory.CreateClient();
-        var demoProject = await DemoProject.LoadAsync(http);
-        await _projectSvc.ActivateDemoProjectAsync(demoProject ?? new AnalysisProject());
+        var raw = await http.GetStringAsync("Walkthrough_Demo.json");
+        await _projectSvc.ActivateDemoProjectAsync(raw);
         IsActive = true;
         CurrentStepIndex = 0;
         Changed?.Invoke();
@@ -179,8 +176,8 @@ public static class WalkthroughSteps
 
 public static class DemoProject
 {
-    public static async Task<AnalysisProject?> LoadAsync(HttpClient http)
+    public static async Task<string> LoadAsync(HttpClient http)
     {
-        return await http.GetFromJsonAsync<AnalysisProject>("Walkthrough_Demo.json");
+        return await http.GetStringAsync("Walkthrough_Demo.json");
     }
 }

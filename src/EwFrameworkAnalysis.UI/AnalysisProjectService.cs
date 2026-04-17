@@ -103,12 +103,14 @@ public class AnalysisProjectService
         }
     }
 
-    public async Task ActivateDemoProjectAsync(AnalysisProject demoProject)
+    public async Task ActivateDemoProjectAsync(string demoJson)
     {
         var realJson = await ExportProjectAsync();
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", WALKTHROUGH_BACKUP_KEY, realJson);
+
+        var demoProject = DeserializeProject(demoJson);
         IsDemoActive = true;
-        Project = demoProject;
+        Project = demoProject ?? new AnalysisProject();
         Notify();
     }
 
