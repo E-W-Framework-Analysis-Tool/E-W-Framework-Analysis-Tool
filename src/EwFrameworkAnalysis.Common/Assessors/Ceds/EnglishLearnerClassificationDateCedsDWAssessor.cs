@@ -1,4 +1,4 @@
-﻿namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
+namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
 /// Profiles English learner classification date data from RDS.FactK12StudentEnrollments

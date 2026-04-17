@@ -1,4 +1,4 @@
-﻿namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
+namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
 /// Profiles GPA data for postsecondary students from RDS.FactPsStudentAcademicRecords.

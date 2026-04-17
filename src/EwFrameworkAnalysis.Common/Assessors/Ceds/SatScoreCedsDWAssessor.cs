@@ -1,4 +1,4 @@
-﻿namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
+namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
 /// Profiles SAT scores from RDS.FactK12StudentAssessments, filtered to grades 11-12

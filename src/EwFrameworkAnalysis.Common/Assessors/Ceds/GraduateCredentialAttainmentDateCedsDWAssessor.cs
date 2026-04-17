@@ -1,4 +1,4 @@
-﻿namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
+namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
 /// Profiles graduate credential attainment dates from RDS.FactPsStudentAcademicAwards,

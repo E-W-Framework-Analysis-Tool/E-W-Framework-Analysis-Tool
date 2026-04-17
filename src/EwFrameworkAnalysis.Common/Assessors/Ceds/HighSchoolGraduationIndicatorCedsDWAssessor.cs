@@ -1,4 +1,4 @@
-﻿namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
+namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
 /// Profiles high school graduation indicator for K-12 students from

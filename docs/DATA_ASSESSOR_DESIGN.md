@@ -145,7 +145,7 @@ characteristics.
 
 | Element Type                                                        | Suggested Characteristics                                            |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Numeric** (age, grade level, score, count)                        | `RecordCount`, `Completeness`, `NumericalRange`                        |
+| **Numeric** (age, grade level, score, count)                        | `RecordCount`, `Completeness`, `NumericalRange`                      |
 | **Categorical** (race/ethnicity, program type, disability category) | `RecordCount`, `Completeness`, `Distribution`                        |
 | **Boolean / Flag** (enrolled, active, indicator)                    | `RecordCount`, `Completeness`, `Distribution` (`'True'` / `'False'`) |
 | **Date** (birth date, enrollment date, exit date)                   | `RecordCount`, `Completeness`                                        |
