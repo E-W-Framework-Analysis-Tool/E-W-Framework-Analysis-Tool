@@ -9,7 +9,7 @@ namespace EwFrameworkAnalysis.Common.UnitTests.ScoringRules;
 public class ScoringTestFixture : IDisposable
 {
     public DataElementScoringRuleRegistry RuleRegistry { get; }
-    public DataElementScoringService ScoringService { get; }
+    public FrameworkCoverageService ScoringService { get; }
     public List<DataSource> DataSources { get; set; } = [];
 
     public ScoringTestFixture()
@@ -20,7 +20,7 @@ public class ScoringTestFixture : IDisposable
         };
 
         RuleRegistry = new DataElementScoringRuleRegistry(rules);
-        ScoringService = new DataElementScoringService(RuleRegistry);
+        ScoringService = new FrameworkCoverageService(RuleRegistry);
     }
 
     public void Dispose()

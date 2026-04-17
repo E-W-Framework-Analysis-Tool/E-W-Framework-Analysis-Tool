@@ -1,0 +1,34 @@
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI
+
+<Card Title="Framework Coverage" Shadow="Card.ShadowSize.XLarge" NoPadding>
+    <div class="px-5 pb-5 flex flex-col gap-3">
+        @if (OverallCoverage > 0)
+        {
+            <p class="text-3xl font-bold text-blue">@OverallCoverage.ToString("0.##%")</p>
+            <progress class="progress @GetProgressBarColor(OverallCoverage) bg-gray-200 h-2"
+                      value="@(OverallCoverage * 100)"
+                      max="100"></progress>
+        }
+        else
+        {
+            <p class="text-sm text-gray-400">No profiling data available.</p>
+        }
+        <a href="@AppRoutes.Analysis" class="text-xs text-blue hover:underline self-end">
+            View full analysis →
+        </a>
+    </div>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public decimal OverallCoverage { get; set; }
+
+    private string GetProgressBarColor(decimal score) =>
+        score switch
+        {
+            > 0.66m => "progress-success",
+            > 0.33m => "progress-warning",
+            > 0m    => "progress-error",
+            _       => "bg-gray-200"
+        };
+}

@@ -47,7 +47,7 @@ builder.Services.AddHttpClient(string.Empty, client =>
 });
 
 // Register Scoring Rules
-builder.Services.AddSingleton<DataElementScoringService>();
+builder.Services.AddSingleton<FrameworkCoverageService>();
 builder.Services.AddSingleton<IDataElementScoringRule, ReportedAndCountScoringRule>();
 builder.Services.AddSingleton(sp =>
 {

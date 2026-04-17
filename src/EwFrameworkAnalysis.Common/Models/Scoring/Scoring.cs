@@ -4,30 +4,64 @@ using EwFrameworkAnalysis.Common.Models.Project;
 namespace EwFrameworkAnalysis.Common.Models.Scoring;
 
 /// <summary>
-/// Represents the readiness score for an essential question
+/// The single output of CalculateFrameworkCoverage().
+/// Everything else is a derived view of this.
 /// </summary>
-public class QuestionScore
+public class FrameworkCoverage
+{
+    public List<QuestionCoverageScore> QuestionScores { get; init; } = [];
+
+    // Flat projections — no recalculation, just different views of QuestionScores
+    public IEnumerable<IndicatorCoverageScore> IndicatorScores =>
+        QuestionScores.SelectMany(q => q.IndicatorScores);
+
+    public IEnumerable<DataElementScore> DataElementScores =>
+        IndicatorScores.SelectMany(i => i.DataElementScores);
+
+    public decimal OverallCoverage => QuestionScores.Count == 0 ? 0
+        : Math.Round(QuestionScores.Average(q => q.CoverageScore), 2);
+
+    public IReadOnlyList<SectorCoverageScore> BySector =>
+        IndicatorScores
+            .SelectMany(i => i.Sectors.Select(s => new { Sector = s, i.CoverageScore }))
+            .GroupBy(x => x.Sector)
+            .Select(g => new SectorCoverageScore
+            {
+                Sector = g.Key,
+                CoverageScore = Math.Round(g.Average(x => x.CoverageScore), 2),
+                IndicatorCount = g.Count()
+            })
+            .OrderBy(r => r.Sector)
+            .ToList();
+
+    public SourceTypeCoverageBreakdown BySourceType { get; init; } = new();
+}
+
+/// <summary>
+/// Coverage score for a single essential question, containing its indicator breakdown.
+/// </summary>
+public class QuestionCoverageScore
 {
     public int QuestionNumber { get; set; }
-    public decimal ReadinessScore { get; set; }
-    public List<IndicatorScore> IndicatorScores { get; set; } = [];
+    public decimal CoverageScore { get; set; }
+    public List<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
     public string? Notes { get; set; }
 }
 
 /// <summary>
-/// Represents the readiness score for an indicator within a question
+/// Coverage score for a single indicator within a question.
 /// </summary>
-public class IndicatorScore
+public class IndicatorCoverageScore
 {
     public string IndicatorCode { get; set; } = string.Empty;
-    public decimal ReadinessScore { get; set; }
+    public decimal CoverageScore { get; set; }
     public List<DataElementScore> DataElementScores { get; set; } = [];
-    public string? Notes { get; set; }
     public List<Sector> Sectors { get; set; } = [];
+    public string? Notes { get; set; }
 }
 
 /// <summary>
-/// Represents the availability/quality score for a data element
+/// Availability/quality score for a single data element.
 /// </summary>
 public class DataElementScore
 {
@@ -37,12 +71,10 @@ public class DataElementScore
     public bool IsAvailable { get; set; }
     public string? Source { get; set; }
     public string? Notes { get; set; }
-
     // Metadata
     public string ScoringRuleName { get; set; } = string.Empty;
     public string SelectedSource { get; set; } = string.Empty;
-
-    // AUDIT
+    // Audit trail
     public List<DataElementSourceScore> SourceScores { get; set; } = [];
 }
 
@@ -51,22 +83,39 @@ public class DataElementSourceScore
     public Guid AssessmentId { get; set; }
     public string SourceType { get; set; } = string.Empty;
     public string DataSourceName { get; set; } = string.Empty;
-
     public AvailabilityJudgment AvailabilityScore { get; set; }
     public decimal QualityScore { get; set; }
     public bool IsAvailable { get; set; }
-
     public string Notes { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Pre-computed per-source-type coverage breakdowns.
+/// Each slice requires a separate scoring pass so computed by the service, not derived.
+/// </summary>
+public class SourceTypeCoverageBreakdown
+{
+    public decimal Combined { get; init; }   // Total combined
+    public decimal Automated { get; init; }  // EdFi + CEDS
+    public decimal Manual { get; init; }      // Custom
+    public decimal Ecs { get; init; }         // EcsState
+}
+
+/// <summary>
+/// Coverage score for a sector, aggregated across all indicators in that sector.
+/// </summary>
+public class SectorCoverageScore
+{
+    public Sector Sector { get; init; }
+    public decimal CoverageScore { get; init; }
+    public int IndicatorCount { get; init; }
+}
 
 public class DataElementScoringRequest
 {
     public string DataElementName { get; init; } = string.Empty;
     public string IndicatorName { get; init; } = string.Empty;
     public string ScoringRuleName { get; init; } = string.Empty;
-
-    // All matches across sources (manual, Ed-Fi, CEDS, etc.)
     public List<DataElementAssessmentContext> Matches { get; init; } = [];
 }
 
@@ -79,26 +128,8 @@ public class DataElementAssessmentContext
     public DataElementAssessment Assessment { get; init; } = null!;
 }
 
-
 public interface IDataElementScoringRule
 {
     string RuleName { get; }
-
     DataElementScore Score(DataElementScoringRequest request);
 }
-
-public class SectorReadinessResult
-{
-    public Sector Sector { get; init; }
-    public decimal ReadinessScore { get; init; } // 0–1
-    public int IndicatorCount { get; init; }
-}
-
-public class OverallReadinessResults
-{
-    public decimal CustomDataSourceReadiness { get; set; }
-    public decimal AutomatedDataSourceReadiness { get; set; }
-    public decimal EcsReadiness { get; set; }
-    public decimal CombinedReadiness { get; set; }
-}
-

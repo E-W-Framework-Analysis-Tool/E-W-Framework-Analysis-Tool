@@ -60,8 +60,8 @@
 
                 <h5 class="font-semibold text-blue pt-2">Framework Coverage Score:</h5>
 
-                <progress class="progress @GetProgressBarColor(_indicatorScore.ReadinessScore)" value="@(_indicatorScore.ReadinessScore * 100)" max="100"></progress>
-                <p class="font-semibold text-center">@_indicatorScore.ReadinessScore.ToString("0.##%")</p>
+                <progress class="progress @GetProgressBarColor(_indicatorScore.CoverageScore)" value="@(_indicatorScore.CoverageScore * 100)" max="100"></progress>
+                <p class="font-semibold text-center">@_indicatorScore.CoverageScore.ToString("0.##%")</p>
 
                 <div class="collapse border border-gray-300 rounded-lg collapse-arrow">
                     <input type="checkbox" />
@@ -103,7 +103,7 @@
 
 @code {
     [Parameter] public bool IsOpen { get; set; }
-    [Parameter] public IndicatorScore? _indicatorScore { get; set; }
+    [Parameter] public IndicatorCoverageScore? _indicatorScore { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
