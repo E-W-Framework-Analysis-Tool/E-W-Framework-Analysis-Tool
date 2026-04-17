@@ -3,10 +3,12 @@
 @using EwFrameworkAnalysis.Common.Mapping
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Mapping
+@using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Components
 @inject AssessorMappingService MappingService
+@inject IJSRuntime JS
 
 <PageTitle>Mapping Overview | E-W Framework Analysis Tool</PageTitle>
 
@@ -154,13 +156,11 @@
                                                 <div class="flex justify-center">
                                                     @if (row.EdFiMapping is not null)
                                                     {
-                                                        var tip = row.EdFiMapping.AssessmentDescription
-                                                        + (row.EdFiMapping.MappedEndpoints.Any() ? "\n\nEndpoints: " + string.Join(", ", row.EdFiMapping.MappedEndpoints) : "");
-                                                        <div class="tooltip tooltip-left" data-tip="@tip">
-                                                            <span class="badge badge-success badge-sm gap-1 cursor-default">
-                                                                <i class="fas fa-check text-[10px]"></i> Mapped
-                                                            </span>
-                                                        </div>
+                                                        <span class="badge badge-success badge-sm gap-1 cursor-pointer hover:badge-info transition-colors"
+                                                              @onclick="() => OpenModal(row, row.EdFiMapping)"
+                                                              @onclick:stopPropagation>
+                                                            <i class="fas fa-check text-[10px]"></i> Mapped
+                                                        </span>
                                                     }
                                                     else
                                                     {
@@ -170,13 +170,11 @@
                                                 <div class="flex justify-center">
                                                     @if (row.CedsMapping is not null)
                                                     {
-                                                        var tip = row.CedsMapping.AssessmentDescription
-                                                        + (row.CedsMapping.MappedEndpoints.Any() ? "\n\nEndpoints: " + string.Join(", ", row.CedsMapping.MappedEndpoints) : "");
-                                                        <div class="tooltip tooltip-left" data-tip="@tip">
-                                                            <span class="badge badge-success badge-sm gap-1 cursor-default">
-                                                                <i class="fas fa-check text-[10px]"></i> Mapped
-                                                            </span>
-                                                        </div>
+                                                        <span class="badge badge-success badge-sm gap-1 cursor-pointer hover:badge-secondary transition-colors"
+                                                              @onclick="() => OpenModal(row, row.CedsMapping)"
+                                                              @onclick:stopPropagation>
+                                                            <i class="fas fa-check text-[10px]"></i> Mapped
+                                                        </span>
                                                     }
                                                     else
                                                     {
@@ -298,6 +296,59 @@
     </div>
 </div>
 
+<!-- Detail Modal -->
+@if (_selectedElement is not null && _selectedMapping is not null)
+{
+    <div class="modal modal-open" @onclick="CloseModal">
+        <div class="modal-box max-w-2xl" @onclick:stopPropagation>
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3"
+                    @onclick="CloseModal">
+                ✕
+            </button>
+
+            <h3 class="font-bold text-lg mb-1">@_selectedElement.DataElementName</h3>
+
+            <div class="mb-3">
+                @if (_selectedMapping.DataSource == DataSourceType.EdFiApi)
+                {
+                    <span class="badge badge-info badge-sm">Ed-Fi ODS API v7.2</span>
+                }
+                else
+                {
+                    <span class="badge badge-secondary badge-sm">CEDS DW v13</span>
+                }
+            </div>
+
+            <p class="text-sm text-gray-600">@_selectedMapping.AssessmentDescription</p>
+
+            @if (_selectedMapping.MappedEndpoints.Any())
+            {
+                <div class="mt-2 flex flex-wrap gap-1">
+                    @foreach (var ep in _selectedMapping.MappedEndpoints)
+                    {
+                        <span class="badge badge-outline badge-xs font-mono">@ep</span>
+                    }
+                </div>
+            }
+
+            @if (_selectedMapping.DataSource == DataSourceType.CedsDw
+                    && !string.IsNullOrWhiteSpace(_selectedMapping.Query))
+            {
+                <div class="mt-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">SQL Query</span>
+                        <button class="btn btn-xs btn-ghost gap-1"
+                                @onclick="() => CopyQuery(_selectedMapping.Query!)">
+                            <i class="fas fa-copy text-[10px]"></i> Copy
+                        </button>
+                    </div>
+                    <pre class="bg-gray-900 text-green-300 text-xs rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words max-h-72 overflow-y-auto">@_selectedMapping.Query</pre>
+                </div>
+            }
+        </div>
+    </div>
+}
+
 @code {
     private enum ShowFilter { All, Mapped, Unmapped }
 
@@ -312,9 +363,29 @@
     private bool _allExpanded = false;
     private HashSet<string> _expandedCategories = new();
 
+    private DataElementMappingRow? _selectedElement;
+    private DataElementMappingInfo? _selectedMapping;
+
     protected override void OnInitialized()
     {
         _report = MappingService.GetReport();
+    }
+
+    private void OpenModal(DataElementMappingRow row, DataElementMappingInfo mapping)
+    {
+        _selectedElement = row;
+        _selectedMapping = mapping;
+    }
+
+    private void CloseModal()
+    {
+        _selectedElement = null;
+        _selectedMapping = null;
+    }
+
+    private async Task CopyQuery(string query)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", query);
     }
 
     private IEnumerable<KeyValuePair<string, List<DataElementMappingRow>>> FilteredCategories
@@ -388,7 +459,7 @@
 
         return results.OrderByDescending(q => q.UnmappedCount).ToList();
     }
-    
+
     private void OnExpandedChanged(bool expanded)
     {
         _allExpanded = expanded;

@@ -317,15 +317,14 @@
 
     protected override void OnInitialized()
     {
-        var assessors = Orchestrator.DiscoverAssessors();
-        _assessorCount = assessors.Count;
+        _assessorCount = Orchestrator.AssessorCount;
     }
 
     private async Task DownloadScript()
     {
         try
         {
-            var script = Orchestrator.GenerateUnionedQuery();
+            var script = Orchestrator.GenerateProfilerScript();
             var fileName = $"CEDS_Profiler_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
 
             await JSRuntime.InvokeVoidAsync(
