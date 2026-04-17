@@ -37,21 +37,22 @@ Key features of the API-based assessors:
 
 ### Query-Based Assessors (CEDS Data Warehouse)
 
-Query-based assessors profile a CEDS Data Warehouse for a single E-W Framework data element. Because the tool runs
-in the browser without direct database access, queries are bundled into a single executable script that users run
-in their own environment and import results back into the tool (air-gapped workflow).
+Query-based assessors profile a CEDS Data Warehouse for a single E-W Framework data element. Because the tool runs in
+the browser without direct database access, queries are bundled into a single executable script that users run in their
+own environment and import results back into the tool (air-gapped workflow).
 
-Each assessor implements the
-[`ICedsDWAssessor`](../src/EwFrameworkAnalysis.Common/Assessors/Ceds/ICedsDWAssessor.cs) interface. The
-[`CedsDWAssessmentOrchestrator`](../src/EwFrameworkAnalysis.Common/Services/CedsDWAssessmentOrchestrator.cs)
-discovers all implementations via reflection and combines them into a single script.
+Each assessor implements the [`ICedsDWAssessor`](../src/EwFrameworkAnalysis.Common/Assessors/Ceds/ICedsDWAssessor.cs)
+interface. The
+[`CedsDWAssessmentOrchestrator`](../src/EwFrameworkAnalysis.Common/Services/CedsDWAssessmentOrchestrator.cs) discovers
+all implementations via reflection and combines them into a single script.
 
 Key features:
 
 - SQL queries designed for CEDS Data Warehouse schema
 - Air-gapped assessment workflow: generate script → execute in SSMS → import CSV results
 - Automatic discovery via reflection — any class implementing `ICedsDWAssessor` is included
-- All assessor queries insert into a shared `#EWFProfilerResults` temp table; a final `SELECT` returns the combined result set
+- All assessor queries insert into a shared `#EWFProfilerResults` temp table; a final `SELECT` returns the combined
+  result set
 
 #### Query Structure Contract
 
@@ -103,8 +104,8 @@ Every `SELECT` in a CEDS assessor query must return exactly these five columns i
 | `SubItemLabel`       | NVARCHAR | NULL or a type-specific label (see each characteristic below)                  |
 | `Remarks`            | NVARCHAR | Optional context, or NULL                                                      |
 
-The `DataElementName` value must be emitted via C# string interpolation using the property itself — never
-hardcoded as a separate literal — so that refactoring the property updates the SQL automatically:
+The `DataElementName` value must be emitted via C# string interpolation using the property itself — never hardcoded as a
+separate literal — so that refactoring the property updates the SQL automatically:
 
 ```csharp
 public string DataElementName => "Suspensions and Expulsions (K-12)";
@@ -119,11 +120,11 @@ SELECT
 
 #### Query Organization
 
-**CTE usage:** When multiple characteristics can be derived from the same underlying data, compute shared values
-once in a CTE. Each characteristic's `SELECT` block then reads from the CTE rather than re-querying the base table.
+**CTE usage:** When multiple characteristics can be derived from the same underlying data, compute shared values once in
+a CTE. Each characteristic's `SELECT` block then reads from the CTE rather than re-querying the base table.
 
-**UNION ALL structure:** All characteristic rows are combined using `UNION ALL`. Each block should be preceded by
-a comment identifying what it produces:
+**UNION ALL structure:** All characteristic rows are combined using `UNION ALL`. Each block should be preceded by a
+comment identifying what it produces:
 
 ```sql
 -- RecordCount
@@ -225,8 +226,8 @@ new NumericalRange(minValue, maxValue, "Age Range")
 
 ### Completeness
 
-Measures data completeness for a specific field by comparing populated records to total records. Produces exactly
-2 rows.
+Measures data completeness for a specific field by comparing populated records to total records. Produces exactly 2
+rows.
 
 **Query output:**
 
@@ -248,7 +249,10 @@ SELECT
     NULL AS Remarks
 ```
 
-> **Populated records:** Count rows where the relevant field has a meaningful value. For text fields, exclude both NULLs and empty strings (`IS NOT NULL AND <> ''`). For nullable non-text fields, `COUNT(col)` (which excludes NULLs) is sufficient. When the data element name covers multiple fields (e.g., "identifier or title"), use a single `CASE` combining them with `OR` rather than producing separate `Completeness` blocks per field.
+> **Populated records:** Count rows where the relevant field has a meaningful value. For text fields, exclude both NULLs
+> and empty strings (`IS NOT NULL AND <> ''`). For nullable non-text fields, `COUNT(col)` (which excludes NULLs) is
+> sufficient. When the data element name covers multiple fields (e.g., "identifier or title"), use a single `CASE`
+> combining them with `OR` rather than producing separate `Completeness` blocks per field.
 
 **C# output:**
 
@@ -261,8 +265,7 @@ new Completeness(totalRecords, populatedRecords, "BirthDate")
 
 ### Distribution
 
-Counts grouped by categorical values (e.g., race/ethnicity, grade levels, program types). Produces 1 row per
-category.
+Counts grouped by categorical values (e.g., race/ethnicity, grade levels, program types). Produces 1 row per category.
 
 **Query output:**
 
