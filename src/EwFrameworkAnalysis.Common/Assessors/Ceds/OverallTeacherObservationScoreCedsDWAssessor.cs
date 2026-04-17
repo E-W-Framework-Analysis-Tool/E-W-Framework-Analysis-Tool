@@ -50,30 +50,32 @@ FROM ObservationBase
 UNION ALL
 -- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                                                                AS DataElementName,
-    'Completeness'                                                                     AS CharacteristicType,
-    CAST(COUNT(AssessmentResultScoreValueScaleScore) AS NVARCHAR(MAX))                 AS Value,
-    'PopulatedRecords'                                                                 AS SubItemLabel,
-    NULL                                                                               AS Remarks
+    '{DataElementName}'             AS DataElementName,
+    'Completeness'                  AS CharacteristicType,
+    CAST(COUNT(CASE WHEN AssessmentResultScoreValueScaleScore IS NOT NULL
+                     AND AssessmentResultScoreValueScaleScore <> '' THEN 1 END) AS NVARCHAR(MAX)) AS Value,
+    'PopulatedRecords'              AS SubItemLabel,
+    NULL                            AS Remarks
 FROM ObservationBase
 UNION ALL
 -- NumericalRange - Minimum
 SELECT
-    '{DataElementName}'                                                                    AS DataElementName,
-    'NumericalRange'                                                                       AS CharacteristicType,
+    '{DataElementName}'             AS DataElementName,
+    'NumericalRange'                AS CharacteristicType,
     CAST(MIN(TRY_CAST(AssessmentResultScoreValueScaleScore AS DECIMAL(18,2))) AS NVARCHAR(MAX)) AS Value,
-    'Minimum'                                                                              AS SubItemLabel,
-    NULL                                                                                   AS Remarks
+    'Minimum'                       AS SubItemLabel,
+    NULL                            AS Remarks
 FROM ObservationBase
 UNION ALL
 -- NumericalRange - Maximum
 SELECT
-    '{DataElementName}'                                                                    AS DataElementName,
-    'NumericalRange'                                                                       AS CharacteristicType,
+    '{DataElementName}'             AS DataElementName,
+    'NumericalRange'                AS CharacteristicType,
     CAST(MAX(TRY_CAST(AssessmentResultScoreValueScaleScore AS DECIMAL(18,2))) AS NVARCHAR(MAX)) AS Value,
-    'Maximum'                                                                              AS SubItemLabel,
-    NULL                                                                                   AS Remarks
-FROM ObservationBase";
+    'Maximum'                       AS SubItemLabel,
+    NULL                            AS Remarks
+FROM ObservationBase
+";
 
     public string AssessmentDescription =>
         "Assesses overall teacher observation scores for K-12 staff using AssessmentTypeCode " +
