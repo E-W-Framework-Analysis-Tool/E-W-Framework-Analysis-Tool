@@ -49,141 +49,117 @@
                     </div>
                 </div>
 
-                @* List Items *@
-                <div class="join-item border-b border-gray-300">
-                    @foreach (var (indicator, index) in PagedIndicators(sortedIndicators.List).Select((value, i) => (value, i)))
-                    {
-                        var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
+                @* Add border between header and list *@
+                <div class="join-item border-b border-gray-300"></div>
 
-                        <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                            <input type="checkbox" name="indicator-check-@index" />
+                @* List Items *@                
+                @foreach (var (indicator, index) in sortedIndicators.List.Select((value, i) => (value, i)))
+                {
+                    var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
 
-                            @* Name, Definition, & Score *@
-                            <div class="collapse-title font-semibold">
-                                <div class="grid grid-cols-24">
-                                    <div class="flex-col col-span-18 justify-start items-center">
-                                        @indicator.Name
-                                        <div class="justify-start items-center font-normal text-gray-500">@indicator.Definition</div>
-                                    </div>
-                                    <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
-                                        <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"> </progress>
-                                        @indicatorScore.ReadinessScore.ToString("0.##%")
-                                    </div>
+                    <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                        <input type="checkbox" name="indicator-check-@index" />
+
+                        @* Name, Definition, & Score *@
+                        <div class="collapse-title font-semibold">
+                            <div class="grid grid-cols-24">
+                                <div class="flex-col col-span-18 justify-start items-center">
+                                    @indicator.Name
+                                    <div class="justify-start items-center font-normal text-gray-500">@indicator.Definition</div>
                                 </div>
-                            </div>
-
-                            @* Collapsed Content *@
-                            <div class="collapse-content text-sm">
-                                <div class="grid grid-cols-24">
-                                    <div class="flex flex-col col-span-24 justify-start space-y-4">
-
-                                        @* Domain, Type, & Data Elements *@
-                                        <p class="font-semibold text-sm text-blue">Domain: <span class="font-normal text-gray">@indicator.Domain.GetDisplayName()</span></p>
-                                        <p class="font-semibold text-sm text-blue">Indicator Type: <span class="font-normal text-gray">@indicator.Type.GetDisplayName()</span></p>
-                                        <h5 class="font-semibold text-sm text-blue">Data Elements:</h5>
-                                        <div class="flex flex-col gap-2">
-                                            @foreach (var dataElementName in indicator.DataElementNames.Order())
-                                            {
-                                                var deScore = indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
-                                                <div class="text-sm text-gray">
-                                                    <i class="@GetDataElementIsAvailableIcon(indicatorScore, dataElementName)"></i>
-                                                    @if (deScore is { IsAvailable: true } && !string.IsNullOrEmpty(deScore.Source))
-                                                    {
-                                                        <div class="dropdown dropdown-top dropdown-start inline-block">
-                                                            <span tabindex="0" role="button" class="cursor-pointer hover:font-semibold focus:font-semibold transition-all">
-                                                                @dataElementName
-                                                                <i class="@GetDataSourceTypeIcon(deScore) text-gray-400 ml-1 text-xs"></i>
-                                                            </span>
-                                                            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 w-64 p-2 shadow-lg border border-gray-200">
-                                                                <li class="menu-title text-sm text-gray-600">@dataElementName</li>
-                                                                <li class="menu-title text-sm text-gray-400">Data Sources:</li>
-                                                                @foreach (var source in deScore.SourceScores)
-                                                                {
-                                                                    <li class="menu-title text-sm text-gray-600 @(source.DataSourceName == deScore.Source ? "bg-gray-200 rounded" : "")">
-                                                                        <span class="text-sm">
-                                                                            <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
-                                                                            @source.DataSourceName
-                                                                        </span>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        @dataElementName
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-
-                                        @* Recommended Metrics *@
-                                        <h5 class="font-semibold text-sm text-blue">Recommended Metrics</h5>
-                                        <p class="text-sm text-gray">@indicator.RecommendedMetrics</p>
-
-                                        @* Sectors *@
-                                        <h5 class="font-semibold text-sm text-blue">Sectors</h5>
-                                        <div class="flex gap-2">
-                                            @foreach (var sector in indicator.Sectors)
-                                            {
-                                                <div class="badge badge-secondary ">@sector.GetDisplayName()</div>
-                                            }
-                                        </div>
-
-                                        @* Data Needed *@
-                                        <h5 class="font-semibold text-sm text-blue">Data Needed</h5>
-                                        <div class="flex gap-2">
-                                            @foreach (var dataNeeded in indicator.DataNeeded)
-                                            {
-                                                <div class="badge badge-secondary ">@dataNeeded.GetDisplayName()</div>
-                                            }
-                                        </div>
-
-                                        @* Essential Questions *@
-                                        <h5 class="font-semibold text-sm text-blue">Essential Questions</h5>
-                                        <ul class="flex flex-col gap-2 list-disc pl-5">
-                                            @foreach (var eq in GetEssentialQuestionsForIndicator(indicator))
-                                            {
-                                                <li class="text-sm text-gray">
-                                                    # @eq.QuestionNumber - @eq.Question
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
+                                <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
+                                    <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"> </progress>
+                                    @indicatorScore.ReadinessScore.ToString("0.##%")
                                 </div>
                             </div>
                         </div>
-                    }
-                </div>
+
+                        @* Collapsed Content *@
+                        <div class="collapse-content text-sm">
+                            <div class="grid grid-cols-24">
+                                <div class="flex flex-col col-span-24 justify-start space-y-4">
+
+                                    @* Domain, Type, & Data Elements *@
+                                    <p class="font-semibold text-sm text-blue">Domain: <span class="font-normal text-gray">@indicator.Domain.GetDisplayName()</span></p>
+                                    <p class="font-semibold text-sm text-blue">Indicator Type: <span class="font-normal text-gray">@indicator.Type.GetDisplayName()</span></p>
+                                    <h5 class="font-semibold text-sm text-blue">Data Elements:</h5>
+                                    <div class="flex flex-col gap-2">
+                                        @foreach (var dataElementName in indicator.DataElementNames.Order())
+                                        {
+                                            var deScore = indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
+                                            <div class="text-sm text-gray">
+                                                <i class="@GetDataElementIsAvailableIcon(indicatorScore, dataElementName)"></i>
+                                                @if (deScore is { IsAvailable: true } && !string.IsNullOrEmpty(deScore.Source))
+                                                {
+                                                    <div class="dropdown dropdown-top dropdown-start inline-block">
+                                                        <span tabindex="0" role="button" class="cursor-pointer hover:font-semibold focus:font-semibold transition-all">
+                                                            @dataElementName
+                                                            <i class="@GetDataSourceTypeIcon(deScore) text-gray-400 ml-1 text-xs"></i>
+                                                        </span>
+                                                        <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 w-64 p-2 shadow-lg border border-gray-200">
+                                                            <li class="menu-title text-sm text-gray-600">@dataElementName</li>
+                                                            <li class="menu-title text-sm text-gray-400">Data Sources:</li>
+                                                            @foreach (var source in deScore.SourceScores)
+                                                            {
+                                                                <li class="menu-title text-sm text-gray-600 @(source.DataSourceName == deScore.Source ? "bg-gray-200 rounded" : "")">
+                                                                    <span class="text-sm">
+                                                                        <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
+                                                                        @source.DataSourceName
+                                                                    </span>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    @dataElementName
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @* Recommended Metrics *@
+                                    <h5 class="font-semibold text-sm text-blue">Recommended Metrics</h5>
+                                    <p class="text-sm text-gray">@indicator.RecommendedMetrics</p>
+
+                                    @* Sectors *@
+                                    <h5 class="font-semibold text-sm text-blue">Sectors</h5>
+                                    <div class="flex gap-2">
+                                        @foreach (var sector in indicator.Sectors)
+                                        {
+                                            <div class="badge badge-secondary ">@sector.GetDisplayName()</div>
+                                        }
+                                    </div>
+
+                                    @* Data Needed *@
+                                    <h5 class="font-semibold text-sm text-blue">Data Needed</h5>
+                                    <div class="flex gap-2">
+                                        @foreach (var dataNeeded in indicator.DataNeeded)
+                                        {
+                                            <div class="badge badge-secondary ">@dataNeeded.GetDisplayName()</div>
+                                        }
+                                    </div>
+
+                                    @* Essential Questions *@
+                                    <h5 class="font-semibold text-sm text-blue">Essential Questions</h5>
+                                    <ul class="flex flex-col gap-2 list-disc pl-5">
+                                        @foreach (var eq in GetEssentialQuestionsForIndicator(indicator))
+                                        {
+                                            <li class="text-sm text-gray">
+                                                # @eq.QuestionNumber - @eq.Question
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
             </SortableList>
         </div>
 
-        @* Pagination *@
-        @if (TotalPages > 1)
-        {
-            <div class="flex justify-center mt-6">
-                <div class="join">
-                    <button class="join-item btn shadow-none @(_currentPage == 1 ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
-                            @onclick="PreviousPage">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-
-                    @for (int page = 1; page <= TotalPages; page++)
-                    {
-                        <!-- capture local copy -->
-                        var p = page;
-                        <button class="join-item btn shadow-none @(_currentPage == p ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")"
-                                @onclick="@(() => GoToPage(p))">
-                            @(p)
-                        </button>
-                    }
-
-                    <button class="join-item btn shadow-none @(_currentPage == TotalPages ? "btn-secondary opacity-80" : "btn-secondary hover:opacity-90")" @onclick="NextPage">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        }
     </ChildContent>
 </Card>
 
@@ -195,9 +171,6 @@
     private List<EssentialQuestion> _allQuestions = [];
     private string _searchQuery = string.Empty;
     private string? _selectedSector = string.Empty;
-
-    private int _pageSize = 20;
-    private int _currentPage = 1;
 
     private static class SortColumnNames
     {
@@ -273,8 +246,6 @@
         _allQuestions
             .Where(eq => eq.RelatedIndicatorNames.Contains(indicator.Name));
 
-    private int TotalPages => (int)Math.Ceiling((double)FilteredIndicators.Count() / _pageSize);
-
     private IEnumerable<Indicator> FilteredIndicators =>
         _allIndicators
             .Where(q =>
@@ -285,32 +256,4 @@
                 string.IsNullOrWhiteSpace(_selectedSector)
                 || q.Sectors.Contains(Enum.Parse<Sector>(_selectedSector))
             );
-
-    private IEnumerable<Indicator> PagedIndicators(IEnumerable<Indicator> indicators) =>
-        indicators
-            .Skip((_currentPage - 1) * _pageSize)
-            .Take(_pageSize);
-
-    private void ClearSearch()
-    {
-        _searchQuery = string.Empty;
-    }
-
-    private void NextPage()
-    {
-        if (_currentPage < TotalPages)
-            _currentPage++;
-    }
-
-    private void PreviousPage()
-    {
-        if (_currentPage > 1)
-            _currentPage--;
-    }
-
-    private void GoToPage(int page)
-    {
-        _currentPage = page;
-    }
-
 }
