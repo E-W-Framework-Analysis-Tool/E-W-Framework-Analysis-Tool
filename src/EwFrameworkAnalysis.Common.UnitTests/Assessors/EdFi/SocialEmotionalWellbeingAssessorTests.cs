@@ -25,18 +25,13 @@ public class SocialEmotionalWellbeingAssessorTests
         new SocialCapitalSurveysK12EdFiAssessor(),
         new CulturalCompetencyAssessmentsK12EdFiAssessor(),
         // Postsecondary SEL
-        new SelfManagementSurveysPostsecondaryEdFiAssessor(),
-        new GrowthMindsetSurveysPostsecondaryEdFiAssessor(),
-        new SelfEfficacySurveysPostsecondaryEdFiAssessor(),
         new SocialProficiencyAssessmentsPostsecondaryEdFiAssessor(),
-        new SocialCapitalSurveysPostsecondaryEdFiAssessor(),
         // Health & Wellness
         new DevelopmentalScreeningResultsEdFiAssessor(),
         new MentalEmotionalWellBeingAssessmentsEdFiAssessor(),
         new UniversalScreeningResultsEdFiAssessor(),
         new HealthRelatedQualityOfLifeEdFiAssessor(),
-        new PhysicalHealthSurveysK12EdFiAssessor(),
-        new PhysicalHealthSurveysPostsecondaryEdFiAssessor()
+        new PhysicalHealthSurveysK12EdFiAssessor()
     ];
 
     [Fact]

@@ -6,9 +6,6 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class SelfEfficacySurveysK12EdFiAssessor : IEdFiAssessor
 {
-    // Keywords for K-12 self-efficacy survey instruments. Framework names the Creative
-    // Self-Efficacy scale; widely used K-12 SEL survey suites that include a self-efficacy
-    // scale are also matched.
     private static readonly string[] _surveyKeywords =
     [
         // Generic terms
@@ -37,10 +34,10 @@ public class SelfEfficacySurveysK12EdFiAssessor : IEdFiAssessor
     public string DataElementName => "Self-efficacy surveys (K-12)";
 
     public string AssessmentDescription =>
-        "Identifies student assessments linked to K-12 self-efficacy survey instruments (e.g., Creative " +
+        "Identifies surveys linked to K-12 self-efficacy instruments (e.g., Creative " +
         "Self-Efficacy scale named in the E-W Framework, plus Panorama / CORE Districts SEL surveys, " +
         "Tripod, PERTS, PALS, MSLQ that include a self-efficacy scale) by matching well-known instrument " +
-        "names and self-efficacy keywords in the Ed-Fi assessments catalog. Ed-Fi has no standard descriptor " +
+        "names and self-efficacy keywords in the Ed-Fi surveys catalog. Ed-Fi has no standard descriptor " +
         "for self-efficacy surveys, so title-based matching is used as a proxy.";
 
     public async Task<DataElementAssessment> AssessAsync(
@@ -48,23 +45,23 @@ public class SelfEfficacySurveysK12EdFiAssessor : IEdFiAssessor
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Searching assessment catalog for K-12 self-efficacy surveys...");
+        context.ReportProgress(0, "Searching survey catalog for K-12 self-efficacy surveys...");
 
-        var matchingAssessments = new List<(string Identifier, string Namespace)>();
+        var matchingSurveys = new List<(string Identifier, string Namespace)>();
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiAssessment>(
+        await EdFiApiPatterns.PageAndProcessAsync<EdFiSurvey>(
             httpClient,
-            "ed-fi/assessments",
-            assessment =>
+            "ed-fi/surveys",
+            survey =>
             {
-                if (IsSelfEfficacySurvey(assessment))
-                    matchingAssessments.Add((assessment.AssessmentIdentifier, assessment.Namespace));
+                if (IsSelfEfficacySurvey(survey))
+                    matchingSurveys.Add((survey.SurveyIdentifier, survey.Namespace));
             },
             context);
 
-        context.Log($"Found {matchingAssessments.Count} K-12 self-efficacy survey(s) in catalog");
+        context.Log($"Found {matchingSurveys.Count} K-12 self-efficacy survey(s) in catalog");
 
-        if (matchingAssessments.Count == 0)
+        if (matchingSurveys.Count == 0)
         {
             context.ReportProgress(100, "Complete — no K-12 self-efficacy surveys found");
             return new DataElementAssessment
@@ -72,42 +69,56 @@ public class SelfEfficacySurveysK12EdFiAssessor : IEdFiAssessor
                 DataElementName = DataElementName,
                 Characteristics = [new RecordCount(0)],
                 Remarks = AssessmentDescription +
-                    " No assessments matching recognized K-12 self-efficacy survey instruments were found " +
-                    "in the assessment catalog."
+                    " No surveys matching recognized K-12 self-efficacy instruments were found " +
+                    "in the survey catalog."
             };
         }
 
-        context.ReportProgress(50, "Loading student assessment results for K-12 self-efficacy surveys...");
+        context.ReportProgress(50, "Loading survey responses for K-12 self-efficacy surveys...");
 
-        var studentAssessments = new List<EdFiStudentAssessment>();
+        var surveyResponses = new List<EdFiSurveyResponse>();
         var surveyDistribution = new Dictionary<string, int>();
 
-        foreach (var (identifier, ns) in matchingAssessments)
+        foreach (var (identifier, ns) in matchingSurveys)
         {
             var queryParams = new Dictionary<string, string>
             {
-                ["assessmentIdentifier"] = identifier,
+                ["surveyIdentifier"] = identifier,
                 ["namespace"] = ns
             };
 
-            var countBefore = studentAssessments.Count;
+            var countBefore = surveyResponses.Count;
 
-            await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentAssessment>(
+            await EdFiApiPatterns.PageAndProcessAsync<EdFiSurveyResponse>(
                 httpClient,
-                "ed-fi/studentAssessments",
-                item => studentAssessments.Add(item),
+                "ed-fi/surveyResponses",
+                item => surveyResponses.Add(item),
                 context,
                 queryParams);
 
-            var added = studentAssessments.Count - countBefore;
+            var added = surveyResponses.Count - countBefore;
             if (added > 0)
                 surveyDistribution[identifier] = added;
         }
 
-        var result = StudentAssessmentAnalyzer.Analyze(studentAssessments);
+        var totalResponses = surveyResponses.Count;
+        var surveyLevelDistribution = new Dictionary<string, int>();
 
-        context.Log(
-            $"Found {result.RecordsWithScores:N0} of {result.TotalRecords:N0} K-12 self-efficacy survey results with score results");
+        foreach (var response in surveyResponses)
+        {
+            if (response.SurveyLevels == null)
+                continue;
+
+            foreach (var level in response.SurveyLevels)
+            {
+                var levelValue = EdFiDescriptorHelper.ParseDescriptorValue(level.SurveyLevelDescriptor);
+                if (!surveyLevelDistribution.ContainsKey(levelValue))
+                    surveyLevelDistribution[levelValue] = 0;
+                surveyLevelDistribution[levelValue]++;
+            }
+        }
+
+        context.Log($"Found {totalResponses:N0} K-12 self-efficacy survey responses");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -115,20 +126,18 @@ public class SelfEfficacySurveysK12EdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(result.TotalRecords),
+                new RecordCount(totalResponses),
                 new Distribution(surveyDistribution, "Survey Instrument"),
-                new Distribution(result.GradeLevelDistribution, "Grade Level Assessed"),
-                new Distribution(result.PerformanceLevelDistribution, "Performance Level / Self-Efficacy Level"),
-                new Completeness(result.TotalRecords, result.RecordsWithScores, "ScoreResults")
+                new Distribution(surveyLevelDistribution, "Survey Level")
             ],
             Remarks = AssessmentDescription
         };
     }
 
-    private static bool IsSelfEfficacySurvey(EdFiAssessment assessment)
+    private static bool IsSelfEfficacySurvey(EdFiSurvey survey)
     {
-        var title = assessment.AssessmentTitle ?? string.Empty;
-        var identifier = assessment.AssessmentIdentifier ?? string.Empty;
+        var title = survey.SurveyTitle ?? string.Empty;
+        var identifier = survey.SurveyIdentifier ?? string.Empty;
 
         foreach (var keyword in _surveyKeywords)
         {

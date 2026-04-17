@@ -6,8 +6,6 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class GrowthMindsetSurveysK12EdFiAssessor : IEdFiAssessor
 {
-    // Keywords for K-12 growth mindset survey instruments and common survey
-    // suites that include a growth mindset scale.
     private static readonly string[] _surveyKeywords =
     [
         // Generic terms
@@ -31,10 +29,10 @@ public class GrowthMindsetSurveysK12EdFiAssessor : IEdFiAssessor
     public string DataElementName => "Growth mindset surveys (K-12)";
 
     public string AssessmentDescription =>
-        "Identifies student assessments linked to K-12 growth mindset survey instruments " +
+        "Identifies surveys linked to K-12 growth mindset instruments " +
         "(e.g., Dweck Mindset Scale / Implicit Theories of Intelligence Scale, PERTS Mindset Meter, " +
         "Panorama / CORE Districts SEL surveys with a growth-mindset scale) by matching well-known " +
-        "instrument names and growth-mindset keywords in the Ed-Fi assessments catalog. Ed-Fi has no " +
+        "instrument names and growth-mindset keywords in the Ed-Fi surveys catalog. Ed-Fi has no " +
         "standard descriptor for growth mindset surveys, so title-based matching is used as a proxy.";
 
     public async Task<DataElementAssessment> AssessAsync(
@@ -42,23 +40,23 @@ public class GrowthMindsetSurveysK12EdFiAssessor : IEdFiAssessor
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Searching assessment catalog for growth mindset surveys...");
+        context.ReportProgress(0, "Searching survey catalog for growth mindset surveys...");
 
-        var matchingAssessments = new List<(string Identifier, string Namespace)>();
+        var matchingSurveys = new List<(string Identifier, string Namespace)>();
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiAssessment>(
+        await EdFiApiPatterns.PageAndProcessAsync<EdFiSurvey>(
             httpClient,
-            "ed-fi/assessments",
-            assessment =>
+            "ed-fi/surveys",
+            survey =>
             {
-                if (IsGrowthMindsetSurvey(assessment))
-                    matchingAssessments.Add((assessment.AssessmentIdentifier, assessment.Namespace));
+                if (IsGrowthMindsetSurvey(survey))
+                    matchingSurveys.Add((survey.SurveyIdentifier, survey.Namespace));
             },
             context);
 
-        context.Log($"Found {matchingAssessments.Count} growth mindset survey(s) in catalog");
+        context.Log($"Found {matchingSurveys.Count} growth mindset survey(s) in catalog");
 
-        if (matchingAssessments.Count == 0)
+        if (matchingSurveys.Count == 0)
         {
             context.ReportProgress(100, "Complete — no growth mindset surveys found");
             return new DataElementAssessment
@@ -66,42 +64,56 @@ public class GrowthMindsetSurveysK12EdFiAssessor : IEdFiAssessor
                 DataElementName = DataElementName,
                 Characteristics = [new RecordCount(0)],
                 Remarks = AssessmentDescription +
-                    " No assessments matching recognized growth mindset survey instruments were found " +
-                    "in the assessment catalog."
+                    " No surveys matching recognized growth mindset instruments were found " +
+                    "in the survey catalog."
             };
         }
 
-        context.ReportProgress(50, "Loading student assessment results for growth mindset surveys...");
+        context.ReportProgress(50, "Loading survey responses for growth mindset surveys...");
 
-        var studentAssessments = new List<EdFiStudentAssessment>();
+        var surveyResponses = new List<EdFiSurveyResponse>();
         var surveyDistribution = new Dictionary<string, int>();
 
-        foreach (var (identifier, ns) in matchingAssessments)
+        foreach (var (identifier, ns) in matchingSurveys)
         {
             var queryParams = new Dictionary<string, string>
             {
-                ["assessmentIdentifier"] = identifier,
+                ["surveyIdentifier"] = identifier,
                 ["namespace"] = ns
             };
 
-            var countBefore = studentAssessments.Count;
+            var countBefore = surveyResponses.Count;
 
-            await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentAssessment>(
+            await EdFiApiPatterns.PageAndProcessAsync<EdFiSurveyResponse>(
                 httpClient,
-                "ed-fi/studentAssessments",
-                item => studentAssessments.Add(item),
+                "ed-fi/surveyResponses",
+                item => surveyResponses.Add(item),
                 context,
                 queryParams);
 
-            var added = studentAssessments.Count - countBefore;
+            var added = surveyResponses.Count - countBefore;
             if (added > 0)
                 surveyDistribution[identifier] = added;
         }
 
-        var result = StudentAssessmentAnalyzer.Analyze(studentAssessments);
+        var totalResponses = surveyResponses.Count;
+        var surveyLevelDistribution = new Dictionary<string, int>();
 
-        context.Log(
-            $"Found {result.RecordsWithScores:N0} of {result.TotalRecords:N0} growth mindset survey results with score results");
+        foreach (var response in surveyResponses)
+        {
+            if (response.SurveyLevels == null)
+                continue;
+
+            foreach (var level in response.SurveyLevels)
+            {
+                var levelValue = EdFiDescriptorHelper.ParseDescriptorValue(level.SurveyLevelDescriptor);
+                if (!surveyLevelDistribution.ContainsKey(levelValue))
+                    surveyLevelDistribution[levelValue] = 0;
+                surveyLevelDistribution[levelValue]++;
+            }
+        }
+
+        context.Log($"Found {totalResponses:N0} growth mindset survey responses");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -109,20 +121,18 @@ public class GrowthMindsetSurveysK12EdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(result.TotalRecords),
+                new RecordCount(totalResponses),
                 new Distribution(surveyDistribution, "Survey Instrument"),
-                new Distribution(result.GradeLevelDistribution, "Grade Level Assessed"),
-                new Distribution(result.PerformanceLevelDistribution, "Performance Level / Mindset Level"),
-                new Completeness(result.TotalRecords, result.RecordsWithScores, "ScoreResults")
+                new Distribution(surveyLevelDistribution, "Survey Level")
             ],
             Remarks = AssessmentDescription
         };
     }
 
-    private static bool IsGrowthMindsetSurvey(EdFiAssessment assessment)
+    private static bool IsGrowthMindsetSurvey(EdFiSurvey survey)
     {
-        var title = assessment.AssessmentTitle ?? string.Empty;
-        var identifier = assessment.AssessmentIdentifier ?? string.Empty;
+        var title = survey.SurveyTitle ?? string.Empty;
+        var identifier = survey.SurveyIdentifier ?? string.Empty;
 
         foreach (var keyword in _surveyKeywords)
         {
