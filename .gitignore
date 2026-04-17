@@ -143,3 +143,4 @@ publish/
 eng/dev-dependencies/database/backups/
 eng/dev-dependencies/ecs-state-data-import-tool/bin/
 eng/dev-dependencies/ecs-state-data-import-tool/obj/
+src/EwFrameworkAnalysis.UI/wwwroot/css/app.css
