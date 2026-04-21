@@ -12,7 +12,7 @@
 
             @if (_assessmentResult == null)
             {
-                <!-- Step 1: Select State & Column -->
+                <!-- Step 1: Select State -->
                 <div class="space-y-4">
                     <p class="text-sm">
                         Select your state and a data column to load a state-level reference profile compiled by the Education Commission of the States.
@@ -31,32 +31,6 @@
                         </select>
                     </div>
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Data Column</span>
-                        </label>
-                        <div class="space-y-4 space-x-4">
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="dataColumn" class="radio radio-primary"
-                                       checked="@(_selectedDataColumn == EcsDataColumn.Collected)"
-                                       @onchange="@(() => _selectedDataColumn = EcsDataColumn.Collected)" />
-                                <span class="flex flex-col">
-                                    <span class="label-text font-medium">Collected</span>
-                                    <span class="label-text text-xs text-gray">Data collected by the state</span>
-                                </span>
-                            </label>
-                            <label class="label cursor-pointer justify-start gap-3">
-                                <input type="radio" name="dataColumn" class="radio radio-primary"
-                                       checked="@(_selectedDataColumn == EcsDataColumn.Reported)"
-                                       @onchange="@(() => _selectedDataColumn = EcsDataColumn.Reported)" />
-                                <span class="flex flex-col">
-                                    <span class="label-text font-medium">Reported</span>
-                                    <span class="label-text text-xs text-gray">Data reported publicly by the state</span>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-
                     @if (_error != null)
                     {
                         <div class="alert alert-error">
@@ -72,8 +46,7 @@
                 <div class="space-y-4">
                     <div class="text-sm text-gray">
                         <span class="font-semibold text-blue">@_selectedState</span>
-                        &mdash;
-                        @(_importBoth ? "Collected & Reported" : _selectedDataColumn.ToString())
+                        &mdash; Reported
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -261,8 +234,6 @@
 
     private List<string> _availableStates = [];
     private string _selectedState = "";
-    private EcsDataColumn _selectedDataColumn = EcsDataColumn.Collected;
-    private bool _importBoth;
 
     protected override void OnInitialized()
     {
@@ -282,8 +253,8 @@
         {
             var records = StateDataProvider.GetStateData(_selectedState);
 
-            var (assessment, stats) = Parser.ProcessStateData(records, _selectedDataColumn);
-            assessment.Name = $"{_selectedState} - {_selectedDataColumn}";
+            var (assessment, stats) = Parser.ProcessStateData(records);
+            assessment.Name = $"{_selectedState} - Reported";
             assessment.ConductedAt = DateTimeOffset.Now;
 
             _assessmentResult = assessment;
@@ -340,6 +311,5 @@
         _isProcessing = false;
         _selectedState = "";
         _showDetails = false;
-        _importBoth = false;
     }
 }
