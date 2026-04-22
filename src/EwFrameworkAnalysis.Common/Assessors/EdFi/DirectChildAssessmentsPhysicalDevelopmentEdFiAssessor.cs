@@ -6,8 +6,12 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor : IEdFiAssessor
 {
-    // Keywords for direct child assessments of physical development — gross/fine motor skills,
-    // administered by teachers, healthcare professionals, or other qualified adults.
+    private static readonly string[] _physicalDevCategoryDescriptors =
+    [
+        "Early Learning - Physical well-being and motor dev",
+        "Psychomotor test"
+    ];
+
     private static readonly string[] _assessmentKeywords =
     [
         // Generic terms
@@ -37,10 +41,10 @@ public class DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor : IEdFiAssess
     public string AssessmentDescription =>
         "Identifies student assessments linked to direct child assessments of physical development " +
         "(gross and fine motor skills) administered by teachers, healthcare professionals, or other " +
-        "qualified adults. Matches the Peabody Developmental Motor Scale named in the E-W Framework " +
-        "along with other widely used direct motor instruments (Bruininks-Oseretsky BOT-2, Movement " +
-        "ABC, Test of Gross Motor Development). Ed-Fi has no standard descriptor for physical " +
-        "development assessments, so title-based matching against the assessments catalog is used.";
+        "qualified adults. Matches assessmentCategoryDescriptor values (Early Learning - Physical " +
+        "well-being and motor development, Psychomotor test), the Peabody Developmental Motor Scale " +
+        "named in the E-W Framework, and other widely used direct motor instruments " +
+        "(Bruininks-Oseretsky BOT-2, Movement ABC, Test of Gross Motor Development).";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
@@ -126,6 +130,16 @@ public class DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor : IEdFiAssess
 
     private static bool IsPhysicalDevelopmentAssessment(EdFiAssessment assessment)
     {
+        if (!string.IsNullOrWhiteSpace(assessment.AssessmentCategoryDescriptor))
+        {
+            var category = EdFiDescriptorHelper.ParseDescriptorValue(assessment.AssessmentCategoryDescriptor);
+            foreach (var descriptor in _physicalDevCategoryDescriptors)
+            {
+                if (category.Equals(descriptor, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+        }
+
         var title = assessment.AssessmentTitle ?? string.Empty;
         var identifier = assessment.AssessmentIdentifier ?? string.Empty;
 
