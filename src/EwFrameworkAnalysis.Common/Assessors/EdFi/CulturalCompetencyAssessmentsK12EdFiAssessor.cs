@@ -71,7 +71,7 @@ public class CulturalCompetencyAssessmentsK12EdFiAssessor : IEdFiAssessor
 
         context.ReportProgress(50, "Loading student assessment results for cultural competency assessments...");
 
-        var studentAssessments = new List<EdFiStudentAssessment>();
+        var totalRecords = 0;
         var instrumentDistribution = new Dictionary<string, int>();
 
         foreach (var (identifier, ns) in matchingAssessments)
@@ -82,24 +82,21 @@ public class CulturalCompetencyAssessmentsK12EdFiAssessor : IEdFiAssessor
                 ["namespace"] = ns
             };
 
-            var countBefore = studentAssessments.Count;
+            var countBefore = totalRecords;
 
             await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentAssessment>(
                 httpClient,
                 "ed-fi/studentAssessments",
-                item => studentAssessments.Add(item),
+                _ => totalRecords++,
                 context,
                 queryParams);
 
-            var added = studentAssessments.Count - countBefore;
+            var added = totalRecords - countBefore;
             if (added > 0)
                 instrumentDistribution[identifier] = added;
         }
 
-        var result = StudentAssessmentAnalyzer.Analyze(studentAssessments);
-
-        context.Log(
-            $"Found {result.RecordsWithScores:N0} of {result.TotalRecords:N0} cultural competency assessment results with score results");
+        context.Log($"Found {totalRecords:N0} cultural competency student assessment records");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -107,11 +104,8 @@ public class CulturalCompetencyAssessmentsK12EdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(result.TotalRecords),
-                new Distribution(instrumentDistribution, "Assessment Instrument"),
-                new Distribution(result.GradeLevelDistribution, "Grade Level Assessed"),
-                new Distribution(result.PerformanceLevelDistribution, "Performance Level / Proficiency"),
-                new Completeness(result.TotalRecords, result.RecordsWithScores, "ScoreResults")
+                new RecordCount(totalRecords),
+                new Distribution(instrumentDistribution, "Assessment Instrument")
             ],
             Remarks = AssessmentDescription
         };

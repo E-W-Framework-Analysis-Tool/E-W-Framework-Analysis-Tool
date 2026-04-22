@@ -1,3 +1,4 @@
+using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -5,54 +6,44 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class CohortGraduationYearEdFiAssessor : IEdFiAssessor
 {
-    private static readonly string _graduationCohortType = "Graduation";
-
-    private readonly EdFiStudentDemographicsProvider _demographicsProvider;
-
-    public CohortGraduationYearEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
-    {
-        _demographicsProvider = demographicsProvider;
-    }
-
     public string DataElementName => "Cohort graduation year";
 
     public string AssessmentDescription =>
-        "Distribution of students by cohort graduation year from studentEducationOrganizationAssociations";
+        "Distribution of students by class-of school year from studentSchoolAssociations";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Loading student demographics...");
-
-        var data = await _demographicsProvider.GetDataAsync(httpClient, context);
+        context.ReportProgress(0, "Querying API...");
 
         var distribution = new Dictionary<string, int>();
-        var totalRecords = data.Count;
+        var totalRecords = 0;
         var reportedCount = 0;
 
-        foreach (var association in data)
-        {
-            var graduationCohort = association.CohortYears?
-                .FirstOrDefault(c => EdFiDescriptorHelper.ParseDescriptorValue(c.CohortYearTypeDescriptor)
-                    .Contains(_graduationCohortType, StringComparison.OrdinalIgnoreCase));
-
-            if (graduationCohort == null)
+        await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentSchoolAssociation>(
+            httpClient,
+            "ed-fi/studentSchoolAssociations",
+            association =>
             {
-                distribution["Not Reported"] = distribution.GetValueOrDefault("Not Reported") + 1;
-            }
-            else
-            {
-                reportedCount++;
-                var schoolYear = graduationCohort.SchoolYearTypeReference?.SchoolYear;
-                var label = schoolYear != null
-                    ? schoolYear.ToString()!
-                    : "Year Not Specified";
+                totalRecords++;
 
-                distribution[label] = distribution.GetValueOrDefault(label) + 1;
-            }
-        }
+                var schoolYear = association.ClassOfSchoolYearTypeReference?.SchoolYear;
 
-        context.Log($"Found {reportedCount:N0} students with graduation cohort year out of {totalRecords:N0}");
+                if (schoolYear != null)
+                {
+                    reportedCount++;
+                    var label = schoolYear.Value.ToString();
+                    distribution[label] = distribution.GetValueOrDefault(label) + 1;
+                }
+                else
+                {
+                    distribution["Not Reported"] = distribution.GetValueOrDefault("Not Reported") + 1;
+                }
+            },
+            context
+        );
+
+        context.Log($"Found {reportedCount:N0} students with cohort graduation year out of {totalRecords:N0}");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -61,7 +52,7 @@ public class CohortGraduationYearEdFiAssessor : IEdFiAssessor
             Characteristics =
             [
                 new RecordCount(totalRecords),
-                new Completeness(totalRecords, reportedCount, "CohortGraduationYear"),
+                new Completeness(totalRecords, reportedCount, "ClassOfSchoolYear"),
                 new Distribution(distribution, "Cohort Graduation Year")
             ]
         };
