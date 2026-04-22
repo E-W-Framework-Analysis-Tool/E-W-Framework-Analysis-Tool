@@ -6,9 +6,12 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class MentalEmotionalWellBeingAssessmentsEdFiAssessor : IEdFiAssessor
 {
-    // Keywords for postsecondary / adult mental and emotional well-being survey instruments.
-    // Framework names the Psychological Wellbeing Scale (Ryff); additional widely used adult
-    // well-being instruments are included for coverage.
+    private static readonly string[] _wellBeingCategoryDescriptors =
+    [
+        "Psychological test",
+        "Attitudinal test"
+    ];
+
     private static readonly string[] _assessmentKeywords =
     [
         // Generic terms
@@ -53,9 +56,8 @@ public class MentalEmotionalWellBeingAssessmentsEdFiAssessor : IEdFiAssessor
         "well-being instruments (e.g., Psychological Wellbeing Scale / Ryff Scales named in the E-W Framework, " +
         "plus Warwick-Edinburgh Mental Well-Being Scale, Satisfaction with Life Scale, PERMA-Profiler, " +
         "Flourishing Scale, Mental Health Continuum, PHQ-9, GAD-7, Kessler K6/K10, DASS, PROMIS) by matching " +
-        "well-known instrument names and well-being keywords in the Ed-Fi assessments catalog. Ed-Fi has no " +
-        "standard descriptor for mental / emotional well-being assessments, so title-based matching is used " +
-        "as a proxy.";
+        "assessmentCategoryDescriptor values (Psychological test, Attitudinal test) and well-known instrument " +
+        "names and well-being keywords in the Ed-Fi assessments catalog.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
@@ -141,6 +143,16 @@ public class MentalEmotionalWellBeingAssessmentsEdFiAssessor : IEdFiAssessor
 
     private static bool IsWellBeingAssessment(EdFiAssessment assessment)
     {
+        if (!string.IsNullOrWhiteSpace(assessment.AssessmentCategoryDescriptor))
+        {
+            var category = EdFiDescriptorHelper.ParseDescriptorValue(assessment.AssessmentCategoryDescriptor);
+            foreach (var descriptor in _wellBeingCategoryDescriptors)
+            {
+                if (category.Equals(descriptor, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+        }
+
         var title = assessment.AssessmentTitle ?? string.Empty;
         var identifier = assessment.AssessmentIdentifier ?? string.Empty;
 
