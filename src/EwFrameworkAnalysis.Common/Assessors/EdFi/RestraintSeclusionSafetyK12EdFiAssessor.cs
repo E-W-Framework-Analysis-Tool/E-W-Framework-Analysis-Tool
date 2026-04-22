@@ -6,60 +6,45 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class RestraintSeclusionSafetyK12EdFiAssessor : IEdFiAssessor
 {
-    private static readonly string _restraint = "Restraint";
-    private static readonly string _seclusion = "Seclusion";
-
     public string DataElementName => "Restraint and seclusion for safety (K-12)";
 
     public string AssessmentDescription =>
-        "Count and distribution of safety-related restraint and seclusion actions from disciplineActions";
+        "Count and distribution of restraint events from the dedicated ed-fi/restraintEvents endpoint, " +
+        "with breakdown by restraintEventReasonDescriptor";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Querying API...");
+        context.ReportProgress(0, "Querying restraint events...");
 
-        var distribution = new Dictionary<string, int>
-        {
-            ["Restraint"] = 0,
-            ["Seclusion"] = 0
-        };
+        var reasonDistribution = new Dictionary<string, int>();
         var totalRecords = 0;
-        var matchCount = 0;
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiDisciplineAction>(
+        await EdFiApiPatterns.PageAndProcessAsync<EdFiRestraintEvent>(
             httpClient,
-            "ed-fi/disciplineActions",
-            action =>
+            "ed-fi/restraintEvents",
+            restraintEvent =>
             {
                 totalRecords++;
 
-                if (action.Disciplines == null)
-                    return;
-
-                foreach (var discipline in action.Disciplines)
+                if (restraintEvent.Reasons is { Count: > 0 })
                 {
-                    if (discipline.DisciplineDescriptor == null)
-                        continue;
-
-                    var value = EdFiDescriptorHelper.ParseDescriptorValue(discipline.DisciplineDescriptor);
-
-                    if (value.Contains(_restraint, StringComparison.OrdinalIgnoreCase))
+                    foreach (var reason in restraintEvent.Reasons)
                     {
-                        matchCount++;
-                        distribution["Restraint"]++;
+                        var value = EdFiDescriptorHelper.ParseDescriptorValue(
+                            reason.RestraintEventReasonDescriptor ?? "Unknown");
+                        reasonDistribution[value] = reasonDistribution.GetValueOrDefault(value) + 1;
                     }
-                    else if (value.Contains(_seclusion, StringComparison.OrdinalIgnoreCase))
-                    {
-                        matchCount++;
-                        distribution["Seclusion"]++;
-                    }
+                }
+                else
+                {
+                    reasonDistribution["Not Reported"] = reasonDistribution.GetValueOrDefault("Not Reported") + 1;
                 }
             },
             context
         );
 
-        context.Log($"Found {matchCount:N0} restraint/seclusion safety records out of {totalRecords:N0} discipline actions");
+        context.Log($"Found {totalRecords:N0} restraint events");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -67,8 +52,8 @@ public class RestraintSeclusionSafetyK12EdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(matchCount),
-                new Distribution(distribution, "Restraint/Seclusion Type")
+                new RecordCount(totalRecords),
+                new Distribution(reasonDistribution, "Restraint Event Reason")
             ]
         };
     }
