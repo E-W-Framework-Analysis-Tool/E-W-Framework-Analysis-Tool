@@ -50,8 +50,10 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         "assessments that report on social-emotional development (e.g., DRDP Social and Emotional " +
         "Development domain, R4K ELA Social Foundations domain, TS GOLD Social-Emotional subscale named " +
         "in the E-W Framework, plus Brigance, KRA, WaKIDS, Work Sampling, HighScope COR) by matching " +
-        "well-known instrument names and SEL-readiness keywords in the Ed-Fi assessments catalog. Ed-Fi " +
-        "has no standard descriptor for kindergarten readiness, so title-based matching is used as a proxy.";
+        "well-known instrument names and SEL-readiness keywords in the Ed-Fi assessments catalog. " +
+        "NOTE: Early learning / Pre-K assessment data is rarely available in Ed-Fi ODS instances — most " +
+        "districts do not load kindergarten readiness instruments into Ed-Fi, so this data element is " +
+        "unlikely to return results.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,

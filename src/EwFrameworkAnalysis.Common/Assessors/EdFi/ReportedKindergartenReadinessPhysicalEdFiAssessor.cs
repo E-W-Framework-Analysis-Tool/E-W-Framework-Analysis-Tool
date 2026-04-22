@@ -51,8 +51,9 @@ public class ReportedKindergartenReadinessPhysicalEdFiAssessor : IEdFiAssessor
         "Physical Development – Health domain, Ready 4 Kindergarten Early Learning Assessment (R4K ELA) " +
         "Physical Well-Being and Motor Development domain, and Teaching Strategies GOLD Physical subscale, " +
         "along with other common kindergarten entry assessments (KRA, WaKIDS, Brigance, Work Sampling). " +
-        "Ed-Fi has no standard descriptor for kindergarten readiness assessments, so title-based matching " +
-        "against the assessments catalog is used.";
+        "NOTE: Early learning / Pre-K assessment data is rarely available in Ed-Fi ODS instances — most " +
+        "districts do not load kindergarten readiness instruments into Ed-Fi, so this data element is " +
+        "unlikely to return results.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,

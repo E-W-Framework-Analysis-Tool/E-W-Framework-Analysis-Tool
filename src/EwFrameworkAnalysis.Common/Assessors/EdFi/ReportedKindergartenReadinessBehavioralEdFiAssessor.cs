@@ -45,8 +45,9 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         "domain. Matches instruments named in the E-W Framework such as the Desired Results Developmental " +
         "Profile (DRDP) Approaches to Learning – Self-Regulation domain and Teaching Strategies GOLD " +
         "Cognitive subscale, along with other common kindergarten entry assessments (KRA, WaKIDS, Brigance, " +
-        "Work Sampling). Ed-Fi has no standard descriptor for kindergarten readiness assessments, so " +
-        "title-based matching against the assessments catalog is used.";
+        "Work Sampling). NOTE: Early learning / Pre-K assessment data is rarely available in Ed-Fi ODS " +
+        "instances — most districts do not load kindergarten readiness instruments into Ed-Fi, so this " +
+        "data element is unlikely to return results.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
