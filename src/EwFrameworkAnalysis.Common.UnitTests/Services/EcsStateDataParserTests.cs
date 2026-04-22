@@ -8,92 +8,114 @@ public class EcsStateDataParserTests
     private readonly EcsStateDataParser _parser = new();
 
     [Fact]
-    public void Should_ProcessStateData_WithCollectedColumn()
-    {
-        var records = new List<EcsStateDataRecord>
-        {
-            new("K-12", "ACT completion indicator", "ACT completion", AvailabilityJudgment.Available, AvailabilityJudgment.NotAvailable),
-            new("K-12", "SAT completion indicator", "SAT completion", AvailabilityJudgment.PartiallyAvailable, AvailabilityJudgment.Available)
-        };
-
-        var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
-
-        Assert.Equal(2, assessment.DataElementAssessments.Count);
-        Assert.Equal(2, stats.DataElementsProcessed);
-
-        var act = assessment.DataElementAssessments.First(a => a.DataElementName == "ACT completion");
-        var actAvailability = act.Characteristics.OfType<ReportedAvailability>().First();
-        Assert.Equal(AvailabilityJudgment.Available, actAvailability.Value);
-
-        var sat = assessment.DataElementAssessments.First(a => a.DataElementName == "SAT completion");
-        var satAvailability = sat.Characteristics.OfType<ReportedAvailability>().First();
-        Assert.Equal(AvailabilityJudgment.PartiallyAvailable, satAvailability.Value);
-    }
-
-    [Fact]
     public void Should_ProcessStateData_WithReportedColumn()
     {
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "ACT completion indicator", "ACT completion", AvailabilityJudgment.Available, AvailabilityJudgment.NotAvailable)
+            new("K-12", "ACT completion indicator", "ACT completion", AvailabilityJudgment.NotAvailable)
         };
 
-        var (assessment, _) = _parser.ProcessStateData(records, EcsDataColumn.Reported);
+        var (assessment, _) = _parser.ProcessStateData(records);
 
-        var availability = assessment.DataElementAssessments[0].Characteristics.OfType<ReportedAvailability>().First();
+        var availability = assessment.DataElementAssessments[0].Characteristics
+            .OfType<ReportedAvailability>().First();
         Assert.Equal(AvailabilityJudgment.NotAvailable, availability.Value);
     }
 
     [Fact]
-    public void Should_ProcessStateData_ConsolidateElements()
+    public void Should_ProcessStateData_ConsolidateElements_KeepingBestJudgment()
     {
-        // Multiple records with the same element name are consolidated,
-        // keeping the best (most available) judgment.
+        // Same element name appears three times with different judgments —
+        // the best (lowest ordinal = most available) should win.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.NotAvailable, null),
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.Available, null),
-            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.PartiallyAvailable, null)
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.NotAvailable),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.Available),
+            new("K-12", "Discipline indicator", "Suspensions and expulsions (K-12)", AvailabilityJudgment.PartiallyAvailable)
         };
 
-        var (assessment, _) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
+        var (assessment, _) = _parser.ProcessStateData(records);
 
         Assert.Single(assessment.DataElementAssessments);
         Assert.Equal("Suspensions and expulsions (K-12)", assessment.DataElementAssessments[0].DataElementName);
-
-        var availability = assessment.DataElementAssessments[0].Characteristics.OfType<ReportedAvailability>().First();
+        var availability = assessment.DataElementAssessments[0].Characteristics
+            .OfType<ReportedAvailability>().First();
         Assert.Equal(AvailabilityJudgment.Available, availability.Value);
     }
 
     [Fact]
     public void Should_ProcessStateData_SkipNullStatus()
     {
+        // One valid record and one null — only the valid one should be assessed.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "ACT indicator", "ACT completion", null, null),
-            new("K-12", "SAT indicator", "SAT completion", AvailabilityJudgment.Available, null)
+            new("K-12", "ACT indicator",  "ACT completion", AvailabilityJudgment.Available),
+            new("K-12", "SAT indicator",  "SAT completion", null)
         };
 
-        var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
+        var (assessment, stats) = _parser.ProcessStateData(records);
 
         Assert.Single(assessment.DataElementAssessments);
         Assert.Equal(1, stats.DataElementsSkipped);
+        Assert.Equal(1, stats.DataElementsProcessed);
     }
 
     [Fact]
     public void Should_ProcessStateData_IncludeUnknownElements()
     {
-        // Elements not in the EW Framework dictionary are included in the assessment.
+        // Elements not in any known framework dictionary are still included.
         var records = new List<EcsStateDataRecord>
         {
-            new("K-12", "Unknown indicator", "Some Unknown Element", AvailabilityJudgment.Available, null),
-            new("K-12", "ACT indicator", "ACT completion", AvailabilityJudgment.Available, null)
+            new("K-12", "Unknown indicator", "Some Unknown Element", AvailabilityJudgment.Available),
+            new("K-12", "ACT indicator",     "ACT completion",       AvailabilityJudgment.NotAvailable)
         };
 
-        var (assessment, stats) = _parser.ProcessStateData(records, EcsDataColumn.Collected);
+        var (assessment, stats) = _parser.ProcessStateData(records);
 
         Assert.Equal(2, assessment.DataElementAssessments.Count);
         Assert.Equal(2, stats.DataElementsProcessed);
-        Assert.Contains(assessment.DataElementAssessments, a => a.DataElementName == "Some Unknown Element");
+        Assert.Contains(assessment.DataElementAssessments,
+            a => a.DataElementName == "Some Unknown Element");
+    }
+
+    [Fact]
+    public void Should_ProcessStateData_SkipEmptyElementName()
+    {
+        var records = new List<EcsStateDataRecord>
+        {
+            new("K-12", "Some indicator", "",    AvailabilityJudgment.Available),
+            new("K-12", "Some indicator", "   ", AvailabilityJudgment.Available),
+            new("K-12", "ACT indicator",  "ACT completion", AvailabilityJudgment.Available)
+        };
+
+        var (assessment, stats) = _parser.ProcessStateData(records);
+
+        Assert.Single(assessment.DataElementAssessments);
+        Assert.Equal(2, stats.DataElementsSkipped);
+    }
+
+    [Fact]
+    public void Should_ProcessStateData_ReturnEmptyAssessment_WhenAllRecordsNull()
+    {
+        var records = new List<EcsStateDataRecord>
+        {
+            new("K-12", "ACT indicator", "ACT completion", null),
+            new("K-12", "SAT indicator", "SAT completion", null)
+        };
+
+        var (assessment, stats) = _parser.ProcessStateData(records);
+
+        Assert.Empty(assessment.DataElementAssessments);
+        Assert.Equal(2, stats.DataElementsSkipped);
+        Assert.Equal(0, stats.DataElementsProcessed);
+    }
+
+    [Fact]
+    public void Should_ProcessStateData_ReturnEmptyAssessment_WhenRecordsEmpty()
+    {
+        var (assessment, stats) = _parser.ProcessStateData([]);
+
+        Assert.Empty(assessment.DataElementAssessments);
+        Assert.Equal(0, stats.TotalRowsRead);
     }
 }

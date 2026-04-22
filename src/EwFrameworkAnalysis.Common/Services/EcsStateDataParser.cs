@@ -2,12 +2,6 @@ using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
-public enum EcsDataColumn
-{
-    Collected,
-    Reported
-}
-
 public class EcsParsingStats
 {
     public int TotalRowsRead { get; set; }
@@ -20,8 +14,7 @@ public class EcsParsingStats
 public class EcsStateDataParser
 {
     public (DataSourceAssessment Assessment, EcsParsingStats Stats) ProcessStateData(
-        List<EcsStateDataRecord> records,
-        EcsDataColumn dataColumn)
+        List<EcsStateDataRecord> records)
     {
         var stats = new EcsParsingStats();
         var elements = new Dictionary<string, AvailabilityJudgment>(StringComparer.OrdinalIgnoreCase);
@@ -37,9 +30,7 @@ public class EcsStateDataParser
                 continue;
             }
 
-            var judgment = dataColumn == EcsDataColumn.Collected ? record.Collected : record.Reported;
-
-            if (judgment == null)
+            if (record.Reported == null)
             {
                 stats.DataElementsSkipped++;
                 stats.SkippedReasons.Add($"No valid status for '{record.ElementName}'");
@@ -50,12 +41,12 @@ public class EcsStateDataParser
 
             if (elements.TryGetValue(record.ElementName, out var existing))
             {
-                if (judgment.Value < existing)
-                    elements[record.ElementName] = judgment.Value;
+                if (record.Reported.Value < existing)
+                    elements[record.ElementName] = record.Reported.Value;
             }
             else
             {
-                elements[record.ElementName] = judgment.Value;
+                elements[record.ElementName] = record.Reported.Value;
             }
         }
 

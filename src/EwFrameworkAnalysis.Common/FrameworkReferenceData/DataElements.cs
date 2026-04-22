@@ -42,16 +42,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Numerical age as of point in time, or birth date"
             },
-        ["Age group"] =
-            new DataElement
-            {
-                Name = "Age group",
-                ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Demographics",
-                RelatedSectors = [Sector.PS, Sector.WF],
-                AdditionalNotes = "Generalized category of age, e.g. adult or minor"
-            },
-        ["AP course designation"] =
+        ["AP course designation"] = // Should this be combined with IB and Dual Credit similar to the following element?
             new DataElement
             {
                 Name = "AP course designation",
@@ -114,7 +105,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Bachelor's degree completion date"] =
+        ["Bachelor's degree completion date"] = // should this just be "credential attainment date"?
             new DataElement
             {
                 Name = "Bachelor's degree completion date",
@@ -321,7 +312,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "For example, completion, failure, passage"
             },
-        ["Course performance (English and Math)"] =
+        ["Course performance (English and Math)"] = // Is "(English and Math)" reasonable or should this be "Course performance by subject area"
             new DataElement
             {
                 Name = "Course performance (English and Math)",
@@ -330,7 +321,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
-        ["Credential or certification type"] =
+        ["Credential or certification type"] = // maybe more specifically "teacher credential", similar to "Teacher qualification or certification type"
             new DataElement
             {
                 Name = "Credential or certification type",
@@ -348,7 +339,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Credits earned in first year"] =
+        ["Credits earned in first year"] = // is "first year" appropriate here? or just "PS credits by year"?
             new DataElement
             {
                 Name = "Credits earned in first year",
@@ -357,7 +348,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["CTE course completion"] =
+        ["CTE course completion"] = // Similar to "Course outcome", just a specific variety of course
             new DataElement
             {
                 Name = "CTE course completion",
@@ -366,7 +357,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["CTE course ID or course title"] =
+        ["CTE course ID or course title"] = // similar to "Course identifier or title" just for CTE... maybe this should be CTE course indicator?
             new DataElement
             {
                 Name = "CTE course ID or course title",
@@ -465,7 +456,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Diploma or credential award date"] =
+        ["Diploma or credential award date"] = // related to High school graduation date, which we already have -- this seems to be exclusively about ACGR metric for HS, skipping
             new DataElement
             {
                 Name = "Diploma or credential award date",
@@ -528,7 +519,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Dual credit course designation"] =
+        ["Dual credit course designation"] = // May want to combine with AP / IB
             new DataElement
             {
                 Name = "Dual credit course designation",
@@ -582,7 +573,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employee income level"] =
+        ["Employee income level"] = // This one is similar to "Earnings" but is more about diversity in a workplace
             new DataElement
             {
                 Name = "Employee income level",
@@ -591,7 +582,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employee race/ethnicity"] =
+        ["Employee race/ethnicity"] = // This one is similar to Staff race/ethnicity... but more oriented around workplace rather than school employees
             new DataElement
             {
                 Name = "Employee race/ethnicity",
@@ -600,7 +591,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employment date"] =
+        ["Employment date"] = // specifically in the context of someone in the workforce, not staff
             new DataElement
             {
                 Name = "Employment date",
@@ -609,7 +600,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Employment status"] =
+        ["Employment status"] = // specifically in the context of someone in the workforce, not staff
             new DataElement
             {
                 Name = "Employment status",
@@ -645,7 +636,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Enrollment date"] =
+        ["Enrollment date"] = // Related to other enrollment dates, pre-K, kindergarten, postsecondary, graduate program, etc., where this is defined in the metrics too it seems "Cohort year" is actually more precise
             new DataElement
             {
                 Name = "Enrollment date",
@@ -681,7 +672,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Enrollment status (current and prior years)"] =
+        ["Enrollment status (current and prior years)"] = // should this be split into K-12 vs PS? Indicator for question 15 seems to be PS oriented specifically, there are separate tables for enrollment
             new DataElement
             {
                 Name = "Enrollment status (current and prior years)",
@@ -690,7 +681,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["Expenditures per student (K-12)"] =
+        ["Expenditures per student (K-12)"] = // overlaps with Institutional expenditure per student?
             new DataElement
             {
                 Name = "Expenditures per student (K-12)",
@@ -762,7 +753,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["First-time 9th grade student status"] =
+        ["First-time 9th grade student status"] = // can't find this
             new DataElement
             {
                 Name = "First-time 9th grade student status",
@@ -789,7 +780,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Gender"] =
+        ["Gender"] = // Should this be split up by sector similar to other elements with "(K-12)" type sucffixes in the names?
             new DataElement
             {
                 Name = "Gender",
@@ -798,7 +789,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Geographical indicator"] =
+        ["Geographical indicator"] = // Should this be Student place of residence? The goal is for this to be relatable to census data for racial/ethnic diversity
             new DataElement
             {
                 Name = "Geographical indicator",
@@ -834,7 +825,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Graduate credential attainment date"] =
+        ["Graduate credential attainment date"] = // Should this just be "credential attainment date"
             new DataElement
             {
                 Name = "Graduate credential attainment date",
@@ -879,7 +870,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Health services offered"] =
+        ["Health services offered"] = // seems to only be used in PK context
             new DataElement
             {
                 Name = "Health services offered",
@@ -951,7 +942,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Highest level of education completed"] =
+        ["Highest level of education completed"] = // This is in reference to teachers, so related to instruction, not individual longitudinally.
             new DataElement
             {
                 Name = "Highest level of education completed",
@@ -969,7 +960,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
             },
-        ["IB course designation"] =
+        ["IB course designation"] = // maybe common course designation element instead with a distribution?
             new DataElement
             {
                 Name = "IB course designation",
@@ -996,7 +987,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Income level"] =
+        ["Income level"] = // as a disaggregate, probably the "target" individual is the person moving through the E-W continuum, not staff or instructors
             new DataElement
             {
                 Name = "Income level",
@@ -1032,7 +1023,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
             },
-        ["Individual or family military status"] =
+        ["Individual or family military status"] = // disaggregate
             new DataElement
             {
                 Name = "Individual or family military status",
@@ -1041,16 +1032,16 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Individual with current or past child welfare involvement"] =
+        ["Individual with current or past child welfare involvement"] = // disaggregate
             new DataElement
             {
                 Name = "Individual with current or past child welfare involvement",
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["Individuals experiencing homelessness"] =
+        ["Individuals experiencing homelessness"] = // disaggregate
             new DataElement
             {
                 Name = "Individuals experiencing homelessness",
@@ -1068,7 +1059,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
             },
-        ["Institution graduation rate"] =
+        ["Institution graduation rate"] = // Should we look at primary elements that could derive this as well?
             new DataElement
             {
                 Name = "Institution graduation rate",
@@ -1077,7 +1068,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Institutional expenditure per student"] =
+        ["Institutional expenditure per student"] = // Seems same as the "Expenditure per puil" elements?
             new DataElement
             {
                 Name = "Institutional expenditure per student",
@@ -1146,7 +1137,7 @@ public static class EwFrameworkDataElements
                 Name = "Kindergarten enrollment date",
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [Sector.PK, Sector.K12],
+                RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
         ["Kindergarten program days per week"] =
@@ -1155,7 +1146,7 @@ public static class EwFrameworkDataElements
                 Name = "Kindergarten program days per week",
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
-                RelatedSectors = [Sector.PK],
+                RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
         ["Kindergarten program hours per day"] =
@@ -1164,7 +1155,7 @@ public static class EwFrameworkDataElements
                 Name = "Kindergarten program hours per day",
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
-                RelatedSectors = [Sector.PK],
+                RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
         ["Kindergarten readiness assessments (cognition)"] =
@@ -1185,7 +1176,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
             },
-        ["Learning and development plan offered"] =
+        ["Learning and development plan offered"] = // Maybe make it clear this is talking about WF specifically in the data element name?
             new DataElement
             {
                 Name = "Learning and development plan offered",
@@ -1291,7 +1282,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
-                AdditionalNotes = null
+                AdditionalNotes = "ACE is an abbreviation for \"adverse childhood experiences\""
             },
         ["Number of affordable housing units in city or county"] =
             new DataElement
@@ -1473,7 +1464,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Percentage of teachers regularly using standards-aligned; culturally responsive curricula"] =
+        ["Percentage of teachers regularly using standards-aligned; culturally responsive curricula"] = // quite a wordy and wide scope
             new DataElement
             {
                 Name = "Percentage of teachers regularly using standards-aligned; culturally responsive curricula",
@@ -1590,7 +1581,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
             },
-        ["Postsecondary institution ID (current and prior years)"] =
+        ["Postsecondary institution ID (current and prior years)"] = // This is fairly duplicative
             new DataElement
             {
                 Name = "Postsecondary institution ID (current and prior years)",
@@ -1861,7 +1852,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
             },
-        ["Sense of belonging surveys"] =
+        ["Sense of belonging surveys"] = // missing WF identifier?
             new DataElement
             {
                 Name = "Sense of belonging surveys",
@@ -1904,7 +1895,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Subject specific for reading/literacy; math; and science"
+                AdditionalNotes = "Student growth percentile, subject specific for reading/literacy, math, and science"
             },
         ["SNAP eligibility"] =
             new DataElement
@@ -2050,7 +2041,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
             },
-        ["Student course enrollment record"] =
+        ["Student course enrollment record"] = // This one replaces individual subjects, but we should probably split this between K-12 and PS...
             new DataElement
             {
                 Name = "Student course enrollment record",
@@ -2068,7 +2059,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["Student FTE status"] =
+        ["Student FTE status"] = // This seems to already be covered by PostsecondaryEnrollmentStatusFullTimePartTime
             new DataElement
             {
                 Name = "Student FTE status",
@@ -2077,7 +2068,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["Student grade level"] =
+        ["Student grade level"] = // This is duplicative of the one below
             new DataElement
             {
                 Name = "Student grade level",
@@ -2104,7 +2095,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
             },
-        ["Student or family socioeconomic status"] =
+        ["Student or family socioeconomic status"] = // May want to split this to income level AND "economic disadvantage status" so we could essentially mark this as partially available for systems like CEDS DW. Also we have "Income Level" as a disaggregate which is a bit of an overlap...
             new DataElement
             {
                 Name = "Student or family socioeconomic status",
@@ -2122,7 +2113,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
             },
-        ["Student race/ethnicity"] =
+        ["Student race/ethnicity"] = // not used strictly as a disaggregate, likely need to track PK vs K12 vs PS here
             new DataElement
             {
                 Name = "Student race/ethnicity",
@@ -2134,13 +2125,13 @@ public static class EwFrameworkDataElements
         ["Student socioeconomic status"] =
             new DataElement
             {
-                Name = "Student socioeconomic status",
+                Name = "Student socioeconomic status", // seems to overlap with "Student or family" version above...
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
+                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS], // this is listed as PS metric only
                 AdditionalNotes = null
             },
-        ["Subscale observation scores"] =
+        ["Subscale observation scores"] = // Not very descriptive -- this refers to teacher observation subscale scores in the context of teacher effectiveness
             new DataElement
             {
                 Name = "Subscale observation scores",
@@ -2230,7 +2221,7 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
             },
-        ["Teaching assignment"] =
+        ["Teaching assignment"] = // May need to break out and include "course teaching requirements" or something, the spirit is really about "qualification to teach a particular course"
             new DataElement
             {
                 Name = "Teaching assignment",

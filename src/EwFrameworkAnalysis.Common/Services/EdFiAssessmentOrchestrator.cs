@@ -10,6 +10,8 @@ public class EdFiAssessmentOrchestrator
 {
     private readonly IEnumerable<IEdFiAssessor> _assessors;
     private readonly EdFiStudentDemographicsProvider? _demographicsProvider;
+    private readonly EdFiCTEProgramProvider? _cteProgramProvider;
+    private readonly EdFiCourseProvider? _courseProvider;
     private readonly int _maxDegreeOfParallelism;
 
     /// <summary>
@@ -19,6 +21,12 @@ public class EdFiAssessmentOrchestrator
     /// <param name="demographicsProvider">
     /// Optional shared demographics provider whose cache is cleared at the start of each run.
     /// </param>
+    /// <param name="cteProgramProvider">
+    /// Optional shared CTE program provider whose cache is cleared at the start of each run.
+    /// </param>
+    /// <param name="courseProvider">
+    /// Optional shared course provider whose cache is cleared at the start of each run.
+    /// </param>
     /// <param name="maxDegreeOfParallelism">
     /// Maximum number of assessors to run concurrently.
     /// Default is 4, which balances throughput with API rate limiting concerns.
@@ -27,10 +35,14 @@ public class EdFiAssessmentOrchestrator
     public EdFiAssessmentOrchestrator(
         IEnumerable<IEdFiAssessor> assessors,
         EdFiStudentDemographicsProvider? demographicsProvider = null,
+        EdFiCTEProgramProvider? cteProgramProvider = null,
+        EdFiCourseProvider? courseProvider = null,
         int maxDegreeOfParallelism = 4)
     {
         _assessors = assessors ?? throw new ArgumentNullException(nameof(assessors));
         _demographicsProvider = demographicsProvider;
+        _cteProgramProvider = cteProgramProvider;
+        _courseProvider = courseProvider;
 
         if (maxDegreeOfParallelism < 1)
             throw new ArgumentOutOfRangeException(nameof(maxDegreeOfParallelism), "Must be at least 1");
@@ -86,6 +98,8 @@ public class EdFiAssessmentOrchestrator
 
         // Clear cached data from previous runs so assessors fetch fresh data
         _demographicsProvider?.ClearCache();
+        _cteProgramProvider?.ClearCache();
+        _courseProvider?.ClearCache();
 
         var assessment = new DataSourceAssessment
         {

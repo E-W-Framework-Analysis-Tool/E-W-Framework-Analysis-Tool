@@ -3,9 +3,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// <summary>
 /// Comprehensive version that also includes completeness of BirthDate
 /// </summary>
-public class StudentAgeCedsDWAssessor : ICedsDWAssessor
+public class AgeCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Student Age";
+    public string DataElementName => "Age";
 
     public string Query => $@"
 WITH PeopleStats AS (
@@ -28,6 +28,9 @@ WITH PeopleStats AS (
             END) as MaxAge
     FROM RDS.DimPeople
 )
+
+INSERT INTO #EWFProfilerResults
+
 -- Completeness - PopulatedRecords
 SELECT
     '{DataElementName}' AS DataElementName,
@@ -50,10 +53,10 @@ FROM PeopleStats
 
 UNION ALL
 
--- IntegerRange - Minimum Age
+-- NumericalRange - Minimum Age
 SELECT
     '{DataElementName}' AS DataElementName,
-    'IntegerRange' AS CharacteristicType,
+    'NumericalRange' AS CharacteristicType,
     CAST(MinAge AS NVARCHAR(MAX)) AS Value,
     'Minimum' AS SubItemLabel,
     'Age Range (from BirthDate)' AS Remarks
@@ -61,10 +64,10 @@ FROM PeopleStats
 
 UNION ALL
 
--- IntegerRange - Maximum Age
+-- NumericalRange - Maximum Age
 SELECT
     '{DataElementName}' AS DataElementName,
-    'IntegerRange' AS CharacteristicType,
+    'NumericalRange' AS CharacteristicType,
     CAST(MaxAge AS NVARCHAR(MAX)) AS Value,
     'Maximum' AS SubItemLabel,
     NULL AS Remarks

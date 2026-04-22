@@ -85,7 +85,8 @@ public class AssessorMappingService
                         DataElementName = de.Name,
                         DataSource = DataSourceType.CedsDw,
                         AssessmentDescription = cedsAssessor.AssessmentDescription,
-                        MappedEndpoints = (cedsAssessor as IAssessorEndpointMetadata)?.MappedEndpoints ?? []
+                        MappedEndpoints = (cedsAssessor as IAssessorEndpointMetadata)?.MappedEndpoints ?? [],
+                        Query = cedsAssessor.Query
                     }
                     : null;
 

@@ -1,0 +1,250 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+@inject AnalysisProjectService ProjectSvc
+@inject IJSRuntime JSRuntime
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+             @onclick="Close" aria-hidden="true" />
+
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10">
+            <!-- Header -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
+                        <i class="fas fa-file-import text-blue text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-title text-lg font-semibold text-blue">Import Data Sources</h3>
+                        <p class="mt-1 text-sm text-gray">
+                            @if (_step == Step.Pick)
+                            {
+                                <span>Load a project file to preview and selectively import its data sources.</span>
+                            }
+                            else
+                            {
+                                <span>Select the data sources you want to import into your current project.</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 pb-2 space-y-4">
+
+                @if (_step == Step.Pick)
+                {
+                    @if (_error != null)
+                    {
+                        <div class="alert alert-error text-sm">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>@_error</span>
+                        </div>
+                    }
+
+                    <button @onclick="TriggerFilePicker"
+                            class="w-full flex items-center justify-center gap-3 p-6 border-2 border-dashed
+                                           border-gray-300 rounded-xl hover:border-blue hover:bg-blue/5
+                                           transition-all text-gray cursor-pointer">
+                        <i class="fas fa-folder-open text-2xl"></i>
+                        <div class="text-left">
+                            <p class="font-medium text-blue">Choose a project file</p>
+                            <p class="text-xs">Accepts .json project files</p>
+                        </div>
+                    </button>
+                }
+                else
+                {
+                    <!-- Conflict warning -->
+                    @if (_conflictIds.Count > 0)
+                    {
+                        <div class="alert alert-warning text-sm">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>
+                                @_conflictIds.Count data source@(_conflictIds.Count == 1 ? "" : "s") already exist
+                                in your project and @(_conflictIds.Count == 1 ? "has" : "have") been unchecked.
+                            </span>
+                        </div>
+                    }
+
+                    <!-- Select all toggle -->
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray">
+                            @_items.Count(i => i.Selected) of @_items.Count selected
+                        </span>
+                        <button class="link link-primary text-xs" @onclick="ToggleAll">
+                            @(_items.All(i => i.Selected) ? "Deselect all" : "Select all")
+                        </button>
+                    </div>
+
+                    <!-- Data source list -->
+                    <div class="space-y-2 max-h-80 overflow-y-auto pr-1">
+                        @foreach (var item in _items)
+                        {
+                            <label class="flex items-start gap-3 p-3 border rounded-xl cursor-pointer
+                                                      transition-all @(item.Selected ? "border-blue bg-blue/5" : "border-gray-200 hover:border-gray-300")">
+                                <input type="checkbox"
+                                       class="checkbox checkbox-sm checkbox-primary mt-0.5"
+                                       checked="@item.Selected"
+                                       @onchange="@(() => item.Selected = !item.Selected)" />
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-sm font-medium text-blue truncate">@item.Source.Name</span>
+                                        <span class="badge badge-sm badge-ghost">@item.Source.Type.GetDisplayName()</span>
+                                        @if (item.IsConflict)
+                                        {
+                                            <span class="badge badge-sm badge-warning">Already exists</span>
+                                        }
+                                    </div>
+                                    <p class="text-xs text-gray mt-0.5">
+                                        @item.Source.Assessments.Count profile@(item.Source.Assessments.Count == 1 ? "" : "s")
+                                        @if (!string.IsNullOrWhiteSpace(item.Source.Description))
+                                        {
+                                            <span> &mdash; @item.Source.Description</span>
+                                        }
+                                    </p>
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl flex justify-end gap-2">
+                <button @onclick="Close"
+                        class="inline-flex items-center justify-center rounded-md border border-gray-300
+                                   bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                   hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                    Cancel
+                </button>
+
+                @if (_step == Step.Preview)
+                {
+                    <button @onclick="ConfirmImport"
+                            disabled="@(!_items.Any(i => i.Selected) || _isImporting)"
+                            class="inline-flex items-center justify-center rounded-md bg-blue px-4 py-2
+                                           text-sm font-medium text-white hover:bg-blue/90 disabled:opacity-50
+                                           focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                        @if (_isImporting)
+                        {
+                            <span class="loading loading-spinner loading-sm mr-2"></span>
+                            <span>Importing...</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-file-import mr-2"></i>
+                            <span>Import @(_items.Count(i => i.Selected)) Source@(_items.Count(i => i.Selected) == 1 ? "" : "s")</span>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Hidden file input -->
+<input type="file"
+       accept=".json"
+       @ref="_fileInput"
+       @onchange="OnFileSelected"
+       style="display: none;" />
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public EventCallback<int> OnImportComplete { get; set; }
+
+    private enum Step { Pick, Preview }
+
+    private Step _step = Step.Pick;
+    private string? _error;
+    private bool _isImporting;
+
+    private List<SelectableSource> _items = [];
+    private List<Guid> _conflictIds = [];
+
+    private ElementReference _fileInput;
+
+    private async Task TriggerFilePicker()
+    {
+        _error = null;
+        await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.triggerFileInput", _fileInput);
+        await JSRuntime.InvokeVoidAsync("ProjectHeaderHelpers.resetFileInput", _fileInput);
+    }
+
+    private async Task OnFileSelected(ChangeEventArgs _)
+    {
+        _error = null;
+        try
+        {
+            var json = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
+            if (string.IsNullOrWhiteSpace(json))
+                return;
+
+            var project = ProjectSvc.DeserializeProject(json);
+            if (project is null || project.DataSources.Count == 0)
+            {
+                _error = "No data sources found in the selected file.";
+                return;
+            }
+
+            var existingIds = ProjectSvc.DataSources.Select(ds => ds.Id).ToHashSet();
+            _conflictIds = project.DataSources
+                .Where(ds => existingIds.Contains(ds.Id))
+                .Select(ds => ds.Id)
+                .ToList();
+
+            _items = project.DataSources
+                .Select(ds => new SelectableSource(ds, isConflict: _conflictIds.Contains(ds.Id)))
+                .ToList();
+
+            _step = Step.Preview;
+        }
+        catch (Exception ex)
+        {
+            _error = $"Could not read the file: {ex.Message}";
+        }
+    }
+
+    private void ToggleAll()
+    {
+        var allSelected = _items.All(i => i.Selected);
+        foreach (var item in _items)
+            item.Selected = !allSelected;
+    }
+
+    private async Task ConfirmImport()
+    {
+        var toImport = _items.Where(i => i.Selected).Select(i => i.Source).ToList();
+        if (toImport.Count == 0) return;
+
+        _isImporting = true;
+        await ProjectSvc.ImportDataSourcesAsync(toImport);
+        _isImporting = false;
+
+        await OnImportComplete.InvokeAsync(toImport.Count);
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(false);
+        _step = Step.Pick;
+        _items = [];
+        _conflictIds = [];
+        _error = null;
+        _isImporting = false;
+    }
+
+    private sealed class SelectableSource(DataSource source, bool isConflict)
+    {
+        public DataSource Source { get; } = source;
+        public bool IsConflict { get; } = isConflict;
+        public bool Selected { get; set; } = !isConflict;
+    }
+}

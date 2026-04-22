@@ -2,6 +2,7 @@ default: true
 
 line-length:
   line_length: 120
+  tables: false
 
 # Allow punctuation at the end of headings (.,;:!)
 heading-punctuation:

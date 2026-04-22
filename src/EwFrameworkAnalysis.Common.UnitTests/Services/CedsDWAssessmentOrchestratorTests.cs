@@ -7,34 +7,18 @@ namespace EwFrameworkAnalysis.Common.UnitTests.Services;
 public class CedsDWAssessmentOrchestratorTests
 {
     [Fact]
-    public void DiscoverAssessors_ShouldFindAllImplementations()
-    {
-        // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
-
-        // Act
-        var assessors = orchestrator.DiscoverAssessors();
-
-        // Assert
-        assessors.Should()
-            .NotBeEmpty()
-            .And.ContainSingle(a => a is SuspensionExpulsionK12CedsDWAssessor)
-            .And.ContainSingle(a => a is SuspensionExpulsionGrades1and2CedsDWAssessor);
-    }
-
-    [Fact]
     public void GenerateUnionedQuery_WithMultipleAssessors_ShouldContainUnionAll()
     {
         // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
         var assessors = new List<ICedsDWAssessor>
         {
             new SuspensionExpulsionK12CedsDWAssessor(),
             new SuspensionExpulsionGrades1and2CedsDWAssessor()
         };
+        var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateUnionedQuery(assessors);
+        var query = orchestrator.GenerateProfilerScript();
 
         // Assert
         query.Should().Contain("UNION ALL");
@@ -44,18 +28,13 @@ public class CedsDWAssessmentOrchestratorTests
     public void GenerateUnionedQuery_WithProvidedAssessors_ShouldIncludeAllAssessors()
     {
         // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
-        var assessors = new List<ICedsDWAssessor>
-        {
-            new SuspensionExpulsionK12CedsDWAssessor(),
-            new SuspensionExpulsionGrades1and2CedsDWAssessor()
-        };
+        var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateUnionedQuery(assessors);
+        var query = orchestrator.GenerateProfilerScript();
 
         // Assert
-        foreach (var assessor in assessors)
+        foreach (var assessor in AssessorTestFixture.DefaultAssessors())
         {
             query.Should().Contain(assessor.DataElementName);
         }
@@ -65,10 +44,10 @@ public class CedsDWAssessmentOrchestratorTests
     public void GenerateUnionedQuery_ShouldIncludeInstructions()
     {
         // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
+        var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateUnionedQuery();
+        var query = orchestrator.GenerateProfilerScript();
 
         // Assert
         query.Should().Contain("INSTRUCTIONS:");
@@ -83,14 +62,14 @@ public class CedsDWAssessmentOrchestratorTests
     public void GenerateUnionedQuery_ShouldEndWithOrderBy()
     {
         // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
         var assessors = new List<ICedsDWAssessor>
         {
             new SuspensionExpulsionK12CedsDWAssessor()
         };
+        var orchestrator = new CedsDWAssessmentOrchestrator(assessors);
 
         // Act
-        var query = orchestrator.GenerateUnionedQuery(assessors);
+        var query = orchestrator.GenerateProfilerScript();
 
         // Assert
         query.Should().Contain("ORDER BY DataElementName");
@@ -100,10 +79,10 @@ public class CedsDWAssessmentOrchestratorTests
     public void GenerateUnionedQuery_ParameterlessOverload_ShouldDiscoverAndGenerateQuery()
     {
         // Arrange
-        var orchestrator = new CedsDWAssessmentOrchestrator();
+        var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateUnionedQuery();
+        var query = orchestrator.GenerateProfilerScript();
 
         // Assert
         query.Should()
@@ -111,4 +90,9 @@ public class CedsDWAssessmentOrchestratorTests
             .And.Contain("UNION ALL")
             .And.Contain("ORDER BY DataElementName");
     }
+}
+
+public static class AssessorTestFixture
+{
+    public static IEnumerable<ICedsDWAssessor> DefaultAssessors() => new List<ICedsDWAssessor> { new SuspensionExpulsionK12CedsDWAssessor(), new GenderCedsDWAssessor() };
 }

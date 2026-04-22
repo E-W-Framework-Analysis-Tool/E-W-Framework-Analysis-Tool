@@ -46,4 +46,6 @@ public class DataElementMappingInfo
     /// Populated from <see cref="IAssessorEndpointMetadata"/> when available.
     /// </summary>
     public IReadOnlyList<string> MappedEndpoints { get; init; } = [];
+
+    public string? Query { get; set; }  // CEDS only — null for Ed-Fi
 }

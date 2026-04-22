@@ -60,7 +60,7 @@
                             <div class="text-xs text-gray-600 mt-1">@c.PopulatedRecords.ToString("N0") / @c.TotalRecords.ToString("N0") records</div>
                         </Card>
                     }
-                    else if (characteristic is IntegerRange ir)
+                    else if (characteristic is NumericalRange ir)
                     {
                         <Card Background="Card.BackgroundColor.Tan"
                               Border="new Card.BorderStyle(Card.BorderColor.Tan, Card.BorderPosition.Left)">
@@ -114,7 +114,7 @@
         [typeof(RecordCount)] = Card.BorderColor.Blue,
         [typeof(ReportedAvailability)] = Card.BorderColor.Green,
         [typeof(Completeness)] = Card.BorderColor.Yellow,
-        [typeof(IntegerRange)] = Card.BorderColor.Tan,
+        [typeof(NumericalRange)] = Card.BorderColor.Tan,
         [typeof(Distribution)] = Card.BorderColor.Gray
     };
 
