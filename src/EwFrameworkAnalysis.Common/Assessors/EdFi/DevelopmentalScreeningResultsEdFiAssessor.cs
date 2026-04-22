@@ -6,9 +6,17 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class DevelopmentalScreeningResultsEdFiAssessor : IEdFiAssessor
 {
-    // Keywords for Pre-K developmental screening tools appropriate for children under age 5.
-    // Sourced from the E-W Framework citation of "Birth to 5: Watch Me Thrive! A Compendium
-    // of Screening Measures for Young Children."
+    private static readonly string[] _screeningCategoryDescriptors =
+    [
+        "Developmental observation",
+        "Early Learning - Approaches toward learning",
+        "Early Learning - Cognition and general knowledge",
+        "Early Learning - Language and literacy development",
+        "Early Learning - Physical well-being and motor dev",
+        "Early Learning - Social and emotional development",
+        "Prekindergarten Readiness"
+    ];
+
     private static readonly string[] _screeningKeywords =
     [
         // Generic terms
@@ -48,10 +56,10 @@ public class DevelopmentalScreeningResultsEdFiAssessor : IEdFiAssessor
     public string AssessmentDescription =>
         "Identifies student assessments linked to Pre-K developmental screening tools for children under age 5 " +
         "(e.g., ASQ / ASQ:SE, PEDS, Brigance Early Childhood Screens, Denver II, Battelle Developmental Inventory, " +
-        "ESI-R, DIAL, M-CHAT) by matching well-known instrument names and developmental-screening keywords in the " +
-        "Ed-Fi assessments catalog. Instruments listed align with the Birth to 5: Watch Me Thrive! compendium " +
-        "referenced in the E-W Framework. Ed-Fi has no standard descriptor for developmental screening, so " +
-        "title-based matching is used as a proxy.";
+        "ESI-R, DIAL, M-CHAT) by matching assessmentCategoryDescriptor values (Developmental observation, " +
+        "Early Learning domains, Prekindergarten Readiness), well-known instrument names, and " +
+        "developmental-screening keywords in the Ed-Fi assessments catalog. Instruments listed align with " +
+        "the Birth to 5: Watch Me Thrive! compendium referenced in the E-W Framework.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
@@ -137,6 +145,16 @@ public class DevelopmentalScreeningResultsEdFiAssessor : IEdFiAssessor
 
     private static bool IsDevelopmentalScreeningAssessment(EdFiAssessment assessment)
     {
+        if (!string.IsNullOrWhiteSpace(assessment.AssessmentCategoryDescriptor))
+        {
+            var category = EdFiDescriptorHelper.ParseDescriptorValue(assessment.AssessmentCategoryDescriptor);
+            foreach (var descriptor in _screeningCategoryDescriptors)
+            {
+                if (category.Equals(descriptor, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+        }
+
         var title = assessment.AssessmentTitle ?? string.Empty;
         var identifier = assessment.AssessmentIdentifier ?? string.Empty;
 
