@@ -5,7 +5,7 @@ using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
-public record EcsStateDataRecord(string Sector, string Indicator, string ElementName, AvailabilityJudgment? Collected, AvailabilityJudgment? Reported);
+public record EcsStateDataRecord(string Sector, string Indicator, string ElementName, AvailabilityJudgment? Reported);
 
 public class EcsStateDataProvider
 {

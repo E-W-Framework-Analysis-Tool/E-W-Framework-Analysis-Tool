@@ -36,6 +36,12 @@
                             <i class="fas fa-save"></i>
                             <span class="hidden sm:inline">Save</span>
                         </button>
+                        <button @onclick="HandleImportSources"
+                                class="btn btn-sm btn-ghost gap-1"
+                                title="Import Data Sources from Project File">
+                            <i class="fas fa-file-import"></i>
+                            <span class="hidden sm:inline">Import</span>
+                        </button>
                         <button @onclick="HandleLoadProject"
                                 class="btn btn-sm btn-ghost gap-1"
                                 title="Load Project">
@@ -81,6 +87,10 @@
         </div>
     </Footer>
 </Modal>
+
+<ImportDataSourcesModal IsOpen="@ImportSourcesModalIsOpen"
+                        IsOpenChanged="@((v) => ImportSourcesModalIsOpen = v)"
+                        OnImportComplete="@HandleImportComplete" />
 
 <!-- Hidden file input for loading projects -->
 <input type="file"
@@ -132,6 +142,7 @@
 
     private bool NewProjectModalIsOpen { get; set; }
     private bool LoadProjectModalIsOpen { get; set; }
+    private bool ImportSourcesModalIsOpen { get; set; }
 
     private ElementReference _fileInput;
     private string? _importError;
@@ -204,6 +215,14 @@
                 : lastModified.ToString("MMMM d, yyyy 'at' h:mm tt");
 
         return $"Last modified: {timeAgo}";
+    }
+
+    private void HandleImportSources() => ImportSourcesModalIsOpen = true;
+
+    private void HandleImportComplete(int count)
+    {
+        // The service already notified, but we could show a toast here if desired.
+        // For now the dashboard will re-render via ProjectSvc.Changed automatically.
     }
 
 }

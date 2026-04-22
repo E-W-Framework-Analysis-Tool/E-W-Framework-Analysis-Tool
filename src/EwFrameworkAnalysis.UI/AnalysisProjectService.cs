@@ -28,7 +28,7 @@ public class AnalysisProjectService
         _jsRuntime = jsRuntime;
     }
 
-    private AnalysisProject? DeserializeProject(string json)
+    public AnalysisProject? DeserializeProject(string json)
     {
         var migration = AnalysisProjectMigrator.MigrateIfNeeded(json);
         if (!migration.Success)
@@ -187,6 +187,33 @@ public class AnalysisProjectService
             await SaveAsync();
             Notify();
         }
+    }
+
+    /// <summary>
+    /// Merges a set of data sources into the current project.
+    /// Data sources whose GUID already exists in the current project are skipped.
+    /// Returns the IDs of any sources that were skipped due to conflicts.
+    /// </summary>
+    public async Task<IReadOnlyList<Guid>> ImportDataSourcesAsync(IEnumerable<DataSource> sources)
+    {
+        var skipped = new List<Guid>();
+
+        foreach (var source in sources)
+        {
+            if (Project.DataSources.Any(ds => ds.Id == source.Id))
+            {
+                skipped.Add(source.Id);
+                continue;
+            }
+
+            Project.DataSources.Insert(0, source);
+        }
+
+        Project.LastModifiedAt = DateTimeOffset.Now;
+        await SaveAsync();
+        Notify();
+
+        return skipped;
     }
 
     #endregion
