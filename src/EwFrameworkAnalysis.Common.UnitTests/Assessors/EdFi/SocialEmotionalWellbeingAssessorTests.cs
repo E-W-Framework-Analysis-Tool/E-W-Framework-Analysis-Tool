@@ -10,10 +10,8 @@ public class SocialEmotionalWellbeingAssessorTests
     [
         // Kindergarten Readiness
         new ReportedKindergartenReadinessSocialEmotionalEdFiAssessor(),
-        new TeacherReportsSocialEmotionalEdFiAssessor(),
         new DirectChildAssessmentsExecutiveFunctionEdFiAssessor(),
         new ReportedKindergartenReadinessBehavioralEdFiAssessor(),
-        new TeacherReportsExecutiveFunctionEdFiAssessor(),
         new DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor(),
         new ReportedKindergartenReadinessPhysicalEdFiAssessor(),
         // K-12 SEL
@@ -24,8 +22,6 @@ public class SocialEmotionalWellbeingAssessorTests
         new CivicEngagementSurveysK12EdFiAssessor(),
         new SocialCapitalSurveysK12EdFiAssessor(),
         new CulturalCompetencyAssessmentsK12EdFiAssessor(),
-        // Postsecondary SEL
-        new SocialProficiencyAssessmentsPostsecondaryEdFiAssessor(),
         // Health & Wellness
         new DevelopmentalScreeningResultsEdFiAssessor(),
         new MentalEmotionalWellBeingAssessmentsEdFiAssessor(),
