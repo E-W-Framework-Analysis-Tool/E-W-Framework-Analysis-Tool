@@ -55,7 +55,7 @@
                 @* List Items *@                
                 @foreach (var (indicator, index) in sortedIndicators.List.Select((value, i) => (value, i)))
                 {
-                    var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
+                    var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorCoverageScore();
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
                         <input type="checkbox" name="indicator-check-@index" />
