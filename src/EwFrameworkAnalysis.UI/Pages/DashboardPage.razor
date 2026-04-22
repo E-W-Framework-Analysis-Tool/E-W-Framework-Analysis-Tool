@@ -13,9 +13,10 @@
     <ProjectHeader ActiveSourceCount="@ActiveSourceCount" />
 
     <!-- Dashboard Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <FrameworkCoverageCard OverallCoverage="@_coverage.OverallCoverage" />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <FrameworkCoverageCard QuestionScores="@_coverage.QuestionScores" />
         <DataElementStatCard DataSourceCounts="@GetDataElementCounts()" />
+        <ActionItemsCard DataSources="@ProjectSvc.DataSources" />
     </div>
 
     <!-- Main Content Area -->

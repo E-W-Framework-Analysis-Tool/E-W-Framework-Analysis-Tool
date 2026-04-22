@@ -1,0 +1,255 @@
+@using EwFrameworkAnalysis.Common.Models
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Action Items" Shadow="Card.ShadowSize.XLarge" NoPadding>
+    <div class="px-5 pb-5 flex flex-col gap-4">
+
+        @* Item List *@
+        <div class="flex flex-col gap-2 overflow-y-auto max-h-64">
+            @if (!VisibleItems.Any())
+            {
+                <p class="text-sm text-gray-400">No action items. You're all set!</p>
+            }
+            else
+            {
+                @foreach (var item in VisibleItems)
+                {
+                    <div class="flex items-start gap-2 group text-sm @(item.IsResolved ? "opacity-50" : "")">
+
+                        @* Resolve toggle *@
+                        <button class="mt-0.5 shrink-0 text-gray-400 hover:text-success transition-colors"
+                                title="@(item.IsResolved ? "Mark incomplete" : "Mark resolved")"
+                                @onclick="() => ToggleResolved(item)">
+                            <i class="fas @(item.IsResolved ? "fa-circle-check text-success" : "fa-circle")"></i>
+                        </button>
+
+                        @* Title + subtitle line *@
+                        <div class="flex-1 min-w-0">
+                            <p class="@(item.IsResolved ? "line-through text-gray-400" : "text-gray-700") whitespace-normal break-words">
+                                @item.Title
+                            </p>
+                            @if (item.IsSuggested)
+                            {
+                                <p class="text-[11px] text-gray-400 flex items-center gap-1">
+                                    <i class="fas fa-magic"></i>Auto-generated suggestion
+                                </p>
+                            }
+                            else if (item.TargetDate.HasValue)
+                            {
+                                <p class="text-[11px] @(item.TargetDate < DateTimeOffset.Now && !item.IsResolved ? "text-error" : "text-gray-400")">
+                                    Due @item.TargetDate.Value.ToString("MMM d, yyyy")
+                                </p>
+                            }
+                        </div>
+
+                        @* Actions — visible on hover *@
+                        <div class="shrink-0 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            @if (item.IsSuggested)
+                            {
+                                <button class="text-gray-400 hover:text-warning transition-colors"
+                                        title="Dismiss suggestion"
+                                        @onclick="() => DismissSuggestion(item)">
+                                    <i class="fas fa-eye-slash text-xs"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="text-gray-400 hover:text-error transition-colors"
+                                        title="Delete"
+                                        @onclick="() => DeleteItem(item)">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        @* Add Item Form *@
+        @if (_isAdding)
+        {
+            <div class="flex flex-col gap-2 border-t border-gray-100 pt-3">
+                <input class="input input-sm w-full"
+                       placeholder="Action item title..."
+                       @bind="_newTitle"
+                       @bind:event="oninput"
+                       @onkeydown="HandleKeyDown" />
+                <div class="flex gap-2 items-center">
+                    <input type="date"
+                           class="input input-sm flex-1"
+                           @bind="_newTargetDate" />
+                    <button class="btn btn-sm btn-primary"
+                            disabled="@(string.IsNullOrWhiteSpace(_newTitle))"
+                            @onclick="CommitAdd">
+                        Add
+                    </button>
+                    <button class="btn btn-sm btn-ghost" @onclick="CancelAdd">Cancel</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-sm btn-ghost self-start gap-1 text-blue -ml-2"
+                    @onclick="() => _isAdding = true">
+                <i class="fas fa-plus text-xs"></i> Add item
+            </button>
+        }
+
+    </div>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<DataSource> DataSources { get; set; } = [];
+
+    private static readonly TimeSpan StaleProfileThreshold = TimeSpan.FromDays(90);
+
+    private List<ActionItem> _items = [];
+    private bool _isAdding = false;
+    private string _newTitle = string.Empty;
+    private DateTimeOffset? _newTargetDate = null;
+
+    private IEnumerable<ActionItem> VisibleItems =>
+        _items.Where(i => !i.IsDeleted && !i.IsDismissed)
+              .OrderBy(i => i.IsResolved)
+              .ThenBy(i => i.IsSuggested)
+              .ThenBy(i => i.TargetDate ?? DateTimeOffset.MaxValue)
+              .ThenBy(i => i.CreatedAt);
+
+    protected override void OnParametersSet()
+    {
+        SyncSuggestions();
+    }
+
+    private void SyncSuggestions()
+    {
+        var keysToRaise = new List<(string Key, string Title)>();
+
+        if (!DataSources.Any())
+        {
+            keysToRaise.Add((SuggestionKeys.NoDataSources, "Add your first data source"));
+        }
+
+        if (DataSources.Any() && !DataSources.Any(ds => ds.Type == DataSourceType.EcsState))
+        {
+            keysToRaise.Add((SuggestionKeys.NoEcsDataSource, "Consider adding an ECS reference profile data source"));
+        }
+
+        foreach (var ds in DataSources.Where(ds => ds.Enabled))
+        {
+            var latest = ds.Assessments.OrderByDescending(a => a.ConductedAt).FirstOrDefault();
+
+            if (latest == null)
+            {
+                keysToRaise.Add((
+                    SuggestionKeys.SourceNotProfiled(ds.Id),
+                    $"\"{ ds.Name}\" has not been profiled yet"
+                ));
+            }
+            else if (DateTimeOffset.Now - latest.ConductedAt > StaleProfileThreshold)
+            {
+                var days = (int)(DateTimeOffset.Now - latest.ConductedAt).TotalDays;
+                keysToRaise.Add((
+                    SuggestionKeys.StaleProfile(ds.Id),
+                    $"Consider re-profiling \"{ ds.Name}\" — last profiled {days} days ago"
+                ));
+            }
+        }
+
+        // Add any new suggestions that haven't been raised before
+        foreach (var (key, title) in keysToRaise)
+        {
+            var existing = _items.FirstOrDefault(i => i.SuggestionKey == key);
+            if (existing == null)
+            {
+                _items.Add(new ActionItem
+                {
+                    Title = title,
+                    IsSuggested = true,
+                    SuggestionKey = key,
+                });
+            }
+            else if (existing.IsDismissed)
+            {
+                // Condition is still true — leave it dismissed, don't re-surface
+                // If the underlying data changes (e.g. new data source added),
+                // a new key will be generated so it will surface fresh
+            }
+        }
+
+        // Remove suggestions whose conditions are no longer true
+        var activeKeys = keysToRaise.Select(x => x.Key).ToHashSet();
+        foreach (var item in _items.Where(i => i.IsSuggested && !i.IsResolved && !i.IsDeleted))
+        {
+            if (!activeKeys.Contains(item.SuggestionKey!))
+                item.IsDeleted = true;
+        }
+    }
+
+    private void ToggleResolved(ActionItem item)
+    {
+        item.IsResolved = !item.IsResolved;
+    }
+
+    private void DismissSuggestion(ActionItem item)
+    {
+        item.IsDismissed = true;
+    }
+
+    private void DeleteItem(ActionItem item)
+    {
+        item.IsDeleted = true;
+    }
+
+    private void CommitAdd()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle)) return;
+
+        _items.Add(new ActionItem
+        {
+            Title = _newTitle.Trim(),
+            TargetDate = _newTargetDate,
+        });
+
+        CancelAdd();
+    }
+
+    private void CancelAdd()
+    {
+        _isAdding = false;
+        _newTitle = string.Empty;
+        _newTargetDate = null;
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") CommitAdd();
+        if (e.Key == "Escape") CancelAdd();
+    }
+
+
+    public class ActionItem
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Title { get; set; } = string.Empty;
+        public DateTimeOffset? TargetDate { get; set; }
+        public bool IsResolved { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool IsSuggested { get; set; }
+        public string? SuggestionKey { get; set; }
+        public bool IsDismissed { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
+    }
+
+    public static class SuggestionKeys
+    {
+        public const string NoDataSources = "no-data-sources";
+        public const string NoEcsDataSource = "no-ecs-data-source";
+        public const string NoProfiledSources = "no-profiled-sources";
+
+        // Per-data-source keys — include the ID so each source gets its own entry
+        public static string StaleProfile(Guid dataSourceId) => $"stale-profile:{dataSourceId}";
+        public static string SourceNotProfiled(Guid dataSourceId) => $"source-not-profiled:{dataSourceId}";
+    }
+}
