@@ -8,12 +8,6 @@ public class SocialEmotionalWellbeingAssessorTests
 {
     private static IEdFiAssessor[] CreateAllSewAssessors() =>
     [
-        // Kindergarten Readiness
-        new ReportedKindergartenReadinessSocialEmotionalEdFiAssessor(),
-        new DirectChildAssessmentsExecutiveFunctionEdFiAssessor(),
-        new ReportedKindergartenReadinessBehavioralEdFiAssessor(),
-        new DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor(),
-        new ReportedKindergartenReadinessPhysicalEdFiAssessor(),
         // K-12 SEL
         new SelfManagementSurveysK12EdFiAssessor(),
         new GrowthMindsetSurveysK12EdFiAssessor(),
