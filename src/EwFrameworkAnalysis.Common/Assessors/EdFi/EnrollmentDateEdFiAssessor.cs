@@ -1,4 +1,3 @@
-using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -9,42 +8,25 @@ public class EnrollmentDateEdFiAssessor : IEdFiAssessor
     public string DataElementName => "Enrollment date";
 
     public string AssessmentDescription =>
-        "Record count and completeness of enrollment dates from studentSchoolAssociations";
+        "Record count of enrollment dates from studentSchoolAssociations (entryDate is a required field)";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Querying API...");
+        context.ReportProgress(0, "Querying API for total count...");
 
-        var totalRecords = 0;
-        var reportedCount = 0;
-
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiStudentSchoolAssociation>(
+        var count = await EdFiApiPatterns.CountFromHeaderAsync(
             httpClient,
-            "ed-fi/studentSchoolAssociations",
-            association =>
-            {
-                totalRecords++;
+            "ed-fi/studentSchoolAssociations");
 
-                if (association.EntryDate != default)
-                {
-                    reportedCount++;
-                }
-            },
-            context
-        );
-
-        context.Log($"Found {reportedCount:N0} enrollment dates out of {totalRecords:N0} records");
+        context.Log($"Found {count:N0} enrollment records (entryDate is required on every record)");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics =
-            [
-                new RecordCount(totalRecords),
-                new Completeness(totalRecords, reportedCount, "EntryDate")
-            ]
+            Characteristics = [new RecordCount(count)],
+            Remarks = AssessmentDescription
         };
     }
 }
