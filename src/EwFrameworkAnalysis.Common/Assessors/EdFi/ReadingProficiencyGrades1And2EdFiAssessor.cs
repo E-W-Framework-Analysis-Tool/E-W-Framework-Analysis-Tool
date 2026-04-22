@@ -6,26 +6,29 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class ReadingProficiencyGrades1And2EdFiAssessor : IEdFiAssessor
 {
-    private static readonly HashSet<string> _stateTestCategories =
+    private static readonly string[] _stateTestCategories =
     [
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#State assessment",
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#Benchmark test",
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#State summative assessment 3-8 general",
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternative assessment/grade-level standards",
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternative assessment/modified standards",
-        "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternate assessment/ELL"
+        "State assessment",
+        "Benchmark test",
+        "State alternative assessment/grade-level standards",
+        "State alternative assessment/modified standards",
+        "State alternate assessment/ELL",
+        "Alternate assessment/ELL",
+        "Alternate assessment/grade-level standards",
+        "Alternative assessment/modified standards",
+        "Reading readiness test"
     ];
 
-    private static readonly HashSet<string> _earlyGrades =
+    private static readonly string[] _earlyGrades =
     [
-        "uri://ed-fi.org/GradeLevelDescriptor#First grade",
-        "uri://ed-fi.org/GradeLevelDescriptor#Second grade"
+        "First grade",
+        "Second grade"
     ];
 
-    private static readonly HashSet<string> _readingSubjects =
+    private static readonly string[] _readingSubjects =
     [
-        "uri://ed-fi.org/AcademicSubjectDescriptor#Reading",
-        "uri://ed-fi.org/AcademicSubjectDescriptor#English Language Arts"
+        "Reading",
+        "English Language Arts"
     ];
 
     public string DataElementName => "Reading proficiency (Grades 1 and 2)";
@@ -45,13 +48,20 @@ public class ReadingProficiencyGrades1And2EdFiAssessor : IEdFiAssessor
             "ed-fi/assessments",
             assessment =>
             {
-                var isStateTest = _stateTestCategories.Contains(assessment.AssessmentCategoryDescriptor ?? "");
+                var category = EdFiDescriptorHelper.ParseDescriptorValue(assessment.AssessmentCategoryDescriptor ?? "");
+                var isStateTest = _stateTestCategories.Any(c => category.Equals(c, StringComparison.OrdinalIgnoreCase));
 
                 var isEarlyGrade = assessment.AssessedGradeLevels?.Any(gl =>
-                    _earlyGrades.Contains(gl.GradeLevelDescriptor ?? "")) ?? false;
+                {
+                    var grade = EdFiDescriptorHelper.ParseDescriptorValue(gl.GradeLevelDescriptor ?? "");
+                    return _earlyGrades.Any(g => grade.Equals(g, StringComparison.OrdinalIgnoreCase));
+                }) ?? false;
 
                 var isReading = assessment.AcademicSubjects?.Any(subj =>
-                    _readingSubjects.Contains(subj.AcademicSubjectDescriptor ?? "")) ?? false;
+                {
+                    var subject = EdFiDescriptorHelper.ParseDescriptorValue(subj.AcademicSubjectDescriptor ?? "");
+                    return _readingSubjects.Any(s => subject.Equals(s, StringComparison.OrdinalIgnoreCase));
+                }) ?? false;
 
                 if (isStateTest && isEarlyGrade && isReading)
                 {
