@@ -5,8 +5,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactK12StudentEnrollments joined to RDS.DimFosterCareStatuses on
 /// FosterCareStatusId. This is the only sector with direct schema support;
 /// Pre-K and Postsecondary are represented with zero counts as no supporting
-/// schema was identified. Assesses record count, completeness, and distribution
-/// by foster care program participation status.
+/// schema was identified. Assesses record count, completeness, and per-sector
+/// distribution of populated foster care participation records.
 /// Note: The original DE query used RDS.FactSpecialEducation joined to
 /// RDS.DimIndividualizedProgramStatuses filtered to 'Children''s protective
 /// services' — that approach is narrower (special ed population only) and
@@ -20,8 +20,7 @@ public class IndividualWithCurrentOrPastChildWelfareInvolvementCedsDWAssessor : 
     public string Query => $@"
 WITH FosterCareBase AS (
     SELECT
-        d.ProgramParticipationFosterCareCode,
-        d.ProgramParticipationFosterCareDescription
+        d.ProgramParticipationFosterCareCode
     FROM RDS.FactK12StudentEnrollments f
     JOIN RDS.DimFosterCareStatuses d
         ON f.FosterCareStatusId = d.DimFosterCareStatusId
@@ -37,66 +36,65 @@ K12Counts AS (
     FROM FosterCareBase
 )
 INSERT INTO #EWFProfilerResults
--- RecordCount - K12
+-- RecordCount
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'RecordCount'                                                       AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))                                 AS Value,
+    NULL                                                                AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM K12Counts
 UNION ALL
--- Completeness - TotalRecords - K12
+-- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))                                 AS Value,
+    'TotalRecords'                                                      AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM K12Counts
 UNION ALL
--- Completeness - PopulatedRecords - K12
+-- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(PopulatedRecords AS NVARCHAR(MAX))                             AS Value,
+    'PopulatedRecords'                                                  AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM K12Counts
 UNION ALL
--- Distribution - K12 by foster care participation status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    ProgramParticipationFosterCareDescription           AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM FosterCareBase
-GROUP BY ProgramParticipationFosterCareDescription
-UNION ALL
--- RecordCount - PreK (no supporting schema identified; emitted as zero)
+-- Distribution - Pre-K (no supporting schema identified)
 -- NOTE: No PreK fact table with FosterCareStatusId was found in the known schema.
 -- Replace this stub if FactElChildEnrollments or similar becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: PreK (not available in schema)'            AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Pre-K'                                                             AS SubItemLabel,
+    'No source table available for Pre-K sector'                        AS Remarks
 UNION ALL
--- RecordCount - Postsecondary (no supporting schema identified; emitted as zero)
+-- Distribution - K-12
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(PopulatedRecords AS NVARCHAR(MAX))                             AS Value,
+    'K-12'                                                              AS SubItemLabel,
+    NULL                                                                AS Remarks
+FROM K12Counts
+UNION ALL
+-- Distribution - Postsecondary (no supporting schema identified)
 -- NOTE: No PS fact table with FosterCareStatusId was found in the known schema.
 -- Replace this stub if a suitable PS fact table becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: Postsecondary (not available in schema)'   AS Remarks";
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Postsecondary'                                                     AS SubItemLabel,
+    'No source table available for Postsecondary sector'                AS Remarks";
 
     public string AssessmentDescription =>
         "Assesses child welfare involvement for K-12 students from RDS.FactK12StudentEnrollments " +
         "joined to RDS.DimFosterCareStatuses. Reports record count, completeness of the foster care " +
-        "participation code, and distribution by foster care status description. Pre-K and " +
-        "Postsecondary sectors are represented with zero record counts pending schema identification.";
+        "participation code, and per-sector distribution of populated records. Pre-K and Postsecondary " +
+        "sectors emit zero pending schema identification.";
 }

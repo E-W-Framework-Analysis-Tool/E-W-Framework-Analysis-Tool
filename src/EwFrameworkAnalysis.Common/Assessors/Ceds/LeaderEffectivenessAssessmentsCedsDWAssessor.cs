@@ -45,50 +45,64 @@ Counts AS (
 INSERT INTO #EWFProfilerResults
 -- RecordCount
 SELECT
-    '{DataElementName}'                                         AS DataElementName,
-    'RecordCount'                                               AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                         AS Value,
-    NULL                                                        AS SubItemLabel,
-    NULL                                                        AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'RecordCount'                                                       AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))                                 AS Value,
+    NULL                                                                AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM Counts
 UNION ALL
 -- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                                         AS DataElementName,
-    'Completeness'                                              AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                         AS Value,
-    'TotalRecords'                                              AS SubItemLabel,
-    NULL                                                        AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(TotalRecords AS NVARCHAR(MAX))                                 AS Value,
+    'TotalRecords'                                                      AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM Counts
 UNION ALL
 -- Completeness - PopulatedRecords (overall score or rating present)
 SELECT
-    '{DataElementName}'                                         AS DataElementName,
-    'Completeness'                                              AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))                     AS Value,
-    'PopulatedRecords'                                          AS SubItemLabel,
-    NULL                                                        AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(PopulatedRecords AS NVARCHAR(MAX))                             AS Value,
+    'PopulatedRecords'                                                  AS SubItemLabel,
+    NULL                                                                AS Remarks
 FROM Counts
 UNION ALL
 -- Distribution - by performance level
 SELECT
-    '{DataElementName}'                                         AS DataElementName,
-    'Distribution'                                              AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                             AS Value,
-    FacultyAndAdministrationPerformanceLevelDescription         AS SubItemLabel,
-    'PerformanceLevel'                                          AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX))                                     AS Value,
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(FacultyAndAdministrationPerformanceLevelDescription)), ''),
+        '(Unknown)'
+    )                                                                   AS SubItemLabel,
+    'PerformanceLevel'                                                  AS Remarks
 FROM LeaderEvalBase
-GROUP BY FacultyAndAdministrationPerformanceLevelDescription
+GROUP BY
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(FacultyAndAdministrationPerformanceLevelDescription)), ''),
+        '(Unknown)'
+    )
 UNION ALL
 -- Distribution - by evaluation system
 SELECT
-    '{DataElementName}'                                         AS DataElementName,
-    'Distribution'                                              AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                             AS Value,
-    StaffEvaluationSystem                                       AS SubItemLabel,
-    'EvaluationSystem'                                          AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX))                                     AS Value,
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(StaffEvaluationSystem)), ''),
+        '(Unknown)'
+    )                                                                   AS SubItemLabel,
+    'EvaluationSystem'                                                  AS Remarks
 FROM LeaderEvalBase
-GROUP BY StaffEvaluationSystem";
+GROUP BY
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(StaffEvaluationSystem)), ''),
+        '(Unknown)'
+    )";
 
     public string AssessmentDescription =>
         "Assesses leader effectiveness evaluation records from RDS.FactK12StaffEvaluationParts " +
