@@ -1,0 +1,640 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.UI.Components
+@inject IJSRuntime JSRuntime
+
+<div class="flex flex-col h-full">
+
+    <!-- Fixed Filter / Control Area -->
+    <div class="sticky bg-white top-0 flex-shrink-0 space-y-2 pb-0 p-4">
+
+        <!-- Main Toolbar Row -->
+        <div class="flex items-center gap-2 flex-wrap">
+
+            <!-- Search Input -->
+            <label class="input input-bordered input-sm flex items-center gap-2 flex-1 min-w-48">
+                <i class="fas fa-search opacity-50"></i>
+                <input type="search"
+                       placeholder="Search data elements..."
+                       class="grow"
+                       @bind="_searchQuery"
+                       @bind:event="oninput" />
+            </label>
+
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Filters toggle -->
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="text-[10px] font-semibold text-gray-500 leading-none">Filters</span>
+                <button class="btn btn-sm btn-ghost gap-1 @(HasAnyFilters() ? "text-primary" : "")"
+                        @onclick="() => _showFilters = !_showFilters"
+                        title="Toggle filters"
+                        aria-expanded="@_showFilters">
+                    <i class="fas fa-sliders-h"></i>
+                    @if (HasAnyFilters())
+                    {
+                        <span class="badge badge-primary badge-xs">@GetActiveFilterCount()</span>
+                    }
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Group By -->
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
+                <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                    <i class="fas fa-layer-group text-xs text-gray-400"></i>
+                    <input type="radio"
+                           name="survey-category-view"
+                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-50")"
+                           aria-label="E-W Clusters"
+                           checked="@(_categoryMode == CategoryMode.EWFramework)"
+                           @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
+                    <input type="radio"
+                           name="survey-category-view"
+                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-50")"
+                           aria-label="Data Categories"
+                           checked="@(_categoryMode == CategoryMode.DataElement)"
+                           @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+
+            <!-- Expand / Collapse -->
+            <div class="flex flex-col items-center gap-0.5">
+                <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
+                                         IsExpandedChanged="OnAllExpandedChanged" />
+            </div>
+        </div>
+
+        <!-- Collapsible Filters Panel -->
+        @if (_showFilters)
+        {
+            <div class="flex flex-wrap gap-4 items-start pt-2 pb-1 px-1 border-t border-gray-200">
+
+                <!-- Interest Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Interest Level</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var level in Enum.GetValues<InterestLevel>())
+                        {
+                            var isSelected = _selectedInterests.Contains(level);
+                            <input class="btn btn-xs @(isSelected ? GetInterestBtnClass(level) : "")"
+                                   type="checkbox"
+                                   checked="@isSelected"
+                                   @onchange="() => ToggleInterest(level)"
+                                   aria-label="@level.GetDisplayName()" />
+                        }
+                        @if (_selectedInterests.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedInterests.Clear()" title="Clear">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="w-px self-stretch bg-gray-200"></div>
+
+                <!-- Availability Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Availability</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var avail in Enum.GetValues<SurveyAvailability>())
+                        {
+                            var isSelected = _selectedAvailabilities.Contains(avail);
+                            <input class="btn btn-xs @(isSelected ? GetAvailabilityBtnClass(avail) : "")"
+                                   type="checkbox"
+                                   checked="@isSelected"
+                                   @onchange="() => ToggleAvailability(avail)"
+                                   aria-label="@avail.GetDisplayName()" />
+                        }
+                        @if (_selectedAvailabilities.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedAvailabilities.Clear()" title="Clear">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="w-px self-stretch bg-gray-200"></div>
+
+                <!-- Responded filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Status</span>
+                    <div class="flex gap-1">
+                        <input class="btn btn-xs @(_filterUnresponded ? "btn-neutral" : "")"
+                               type="checkbox"
+                               checked="@_filterUnresponded"
+                               @onchange="() => _filterUnresponded = !_filterUnresponded"
+                               aria-label="Not Yet Responded" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Scrollable Element List -->
+    <div class="flex-1 overflow-y-auto mt-2 rounded-lg border border-gray-300 shadow-inner">
+        <div class="bg-white divide-y divide-gray-200">
+
+            @foreach (var category in GetFilteredCategories())
+            {
+                <div class="border-b border-gray-200 last:border-b-0">
+
+                    <!-- Category Header -->
+                    <div class="flex items-center gap-2 p-3 bg-base-100 hover:bg-base-200 cursor-pointer"
+                         @onclick="() => ToggleCategoryExpanded(category.Name)">
+                        <i class="fas @(IsCategoryExpanded(category.Name) ? "fa-chevron-down" : "fa-chevron-right") text-xs text-gray-500"></i>
+                        <div class="flex-1 flex items-center gap-2 flex-wrap">
+                            <i class="fas @category.Icon text-blue"></i>
+                            <span class="font-semibold text-blue">@category.Name</span>
+                            <span class="text-xs text-gray-500">
+                                (@GetCategoryRespondedCount(category) of @category.Elements.Count responded)
+                            </span>
+                        </div>
+
+                        <!-- Bulk-set controls -->
+                        <div class="flex items-center gap-3 ml-auto" @onclick:stopPropagation="true">
+                            <!-- Interest -->
+                            <div class="flex gap-1">
+                                @foreach (var level in Enum.GetValues<InterestLevel>())
+                                {
+                                    <button class="btn btn-xs @GetCategoryInterestBtnClass(category, level) gap-1"
+                                            @onclick="() => SetCategoryInterest(category, level)"
+                                            title="Set all: @level.GetDisplayName()">
+                                        @GetInterestIcon(level)
+                                        <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
+                                    </button>
+                                }
+                            </div>
+                            <div class="w-px self-stretch bg-gray-300"></div>
+                            <!-- Availability -->
+                            <div class="flex gap-1">
+                                @foreach (var avail in Enum.GetValues<SurveyAvailability>())
+                                {
+                                    <button class="btn btn-xs @GetCategoryAvailabilityBtnClass(category, avail) gap-1"
+                                            @onclick="() => SetCategoryAvailability(category, avail)"
+                                            title="Set all: @avail.GetDisplayName()">
+                                        @GetAvailabilityIcon(avail)
+                                        <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
+                                    </button>
+                                }
+                            </div>
+                            <div class="w-px self-stretch bg-gray-300"></div>
+                            <!-- Can Share -->
+                            <div class="flex gap-1">
+                                <button class="btn btn-xs @GetCategoryCanShareBtnClass(category, true) gap-1"
+                                        @onclick="() => SetCategoryCanShare(category, true)"
+                                        title="Set all: Yes">
+                                    ✓ <span class="hidden sm:inline text-[10px]">Yes</span>
+                                </button>
+                                <button class="btn btn-xs @GetCategoryCanShareBtnClass(category, false) gap-1"
+                                        @onclick="() => SetCategoryCanShare(category, false)"
+                                        title="Set all: No">
+                                    ✗ <span class="hidden sm:inline text-[10px]">No</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elements -->
+                    @if (IsCategoryExpanded(category.Name))
+                    {
+                        <div class="bg-gray-50 divide-y divide-gray-200">
+                            @foreach (var element in category.Elements)
+                            {
+                                var response = Responses.TryGetValue(element.Name, out var r) ? r : null;
+
+                                <div class="flex items-center gap-3 px-4 py-2.5 pl-10 bg-gray-100 hover:bg-gray-200">
+
+                                    <!-- Element Name -->
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-sm text-gray-800 @(element.AdditionalNotes != null ? "cursor-help" : "")"
+                                             title="@element.AdditionalNotes">
+                                            @element.Name
+                                            @if (!string.IsNullOrWhiteSpace(element.AdditionalNotes))
+                                            {
+                                                <i class="fas fa-info-circle text-xs text-gray-400 ml-1"></i>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Controls pushed right -->
+                                    <div class="flex items-center gap-3 ml-auto flex-shrink-0">
+
+                                        <!-- Interest Level -->
+                                        <div class="flex flex-col gap-0.5 items-end">
+                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Interest</span>
+                                            <div class="flex gap-1">
+                                                @foreach (var level in Enum.GetValues<InterestLevel>())
+                                                {
+                                                    var isActive = response?.Interest == level;
+                                                    <button class="btn btn-xs @(isActive ? GetInterestBtnClass(level) : "btn-ghost btn-outline") gap-1"
+                                                            @onclick="() => SetInterest(element.Name, level)"
+                                                            title="@level.GetDisplayName()">
+                                                        @GetInterestIcon(level)
+                                                        <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="w-px self-stretch bg-gray-200"></div>
+
+                                        <!-- Availability -->
+                                        <div class="flex flex-col gap-0.5 items-end">
+                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Availability</span>
+                                            <div class="flex gap-1">
+                                                @foreach (var avail in Enum.GetValues<SurveyAvailability>())
+                                                {
+                                                    var isActive = response?.Availability == avail;
+                                                    <button class="btn btn-xs @(isActive ? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline") gap-1"
+                                                            @onclick="() => SetAvailability(element.Name, avail)"
+                                                            title="@avail.GetDisplayName()">
+                                                        @GetAvailabilityIcon(avail)
+                                                        <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="w-px self-stretch bg-gray-200"></div>
+
+                                        <!-- Can Query & Share -->
+                                        <div class="flex flex-col gap-0.5 items-end">
+                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Can Share</span>
+                                            <div class="flex gap-1">
+                                                <button class="btn btn-xs @(response?.CanQueryAndShare == true ? "btn-success" : "btn-ghost btn-outline") gap-1"
+                                                        @onclick="() => SetCanShare(element.Name, true)"
+                                                        title="Yes - can query and share">
+                                                    ✓ <span class="hidden sm:inline text-[10px]">Yes</span>
+                                                </button>
+                                                <button class="btn btn-xs @(response?.CanQueryAndShare == false ? "btn-error" : "btn-ghost btn-outline") gap-1"
+                                                        @onclick="() => SetCanShare(element.Name, false)"
+                                                        title="No - cannot query and share">
+                                                    ✗ <span class="hidden sm:inline text-[10px]">No</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (!GetFilteredCategories().Any())
+            {
+                <div class="p-8 text-center text-gray-500">
+                    <i class="fas fa-search text-3xl mb-2"></i>
+                    <div>No data elements match your filters</div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Dictionary<string, SurveyResponse> Responses { get; set; } = new();
+    [Parameter] public EventCallback<Dictionary<string, SurveyResponse>> ResponsesChanged { get; set; }
+
+    private string _searchQuery = string.Empty;
+    private HashSet<string> _expandedCategories = new();
+    private HashSet<InterestLevel> _selectedInterests = new();
+    private HashSet<SurveyAvailability> _selectedAvailabilities = new();
+    private bool _filterUnresponded = false;
+    private bool _allExpanded = false;
+    private bool _showFilters = false;
+    private CategoryMode _categoryMode = CategoryMode.EWFramework;
+    private const string CATEGORY_MODE_STORAGE_KEY = "survey_category_preference";
+
+    private List<DataElementCategory> _categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var saved = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(saved) && Enum.TryParse<CategoryMode>(saved, out var mode))
+                _categoryMode = mode;
+        }
+        catch { }
+
+        BuildCategories();
+    }
+
+    private enum CategoryMode { EWFramework, DataElement }
+
+    private async Task SetCategoryMode(CategoryMode mode)
+    {
+        _categoryMode = mode;
+        _expandedCategories.Clear();
+        _allExpanded = false;
+        BuildCategories();
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", CATEGORY_MODE_STORAGE_KEY, mode.ToString());
+    }
+
+    private void OnAllExpandedChanged(bool expanded)
+    {
+        _allExpanded = expanded;
+        _expandedCategories = expanded
+            ? _categories.Select(c => c.Name).ToHashSet()
+            : new HashSet<string>();
+    }
+
+    private readonly Dictionary<string, string> _categoryIcons = new()
+    {
+        ["Academic Assessment and Performance"] = "fa-chart-line",
+        ["Attendance and Engagement"] = "fa-calendar-check",
+        ["Behavior and Discipline"] = "fa-gavel",
+        ["Community and Environmental Conditions"] = "fa-city",
+        ["Course and Curriculum"] = "fa-book",
+        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
+        ["Educator Qualifications and Credentials"] = "fa-certificate",
+        ["Financial Support and Resources"] = "fa-dollar-sign",
+        ["Health and Well-being"] = "fa-heart",
+        ["Instructional Quality and Practice"] = "fa-chalkboard",
+        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
+        ["Program Eligibility and Enrollment"] = "fa-school",
+        ["Program Quality and Standards"] = "fa-award",
+        ["School Climate and Engagement"] = "fa-users",
+        ["Student Demographics"] = "fa-user",
+        ["Student Support Services"] = "fa-hands-helping",
+        ["System Economic Conditions"] = "fa-coins",
+        ["Workforce and Career Outcomes"] = "fa-briefcase",
+        ["Academic Coursework"] = "fa-book",
+        ["Academic Performance"] = "fa-chart-line",
+        ["Assessments"] = "fa-clipboard-check",
+        ["Attendance & Enrollment"] = "fa-user-check",
+        ["Career & Technical Education (CTE)"] = "fa-tools",
+        ["Community Context"] = "fa-users",
+        ["Demographics"] = "fa-chart-pie",
+        ["Discipline & Behavior"] = "fa-gavel",
+        ["Early Learning"] = "fa-seedling",
+        ["Employment & Earnings"] = "fa-briefcase",
+        ["Finance & Resources"] = "fa-coins",
+        ["Financial Aid & Affordability"] = "fa-hand-holding-usd",
+        ["Health & Wellness"] = "fa-heartbeat",
+        ["Postsecondary Outcomes"] = "fa-graduation-cap",
+        ["School Climate"] = "fa-school",
+        ["Social-Emotional Learning (SEL)"] = "fa-smile",
+        ["Staff & Educators"] = "fa-chalkboard-teacher",
+        ["Transportation"] = "fa-bus",
+    };
+
+    private void BuildCategories()
+    {
+        Func<DataElement, string> selector = _categoryMode == CategoryMode.EWFramework
+            ? e => e.ClusterOnlyCategory
+            : e => e.DataElementCategory;
+
+        _categories = EwFrameworkDataElements.Elements.Values
+            .GroupBy(selector)
+            .Select(g => new DataElementCategory
+            {
+                Name = g.Key,
+                Icon = _categoryIcons.GetValueOrDefault(g.Key, "fa-folder"),
+                Elements = g.ToList()
+            })
+            .OrderBy(c => c.Name)
+            .ToList();
+    }
+
+    private List<DataElementCategory> GetFilteredCategories()
+    {
+        var cats = _categories.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            var q = _searchQuery.ToLowerInvariant();
+            cats = cats
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name, Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.Name.ToLowerInvariant().Contains(q) ||
+                                    (e.AdditionalNotes?.ToLowerInvariant().Contains(q) ?? false))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any() || c.Name.ToLowerInvariant().Contains(q));
+        }
+
+        if (_selectedInterests.Any())
+        {
+            cats = cats
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name, Icon = c.Icon,
+                    Elements = c.Elements.Where(e =>
+                        Responses.TryGetValue(e.Name, out var r) && r.Interest.HasValue &&
+                        _selectedInterests.Contains(r.Interest.Value)).ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedAvailabilities.Any())
+        {
+            cats = cats
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name, Icon = c.Icon,
+                    Elements = c.Elements.Where(e =>
+                        Responses.TryGetValue(e.Name, out var r) && r.Availability.HasValue &&
+                        _selectedAvailabilities.Contains(r.Availability.Value)).ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_filterUnresponded)
+        {
+            cats = cats
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name, Icon = c.Icon,
+                    Elements = c.Elements.Where(e => !Responses.ContainsKey(e.Name)).ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        return cats.ToList();
+    }
+
+    private void ToggleCategoryExpanded(string name)
+    {
+        if (_expandedCategories.Contains(name)) _expandedCategories.Remove(name);
+        else _expandedCategories.Add(name);
+    }
+
+    private bool IsCategoryExpanded(string name) => _expandedCategories.Contains(name);
+
+    private int GetCategoryRespondedCount(DataElementCategory cat) =>
+        cat.Elements.Count(e => Responses.ContainsKey(e.Name));
+
+    private void ToggleInterest(InterestLevel level)
+    {
+        if (_selectedInterests.Contains(level)) _selectedInterests.Remove(level);
+        else _selectedInterests.Add(level);
+    }
+
+    private void ToggleAvailability(SurveyAvailability avail)
+    {
+        if (_selectedAvailabilities.Contains(avail)) _selectedAvailabilities.Remove(avail);
+        else _selectedAvailabilities.Add(avail);
+    }
+
+    private bool HasAnyFilters() => _selectedInterests.Any() || _selectedAvailabilities.Any() || _filterUnresponded;
+    private int GetActiveFilterCount() => _selectedInterests.Count + _selectedAvailabilities.Count + (_filterUnresponded ? 1 : 0);
+
+    private void SetCategoryInterest(DataElementCategory category, InterestLevel level)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.Interest == level);
+        foreach (var e in category.Elements)
+        {
+            var r = GetOrCreate(e.Name);
+            r.Interest = allMatch ? null : level;
+            CleanIfEmpty(e.Name, r);
+        }
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private void SetCategoryAvailability(DataElementCategory category, SurveyAvailability avail)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.Availability == avail);
+        foreach (var e in category.Elements)
+        {
+            var r = GetOrCreate(e.Name);
+            r.Availability = allMatch ? null : avail;
+            CleanIfEmpty(e.Name, r);
+        }
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private void SetCategoryCanShare(DataElementCategory category, bool value)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.CanQueryAndShare == value);
+        foreach (var e in category.Elements)
+        {
+            var r = GetOrCreate(e.Name);
+            r.CanQueryAndShare = allMatch ? null : value;
+            CleanIfEmpty(e.Name, r);
+        }
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private string GetCategoryInterestBtnClass(DataElementCategory category, InterestLevel level)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.Interest == level);
+        return allMatch ? GetInterestBtnClass(level) : "btn-ghost btn-outline";
+    }
+
+    private string GetCategoryAvailabilityBtnClass(DataElementCategory category, SurveyAvailability avail)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.Availability == avail);
+        return allMatch ? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline";
+    }
+
+    private string GetCategoryCanShareBtnClass(DataElementCategory category, bool value)
+    {
+        var allMatch = category.Elements.All(e =>
+            Responses.TryGetValue(e.Name, out var r) && r.CanQueryAndShare == value);
+        return allMatch ? (value ? "btn-success" : "btn-error") : "btn-ghost btn-outline";
+    }
+
+    private void SetInterest(string elementName, InterestLevel level)
+    {
+        var r = GetOrCreate(elementName);
+        if (r.Interest == level) r.Interest = null;
+        else r.Interest = level;
+        CleanIfEmpty(elementName, r);
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private void SetAvailability(string elementName, SurveyAvailability avail)
+    {
+        var r = GetOrCreate(elementName);
+        if (r.Availability == avail) r.Availability = null;
+        else r.Availability = avail;
+        CleanIfEmpty(elementName, r);
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private void SetCanShare(string elementName, bool value)
+    {
+        var r = GetOrCreate(elementName);
+        if (r.CanQueryAndShare == value) r.CanQueryAndShare = null;
+        else r.CanQueryAndShare = value;
+        CleanIfEmpty(elementName, r);
+        ResponsesChanged.InvokeAsync(Responses);
+    }
+
+    private SurveyResponse GetOrCreate(string name)
+    {
+        if (!Responses.TryGetValue(name, out var r))
+        {
+            r = new SurveyResponse();
+            Responses[name] = r;
+        }
+        return r;
+    }
+
+    private void CleanIfEmpty(string name, SurveyResponse r)
+    {
+        if (!r.Interest.HasValue && !r.Availability.HasValue && !r.CanQueryAndShare.HasValue)
+            Responses.Remove(name);
+    }
+
+    private string GetInterestBtnClass(InterestLevel level) => level switch
+    {
+        InterestLevel.NoInterest => "btn-ghost btn-active",
+        InterestLevel.LowPriority => "btn-warning",
+        InterestLevel.HighPriority => "btn-success",
+        _ => "btn-ghost"
+    };
+
+    private string GetAvailabilityBtnClass(SurveyAvailability avail) => avail switch
+    {
+        SurveyAvailability.NotAvailable => "btn-error",
+        SurveyAvailability.PartiallyAvailable => "btn-warning",
+        SurveyAvailability.Available => "btn-success",
+        _ => "btn-ghost"
+    };
+
+    private string GetInterestIcon(InterestLevel level) => level switch
+    {
+        InterestLevel.NoInterest => "—",
+        InterestLevel.LowPriority => "↓",
+        InterestLevel.HighPriority => "★",
+        _ => "?"
+    };
+
+    private string GetAvailabilityIcon(SurveyAvailability avail) => avail switch
+    {
+        SurveyAvailability.NotAvailable => "✗",
+        SurveyAvailability.PartiallyAvailable => "◐",
+        SurveyAvailability.Available => "✓",
+        _ => "?"
+    };
+
+    private class DataElementCategory
+    {
+        public string Name { get; set; } = "";
+        public string Icon { get; set; } = "";
+        public List<DataElement> Elements { get; set; } = new();
+    }
+}

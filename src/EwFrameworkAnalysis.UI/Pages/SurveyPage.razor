@@ -1,0 +1,204 @@
+@page "/survey"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.UI.Pages.Survey
+@using CsvHelper
+@using CsvHelper.Configuration.Attributes
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Data Survey</PageTitle>
+
+<div class="flex flex-col h-screen bg-base-200">
+
+    <!-- Page Header -->
+    <div class="flex-shrink-0 bg-base-100 border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <div>
+                <h1 class="text-xl font-bold">Data Survey</h1>
+                <p class="text-sm text-gray-500 mt-0.5">
+                    For each data element, indicate your interest level, data availability, and whether you can query and share the data.
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="btn btn-sm btn-ghost gap-1" @onclick="ResetSurvey" title="Clear all responses">
+                    <i class="fas fa-undo text-xs"></i> Reset
+                </button>
+                <button class="btn btn-sm btn-primary gap-1" @onclick="DownloadCsv">
+                    <i class="fas fa-download text-xs"></i> Download CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="max-w-7xl mx-auto mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="bg-base-200 rounded-lg p-2 text-center">
+                <div class="text-xs text-gray-500">Responded</div>
+                <div class="text-lg font-bold">@_responses.Count <span class="text-xs font-normal text-gray-400">/ @TotalElements</span></div>
+            </div>
+            <div class="bg-success/10 border border-success/30 rounded-lg p-2 text-center">
+                <div class="text-xs text-gray-500">High Priority</div>
+                <div class="text-lg font-bold text-success">@CountInterest(InterestLevel.HighPriority)</div>
+            </div>
+            <div class="bg-info/10 border border-info/30 rounded-lg p-2 text-center">
+                <div class="text-xs text-gray-500">Available</div>
+                <div class="text-lg font-bold text-info">@CountAvailability(SurveyAvailability.Available)</div>
+            </div>
+            <div class="bg-primary/10 border border-primary/30 rounded-lg p-2 text-center">
+                <div class="text-xs text-gray-500">Can Share</div>
+                <div class="text-lg font-bold text-primary">@CountCanShare(true)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-hidden px-6 py-4">
+        <div class="max-w-7xl mx-auto h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <SurveyElementList Responses="_responses"
+                               ResponsesChanged="OnResponsesChanged" />
+        </div>
+    </div>
+</div>
+
+<!-- Reset Confirmation -->
+@if (_showResetConfirmation)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Reset Survey?</h3>
+            <p class="py-4 text-gray-600">
+                All responses will be permanently cleared. This cannot be undone.
+            </p>
+            <div class="modal-action">
+                <button class="btn btn-ghost" @onclick="() => _showResetConfirmation = false">Cancel</button>
+                <button class="btn btn-error" @onclick="ConfirmReset">
+                    <i class="fas fa-trash mr-2"></i>Reset All
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private const string STORAGE_KEY = "survey_response";
+
+    private Dictionary<string, SurveyResponse> _responses = new();
+    private bool _showResetConfirmation = false;
+
+    private int TotalElements => EwFrameworkDataElements.Elements.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFromStorage();
+    }
+
+    private async Task LoadFromStorage()
+    {
+        try
+        {
+            var json = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", STORAGE_KEY);
+            if (!string.IsNullOrEmpty(json))
+            {
+                var loaded = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, SurveyResponse>>(json);
+                if (loaded != null)
+                    _responses = loaded;
+            }
+        }
+        catch { }
+    }
+
+    private async Task SaveToStorage()
+    {
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(_responses);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", STORAGE_KEY, json);
+        }
+        catch { }
+    }
+
+    private async Task OnResponsesChanged(Dictionary<string, SurveyResponse> updated)
+    {
+        _responses = updated;
+        await SaveToStorage();
+        StateHasChanged();
+    }
+
+    private int CountInterest(InterestLevel level) =>
+        _responses.Values.Count(r => r.Interest == level);
+
+    private int CountAvailability(SurveyAvailability avail) =>
+        _responses.Values.Count(r => r.Availability == avail);
+
+    private int CountCanShare(bool value) =>
+        _responses.Values.Count(r => r.CanQueryAndShare == value);
+
+    private void ResetSurvey() => _showResetConfirmation = true;
+
+    private async Task ConfirmReset()
+    {
+        _showResetConfirmation = false;
+        _responses.Clear();
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", STORAGE_KEY);
+    }
+
+    private async Task DownloadCsv()
+    {
+        var records = EwFrameworkDataElements.Elements.Values
+            .OrderBy(e => e.DataElementCategory)
+            .ThenBy(e => e.Name)
+            .Select(e =>
+            {
+                _responses.TryGetValue(e.Name, out var r);
+                return new SurveyCsvRow
+                {
+                    DataElement = e.Name,
+                    Category = e.DataElementCategory,
+                    EwCluster = e.ClusterOnlyCategory,
+                    InterestLevel = r?.Interest.HasValue == true ? r.Interest.Value.GetDisplayName() : "",
+                    Availability = r?.Availability.HasValue == true ? r.Availability.Value.GetDisplayName() : "",
+                    CanQueryAndShare = r?.CanQueryAndShare.HasValue == true ? (r.CanQueryAndShare.Value ? "Yes" : "No") : ""
+                };
+            })
+            .ToList();
+
+        using var ms = new System.IO.MemoryStream();
+        using var writer = new System.IO.StreamWriter(ms);
+        using var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture);
+        csv.WriteRecords(records);
+        writer.Flush();
+
+        var base64 = Convert.ToBase64String(ms.ToArray());
+        var fileName = $"data-survey-{DateTimeOffset.Now:yyyy-MM-dd}.csv";
+
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            (function() {{
+                var bytes = Uint8Array.from(atob('{base64}'), c => c.charCodeAt(0));
+                var blob = new Blob([bytes], {{ type: 'text/csv' }});
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = '{fileName}';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }})();
+        ");
+    }
+
+    private class SurveyCsvRow
+    {
+        [Name("Data Element")]
+        public string DataElement { get; set; } = "";
+        [Name("Category")]
+        public string Category { get; set; } = "";
+        [Name("EW Cluster")]
+        public string EwCluster { get; set; } = "";
+        [Name("Interest Level")]
+        public string InterestLevel { get; set; } = "";
+        [Name("Availability")]
+        public string Availability { get; set; } = "";
+        [Name("Can Query and Share")]
+        public string CanQueryAndShare { get; set; } = "";
+    }
+}
