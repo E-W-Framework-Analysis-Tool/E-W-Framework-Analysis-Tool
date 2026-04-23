@@ -321,10 +321,17 @@ public class DataSourceAssessmentFileParser
             return null;
         }
 
-        if (!int.TryParse(minRow.Value, out var minimum))
-            throw new FormatException($"Invalid Minimum value: '{minRow.Value}'. Expected number.");
-        if (!int.TryParse(maxRow.Value, out var maximum))
-            throw new FormatException($"Invalid Maximum value: '{maxRow.Value}'. Expected number.");
+        if (!decimal.TryParse(minRow.Value, out var minimum))
+        {
+            throw new FormatException(
+                $"Invalid Minimum value for '{rows[0].DataElementName}': '{minRow.Value}'. Expected number.");
+        }
+
+        if (!decimal.TryParse(maxRow.Value, out var maximum))
+        {
+            throw new FormatException(
+                $"Invalid Maximum value for '{rows[0].DataElementName}': '{maxRow.Value}'. Expected number.");
+        }
 
         // Use the label from Remarks, or default to the data element name
         var label = minRow.Remarks ?? maxRow.Remarks ?? rows[0].DataElementName;

@@ -51,19 +51,30 @@ SELECT
     NULL                            AS Remarks
 FROM EducationLevelBase
 UNION ALL
--- Distribution - one row per education level description
+-- Distribution - one row per education level, falling back to Code when Description is absent
 SELECT
-    '{DataElementName}'                          AS DataElementName,
-    'Distribution'                               AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))              AS Value,
-    HighestLevelOfEducationCompletedDescription  AS SubItemLabel,
-    NULL                                         AS Remarks
+    '{DataElementName}'             AS DataElementName,
+    'Distribution'                  AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(HighestLevelOfEducationCompletedDescription)), ''),
+        NULLIF(LTRIM(RTRIM(HighestLevelOfEducationCompletedCode)), ''),
+        '(Unknown)'
+    )                               AS SubItemLabel,
+    NULL                            AS Remarks
 FROM EducationLevelBase
-GROUP BY HighestLevelOfEducationCompletedDescription";
+GROUP BY
+    COALESCE(
+        NULLIF(LTRIM(RTRIM(HighestLevelOfEducationCompletedDescription)), ''),
+        NULLIF(LTRIM(RTRIM(HighestLevelOfEducationCompletedCode)), ''),
+        '(Unknown)'
+    )";
 
     public string AssessmentDescription =>
         "Assesses highest level of education completed from RDS.DimPeople, scoped to active " +
         "K-12 staff (IsActiveK12Staff = 1). Reports total record count, completeness of the " +
         "education level field (excluding NULL, empty, and MISSING sentinel values), and " +
-        "distribution of staff across education level categories per the CEDS option set.";
+        "distribution of staff across education level categories. Distribution labels use " +
+        "HighestLevelOfEducationCompletedDescription where populated, falling back to " +
+        "HighestLevelOfEducationCompletedCode, then '(Unknown)' if both are absent.";
 }

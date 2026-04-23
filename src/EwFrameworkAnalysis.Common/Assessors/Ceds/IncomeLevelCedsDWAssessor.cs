@@ -7,8 +7,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactAeStudentEnrollments respectively, each joined to
 /// RDS.DimEconomicallyDisadvantagedStatuses. Pre-K and Workforce sectors are
 /// represented with zero counts as no supporting schema was identified.
-/// Assesses record count, completeness, and distribution by economic disadvantage
-/// status description per sector.
+/// Assesses combined record count and completeness across all sectors, and per-sector
+/// populated counts as a distribution. Pre-K and Workforce sectors are represented
+/// with zero counts as no supporting schema was identified.
 /// </summary>
 public class IncomeLevelCedsDWAssessor : ICedsDWAssessor
 {
@@ -70,141 +71,90 @@ AeCounts AS (
     FROM AeBase
 )
 INSERT INTO #EWFProfilerResults
--- RecordCount - K12
+-- RecordCount
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'RecordCount'                                                       AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    NULL                                                                AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Completeness - TotalRecords - K12
+-- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    'TotalRecords'                                                      AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Completeness - PopulatedRecords - K12
+-- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(
+        (SELECT PopulatedRecords FROM K12Counts) +
+        (SELECT PopulatedRecords FROM PsCounts) +
+        (SELECT PopulatedRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    'PopulatedRecords'                                                  AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Distribution - K12 by economic disadvantage status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    EconomicDisadvantageStatusDescription               AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Base
-GROUP BY EconomicDisadvantageStatusDescription
-UNION ALL
--- RecordCount - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Completeness - TotalRecords - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Completeness - PopulatedRecords - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Distribution - PS by economic disadvantage status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    EconomicDisadvantageStatusDescription               AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsBase
-GROUP BY EconomicDisadvantageStatusDescription
-UNION ALL
--- RecordCount - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - TotalRecords - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - PopulatedRecords - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Distribution - AE by economic disadvantage status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    EconomicDisadvantageStatusDescription               AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeBase
-GROUP BY EconomicDisadvantageStatusDescription
-UNION ALL
--- RecordCount - PreK (no supporting schema identified; emitted as zero)
+-- Distribution - Pre-K (no supporting schema identified)
 -- NOTE: No PreK fact table with EconomicallyDisadvantagedStatusId was found in the
 -- known schema. Replace this stub if FactElChildEnrollments or similar becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: PreK (not available in schema)'            AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Pre-K'                                                             AS SubItemLabel,
+    'No source table available for Pre-K sector'                        AS Remarks
 UNION ALL
--- RecordCount - Workforce (no supporting schema identified; emitted as zero)
+-- Distribution - K-12
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM K12Counts) AS NVARCHAR(MAX))     AS Value,
+    'K-12'                                                              AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Postsecondary
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM PsCounts) AS NVARCHAR(MAX))      AS Value,
+    'Postsecondary'                                                     AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Adult Education
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM AeCounts) AS NVARCHAR(MAX))      AS Value,
+    'Adult Education'                                                   AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Workforce (no supporting schema identified)
 -- NOTE: No workforce fact table with EconomicallyDisadvantagedStatusId was found in the
 -- known schema. Replace this stub if FactWfProgramParticipation or similar becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: Workforce (not available in schema)'       AS Remarks";
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Workforce'                                                         AS SubItemLabel,
+    'No source table available for Workforce sector'                    AS Remarks
+";
 
     public string AssessmentDescription =>
-        "Assesses income level (economic disadvantage status) as a disaggregate across K-12, " +
-        "postsecondary, and adult education populations joined to RDS.DimEconomicallyDisadvantagedStatuses. " +
-        "Reports record count, completeness of the economic disadvantage status code, and distribution " +
-        "by status description per sector. Pre-K and Workforce sectors are represented with zero record " +
-        "counts pending schema identification.";
+        "Assesses income level (economic disadvantage status) across K-12, postsecondary, and " +
+        "adult education populations joined to RDS.DimEconomicallyDisadvantagedStatuses. Reports " +
+        "combined record count and completeness across all sectors, and per-sector populated counts " +
+        "as a distribution. Pre-K and Workforce emit zero pending schema identification.";
 }
