@@ -420,13 +420,13 @@ public class DataSourceAssessmentFileParser
             return null;
         }
 
-        if (!int.TryParse(minRow.Value, out var minimum))
+        if (!decimal.TryParse(minRow.Value, out var minimum))
         {
             throw new FormatException(
                 $"Invalid Minimum value for '{rows[0].DataElementName}': '{minRow.Value}'. Expected number.");
         }
 
-        if (!int.TryParse(maxRow.Value, out var maximum))
+        if (!decimal.TryParse(maxRow.Value, out var maximum))
         {
             throw new FormatException(
                 $"Invalid Maximum value for '{rows[0].DataElementName}': '{maxRow.Value}'. Expected number.");
