@@ -7,29 +7,20 @@
 
     <!-- Fixed Filter / Control Area -->
     <div class="sticky bg-white top-0 flex-shrink-0 space-y-2 pb-0 p-4">
-
-        <!-- Main Toolbar Row -->
         <div class="flex items-center gap-2 flex-wrap">
 
-            <!-- Search Input -->
             <label class="input input-bordered input-sm flex items-center gap-2 flex-1 min-w-48">
                 <i class="fas fa-search opacity-50"></i>
-                <input type="search"
-                       placeholder="Search data elements..."
-                       class="grow"
-                       @bind="_searchQuery"
-                       @bind:event="oninput" />
+                <input type="search" placeholder="Search data elements..." class="grow"
+                       @bind="_searchQuery" @bind:event="oninput" />
             </label>
 
-            <!-- Divider -->
             <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
 
-            <!-- Filters toggle -->
             <div class="flex flex-col items-center gap-0.5">
                 <span class="text-[10px] font-semibold text-gray-500 leading-none">Filters</span>
                 <button class="btn btn-sm btn-ghost gap-1 @(HasAnyFilters() ? "text-primary" : "")"
                         @onclick="() => _showFilters = !_showFilters"
-                        title="Toggle filters"
                         aria-expanded="@_showFilters">
                     <i class="fas fa-sliders-h"></i>
                     @if (HasAnyFilters())
@@ -39,22 +30,18 @@
                 </button>
             </div>
 
-            <!-- Divider -->
             <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
 
-            <!-- Group By -->
             <div class="flex flex-col items-center gap-0.5">
                 <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
                 <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
                     <i class="fas fa-layer-group text-xs text-gray-400"></i>
-                    <input type="radio"
-                           name="survey-category-view"
+                    <input type="radio" name="survey-category-view"
                            class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-50")"
                            aria-label="E-W Clusters"
                            checked="@(_categoryMode == CategoryMode.EWFramework)"
                            @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
-                    <input type="radio"
-                           name="survey-category-view"
+                    <input type="radio" name="survey-category-view"
                            class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-50")"
                            aria-label="Data Categories"
                            checked="@(_categoryMode == CategoryMode.DataElement)"
@@ -62,37 +49,29 @@
                 </div>
             </div>
 
-            <!-- Divider -->
             <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
 
-            <!-- Expand / Collapse -->
             <div class="flex flex-col items-center gap-0.5">
-                <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
-                                         IsExpandedChanged="OnAllExpandedChanged" />
+                <ExpandCollapseAllToggle IsExpanded="@_allExpanded" IsExpandedChanged="OnAllExpandedChanged" />
             </div>
         </div>
 
-        <!-- Collapsible Filters Panel -->
         @if (_showFilters)
         {
             <div class="flex flex-wrap gap-4 items-start pt-2 pb-1 px-1 border-t border-gray-200">
-
-                <!-- Interest Filter -->
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Interest Level</span>
                     <div class="flex flex-wrap gap-1">
-                        @foreach (var level in Enum.GetValues<InterestLevel>())
+                        @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
                         {
                             var isSelected = _selectedInterests.Contains(level);
-                            <input class="btn btn-xs @(isSelected ? GetInterestBtnClass(level) : "")"
-                                   type="checkbox"
-                                   checked="@isSelected"
-                                   @onchange="() => ToggleInterest(level)"
+                            <input class="btn btn-xs @(isSelected? GetInterestBtnClass(level) : "")" type="checkbox"
+                                   checked="@isSelected" @onchange="() => ToggleInterest(level)"
                                    aria-label="@level.GetDisplayName()" />
                         }
                         @if (_selectedInterests.Any())
                         {
-                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedInterests.Clear()" title="Clear">
+                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedInterests.Clear()">
                                 <i class="fas fa-times"></i>
                             </button>
                         }
@@ -101,22 +80,19 @@
 
                 <div class="w-px self-stretch bg-gray-200"></div>
 
-                <!-- Availability Filter -->
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Availability</span>
                     <div class="flex flex-wrap gap-1">
-                        @foreach (var avail in Enum.GetValues<SurveyAvailability>())
+                        @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
                         {
                             var isSelected = _selectedAvailabilities.Contains(avail);
-                            <input class="btn btn-xs @(isSelected ? GetAvailabilityBtnClass(avail) : "")"
-                                   type="checkbox"
-                                   checked="@isSelected"
-                                   @onchange="() => ToggleAvailability(avail)"
+                            <input class="btn btn-xs @(isSelected? GetAvailabilityBtnClass(avail) : "")" type="checkbox"
+                                   checked="@isSelected" @onchange="() => ToggleAvailability(avail)"
                                    aria-label="@avail.GetDisplayName()" />
                         }
                         @if (_selectedAvailabilities.Any())
                         {
-                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedAvailabilities.Clear()" title="Clear">
+                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedAvailabilities.Clear()">
                                 <i class="fas fa-times"></i>
                             </button>
                         }
@@ -125,12 +101,10 @@
 
                 <div class="w-px self-stretch bg-gray-200"></div>
 
-                <!-- Responded filter -->
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Status</span>
                     <div class="flex gap-1">
-                        <input class="btn btn-xs @(_filterUnresponded ? "btn-neutral" : "")"
-                               type="checkbox"
+                        <input class="btn btn-xs @(_filterUnresponded ? "btn-neutral" : "")" type="checkbox"
                                checked="@_filterUnresponded"
                                @onchange="() => _filterUnresponded = !_filterUnresponded"
                                aria-label="Not Yet Responded" />
@@ -144,6 +118,75 @@
     <div class="flex-1 overflow-y-auto mt-2 rounded-lg border border-gray-300 shadow-inner">
         <div class="bg-white divide-y divide-gray-200">
 
+            <!-- Sticky column header — invisible spacer buttons ensure labels sit directly above the real buttons -->
+            <div class="sticky top-0 z-10 bg-white border-b border-gray-300">
+                <div class="flex items-center gap-3 px-4 py-1">
+                    <div class="flex-1"></div>
+                    <div class="flex items-center gap-3 ml-auto flex-shrink-0">
+
+                        <!-- Interest label + spacer -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Interest</span>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-question-circle text-[10px] text-gray-400"></i>
+                                    <div class="absolute right-0 top-4 z-30 hidden group-hover:block w-52 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl leading-snug">
+                                        How important is this data element? High = actively seeking, Low = useful but not critical, None = not relevant.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-1 opacity-0 pointer-events-none select-none" aria-hidden="true">
+                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
+                                {
+                                    <div class="btn btn-xs btn-ghost gap-1">@GetInterestIcon(level) <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span></div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="w-px self-stretch bg-gray-200"></div>
+
+                        <!-- Availability label + spacer -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Availability</span>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-question-circle text-[10px] text-gray-400"></i>
+                                    <div class="absolute right-0 top-4 z-30 hidden group-hover:block w-52 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl leading-snug">
+                                        Is this data in your systems? Available = ready to use, Partial = incomplete or restricted, Not Available = not collected or inaccessible.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-1 opacity-0 pointer-events-none select-none" aria-hidden="true">
+                                @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
+                                {
+                                    <div class="btn btn-xs btn-ghost gap-1">@GetAvailabilityIcon(avail) <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span></div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="w-px self-stretch bg-gray-200"></div>
+
+                        <!-- Can Share label + spacer -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Can Share</span>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-question-circle text-[10px] text-gray-400"></i>
+                                    <div class="absolute right-0 top-4 z-30 hidden group-hover:block w-52 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl leading-snug">
+                                        Can you query and share results with external partners? Considers both technical access and policy or privacy constraints.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-1 opacity-0 pointer-events-none select-none" aria-hidden="true">
+                                <div class="btn btn-xs btn-ghost gap-1">✓ <span class="hidden sm:inline text-[10px]">Yes</span></div>
+                                <div class="btn btn-xs btn-ghost gap-1">✗ <span class="hidden sm:inline text-[10px]">No</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
             @foreach (var category in GetFilteredCategories())
             {
                 <div class="border-b border-gray-200 last:border-b-0">
@@ -160,11 +203,9 @@
                             </span>
                         </div>
 
-                        <!-- Bulk-set controls -->
-                        <div class="flex items-center gap-3 ml-auto" @onclick:stopPropagation="true">
-                            <!-- Interest -->
+                        <div class="flex items-center gap-3 ml-auto flex-shrink-0" @onclick:stopPropagation="true">
                             <div class="flex gap-1">
-                                @foreach (var level in Enum.GetValues<InterestLevel>())
+                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
                                 {
                                     <button class="btn btn-xs @GetCategoryInterestBtnClass(category, level) gap-1"
                                             @onclick="() => SetCategoryInterest(category, level)"
@@ -175,9 +216,8 @@
                                 }
                             </div>
                             <div class="w-px self-stretch bg-gray-300"></div>
-                            <!-- Availability -->
                             <div class="flex gap-1">
-                                @foreach (var avail in Enum.GetValues<SurveyAvailability>())
+                                @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
                                 {
                                     <button class="btn btn-xs @GetCategoryAvailabilityBtnClass(category, avail) gap-1"
                                             @onclick="() => SetCategoryAvailability(category, avail)"
@@ -188,16 +228,13 @@
                                 }
                             </div>
                             <div class="w-px self-stretch bg-gray-300"></div>
-                            <!-- Can Share -->
                             <div class="flex gap-1">
                                 <button class="btn btn-xs @GetCategoryCanShareBtnClass(category, true) gap-1"
-                                        @onclick="() => SetCategoryCanShare(category, true)"
-                                        title="Set all: Yes">
+                                        @onclick="() => SetCategoryCanShare(category, true)" title="Set all: Yes">
                                     ✓ <span class="hidden sm:inline text-[10px]">Yes</span>
                                 </button>
                                 <button class="btn btn-xs @GetCategoryCanShareBtnClass(category, false) gap-1"
-                                        @onclick="() => SetCategoryCanShare(category, false)"
-                                        title="Set all: No">
+                                        @onclick="() => SetCategoryCanShare(category, false)" title="Set all: No">
                                     ✗ <span class="hidden sm:inline text-[10px]">No</span>
                                 </button>
                             </div>
@@ -207,85 +244,69 @@
                     <!-- Elements -->
                     @if (IsCategoryExpanded(category.Name))
                     {
-                        <div class="bg-gray-50 divide-y divide-gray-200">
+                        <div class="bg-gray-200 divide-y divide-gray-300">
                             @foreach (var element in category.Elements)
                             {
                                 var response = Responses.TryGetValue(element.Name, out var r) ? r : null;
+                                <div class="flex items-center gap-3 px-4 py-2.5 pl-10 hover:bg-gray-300">
 
-                                <div class="flex items-center gap-3 px-4 py-2.5 pl-10 bg-gray-100 hover:bg-gray-200">
-
-                                    <!-- Element Name -->
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-sm text-gray-800 @(element.AdditionalNotes != null ? "cursor-help" : "")"
                                              title="@element.AdditionalNotes">
                                             @element.Name
                                             @if (!string.IsNullOrWhiteSpace(element.AdditionalNotes))
                                             {
-                                                <i class="fas fa-info-circle text-xs text-gray-400 ml-1"></i>
+                                                <i class="fas fa-info-circle text-xs text-gray-500 ml-1"></i>
                                             }
                                         </div>
                                     </div>
 
-                                    <!-- Controls pushed right -->
                                     <div class="flex items-center gap-3 ml-auto flex-shrink-0">
 
-                                        <!-- Interest Level -->
-                                        <div class="flex flex-col gap-0.5 items-end">
-                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Interest</span>
-                                            <div class="flex gap-1">
-                                                @foreach (var level in Enum.GetValues<InterestLevel>())
-                                                {
-                                                    var isActive = response?.Interest == level;
-                                                    <button class="btn btn-xs @(isActive ? GetInterestBtnClass(level) : "btn-ghost btn-outline") gap-1"
-                                                            @onclick="() => SetInterest(element.Name, level)"
-                                                            title="@level.GetDisplayName()">
-                                                        @GetInterestIcon(level)
-                                                        <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
-                                                    </button>
-                                                }
-                                            </div>
+                                        <div class="flex gap-1">
+                                            @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
+                                            {
+                                                var isActive = response?.Interest == level;
+                                                <button class="btn btn-xs @(isActive? GetInterestBtnClass(level) : "btn-ghost btn-outline") gap-1"
+                                                        @onclick="() => SetInterest(element.Name, level)"
+                                                        title="@level.GetDisplayName()">
+                                                    @GetInterestIcon(level)
+                                                    <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
+                                                </button>
+                                            }
                                         </div>
 
-                                        <div class="w-px self-stretch bg-gray-200"></div>
+                                        <div class="w-px self-stretch bg-gray-400"></div>
 
-                                        <!-- Availability -->
-                                        <div class="flex flex-col gap-0.5 items-end">
-                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Availability</span>
-                                            <div class="flex gap-1">
-                                                @foreach (var avail in Enum.GetValues<SurveyAvailability>())
-                                                {
-                                                    var isActive = response?.Availability == avail;
-                                                    <button class="btn btn-xs @(isActive ? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline") gap-1"
-                                                            @onclick="() => SetAvailability(element.Name, avail)"
-                                                            title="@avail.GetDisplayName()">
-                                                        @GetAvailabilityIcon(avail)
-                                                        <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
-                                                    </button>
-                                                }
-                                            </div>
+                                        <div class="flex gap-1">
+                                            @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
+                                            {
+                                                var isActive = response?.Availability == avail;
+                                                <button class="btn btn-xs @(isActive? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline") gap-1"
+                                                        @onclick="() => SetAvailability(element.Name, avail)"
+                                                        title="@avail.GetDisplayName()">
+                                                    @GetAvailabilityIcon(avail)
+                                                    <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
+                                                </button>
+                                            }
                                         </div>
 
-                                        <div class="w-px self-stretch bg-gray-200"></div>
+                                        <div class="w-px self-stretch bg-gray-400"></div>
 
-                                        <!-- Can Query & Share -->
-                                        <div class="flex flex-col gap-0.5 items-end">
-                                            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">Can Share</span>
-                                            <div class="flex gap-1">
-                                                <button class="btn btn-xs @(response?.CanQueryAndShare == true ? "btn-success" : "btn-ghost btn-outline") gap-1"
-                                                        @onclick="() => SetCanShare(element.Name, true)"
-                                                        title="Yes - can query and share">
-                                                    ✓ <span class="hidden sm:inline text-[10px]">Yes</span>
-                                                </button>
-                                                <button class="btn btn-xs @(response?.CanQueryAndShare == false ? "btn-error" : "btn-ghost btn-outline") gap-1"
-                                                        @onclick="() => SetCanShare(element.Name, false)"
-                                                        title="No - cannot query and share">
-                                                    ✗ <span class="hidden sm:inline text-[10px]">No</span>
-                                                </button>
-                                            </div>
+                                        <div class="flex gap-1">
+                                            <button class="btn btn-xs @(response?.CanQueryAndShare == true ? "btn-success" : "btn-ghost btn-outline") gap-1"
+                                                    @onclick="() => SetCanShare(element.Name, true)"
+                                                    title="Yes - can query and share">
+                                                ✓ <span class="hidden sm:inline text-[10px]">Yes</span>
+                                            </button>
+                                            <button class="btn btn-xs @(response?.CanQueryAndShare == false ? "btn-error" : "btn-ghost btn-outline") gap-1"
+                                                    @onclick="() => SetCanShare(element.Name, false)"
+                                                    title="No - cannot query and share">
+                                                ✗ <span class="hidden sm:inline text-[10px]">No</span>
+                                            </button>
                                         </div>
 
                                     </div>
-
                                 </div>
                             }
                         </div>
@@ -421,7 +442,8 @@
             cats = cats
                 .Select(c => new DataElementCategory
                 {
-                    Name = c.Name, Icon = c.Icon,
+                    Name = c.Name,
+                    Icon = c.Icon,
                     Elements = c.Elements
                         .Where(e => e.Name.ToLowerInvariant().Contains(q) ||
                                     (e.AdditionalNotes?.ToLowerInvariant().Contains(q) ?? false))
@@ -435,7 +457,8 @@
             cats = cats
                 .Select(c => new DataElementCategory
                 {
-                    Name = c.Name, Icon = c.Icon,
+                    Name = c.Name,
+                    Icon = c.Icon,
                     Elements = c.Elements.Where(e =>
                         Responses.TryGetValue(e.Name, out var r) && r.Interest.HasValue &&
                         _selectedInterests.Contains(r.Interest.Value)).ToList()
@@ -448,7 +471,8 @@
             cats = cats
                 .Select(c => new DataElementCategory
                 {
-                    Name = c.Name, Icon = c.Icon,
+                    Name = c.Name,
+                    Icon = c.Icon,
                     Elements = c.Elements.Where(e =>
                         Responses.TryGetValue(e.Name, out var r) && r.Availability.HasValue &&
                         _selectedAvailabilities.Contains(r.Availability.Value)).ToList()
@@ -461,7 +485,8 @@
             cats = cats
                 .Select(c => new DataElementCategory
                 {
-                    Name = c.Name, Icon = c.Icon,
+                    Name = c.Name,
+                    Icon = c.Icon,
                     Elements = c.Elements.Where(e => !Responses.ContainsKey(e.Name)).ToList()
                 })
                 .Where(c => c.Elements.Any());
@@ -601,7 +626,7 @@
 
     private string GetInterestBtnClass(InterestLevel level) => level switch
     {
-        InterestLevel.NoInterest => "btn-ghost btn-active",
+        InterestLevel.NoInterest => "btn-error",
         InterestLevel.LowPriority => "btn-warning",
         InterestLevel.HighPriority => "btn-success",
         _ => "btn-ghost"

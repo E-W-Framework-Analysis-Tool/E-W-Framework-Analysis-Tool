@@ -30,23 +30,8 @@
         </div>
 
         <!-- Summary Stats -->
-        <div class="max-w-7xl mx-auto mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div class="bg-base-200 rounded-lg p-2 text-center">
-                <div class="text-xs text-gray-500">Responded</div>
-                <div class="text-lg font-bold">@_responses.Count <span class="text-xs font-normal text-gray-400">/ @TotalElements</span></div>
-            </div>
-            <div class="bg-success/10 border border-success/30 rounded-lg p-2 text-center">
-                <div class="text-xs text-gray-500">High Priority</div>
-                <div class="text-lg font-bold text-success">@CountInterest(InterestLevel.HighPriority)</div>
-            </div>
-            <div class="bg-info/10 border border-info/30 rounded-lg p-2 text-center">
-                <div class="text-xs text-gray-500">Available</div>
-                <div class="text-lg font-bold text-info">@CountAvailability(SurveyAvailability.Available)</div>
-            </div>
-            <div class="bg-primary/10 border border-primary/30 rounded-lg p-2 text-center">
-                <div class="text-xs text-gray-500">Can Share</div>
-                <div class="text-lg font-bold text-primary">@CountCanShare(true)</div>
-            </div>
+        <div class="max-w-7xl mx-auto mt-3">
+            <SurveyStats Responses="_responses" TotalElements="TotalElements" />
         </div>
     </div>
 
