@@ -432,8 +432,11 @@ public class AssessmentResultRow
 }
 
 /// <summary>
-/// Statistics about the assessment parsing process
+/// Represents a parse error on a single row from the assessment results CSV
 /// </summary>
+public class AssessmentParseError
+{
+    public string DataElementName { get; }
     public string CharacteristicType { get; }
     public string Message { get; }
 
@@ -445,6 +448,9 @@ public class AssessmentResultRow
     }
 }
 
+/// <summary>
+/// Statistics about the assessment parsing process
+/// </summary>
 public class AssessmentParsingStats
 {
     public bool HasHeaderRow { get; set; }
