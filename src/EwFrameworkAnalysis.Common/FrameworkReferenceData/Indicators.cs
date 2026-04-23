@@ -635,7 +635,7 @@ public static class EwFrameworkIndicators
                     // "Postsecondary program length"
                 ]
             },
-        ["Kindergarten readiness: social-emotional development"] =
+        ["Kindergarten readiness: social-emotional development"] = // a.k.a Developmental progress: social-emotional development
             new()
             {
                 Name = "Kindergarten readiness: social-emotional development",
@@ -655,7 +655,7 @@ public static class EwFrameworkIndicators
                     "Teacher reports of social-emotional development"
                 ]
             },
-        ["Kindergarten readiness: approaches to learning"] =
+        ["Kindergarten readiness: approaches to learning"] = // a.k.a Developmental progress: approaches to learning
             new()
             {
                 Name = "Kindergarten readiness: approaches to learning",
@@ -676,7 +676,7 @@ public static class EwFrameworkIndicators
                     "Teacher reports of executive function"
                 ]
             },
-        ["Kindergarten readiness: perceptual, motor, and physical development"] =
+        ["Kindergarten readiness: perceptual, motor, and physical development"] = // a.k.a. Developmental progress: perceptual, motor, and physical development
             new()
             {
                 Name = "Kindergarten readiness: perceptual, motor, and physical development",
@@ -689,7 +689,6 @@ public static class EwFrameworkIndicators
                 DataNeeded = [DataCategory.Assessments],
                 Sectors = [Sector.PK],
                 DataElementNames = [
-                    //"Direct child assessments of physical development",
                     /* ECS data elements */
                     "Direct child assessments of physical development",
                     "Reported kindergarten readiness (physical development)"
