@@ -1,3 +1,4 @@
+using ApexCharts;
 using EwFrameworkAnalysis.Common.Assessors.Ceds;
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
 using EwFrameworkAnalysis.Common.Mapping;
@@ -58,6 +59,8 @@ builder.Services.AddSingleton(sp =>
     var rules = sp.GetServices<IDataElementScoringRule>();
     return new DataElementScoringRuleRegistry(rules);
 });
+
+builder.Services.AddApexCharts();
 
 // Register Ed-Fi assessors
 var assessorAssembly = typeof(IEdFiAssessor).Assembly;
