@@ -6,133 +6,133 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class TeacherReportsSocialEmotionalEdFiAssessor : IEdFiAssessor
 {
-    /// <summary>
-    /// SurveyCategoryDescriptor values that indicate SEL / social-emotional teacher reports.
-    /// Ed-Fi does not standardize a single category — districts map local frameworks
-    /// (CASEL, DECA, SAEBRS, Panorama, Second Step) using local descriptors.
-    /// We match the standard "Teacher" category plus common local patterns.
-    /// </summary>
-    private static readonly HashSet<string> _selSurveyCategoryKeywords =
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-            "teacher",
-            "sel",
-            "social",
-            "emotional",
-            "socialemotional",
-            "socialemotionallearning",
-            "socialemotionaldevelopment",
-            "schoolclimate",
-            "casel",
-            "deca",
-            "saebrs",
-            "panorama",
-            "secondstep"
-        };
+    private static readonly string[] _surveyKeywords =
+    [
+        // Generic terms
+        "social-emotional",
+        "social emotional",
+        "social development",
+        "emotional development",
+        "sel",
+        "social skills",
+        "emotional functioning",
+        "identity and belonging",
+        "positive relationships",
+
+        // Instruments named in the E-W Framework
+        "CBRS",                              // Child Behavior Rating Scale
+        "Child Behavior Rating",
+        "Child Behavior Rating Scale",
+        "DECA",                              // Devereux Early Childhood Assessment
+        "DECA-P2",                           // DECA Preschool Program, 2nd Edition
+        "Devereux",
+        "Devereux Early Childhood",
+
+        // Other widely used teacher report SEL instruments
+        "SAEBRS",                            // Social, Academic, and Emotional Behavior Risk Screener
+        "Panorama",
+        "Second Step",
+        "CASEL",
+        "BASC",                              // Behavior Assessment System for Children
+        "BESS",                              // Behavioral and Emotional Screening System
+        "SSIS",                              // Social Skills Improvement System
+        "Social Skills Improvement",
+        "DESSA",                             // Devereux Student Strengths Assessment
+        "LearnPad"
+    ];
 
     public string DataElementName => "Teacher reports of social-emotional development";
 
     public string AssessmentDescription =>
-        "Queries the Ed-Fi Survey API (ed-fi/surveys and ed-fi/surveyResponses) to count surveys and " +
-        "responses where the surveyCategoryDescriptor indicates teacher-reported SEL data. " +
-        "Matches standard Ed-Fi 'Teacher' category and common SEL framework categories " +
-        "(CASEL, DECA, SAEBRS, Panorama, Second Step).";
+        "Identifies surveys linked to teacher reports of social-emotional development (e.g., " +
+        "Child Behavior Rating Scale (CBRS) and Devereux Early Childhood Assessment Preschool " +
+        "Program (DECA-P2) named in the E-W Framework, plus SAEBRS, Panorama, Second Step, " +
+        "BASC/BESS, SSIS, DESSA) by matching well-known instrument names and social-emotional " +
+        "keywords in the Ed-Fi surveys catalog. Ed-Fi has no standard descriptor for social-emotional " +
+        "teacher reports, so title-based matching is used as a proxy.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Querying Ed-Fi surveys...");
+        context.ReportProgress(0, "Searching survey catalog for teacher reports of social-emotional development...");
 
-        // Step 1: Fetch all surveys and identify SEL teacher-report surveys
-        var matchingSurveyKeys = new HashSet<string>();
-        var surveyCategoryDistribution = new Dictionary<string, int>();
+        var matchingSurveys = new List<(string Identifier, string Namespace)>();
 
         await EdFiApiPatterns.PageAndProcessAsync<EdFiSurvey>(
             httpClient,
             "ed-fi/surveys",
             survey =>
             {
-                var category = EdFiDescriptorHelper.ParseDescriptorValue(survey.SurveyCategoryDescriptor);
-                var categoryNormalized = category.Replace(" ", "").Replace("-", "").Replace("_", "");
-
-                if (_selSurveyCategoryKeywords.Any(kw =>
-                    categoryNormalized.Contains(kw, StringComparison.OrdinalIgnoreCase)))
-                {
-                    var key = $"{survey.Namespace}|{survey.SurveyIdentifier}";
-                    matchingSurveyKeys.Add(key);
-
-                    if (!surveyCategoryDistribution.ContainsKey(category))
-                        surveyCategoryDistribution[category] = 0;
-                    surveyCategoryDistribution[category]++;
-                }
+                if (IsSocialEmotionalSurvey(survey))
+                    matchingSurveys.Add((survey.SurveyIdentifier, survey.Namespace));
             },
             context);
 
-        context.Log($"Found {matchingSurveyKeys.Count} SEL-related survey definition(s)");
+        context.Log($"Found {matchingSurveys.Count} social-emotional teacher report survey(s) in catalog");
 
-        if (matchingSurveyKeys.Count == 0)
+        if (matchingSurveys.Count == 0)
         {
-            context.ReportProgress(100, "Complete — no matching surveys found");
-
+            context.ReportProgress(100, "Complete — no social-emotional teacher report surveys found");
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
-                Characteristics =
-                [
-                    new RecordCount(0)
-                ],
-                Remarks = "No surveys found with SEL-related category descriptors (Teacher, SEL, " +
-                           "Social-Emotional, CASEL, DECA, SAEBRS, Panorama, Second Step). " +
-                           "Districts must map their SEL survey frameworks using local surveyCategoryDescriptor values."
+                Characteristics = [new RecordCount(0)],
+                Remarks = AssessmentDescription +
+                    " No surveys matching recognized social-emotional teacher report instruments were found " +
+                    "in the survey catalog."
             };
         }
 
-        // Step 2: Count survey responses that belong to the matching surveys
-        context.ReportProgress(40, "Counting survey responses...");
+        context.ReportProgress(50, "Counting survey responses for social-emotional teacher reports...");
 
         var totalResponses = 0;
-        var responsesWithStudentRef = 0;
+        var surveyDistribution = new Dictionary<string, int>();
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiSurveyResponse>(
-            httpClient,
-            "ed-fi/surveyResponses",
-            response =>
-            {
-                var surveyRef = response.SurveyReference;
-                if (surveyRef == null) return;
-
-                var key = $"{surveyRef.Namespace}|{surveyRef.SurveyIdentifier}";
-                if (!matchingSurveyKeys.Contains(key)) return;
-
-                totalResponses++;
-                if (response.StudentReference != null)
-                    responsesWithStudentRef++;
-            },
-            context);
-
-        context.Log($"Found {totalResponses:N0} survey responses for SEL surveys, " +
-                     $"{responsesWithStudentRef:N0} linked to students");
-        context.ReportProgress(100, "Complete");
-
-        var characteristics = new List<DataCharacteristicBase>
+        foreach (var (identifier, ns) in matchingSurveys)
         {
-            new RecordCount(totalResponses),
-            new Distribution(surveyCategoryDistribution, "Survey Category")
-        };
+            var count = await EdFiApiPatterns.CountFromHeaderAsync(
+                httpClient,
+                "ed-fi/surveyResponses",
+                new Dictionary<string, string>
+                {
+                    ["surveyIdentifier"] = identifier,
+                    ["namespace"] = ns
+                });
 
-        if (totalResponses > 0)
-        {
-            characteristics.Add(
-                new Completeness(totalResponses, responsesWithStudentRef, "Student Reference"));
+            totalResponses += count;
+            if (count > 0)
+                surveyDistribution[identifier] = count;
         }
+
+        context.Log($"Found {totalResponses:N0} social-emotional teacher report survey responses");
+        context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
-            Characteristics = characteristics,
+            Characteristics =
+            [
+                new RecordCount(totalResponses),
+                new Distribution(surveyDistribution, "Survey Instrument")
+            ],
             Remarks = AssessmentDescription
         };
+    }
+
+    private static bool IsSocialEmotionalSurvey(EdFiSurvey survey)
+    {
+        var title = survey.SurveyTitle ?? string.Empty;
+        var identifier = survey.SurveyIdentifier ?? string.Empty;
+
+        foreach (var keyword in _surveyKeywords)
+        {
+            if (title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                identifier.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 }
