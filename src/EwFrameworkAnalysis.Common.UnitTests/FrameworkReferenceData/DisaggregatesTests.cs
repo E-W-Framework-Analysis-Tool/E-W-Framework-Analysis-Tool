@@ -29,9 +29,9 @@ public class DisaggregatesTests
     public void Disaggregates_MappedDataElementsShouldExistInDataElements()
     {
         var unknownMappings = EwFrameworkDisaggregates.Disaggregates
-            .Where(d => d.DataElementName != null)
-            .Where(d => !EwFrameworkDataElements.Elements.ContainsKey(d.DataElementName!))
-            .Select(d => $"\"{d.Name}\" -> \"{d.DataElementName}\"")
+            .SelectMany(d => d.DataElementNames
+                .Where(name => !EwFrameworkDataElements.Elements.ContainsKey(name))
+                .Select(name => $"\"{d.Name}\" -> \"{name}\""))
             .ToList();
 
         Assert.True(

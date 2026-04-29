@@ -113,9 +113,9 @@ public class DataElementScoringService
     public List<DataElementScore> CalculateDisaggregateScores(List<DataSourceAssessmentWithSource> assessments)
     {
         return [.. EwFrameworkDisaggregates.Disaggregates
-            .Select(d => d.DataElementName != null
-                ? GetDataElementScore(d.DataElementName, d.Name, assessments)
-                : new DataElementScore { DataElementName = d.Name })];
+            .SelectMany(d => d.DataElementNames.Count > 0
+                ? d.DataElementNames.Select(name => GetDataElementScore(name, d.Name, assessments))
+                : [new DataElementScore { DataElementName = d.Name }])];
     }
 
     public List<SectorReadinessResult> CalculateSectorReadiness(IEnumerable<QuestionScore> questionScores)
