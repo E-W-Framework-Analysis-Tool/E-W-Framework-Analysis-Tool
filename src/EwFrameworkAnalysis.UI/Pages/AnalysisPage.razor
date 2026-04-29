@@ -35,8 +35,7 @@
 
         <!-- Disaggregates Grid -->
         <input type="radio" name="my_tabs_3" class="tab text-lg  bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates"/>
-        <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">Not implemented.</Card>
-        @* <DisaggregateGrid DisaggregateScore="_disaggregateScores" /> *@
+        <DisaggregateGrid DisaggregateScores="_disaggregateScores"/>
 
     </div>
 </div>
@@ -66,6 +65,7 @@
     private List<IndicatorScore> _indicatorScores = [];
     private OverallReadinessResults _overallReadinessScores = new();
     private List<SectorReadinessResult> _sectorReadinessScores = [];
+    private List<DataElementScore> _disaggregateScores = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,5 +108,7 @@
         _overallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
 
         _sectorReadinessScores = ScoringSvc.CalculateSectorReadiness(_questionScores);
+
+        _disaggregateScores = ScoringSvc.CalculateDisaggregateScores(Assessments);
     }
 }
