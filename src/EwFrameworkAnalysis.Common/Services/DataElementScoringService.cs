@@ -110,6 +110,14 @@ public class DataElementScoringService
         return rule.Score(scoringRequest);
     }
 
+    public List<DataElementScore> CalculateDisaggregateScores(List<DataSourceAssessmentWithSource> assessments)
+    {
+        return [.. EwFrameworkDisaggregates.Disaggregates
+            .Select(d => d.DataElementName != null
+                ? GetDataElementScore(d.DataElementName, d.Name, assessments)
+                : new DataElementScore { DataElementName = d.Name })];
+    }
+
     public List<SectorReadinessResult> CalculateSectorReadiness(IEnumerable<QuestionScore> questionScores)
     {
         var uniqueIndicators = questionScores
