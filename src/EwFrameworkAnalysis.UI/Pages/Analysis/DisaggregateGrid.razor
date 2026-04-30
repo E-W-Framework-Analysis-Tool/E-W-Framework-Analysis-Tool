@@ -31,15 +31,15 @@
                 @* Headers *@
                 <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
                     <div class="grid grid-cols-24">
-                        <div class="col-span-20 cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Name)">
+                        <div class="col-span-18 cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Name)">
                             Disaggregate
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedDisaggregates.IsActive(SortColumnNames.Name, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedDisaggregates.IsActive(SortColumnNames.Name, false) ? "" : "opacity-50")"></i>
                             </span>
                         </div>
-                        <div class="col-span-4 justify-self-center cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Status)">
-                            Status
+                        <div class="col-span-6 justify-self-center cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Status)">
+                            Coverage Score
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedDisaggregates.IsActive(SortColumnNames.Status, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedDisaggregates.IsActive(SortColumnNames.Status, false) ? "" : "opacity-50")"></i>
@@ -55,16 +55,18 @@
                 @foreach (var (disaggregate, index) in sortedDisaggregates.List.Select((value, i) => (value, i)))
                 {
                     var scores = GetScoresForDisaggregate(disaggregate);
+                    var aggScore = GetAggregateQualityScore(scores);
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
                         <input type="checkbox" name="disaggregate-check-@index" />
 
-                        @* Name & Status *@
+                        @* Name & Score *@
                         <div class="collapse-title font-semibold">
                             <div class="grid grid-cols-24 items-center">
-                                <div class="col-span-20">@disaggregate.Name</div>
-                                <div class="col-span-4 text-center text-sm">
-                                    @GetAggregateAvailabilityLabel(scores)
+                                <div class="col-span-18">@disaggregate.Name</div>
+                                <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
+                                    <progress class="progress @GetProgressBarColor(aggScore)" value="@(aggScore * 100)" max="100"></progress>
+                                    @aggScore.ToString("0.##%")
                                 </div>
                             </div>
                         </div>
@@ -85,6 +87,7 @@
                                     }
                                 </div>
 
+                                @* Data Elements *@
                                 @if (disaggregate.DataElementNames.Count == 0)
                                 {
                                     <p class="text-sm text-gray italic">No matching data element defined for this disaggregate.</p>
@@ -92,36 +95,41 @@
                                 else
                                 {
                                     <h5 class="font-semibold text-sm text-blue">Data Elements</h5>
-                                    @foreach (var name in disaggregate.DataElementNames)
-                                    {
-                                        var score = scores.FirstOrDefault(s => s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-                                        <div class="flex flex-col gap-1 pl-2 border-l-2 border-gray-200 mb-2">
-                                            <div class="font-semibold text-sm">
+                                    <div class="flex flex-col gap-2">
+                                        @foreach (var name in disaggregate.DataElementNames)
+                                        {
+                                            var score = scores.FirstOrDefault(s => s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase));
+                                            <div class="text-sm text-gray">
                                                 <i class="@GetAvailabilityIcon(score)"></i>
-                                                @name
-                                                <span class="font-normal text-gray ml-1">— @GetAvailabilityLabel(score)</span>
+                                                @if (score is { IsAvailable: true } && !string.IsNullOrEmpty(score.Source))
+                                                {
+                                                    <div class="dropdown dropdown-top dropdown-start inline-block">
+                                                        <span tabindex="0" role="button" class="cursor-pointer hover:font-semibold focus:font-semibold transition-all">
+                                                            @name
+                                                            <i class="@GetDataSourceTypeIcon(score) text-gray-400 ml-1 text-xs"></i>
+                                                        </span>
+                                                        <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 w-64 p-2 shadow-lg border border-gray-200">
+                                                            <li class="menu-title text-sm text-gray-600">@name</li>
+                                                            <li class="menu-title text-sm text-gray-400">Data Sources:</li>
+                                                            @foreach (var source in score.SourceScores)
+                                                            {
+                                                                <li class="menu-title text-sm text-gray-600 @(source.DataSourceName == score.Source ? "bg-gray-200 rounded" : "")">
+                                                                    <span class="text-sm">
+                                                                        <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
+                                                                        @source.DataSourceName
+                                                                    </span>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    @name
+                                                }
                                             </div>
-
-                                            @if (score is { SourceScores.Count: > 0 })
-                                            {
-                                                <div class="flex flex-col gap-1 pl-4">
-                                                    @foreach (var source in score.SourceScores)
-                                                    {
-                                                        <div class="text-sm text-gray @(source.DataSourceName == score.Source ? "font-semibold" : "")">
-                                                            <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
-                                                            @source.DataSourceName
-                                                            <i class="@GetDataSourceTypeIcon(source) text-gray-400 ml-1 text-xs"></i>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <p class="text-sm text-gray italic pl-4">No assessment data available.</p>
-                                            }
-                                        </div>
-                                    }
+                                        }
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -136,7 +144,7 @@
 
 @code {
     [Parameter]
-    public List<DataElementScore> DisaggregateScores { get; set; } = [];
+    public IReadOnlyList<DataElementScore> DisaggregateScores { get; set; } = [];
 
     private IReadOnlyList<Disaggregate> _allDisaggregates = [];
     private string _searchQuery = string.Empty;
@@ -151,7 +159,7 @@
     private List<SortColumn<Disaggregate>> DisaggregateColumnOptions() =>
     [
         new SortColumn<Disaggregate> { Key = SortColumnNames.Name, Selector = d => d.Name, DefaultAscending = true },
-        new SortColumn<Disaggregate> { Key = SortColumnNames.Status, Selector = d => GetScoresForDisaggregate(d).Select(s => s.QualityScore).DefaultIfEmpty(0m).Max(), DefaultAscending = false },
+        new SortColumn<Disaggregate> { Key = SortColumnNames.Status, Selector = d => GetAggregateQualityScore(GetScoresForDisaggregate(d)), DefaultAscending = false },
     ];
 
     protected override void OnInitialized()
@@ -165,58 +173,59 @@
             return [];
 
         return DisaggregateScores
-            .Where(s => disaggregate.DataElementNames.Any(name => s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            .Where(s => disaggregate.DataElementNames.Any(name =>
+                s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase)))
             .ToList();
     }
 
-    private static string GetAvailabilityIcon(DataElementScore? score) =>
+    private static decimal GetAggregateQualityScore(List<DataElementScore> scores) =>
+        scores.Count == 0 ? 0m : Math.Round(scores.Average(s => s.QualityScore), 2);
+
+    private static string GetProgressBarColor(decimal score) =>
         score switch
         {
-            { IsAvailable: true, AvailabilityScore: AvailabilityJudgment.Available } => "fas fa-check-circle text-success",
-            { IsAvailable: true, AvailabilityScore: AvailabilityJudgment.PartiallyAvailable } => "fas fa-triangle-exclamation text-warning",
-            _ => "fas fa-times-circle text-error"
+            > 0.66m => "progress-success",
+            > 0.33m => "progress-warning",
+            > 0m    => "progress-error",
+            _       => "bg-gray-200"
         };
 
-    private static string GetAvailabilityLabel(DataElementScore? score) =>
-        score switch
-        {
-            { AvailabilityScore: AvailabilityJudgment.Available } => "Available",
-            { AvailabilityScore: AvailabilityJudgment.PartiallyAvailable } => "Partial",
-            _ => "Not Available"
-        };
-
-    private static string GetAggregateAvailabilityLabel(List<DataElementScore> scores)
+    // Mirrors IndicatorGrid: check IsAvailable first, then judgment
+    private static string GetAvailabilityIcon(DataElementScore? score)
     {
-        if (scores.Count == 0)
-            return "Not Available";
-
-        if (scores.Any(s => s.AvailabilityScore == AvailabilityJudgment.Available))
-            return "Available";
-
-        if (scores.Any(s => s.AvailabilityScore == AvailabilityJudgment.PartiallyAvailable))
-            return "Partial";
-
-        return "Not Available";
+        if (score is { IsAvailable: true })
+        {
+            return score.AvailabilityScore switch
+            {
+                AvailabilityJudgment.Available         => "fas fa-check-circle text-success",
+                AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+                _                                       => "fas fa-check-circle text-success"
+            };
+        }
+        return "fas fa-times-circle text-error";
     }
 
     private static string GetSourceAvailabilityIcon(AvailabilityJudgment judgment) =>
         judgment switch
         {
-            AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+            AvailabilityJudgment.Available          => "fas fa-check-circle text-success",
             AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
-            AvailabilityJudgment.NotAvailable => "fas fa-times-circle text-error",
-            _ => "fas fa-question-circle text-gray-400"
+            AvailabilityJudgment.NotAvailable       => "fas fa-times-circle text-error",
+            _                                       => "fas fa-question-circle text-gray-400"
         };
 
-    private static string GetDataSourceTypeIcon(DataElementSourceScore source) =>
-        source.SourceType switch
+    private static string GetDataSourceTypeIcon(DataElementScore score)
+    {
+        var selected = score.SourceScores.FirstOrDefault(s => s.DataSourceName == score.Source);
+        return selected?.SourceType switch
         {
-            nameof(DataSourceType.EdFiApi) => "fas fa-network-wired",
-            nameof(DataSourceType.CedsDw) => "fas fa-warehouse",
-            nameof(DataSourceType.Custom) => "fas fa-list-check",
+            nameof(DataSourceType.EdFiApi)  => "fas fa-network-wired",
+            nameof(DataSourceType.CedsDw)   => "fas fa-warehouse",
+            nameof(DataSourceType.Custom)   => "fas fa-list-check",
             nameof(DataSourceType.EcsState) => "fas fa-map",
-            _ => "fas fa-database"
+            _                               => "fas fa-database"
         };
+    }
 
     private IEnumerable<Disaggregate> FilteredDisaggregates =>
         _allDisaggregates
@@ -226,6 +235,5 @@
                 || d.Description.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
             .Where(d =>
                 string.IsNullOrWhiteSpace(_selectedSector)
-                || d.Sectors.Contains(Enum.Parse<Sector>(_selectedSector))
-            );
+                || d.Sectors.Contains(Enum.Parse<Sector>(_selectedSector)));
 }
