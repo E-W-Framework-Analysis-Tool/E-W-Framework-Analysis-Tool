@@ -6,12 +6,12 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// RDS.FactPsStudentCourseTranscripts, and RDS.FactAeStudentEnrollments respectively,
 /// each joined to RDS.DimHomelessnessStatuses on HomelessnessStatusId. Pre-K and
 /// Workforce sectors are represented with zero counts as no supporting schema was
-/// identified. Assesses record count, completeness, and Yes/No distribution of
-/// homelessness status per sector.
+/// identified. Assesses combined record count and completeness across all sectors,
+/// and per-sector populated counts as a distribution.
 /// Note: The original DE query filtered to HomelessnessStatusCode = 'Yes', counting
 /// only homeless individuals. This assessor removes that filter so RecordCount and
-/// Completeness reflect the full population; the Yes/No split is surfaced via
-/// Distribution instead.
+/// Completeness reflect the full population; the per-sector populated count in
+/// Distribution reflects records with any non-sentinel HomelessnessStatusCode.
 /// </summary>
 public class IndividualsExperiencingHomelessnessCedsDWAssessor : ICedsDWAssessor
 {
@@ -67,141 +67,89 @@ AeCounts AS (
     FROM AeBase
 )
 INSERT INTO #EWFProfilerResults
--- RecordCount - K12
+-- RecordCount
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'RecordCount'                                                       AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    NULL                                                                AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Completeness - TotalRecords - K12
+-- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    'TotalRecords'                                                      AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Completeness - PopulatedRecords - K12
+-- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                                 AS DataElementName,
+    'Completeness'                                                      AS CharacteristicType,
+    CAST(
+        (SELECT PopulatedRecords FROM K12Counts) +
+        (SELECT PopulatedRecords FROM PsCounts) +
+        (SELECT PopulatedRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                                   AS Value,
+    'PopulatedRecords'                                                  AS SubItemLabel,
+    NULL                                                                AS Remarks
 UNION ALL
--- Distribution - K12 by homelessness status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    HomelessnessStatusCode                              AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'                 AS Remarks
-FROM K12Base
-GROUP BY HomelessnessStatusCode
-UNION ALL
--- RecordCount - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Completeness - TotalRecords - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Completeness - PopulatedRecords - PS
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsCounts
-UNION ALL
--- Distribution - PS by homelessness status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    HomelessnessStatusCode                              AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'            AS Remarks
-FROM PsBase
-GROUP BY HomelessnessStatusCode
-UNION ALL
--- RecordCount - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - TotalRecords - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))                 AS Value,
-    'TotalRecords'                                      AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - PopulatedRecords - AE
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Completeness'                                      AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))             AS Value,
-    'PopulatedRecords'                                  AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeCounts
-UNION ALL
--- Distribution - AE by homelessness status
-SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'Distribution'                                      AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX))                     AS Value,
-    HomelessnessStatusCode                              AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'                  AS Remarks
-FROM AeBase
-GROUP BY HomelessnessStatusCode
-UNION ALL
--- RecordCount - PreK (no supporting schema identified; emitted as zero)
+-- Distribution - Pre-K (no supporting schema identified)
 -- NOTE: No PreK fact table with HomelessnessStatusId was found in the known schema.
 -- Replace this stub if FactElChildEnrollments or similar becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: PreK (not available in schema)'            AS Remarks
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Pre-K'                                                             AS SubItemLabel,
+    'No source table available for Pre-K sector'                        AS Remarks
 UNION ALL
--- RecordCount - Workforce (no supporting schema identified; emitted as zero)
+-- Distribution - K-12
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM K12Counts) AS NVARCHAR(MAX))     AS Value,
+    'K-12'                                                              AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Postsecondary
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM PsCounts) AS NVARCHAR(MAX))      AS Value,
+    'Postsecondary'                                                     AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Adult Education
+SELECT
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM AeCounts) AS NVARCHAR(MAX))      AS Value,
+    'Adult Education'                                                   AS SubItemLabel,
+    NULL                                                                AS Remarks
+UNION ALL
+-- Distribution - Workforce (no supporting schema identified)
 -- NOTE: No workforce fact table with HomelessnessStatusId was found in the known schema.
 -- Replace this stub if FactWfProgramParticipation or similar becomes available.
 SELECT
-    '{DataElementName}'                                 AS DataElementName,
-    'RecordCount'                                       AS CharacteristicType,
-    CAST(0 AS NVARCHAR(MAX))                            AS Value,
-    NULL                                                AS SubItemLabel,
-    'Source: Workforce (not available in schema)'       AS Remarks";
+    '{DataElementName}'                                                 AS DataElementName,
+    'Distribution'                                                      AS CharacteristicType,
+    CAST(0 AS NVARCHAR(MAX))                                            AS Value,
+    'Workforce'                                                         AS SubItemLabel,
+    'No source table available for Workforce sector'                    AS Remarks";
 
     public string AssessmentDescription =>
-        "Assesses homelessness status as a disaggregate across K-12, postsecondary, and adult " +
-        "education populations joined to RDS.DimHomelessnessStatuses. Reports record count, " +
-        "completeness of the homelessness status code, and Yes/No distribution per sector. " +
-        "Pre-K and Workforce sectors are represented with zero record counts pending schema " +
-        "identification.";
+        "Assesses homelessness status across K-12, postsecondary, and adult education populations " +
+        "joined to RDS.DimHomelessnessStatuses. Reports combined record count and completeness " +
+        "across all sectors, and per-sector populated counts as a distribution. Pre-K and Workforce " +
+        "sectors emit zero pending schema identification.";
 }

@@ -1,3 +1,4 @@
+using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Framework;
 using EwFrameworkAnalysis.Common.Models.Project;
 
@@ -32,6 +33,16 @@ public class FrameworkCoverage
                 IndicatorCount = g.Count()
             })
             .OrderBy(r => r.Sector)
+            .ToList();
+
+    public IReadOnlyList<DataElementScore> DisaggregateScores =>
+        EwFrameworkDisaggregates.Disaggregates
+            .SelectMany(d => d.DataElementNames.Count > 0
+                ? d.DataElementNames.Select(name =>
+                    DataElementScores.FirstOrDefault(s =>
+                        s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    ?? new DataElementScore { DataElementName = name })
+                : [new DataElementScore { DataElementName = d.Name }])
             .ToList();
 
     public SourceTypeCoverageBreakdown BySourceType { get; init; } = new();

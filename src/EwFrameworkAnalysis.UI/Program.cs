@@ -1,3 +1,4 @@
+using ApexCharts;
 using EwFrameworkAnalysis.Common.Assessors.Ceds;
 using EwFrameworkAnalysis.Common.Assessors.EdFi;
 using EwFrameworkAnalysis.Common.Mapping;
@@ -30,6 +31,7 @@ builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
+builder.Services.AddScoped<EdFiStudentAssessmentProvider>();
 builder.Services.AddScoped<EdFiCTEProgramProvider>();
 builder.Services.AddScoped<EdFiCourseProvider>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
@@ -57,6 +59,8 @@ builder.Services.AddSingleton(sp =>
     var rules = sp.GetServices<IDataElementScoringRule>();
     return new DataElementScoringRuleRegistry(rules);
 });
+
+builder.Services.AddApexCharts();
 
 // Register Ed-Fi assessors
 var assessorAssembly = typeof(IEdFiAssessor).Assembly;

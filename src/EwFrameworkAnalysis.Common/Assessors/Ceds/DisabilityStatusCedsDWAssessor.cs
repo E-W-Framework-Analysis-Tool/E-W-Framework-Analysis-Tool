@@ -4,7 +4,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// Profiles disability status data across three populations — K-12, postsecondary,
 /// and adult education — from RDS.FactK12StudentEnrollments, RDS.FactPsStudentCourseTranscripts,
 /// and RDS.FactAeStudentEnrollments respectively, each joined to RDS.DimDisabilityStatuses.
-/// Assesses record count and completeness of DisabilityStatusCode per source.
+/// Reports a combined record count and completeness across all sources, and a per-sector
+/// count of records with a populated DisabilityStatusCode as a distribution.
 /// Note: DisabilityStatusCode is a Yes/No flag. K-12 enrollment records also carry
 /// IdeaStatusId, PrimaryDisabilityTypeId, and SecondaryDisabilityTypeId as related
 /// but distinct disability indicators not profiled here.
@@ -37,7 +38,7 @@ AeBase AS (
 ),
 K12Counts AS (
     SELECT
-        COUNT(*)                                    AS TotalRecords,
+        COUNT(*) AS TotalRecords,
         COUNT(CASE
             WHEN DisabilityStatusCode IS NOT NULL
              AND DisabilityStatusCode <> ''
@@ -46,116 +47,96 @@ K12Counts AS (
              -- Review distinct DisabilityStatusCode values and extend if needed.
              AND DisabilityStatusCode <> 'MISSING'
             THEN 1
-        END)                                        AS PopulatedRecords
+        END) AS PopulatedRecords
     FROM K12Base
 ),
 PsCounts AS (
     SELECT
-        COUNT(*)                                    AS TotalRecords,
+        COUNT(*) AS TotalRecords,
         COUNT(CASE
             WHEN DisabilityStatusCode IS NOT NULL
              AND DisabilityStatusCode <> ''
              AND DisabilityStatusCode <> 'MISSING'
             THEN 1
-        END)                                        AS PopulatedRecords
+        END) AS PopulatedRecords
     FROM PsBase
 ),
 AeCounts AS (
     SELECT
-        COUNT(*)                                    AS TotalRecords,
+        COUNT(*) AS TotalRecords,
         COUNT(CASE
             WHEN DisabilityStatusCode IS NOT NULL
              AND DisabilityStatusCode <> ''
              AND DisabilityStatusCode <> 'MISSING'
             THEN 1
-        END)                                        AS PopulatedRecords
+        END) AS PopulatedRecords
     FROM AeBase
 )
 INSERT INTO #EWFProfilerResults
--- RecordCount - K12
+-- RecordCount
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'RecordCount'                               AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    NULL                                        AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'         AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                             AS DataElementName,
+    'RecordCount'                                                   AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                               AS Value,
+    NULL                                                            AS SubItemLabel,
+    NULL                                                            AS Remarks
 UNION ALL
--- Completeness - TotalRecords - K12
+-- Completeness - TotalRecords
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    'TotalRecords'                              AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'         AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                             AS DataElementName,
+    'Completeness'                                                  AS CharacteristicType,
+    CAST(
+        (SELECT TotalRecords FROM K12Counts) +
+        (SELECT TotalRecords FROM PsCounts) +
+        (SELECT TotalRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                               AS Value,
+    'TotalRecords'                                                  AS SubItemLabel,
+    NULL                                                            AS Remarks
 UNION ALL
--- Completeness - PopulatedRecords - K12
+-- Completeness - PopulatedRecords
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))     AS Value,
-    'PopulatedRecords'                          AS SubItemLabel,
-    'Source: FactK12StudentEnrollments'         AS Remarks
-FROM K12Counts
+    '{DataElementName}'                                             AS DataElementName,
+    'Completeness'                                                  AS CharacteristicType,
+    CAST(
+        (SELECT PopulatedRecords FROM K12Counts) +
+        (SELECT PopulatedRecords FROM PsCounts) +
+        (SELECT PopulatedRecords FROM AeCounts)
+    AS NVARCHAR(MAX))                                               AS Value,
+    'PopulatedRecords'                                              AS SubItemLabel,
+    NULL                                                            AS Remarks
 UNION ALL
--- RecordCount - PS
+-- Distribution - K-12
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'RecordCount'                               AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    NULL                                        AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'    AS Remarks
-FROM PsCounts
+    '{DataElementName}'                                             AS DataElementName,
+    'Distribution'                                                  AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM K12Counts) AS NVARCHAR(MAX)) AS Value,
+    'K-12'                                                          AS SubItemLabel,
+    NULL                                                            AS Remarks
 UNION ALL
--- Completeness - TotalRecords - PS
+-- Distribution - Postsecondary
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    'TotalRecords'                              AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'    AS Remarks
-FROM PsCounts
+    '{DataElementName}'                                             AS DataElementName,
+    'Distribution'                                                  AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM PsCounts) AS NVARCHAR(MAX))  AS Value,
+    'Postsecondary'                                                 AS SubItemLabel,
+    NULL                                                            AS Remarks
 UNION ALL
--- Completeness - PopulatedRecords - PS
+-- Distribution - Adult Education
 SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))     AS Value,
-    'PopulatedRecords'                          AS SubItemLabel,
-    'Source: FactPsStudentCourseTranscripts'    AS Remarks
-FROM PsCounts
-UNION ALL
--- RecordCount - AE
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'RecordCount'                               AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    NULL                                        AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'          AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - TotalRecords - AE
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(TotalRecords AS NVARCHAR(MAX))         AS Value,
-    'TotalRecords'                              AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'          AS Remarks
-FROM AeCounts
-UNION ALL
--- Completeness - PopulatedRecords - AE
-SELECT
-    '{DataElementName}'                         AS DataElementName,
-    'Completeness'                              AS CharacteristicType,
-    CAST(PopulatedRecords AS NVARCHAR(MAX))     AS Value,
-    'PopulatedRecords'                          AS SubItemLabel,
-    'Source: FactAeStudentEnrollments'          AS Remarks
-FROM AeCounts";
+    '{DataElementName}'                                             AS DataElementName,
+    'Distribution'                                                  AS CharacteristicType,
+    CAST((SELECT PopulatedRecords FROM AeCounts) AS NVARCHAR(MAX))  AS Value,
+    'Adult Education'                                               AS SubItemLabel,
+    NULL                                                            AS Remarks";
 
     public string AssessmentDescription =>
         "Assesses disability status flag (DisabilityStatusCode, Yes/No) across K-12 enrollment, " +
-        "postsecondary course transcripts, and adult education enrollment populations. Record count " +
-        "and completeness are reported per source via Remarks. Related K-12 indicators " +
+        "postsecondary course transcripts, and adult education enrollment populations. Reports a " +
+        "combined record count and completeness across all three sources, and a per-sector count " +
+        "of records with a populated DisabilityStatusCode as a distribution. Related K-12 indicators " +
         "(IdeaStatusId, PrimaryDisabilityTypeId, SecondaryDisabilityTypeId) are not profiled here.";
 }

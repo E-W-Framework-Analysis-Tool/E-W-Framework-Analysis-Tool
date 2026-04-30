@@ -1,0 +1,231 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none w-full">
+    <ChildContent>
+
+        @* Search *@
+        <div class="flex gap-4 pb-4">
+            <label class="input flex-1">
+                <i class="fa-solid fa-magnifying-glass opacity-50"></i>
+                <input type="search" placeholder="Search" @bind="_searchQuery" @bind:event="oninput" class="right-placeholder" />
+                <span class="label">@FilteredDisaggregates.Count() of @_allDisaggregates.Count</span>
+            </label>
+
+            <select class="select w-52" @bind="_selectedSector">
+                <option value="">All Sectors</option>
+                @foreach (var sector in Enum.GetValues<Sector>())
+                {
+                    <option value="@sector">@sector.GetDisplayName()</option>
+                }
+            </select>
+        </div>
+
+        @* List *@
+        <div class="join join-vertical w-full border-1 border-gray-300 rounded-lg">
+            <SortableList List="@FilteredDisaggregates" Columns="@DisaggregateColumnOptions()" DefaultSortColumn="@SortColumnNames.Name" Context="sortedDisaggregates">
+
+                @* Headers *@
+                <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
+                    <div class="grid grid-cols-24">
+                        <div class="col-span-20 cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Name)">
+                            Disaggregate
+                            <span class="fa-stack fa-xs">
+                                <i class="fas fa-stack-1x fa-sort-up @(sortedDisaggregates.IsActive(SortColumnNames.Name, true) ? "" : "opacity-50")"></i>
+                                <i class="fas fa-stack-1x fa-sort-down @(sortedDisaggregates.IsActive(SortColumnNames.Name, false) ? "" : "opacity-50")"></i>
+                            </span>
+                        </div>
+                        <div class="col-span-4 justify-self-center cursor-pointer" @onclick="() => sortedDisaggregates.Toggle(SortColumnNames.Status)">
+                            Status
+                            <span class="fa-stack fa-xs">
+                                <i class="fas fa-stack-1x fa-sort-up @(sortedDisaggregates.IsActive(SortColumnNames.Status, true) ? "" : "opacity-50")"></i>
+                                <i class="fas fa-stack-1x fa-sort-down @(sortedDisaggregates.IsActive(SortColumnNames.Status, false) ? "" : "opacity-50")"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                @* Add border between header and list *@
+                <div class="join-item border-b border-gray-300"></div>
+
+                @* List Items *@
+                @foreach (var (disaggregate, index) in sortedDisaggregates.List.Select((value, i) => (value, i)))
+                {
+                    var scores = GetScoresForDisaggregate(disaggregate);
+
+                    <div class="collapse collapse-arrow join-item border-b border-gray-300">
+                        <input type="checkbox" name="disaggregate-check-@index" />
+
+                        @* Name & Status *@
+                        <div class="collapse-title font-semibold">
+                            <div class="grid grid-cols-24 items-center">
+                                <div class="col-span-20">@disaggregate.Name</div>
+                                <div class="col-span-4 text-center text-sm">
+                                    @GetAggregateAvailabilityLabel(scores)
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Collapsed Content *@
+                        <div class="collapse-content text-sm">
+                            <div class="flex flex-col space-y-4">
+
+                                @* Description *@
+                                <p class="text-sm text-gray">@disaggregate.Description</p>
+
+                                @* Sectors *@
+                                <h5 class="font-semibold text-sm text-blue">Applicable Sectors</h5>
+                                <div class="flex gap-2">
+                                    @foreach (var sector in disaggregate.Sectors)
+                                    {
+                                        <div class="badge badge-secondary">@sector.GetDisplayName()</div>
+                                    }
+                                </div>
+
+                                @if (disaggregate.DataElementNames.Count == 0)
+                                {
+                                    <p class="text-sm text-gray italic">No matching data element defined for this disaggregate.</p>
+                                }
+                                else
+                                {
+                                    <h5 class="font-semibold text-sm text-blue">Data Elements</h5>
+                                    @foreach (var name in disaggregate.DataElementNames)
+                                    {
+                                        var score = scores.FirstOrDefault(s => s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                                        <div class="flex flex-col gap-1 pl-2 border-l-2 border-gray-200 mb-2">
+                                            <div class="font-semibold text-sm">
+                                                <i class="@GetAvailabilityIcon(score)"></i>
+                                                @name
+                                                <span class="font-normal text-gray ml-1">— @GetAvailabilityLabel(score)</span>
+                                            </div>
+
+                                            @if (score is { SourceScores.Count: > 0 })
+                                            {
+                                                <div class="flex flex-col gap-1 pl-4">
+                                                    @foreach (var source in score.SourceScores)
+                                                    {
+                                                        <div class="text-sm text-gray @(source.DataSourceName == score.Source ? "font-semibold" : "")">
+                                                            <i class="@GetSourceAvailabilityIcon(source.AvailabilityScore)"></i>
+                                                            @source.DataSourceName
+                                                            <i class="@GetDataSourceTypeIcon(source) text-gray-400 ml-1 text-xs"></i>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-sm text-gray italic pl-4">No assessment data available.</p>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </SortableList>
+        </div>
+
+    </ChildContent>
+</Card>
+
+@code {
+    [Parameter]
+    public List<DataElementScore> DisaggregateScores { get; set; } = [];
+
+    private IReadOnlyList<Disaggregate> _allDisaggregates = [];
+    private string _searchQuery = string.Empty;
+    private string? _selectedSector = string.Empty;
+
+    private static class SortColumnNames
+    {
+        public const string Name = nameof(Name);
+        public const string Status = nameof(Status);
+    }
+
+    private List<SortColumn<Disaggregate>> DisaggregateColumnOptions() =>
+    [
+        new SortColumn<Disaggregate> { Key = SortColumnNames.Name, Selector = d => d.Name, DefaultAscending = true },
+        new SortColumn<Disaggregate> { Key = SortColumnNames.Status, Selector = d => GetScoresForDisaggregate(d).Select(s => s.QualityScore).DefaultIfEmpty(0m).Max(), DefaultAscending = false },
+    ];
+
+    protected override void OnInitialized()
+    {
+        _allDisaggregates = EwFrameworkDisaggregates.Disaggregates;
+    }
+
+    private List<DataElementScore> GetScoresForDisaggregate(Disaggregate disaggregate)
+    {
+        if (disaggregate.DataElementNames.Count == 0)
+            return [];
+
+        return DisaggregateScores
+            .Where(s => disaggregate.DataElementNames.Any(name => s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+    }
+
+    private static string GetAvailabilityIcon(DataElementScore? score) =>
+        score switch
+        {
+            { IsAvailable: true, AvailabilityScore: AvailabilityJudgment.Available } => "fas fa-check-circle text-success",
+            { IsAvailable: true, AvailabilityScore: AvailabilityJudgment.PartiallyAvailable } => "fas fa-triangle-exclamation text-warning",
+            _ => "fas fa-times-circle text-error"
+        };
+
+    private static string GetAvailabilityLabel(DataElementScore? score) =>
+        score switch
+        {
+            { AvailabilityScore: AvailabilityJudgment.Available } => "Available",
+            { AvailabilityScore: AvailabilityJudgment.PartiallyAvailable } => "Partial",
+            _ => "Not Available"
+        };
+
+    private static string GetAggregateAvailabilityLabel(List<DataElementScore> scores)
+    {
+        if (scores.Count == 0)
+            return "Not Available";
+
+        if (scores.Any(s => s.AvailabilityScore == AvailabilityJudgment.Available))
+            return "Available";
+
+        if (scores.Any(s => s.AvailabilityScore == AvailabilityJudgment.PartiallyAvailable))
+            return "Partial";
+
+        return "Not Available";
+    }
+
+    private static string GetSourceAvailabilityIcon(AvailabilityJudgment judgment) =>
+        judgment switch
+        {
+            AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+            AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+            AvailabilityJudgment.NotAvailable => "fas fa-times-circle text-error",
+            _ => "fas fa-question-circle text-gray-400"
+        };
+
+    private static string GetDataSourceTypeIcon(DataElementSourceScore source) =>
+        source.SourceType switch
+        {
+            nameof(DataSourceType.EdFiApi) => "fas fa-network-wired",
+            nameof(DataSourceType.CedsDw) => "fas fa-warehouse",
+            nameof(DataSourceType.Custom) => "fas fa-list-check",
+            nameof(DataSourceType.EcsState) => "fas fa-map",
+            _ => "fas fa-database"
+        };
+
+    private IEnumerable<Disaggregate> FilteredDisaggregates =>
+        _allDisaggregates
+            .Where(d =>
+                string.IsNullOrWhiteSpace(_searchQuery)
+                || d.Name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)
+                || d.Description.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
+            .Where(d =>
+                string.IsNullOrWhiteSpace(_selectedSector)
+                || d.Sectors.Contains(Enum.Parse<Sector>(_selectedSector))
+            );
+}
