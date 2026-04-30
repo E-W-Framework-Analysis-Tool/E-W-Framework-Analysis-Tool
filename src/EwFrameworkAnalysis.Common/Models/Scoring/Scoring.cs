@@ -13,11 +13,11 @@ public class FrameworkCoverage
     public List<QuestionCoverageScore> QuestionScores { get; init; } = [];
 
     // Flat projections — no recalculation, just different views of QuestionScores
-    public IEnumerable<IndicatorCoverageScore> IndicatorScores =>
-        QuestionScores.SelectMany(q => q.IndicatorScores);
+    public IReadOnlyList<IndicatorCoverageScore> IndicatorScores =>
+        QuestionScores.SelectMany(q => q.IndicatorScores).ToList();
 
-    public IEnumerable<DataElementScore> DataElementScores =>
-        IndicatorScores.SelectMany(i => i.DataElementScores);
+    public IReadOnlyList<DataElementScore> DataElementScores =>
+        IndicatorScores.SelectMany(i => i.DataElementScores).ToList();
 
     public decimal OverallCoverage => QuestionScores.Count == 0 ? 0
         : Math.Round(QuestionScores.Average(q => q.CoverageScore), 2);

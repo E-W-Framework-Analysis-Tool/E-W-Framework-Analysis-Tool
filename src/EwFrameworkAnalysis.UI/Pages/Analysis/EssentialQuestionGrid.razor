@@ -116,7 +116,7 @@
 
 @code {
     [Parameter]
-    public List<QuestionCoverageScore> QuestionScores { get; set; } = [];
+    public IReadOnlyList<QuestionCoverageScore> QuestionScores { get; set; } = [];
 
     private List<EssentialQuestion> _allQuestions = [];
     private string _searchQuery = string.Empty;

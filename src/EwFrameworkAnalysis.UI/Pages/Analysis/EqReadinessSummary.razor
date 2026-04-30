@@ -54,7 +54,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public List<QuestionCoverageScore> QuestionScores { get; set; } = [];
+    public IReadOnlyList<QuestionCoverageScore> QuestionScores { get; set; } = [];
 
     [Parameter, EditorRequired]
     public IReadOnlyList<SectorCoverageScore> SectorCoverageScores { get; set; } = [];

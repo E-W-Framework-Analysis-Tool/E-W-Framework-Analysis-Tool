@@ -112,7 +112,7 @@
     public SourceTypeCoverageBreakdown CoverageScores { get; set; } = new();
 
     [Parameter, EditorRequired]
-    public List<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
+    public IReadOnlyList<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
 
     private record RoiItem(string Name, List<string> Indicators, decimal PotentialImpact);
 

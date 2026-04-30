@@ -165,7 +165,7 @@
 
 @code {
     [Parameter]
-    public List<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
+    public IReadOnlyList<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
 
     private IEnumerable<Indicator> _allIndicators = [];
     private List<EssentialQuestion> _allQuestions = [];
