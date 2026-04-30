@@ -33,13 +33,14 @@ public class MigrationResult
 /// </summary>
 public static class AnalysisProjectMigrator
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     // Each entry migrates from index N to N+1.
     // _migrations[0] = V1 → V2, _migrations[1] = V2 → V3, etc.
     private static readonly List<Func<JsonObject, JsonObject>> _migrations =
     [
         MigrateV1ToV2,
+        MigrateV2ToV3,
     ];
 
     /// <summary>
@@ -80,6 +81,19 @@ public static class AnalysisProjectMigrator
     private static JsonObject MigrateV1ToV2(JsonObject project)
     {
         RenameDiscriminator(project, "IntegerRange", "NumericalRange");
+        return project;
+    }
+
+    // -------------------------------------------------------------------------
+    // V2 → V3: Introduce top-level actionItems array
+    // -------------------------------------------------------------------------
+    private static JsonObject MigrateV2ToV3(JsonObject project)
+    {
+        // If the property is already present (e.g. partially migrated data),
+        // leave it untouched.
+        if (!project.ContainsKey("actionItems"))
+            project["actionItems"] = new JsonArray();
+
         return project;
     }
 

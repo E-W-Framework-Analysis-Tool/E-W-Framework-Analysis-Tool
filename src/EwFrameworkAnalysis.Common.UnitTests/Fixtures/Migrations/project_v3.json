@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 3,
+  "id": "fixture-project-001",
+  "title": "Migration Fixture Project",
+  "createdAt": "2025-01-01T00:00:00+00:00",
+  "lastModifiedAt": "2025-01-01T00:00:00+00:00",
+  "dataSources": [
+    {
+      "id": "fixture-ds-001",
+      "name": "CEDS Data Warehouse",
+      "type": "CedsDataWarehouse",
+      "enabled": true,
+      "assessments": [
+        {
+          "id": "fixture-assessment-001",
+          "name": "Data Profile 2025-01-01",
+          "active": true,
+          "dataElementAssessments": [
+            {
+              "dataElementName": "Student Age",
+              "characteristics": [
+                {
+                  "$type": "RecordCount",
+                  "value": 1500
+                },
+                {
+                  "$type": "NumericalRange",
+                  "minimum": 5,
+                  "maximum": 21,
+                  "label": "Age Range"
+                }
+              ]
+            },
+            {
+              "dataElementName": "Suspensions and Expulsions (K-12)",
+              "characteristics": [
+                {
+                  "$type": "RecordCount",
+                  "value": 1020
+                },
+                {
+                  "$type": "Completeness",
+                  "totalRecords": 1020,
+                  "populatedRecords": 850,
+                  "attributeName": "IncidentDate"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actionItems": []
+}

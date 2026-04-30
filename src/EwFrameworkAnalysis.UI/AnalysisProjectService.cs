@@ -102,6 +102,15 @@ public class AnalysisProjectService
             // Handle save errors gracefully
         }
     }
+    public IReadOnlyList<ActionItem> ActionItems => Project.ActionItems;
+
+    public async Task SaveActionItemsAsync(List<ActionItem> items)
+    {
+        Project.ActionItems = items;
+        Project.LastModifiedAt = DateTimeOffset.Now;
+        await SaveAsync();
+        Notify();
+    }
 
     public async Task ActivateDemoProjectAsync(string demoJson)
     {

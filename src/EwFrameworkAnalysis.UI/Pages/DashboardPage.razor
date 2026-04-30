@@ -16,7 +16,9 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FrameworkCoverageCard QuestionScores="@_coverage.QuestionScores" />
         <DataElementStatCard DataSourceCounts="@GetDataElementCounts()" />
-        <ActionItemsCard DataSources="@ProjectSvc.DataSources" />
+        <ActionItemsCard Items="ProjectSvc.ActionItems"
+                         ItemsChanged="async items => await ProjectSvc.SaveActionItemsAsync(items)"
+                         DataSources="ProjectSvc.DataSources" />
     </div>
 
     <!-- Main Content Area -->

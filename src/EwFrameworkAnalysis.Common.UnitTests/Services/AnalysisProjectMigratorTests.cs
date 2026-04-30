@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using EwFrameworkAnalysis.Common.Services;
 using Xunit.Abstractions;
@@ -20,7 +21,6 @@ public class AnalysisProjectMigratorTests
     private static string LoadFixture(string filename)
     {
         var assembly = typeof(AnalysisProjectMigratorTests).Assembly;
-        // Embedded resource names use dots as separators and are prefixed with the assembly name
         var resourceName = $"{assembly.GetName().Name}.Fixtures.Migrations.{filename}";
         using var stream = assembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
@@ -65,7 +65,8 @@ public class AnalysisProjectMigratorTests
     [Fact]
     public void MigrateIfNeeded_AlreadyCurrentVersion_ReturnsUnchanged()
     {
-        var json = LoadFixture("project_v2.json");
+        // project_v3.json is the current version — must not be migrated
+        var json = LoadFixture("project_v3.json");
         var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
 
         Assert.True(result.Success);
@@ -74,16 +75,16 @@ public class AnalysisProjectMigratorTests
             JsonNode.Parse(json)!.ToJsonString(),
             JsonNode.Parse(result.Json!)!.ToJsonString()
         );
-        _output.WriteLine("V2 passed through unchanged.");
+        _output.WriteLine("V3 passed through unchanged.");
     }
 
     [Fact]
     public void MigrateIfNeeded_MissingSchemaVersion_TreatedAsV1()
     {
-        // A project with no schemaVersion field should be treated as V1
         var json = """{ "title": "Old Project", "dataSources": [] }""";
         var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
 
+        Assert.True(result.Success);
         Assert.Equal(AnalysisProjectMigrator.CurrentSchemaVersion, GetSchemaVersion(result.Json!));
         _output.WriteLine($"No-version project migrated to V{GetSchemaVersion(result.Json!)}.");
     }
@@ -106,7 +107,7 @@ public class AnalysisProjectMigratorTests
     public void MigrateV1ToV2_RenamesIntegerRangeDiscriminator()
     {
         var v1 = LoadFixture("project_v1.json");
-        Assert.Equal(1, GetSchemaVersion(v1)); // sanity-check fixture
+        Assert.Equal(1, GetSchemaVersion(v1));
 
         var result = AnalysisProjectMigrator.MigrateIfNeeded(v1);
 
@@ -118,27 +119,39 @@ public class AnalysisProjectMigratorTests
     }
 
     [Fact]
-    public void MigrateV1ToV2_UpdatesSchemaVersion()
+    public void MigrateV1_ProducesCurrentSchemaVersion()
+    {
+        // Running V1 through the full migrator should reach CurrentSchemaVersion,
+        // not stop at V2. The old test asserting == 2 was wrong once V3 existed.
+        var v1 = LoadFixture("project_v1.json");
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(v1);
+
+        Assert.Equal(AnalysisProjectMigrator.CurrentSchemaVersion, GetSchemaVersion(result.Json!));
+        _output.WriteLine($"V1 migrated to current version V{GetSchemaVersion(result.Json!)}.");
+    }
+
+    [Fact]
+    public void MigrateV1_ReportsCorrectMigrationsApplied()
     {
         var v1 = LoadFixture("project_v1.json");
         var result = AnalysisProjectMigrator.MigrateIfNeeded(v1);
 
-        Assert.Equal(2, GetSchemaVersion(result.Json!));
-        _output.WriteLine($"Schema version updated to {GetSchemaVersion(result.Json!)}.");
+        // V1 → V2 → V3 = 2 migrations
+        Assert.Equal(AnalysisProjectMigrator.CurrentSchemaVersion - 1, result.MigrationsApplied);
+        _output.WriteLine($"{result.MigrationsApplied} migration(s) applied from V1.");
     }
 
     [Fact]
-    public void MigrateV1ToV2_ProducesExpectedOutput()
+    public void MigrateV1_ProducesExpectedOutput()
     {
         var v1 = LoadFixture("project_v1.json");
         var result = AnalysisProjectMigrator.MigrateIfNeeded(v1);
 
         Assert.True(result.Success);
-        Assert.Equal(2, GetSchemaVersion(result.Json!));
+        Assert.Equal(AnalysisProjectMigrator.CurrentSchemaVersion, GetSchemaVersion(result.Json!));
         Assert.False(ContainsDiscriminator(result.Json!, "IntegerRange"));
         Assert.True(ContainsDiscriminator(result.Json!, "NumericalRange"));
 
-        // Non-migration data is preserved
         var node = JsonNode.Parse(result.Json!)!.AsObject();
         Assert.Equal("fixture-project-001", node["id"]?.GetValue<string>());
         Assert.Equal("Migration Fixture Project", node["title"]?.GetValue<string>());
@@ -147,13 +160,12 @@ public class AnalysisProjectMigratorTests
     }
 
     [Fact]
-    public void MigrateV1ToV2_PreservesNonDiscriminatorData()
+    public void MigrateV1_PreservesNonDiscriminatorData()
     {
         var v1 = LoadFixture("project_v1.json");
         var v1Node = JsonNode.Parse(v1)!.AsObject();
         var result = JsonNode.Parse(AnalysisProjectMigrator.MigrateIfNeeded(v1).Json!)!.AsObject();
 
-        // Title, id, timestamps, and data structure should be untouched
         Assert.Equal(v1Node["title"]?.GetValue<string>(), result["title"]?.GetValue<string>());
         Assert.Equal(v1Node["id"]?.GetValue<string>(), result["id"]?.GetValue<string>());
 
@@ -164,10 +176,8 @@ public class AnalysisProjectMigratorTests
     }
 
     [Fact]
-    public void MigrateV1ToV2_WithNoIntegerRangeCharacteristics_StillUpdatesVersion()
+    public void MigrateV1ToV2_WithNoIntegerRangeCharacteristics_StillReachesCurrentVersion()
     {
-        // A V1 project that happens to have no IntegerRange characteristics
-        // should still be bumped to V2
         var json = """
             {
               "schemaVersion": 1,
@@ -179,9 +189,101 @@ public class AnalysisProjectMigratorTests
 
         var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
 
-        Assert.Equal(2, GetSchemaVersion(result.Json!));
+        Assert.Equal(AnalysisProjectMigrator.CurrentSchemaVersion, GetSchemaVersion(result.Json!));
         Assert.False(ContainsDiscriminator(result.Json!, "IntegerRange"));
-        _output.WriteLine("Version bumped even with no IntegerRange characteristics present.");
+        _output.WriteLine("Version reached current even with no IntegerRange characteristics present.");
+    }
+
+    // -------------------------------------------------------------------------
+    // V2 → V3: actionItems array added
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void MigrateV2ToV3_AddsActionItemsArray()
+    {
+        var v2 = LoadFixture("project_v2.json");
+        Assert.Equal(2, GetSchemaVersion(v2));
+
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(v2);
+
+        var node = JsonNode.Parse(result.Json!)!.AsObject();
+        Assert.True(node.ContainsKey("actionItems"), "actionItems key should be present after migration");
+        Assert.Equal(JsonValueKind.Array, node["actionItems"]!.GetValueKind());
+        _output.WriteLine("actionItems array added by V2→V3 migration.");
+    }
+
+    [Fact]
+    public void MigrateV2ToV3_ActionItemsIsEmptyArray_WhenNotPreviouslyPresent()
+    {
+        var v2 = LoadFixture("project_v2.json");
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(v2);
+
+        var node = JsonNode.Parse(result.Json!)!.AsObject();
+        var actionItems = node["actionItems"]!.AsArray();
+        Assert.Empty(actionItems);
+        _output.WriteLine("actionItems defaults to empty array.");
+    }
+
+    [Fact]
+    public void MigrateV2ToV3_PreservesExistingActionItems_WhenAlreadyPresent()
+    {
+        // Defensive: if somehow actionItems already exists (e.g. partial migration),
+        // the migration should not clobber it.
+        var json = """
+            {
+              "schemaVersion": 2,
+              "id": "test-id",
+              "title": "Pre-existing Items",
+              "dataSources": [],
+              "actionItems": [
+                { "id": "abc", "title": "Existing item", "isResolved": false }
+              ]
+            }
+            """;
+
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
+
+        var node = JsonNode.Parse(result.Json!)!.AsObject();
+        var actionItems = node["actionItems"]!.AsArray();
+        Assert.Single(actionItems);
+        Assert.Equal("Existing item", actionItems[0]!["title"]?.GetValue<string>());
+        _output.WriteLine("Pre-existing actionItems preserved through V2→V3 migration.");
+    }
+
+    [Fact]
+    public void MigrateV2ToV3_UpdatesSchemaVersion()
+    {
+        var v2 = LoadFixture("project_v2.json");
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(v2);
+
+        Assert.Equal(3, GetSchemaVersion(result.Json!));
+        _output.WriteLine($"Schema version updated to {GetSchemaVersion(result.Json!)}.");
+    }
+
+    [Fact]
+    public void MigrateV2ToV3_PreservesOtherData()
+    {
+        var v2 = LoadFixture("project_v2.json");
+        var v2Node = JsonNode.Parse(v2)!.AsObject();
+        var result = JsonNode.Parse(AnalysisProjectMigrator.MigrateIfNeeded(v2).Json!)!.AsObject();
+
+        Assert.Equal(v2Node["title"]?.GetValue<string>(), result["title"]?.GetValue<string>());
+        Assert.Equal(v2Node["id"]?.GetValue<string>(), result["id"]?.GetValue<string>());
+
+        var v2Sources = v2Node["dataSources"]?.AsArray();
+        var resultSources = result["dataSources"]?.AsArray();
+        Assert.Equal(v2Sources?.Count, resultSources?.Count);
+        _output.WriteLine("Non-actionItems data preserved through V2→V3 migration.");
+    }
+
+    [Fact]
+    public void MigrateV2_ReportsOneMigrationApplied()
+    {
+        var v2 = LoadFixture("project_v2.json");
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(v2);
+
+        Assert.Equal(1, result.MigrationsApplied);
+        _output.WriteLine("Exactly 1 migration applied from V2.");
     }
 
     // -------------------------------------------------------------------------
