@@ -10,35 +10,30 @@ public record DataSourceScore(string Name, double Score);
 public class PdfReportService(IJSRuntime jsRuntime)
 {
     public async Task GenerateReportAsync(
-        List<QuestionScore> questionScores,
-        List<SectorReadinessResult> sectorReadinessScores,
-        OverallReadinessResults overallReadinessScores,
+        FrameworkCoverage coverage,
         string? projectTitle,
-        List<DataSourceScore> dataSourceScores,
-        List<IndicatorScore> indicatorScores)
+        List<DataSourceScore> dataSourceScores)
     {
-
         var eqBands = new[]
         {
-            new { label = "90\u2013100%", count = questionScores.Count(q => q.ReadinessScore >= 0.90m) },
-            new { label = "80\u201390%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.80m and < 0.90m) },
-            new { label = "70\u201380%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.70m and < 0.80m) },
-            new { label = "60\u201370%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.60m and < 0.70m) },
-            new { label = "50\u201360%",  count = questionScores.Count(q => q.ReadinessScore is >= 0.50m and < 0.60m) },
-            new { label = "<50%",         count = questionScores.Count(q => q.ReadinessScore < 0.50m) },
+            new { label = "90\u2013100%", count = coverage.QuestionScores.Count(q => q.CoverageScore >= 0.90m) },
+            new { label = "80\u201390%",  count = coverage.QuestionScores.Count(q => q.CoverageScore is >= 0.80m and < 0.90m) },
+            new { label = "70\u201380%",  count = coverage.QuestionScores.Count(q => q.CoverageScore is >= 0.70m and < 0.80m) },
+            new { label = "60\u201370%",  count = coverage.QuestionScores.Count(q => q.CoverageScore is >= 0.60m and < 0.70m) },
+            new { label = "50\u201360%",  count = coverage.QuestionScores.Count(q => q.CoverageScore is >= 0.50m and < 0.60m) },
+            new { label = "<50%",         count = coverage.QuestionScores.Count(q => q.CoverageScore < 0.50m) },
         };
 
-        var sectorReadiness = sectorReadinessScores
-            .OrderByDescending(s => s.ReadinessScore)
-            .Select(s => new { sector = s.Sector.GetDisplayName(), score = (double)s.ReadinessScore })
+        var sectorCoverage = coverage.BySector
+            .OrderByDescending(s => s.CoverageScore)
+            .Select(s => new { sector = s.Sector.GetDisplayName(), score = (double)s.CoverageScore })
             .ToArray();
 
         var questions = EwFrameworkEssentialQuestions.Questions
             .Select(eq =>
             {
-                var qs = questionScores.FirstOrDefault(q => q.QuestionNumber == eq.QuestionNumber);
+                var qs = coverage.QuestionScores.FirstOrDefault(q => q.QuestionNumber == eq.QuestionNumber);
 
-                // For each distinct data element, take the best (lowest enum value) availability across all indicators
                 var distinctAvailability = qs?.IndicatorScores
                     .SelectMany(i => i.DataElementScores)
                     .GroupBy(de => de.DataElementName)
@@ -54,7 +49,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
                     question = eq.Question,
                     summary = eq.QuestionSummary,
                     sectors = eq.ApplicableSectors.Select(s => s.GetDisplayName()).ToArray(),
-                    readinessScore = qs != null ? (double)qs.ReadinessScore : 0.0,
+                    coverageScore = qs != null ? (double)qs.CoverageScore : 0.0,
                     indicatorCount = qs?.IndicatorScores.Count ?? 0,
                     dataElements = new
                     {
@@ -69,7 +64,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
                             return new
                             {
                                 name = indName,
-                                readinessScore = (double)scored.ReadinessScore,
+                                coverageScore = (double)scored.CoverageScore,
                                 sectors = scored.Sectors.Select(s => s.ToString()).ToArray(),
                             };
                         }
@@ -77,7 +72,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
                         var fallbackSectors = EwFrameworkIndicators.Indicators.TryGetValue(indName, out var def)
                             ? def.Sectors.Select(s => s.ToString()).ToArray()
                             : [];
-                        return new { name = indName, readinessScore = 0.0, sectors = fallbackSectors };
+                        return new { name = indName, coverageScore = 0.0, sectors = fallbackSectors };
                     }).ToArray(),
                     distinctDataElements = qs?.IndicatorScores
                         .SelectMany(i => i.DataElementScores)
@@ -91,7 +86,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
             })
             .ToArray();
 
-        var roiItems = indicatorScores
+        var roiItems = coverage.IndicatorScores
             .DistinctBy(i => i.IndicatorCode)
             .SelectMany(i => i.DataElementScores
                 .Where(de => de.QualityScore < 1.0m)
@@ -114,17 +109,17 @@ public class PdfReportService(IJSRuntime jsRuntime)
             summary = new
             {
                 eqBands,
-                sectorReadiness,
-                dataSourceReadiness = dataSourceScores
+                sectorCoverage,
+                dataSourceCoverage = dataSourceScores
                     .Select(ds => new { name = ds.Name, score = ds.Score })
                     .ToArray(),
             },
-            overallReadiness = new
+            overallCoverage = new
             {
-                manual = (double)overallReadinessScores.CustomDataSourceReadiness,
-                automated = (double)overallReadinessScores.AutomatedDataSourceReadiness,
-                ecs = (double)overallReadinessScores.EcsReadiness,
-                combined = (double)overallReadinessScores.CombinedReadiness,
+                manual = (double)coverage.BySourceType.Manual,
+                automated = (double)coverage.BySourceType.Automated,
+                ecs = (double)coverage.BySourceType.Ecs,
+                combined = (double)coverage.BySourceType.Combined,
                 roiItems,
             },
             questions,

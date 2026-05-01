@@ -55,7 +55,7 @@
                 @* List Items *@                
                 @foreach (var (indicator, index) in sortedIndicators.List.Select((value, i) => (value, i)))
                 {
-                    var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorScore();
+                    var indicatorScore = GetIndicatorScoreByCode(indicator.Name) ?? new IndicatorCoverageScore();
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
                         <input type="checkbox" name="indicator-check-@index" />
@@ -68,8 +68,8 @@
                                     <div class="justify-start items-center font-normal text-gray-500">@indicator.Definition</div>
                                 </div>
                                 <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
-                                    <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"> </progress>
-                                    @indicatorScore.ReadinessScore.ToString("0.##%")
+                                    <progress class="progress @GetProgressBarColor(indicatorScore.CoverageScore)" value="@(indicatorScore.CoverageScore * 100)" max="100"> </progress>
+                                    @indicatorScore.CoverageScore.ToString("0.##%")
                                 </div>
                             </div>
                         </div>
@@ -165,7 +165,7 @@
 
 @code {
     [Parameter]
-    public List<IndicatorScore> IndicatorScores { get; set; } = [];
+    public IReadOnlyList<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
 
     private IEnumerable<Indicator> _allIndicators = [];
     private List<EssentialQuestion> _allQuestions = [];
@@ -182,7 +182,7 @@
     private List<SortColumn<Indicator>> IndicatorColumnOptions() =>
     [
         new SortColumn<Indicator> { Key = SortColumnNames.Name, Selector = eq => eq.Name, DefaultAscending = true },
-        new SortColumn<Indicator> { Key = SortColumnNames.Score, Selector = i => GetIndicatorScoreByCode(i.Name)?.ReadinessScore ?? 0m, DefaultAscending = false },
+        new SortColumn<Indicator> { Key = SortColumnNames.Score, Selector = i => GetIndicatorScoreByCode(i.Name)?.CoverageScore ?? 0m, DefaultAscending = false },
     ];
 
     protected override void OnInitialized()
@@ -191,7 +191,7 @@
         _allQuestions = EwFrameworkEssentialQuestions.Questions;
     }
 
-    private IndicatorScore? GetIndicatorScoreByCode(string indicatorCode) =>
+    private IndicatorCoverageScore? GetIndicatorScoreByCode(string indicatorCode) =>
         IndicatorScores.FirstOrDefault(x => x.IndicatorCode == indicatorCode);
 
     private string GetProgressBarColor(decimal score) =>
@@ -204,7 +204,7 @@
             _ => "bg-gray-200"
         };
 
-    private string GetDataElementIsAvailableIcon(IndicatorScore indicatorScore, string dataElementName)
+    private string GetDataElementIsAvailableIcon(IndicatorCoverageScore indicatorScore, string dataElementName)
     {
         var score = indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
         if (score is { IsAvailable: true })

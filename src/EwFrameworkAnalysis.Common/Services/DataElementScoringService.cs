@@ -1,4 +1,3 @@
-
 using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Models.Scoring;
@@ -6,99 +5,102 @@ using EwFrameworkAnalysis.Common.Scoring;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
-public class DataElementScoringService
+public class FrameworkCoverageService
 {
-    private DataElementScoringRuleRegistry _ruleRegistry;
+    private readonly DataElementScoringRuleRegistry _ruleRegistry;
 
-    public DataElementScoringService(DataElementScoringRuleRegistry ruleRegistry)
+    public FrameworkCoverageService(DataElementScoringRuleRegistry ruleRegistry)
     {
         _ruleRegistry = ruleRegistry;
     }
 
-    public List<QuestionScore> CalculateScoresForActiveData(List<DataSourceAssessmentWithSource> assessments)
+    /// <summary>
+    /// The single entry point. Pass in active assessments, get back a fully populated
+    /// FrameworkCoverage result. All derived views (BySector, BySourceType, etc.)
+    /// are either computed here or derived from the result's own properties.
+    /// </summary>
+    public FrameworkCoverage CalculateFrameworkCoverage(IEnumerable<DataSourceAssessmentWithSource> assessments)
     {
-        var questions = EwFrameworkEssentialQuestions.Questions;
+        var assessmentList = assessments.ToList();
+        var questionScores = ScoreQuestions(assessmentList);
 
-        var questionScores = new List<QuestionScore>();
-        foreach (var question in questions)
+        return new FrameworkCoverage
         {
-
-            var questionScore = GetQuestionScores(question, assessments);
-
-            questionScores.Add(questionScore);
-        }
-
-        return questionScores;
+            QuestionScores = questionScores,
+            BySourceType = new SourceTypeCoverageBreakdown
+            {
+                Combined = AverageCoverage(questionScores),
+                Automated = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType is DataSourceType.EdFiApi or DataSourceType.CedsDw)])),
+                Manual = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType == DataSourceType.Custom)])),
+                Ecs = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType == DataSourceType.EcsState)])),
+            }
+        };
     }
 
-    private QuestionScore GetQuestionScores(EssentialQuestion question, List<DataSourceAssessmentWithSource> assessments)
+    // --- Private implementation ---
+
+    private List<QuestionCoverageScore> ScoreQuestions(List<DataSourceAssessmentWithSource> assessments)
+    {
+        return [.. EwFrameworkEssentialQuestions.Questions.Select(q => ScoreQuestion(q, assessments))];
+    }
+
+    private QuestionCoverageScore ScoreQuestion(EssentialQuestion question, List<DataSourceAssessmentWithSource> assessments)
     {
         var indicatorScores = question.RelatedIndicatorNames
-            .Select(indicatorName => GetIndicatorScores(indicatorName, assessments))
-            .Where(score => score.IndicatorCode != string.Empty)
+            .Select(name => ScoreIndicator(name, assessments))
+            .Where(s => s.IndicatorCode != string.Empty)
             .ToList();
 
-        return new QuestionScore
+        return new QuestionCoverageScore
         {
             QuestionNumber = question.QuestionNumber,
             IndicatorScores = indicatorScores,
-            ReadinessScore = indicatorScores.Count == 0
+            CoverageScore = indicatorScores.Count == 0
                 ? 0
-                : Math.Round(indicatorScores.Average(i => i.ReadinessScore), 2)
+                : Math.Round(indicatorScores.Average(i => i.CoverageScore), 2)
         };
     }
 
-    private IndicatorScore GetIndicatorScores(string indicatorName, List<DataSourceAssessmentWithSource> assessments)
+    private IndicatorCoverageScore ScoreIndicator(string indicatorName, List<DataSourceAssessmentWithSource> assessments)
     {
         if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
-            return new IndicatorScore { };
+            return new IndicatorCoverageScore();
 
         var dataElementScores = indicator.DataElementNames
-            .Select(dataElementName => GetDataElementScore(dataElementName, indicatorName, assessments))
-            .Where(score => score.DataElementName != string.Empty)
+            .Select(name => ScoreDataElement(name, indicatorName, assessments))
+            .Where(s => s.DataElementName != string.Empty)
             .ToList();
 
-        var indicatorScore = new IndicatorScore
+        return new IndicatorCoverageScore
         {
             IndicatorCode = indicatorName,
             Sectors = indicator.Sectors,
-            DataElementScores = dataElementScores
+            DataElementScores = dataElementScores,
+            CoverageScore = dataElementScores.Count == 0
+                ? 0
+                : Math.Round(dataElementScores.Average(x => x.QualityScore), 2)
         };
-
-        // Weighted readiness: Available=1.0, PartiallyAvailable=0.5, NotAvailable=0.0
-        if (indicatorScore.DataElementScores.Count > 0)
-        {
-            indicatorScore.ReadinessScore =
-                Math.Round(indicatorScore.DataElementScores.Average(x => x.QualityScore), 2);
-        }
-
-        return indicatorScore;
     }
 
-    private DataElementScore GetDataElementScore(string dataElementName, string indicatorName, List<DataSourceAssessmentWithSource> assessments)
+    private DataElementScore ScoreDataElement(string dataElementName, string indicatorName, List<DataSourceAssessmentWithSource> assessments)
     {
-
         EwFrameworkDataElements.Elements.TryGetValue(dataElementName, out var dataElement);
 
-        // Flatten assessed data elements with their parent assessment for tracking
-        var assessedDataElementsWithSource = assessments
-            .Where(x => x.Active ?? false)
-            .SelectMany(assessment => assessment.DataElementAssessments.Select(dataElem => new { Assessment = assessment, DataElement = dataElem }))
+        var matches = assessments
+            .Where(a => a.Active ?? false)
+            .SelectMany(a => a.DataElementAssessments
+                .Where(d => d.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase))
+                .Select(d => new DataElementAssessmentContext
+                {
+                    AssessmentId = a.Id,
+                    AssessmentName = a.Name,
+                    DataSourceType = a.DataSourceType,
+                    DataSourceName = a.DataSourceName,
+                    Assessment = d
+                }))
             .ToList();
 
-        var matches = assessedDataElementsWithSource
-            .Where(x => x.DataElement.DataElementName.Equals(dataElementName, StringComparison.OrdinalIgnoreCase))
-            .Select(x => new DataElementAssessmentContext
-            {
-                AssessmentId = x.Assessment.Id,
-                AssessmentName = x.Assessment.Name,
-                DataSourceType = x.Assessment.DataSourceType,
-                DataSourceName = x.Assessment.DataSourceName,
-                Assessment = x.DataElement
-            })
-            .ToList();
-
-        var scoringRequest = new DataElementScoringRequest
+        var request = new DataElementScoringRequest
         {
             DataElementName = dataElementName,
             IndicatorName = indicatorName,
@@ -106,64 +108,18 @@ public class DataElementScoringService
             Matches = matches
         };
 
-        var rule = _ruleRegistry.Resolve(scoringRequest.ScoringRuleName);
-        return rule.Score(scoringRequest);
+        return _ruleRegistry.Resolve(request.ScoringRuleName).Score(request);
     }
 
-    public List<DataElementScore> CalculateDisaggregateScores(List<DataSourceAssessmentWithSource> assessments)
+    private static decimal AverageCoverage(List<QuestionCoverageScore> questionScores)
     {
-        return [.. EwFrameworkDisaggregates.Disaggregates
-            .SelectMany(d => d.DataElementNames.Count > 0
-                ? d.DataElementNames.Select(name => GetDataElementScore(name, d.Name, assessments))
-                : [new DataElementScore { DataElementName = d.Name }])];
-    }
-
-    public List<SectorReadinessResult> CalculateSectorReadiness(IEnumerable<QuestionScore> questionScores)
-    {
-        var uniqueIndicators = questionScores
+        var indicatorScores = questionScores
             .SelectMany(q => q.IndicatorScores)
-            .GroupBy(i => i.IndicatorCode)
-            .Select(g => g.First())
+            .Select(i => i.CoverageScore)
             .ToList();
 
-        return [..uniqueIndicators
-            .SelectMany(i => i.Sectors.Select(s => new
-            {
-                Sector = s,
-                i.ReadinessScore
-            }))
-            .GroupBy(x => x.Sector)
-            .Select(g => new SectorReadinessResult
-            {
-                Sector = g.Key,
-                ReadinessScore = Math.Round(g.Average(x => x.ReadinessScore), 2),
-                IndicatorCount = g.Count()
-            })
-            .OrderBy(r => r.Sector)];
-    }
-
-    public decimal CalculateReadinessForAssessments(List<DataSourceAssessmentWithSource> assessments)
-    {
-        if (assessments.Count == 0) return 0;
-
-        var scores = CalculateScoresForActiveData(assessments)
-            .SelectMany(q => q.IndicatorScores)
-            .Select(i => i.ReadinessScore)
-            .ToList();
-
-        return scores.Count == 0 ? 0 : Math.Round(scores.Average(), 2);
-    }
-
-    public OverallReadinessResults CalculateOverallReadinessScores(List<DataSourceAssessmentWithSource> assessments)
-    {
-        var active = assessments.Where(a => a.Active == true).ToList();
-
-        return new OverallReadinessResults
-        {
-            CustomDataSourceReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.Custom)]),
-            AutomatedDataSourceReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.EdFiApi || a.DataSourceType == DataSourceType.CedsDw)]),
-            EcsReadiness = CalculateReadinessForAssessments([.. active.Where(a => a.DataSourceType == DataSourceType.EcsState)]),
-            CombinedReadiness = CalculateReadinessForAssessments(active),
-        };
+        return indicatorScores.Count == 0
+            ? 0
+            : Math.Round(indicatorScores.Average(), 2);
     }
 }

@@ -7,71 +7,47 @@
 @using EwFrameworkAnalysis.UI.Pages.Analysis
 @using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
-@inject DataElementScoringService ScoringSvc
+@inject FrameworkCoverageService CoverageSvc
 @inject PdfReportService PdfReportSvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Header -->
     <AnalysisHeader OnGenerateReport="GenerateReportAsync"/>
 
-    <!-- EQ Readiness Summary -->
-    <EqReadinessSummary QuestionScores="_questionScores"
-                        SectorReadinessScores="_sectorReadinessScores"/>
+    <!-- EQ Coverage Summary -->
+    <EqReadinessSummary QuestionScores="_coverage.QuestionScores"
+                        SectorCoverageScores="_coverage.BySector"/>
 
-    <!-- Overall and Readiness Assessment -->
-    <OverallReadinessAssessment OverallReadinessScores="_overallReadinessScores"
-                                IndicatorScores="_indicatorScores" />
+    <!-- Overall Coverage Assessment -->
+    <OverallReadinessAssessment CoverageScores="_coverage.BySourceType"
+                                IndicatorScores="_coverage.IndicatorScores" />
 
     <!-- Tabs -->
     <div class="tabs tabs-border !rounded-none">
 
         <!-- Essential Questions Grid -->
         <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked" data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector"/>
-        <EssentialQuestionGrid QuestionScores="_questionScores"/>
+        <EssentialQuestionGrid QuestionScores="_coverage.QuestionScores"/>
 
         <!-- Indicators Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg  bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators"/>
-        <IndicatorGrid IndicatorScores="_indicatorScores"/>
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators"/>
+        <IndicatorGrid IndicatorScores="_coverage.IndicatorScores"/>
 
         <!-- Disaggregates Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg  bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates"/>
-        <DisaggregateGrid DisaggregateScores="_disaggregateScores"/>
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates"/>
+        <DisaggregateGrid DisaggregateScores="_coverage.DisaggregateScores"/>
 
     </div>
 </div>
 
 @code {
-    private List<DataSource> ActiveDataSources => ProjectSvc.DataSources.Where(x => x.Enabled).ToList();
-
-    private List<DataSourceAssessmentWithSource> Assessments => ActiveDataSources.SelectMany(ds => ds.Assessments.Select(a => new
-    DataSourceAssessmentWithSource
-    {
-        // base properties
-        Id = a.Id,
-        Name = a.Name,
-        ConductedAt = a.ConductedAt,
-        Notes = a.Notes,
-        DataElementAssessments = a.DataElementAssessments,
-        Active = a.Active,
-
-        // datasource metadata
-        DataSourceId = ds.Id,
-        DataSourceType = ds.Type,
-        DataSourceName = ds.Name
-    }))
-    .ToList();
-
-    private List<QuestionScore> _questionScores = [];
-    private List<IndicatorScore> _indicatorScores = [];
-    private OverallReadinessResults _overallReadinessScores = new();
-    private List<SectorReadinessResult> _sectorReadinessScores = [];
-    private List<DataElementScore> _disaggregateScores = [];
+    private FrameworkCoverage _coverage = new();
 
     protected override async Task OnInitializedAsync()
     {
         ProjectSvc.Changed += OnProjectChanged;
         await ProjectSvc.InitializeAsync();
-        CalculateScores();
+        RecalculateCoverage();
     }
 
     public void Dispose()
@@ -81,34 +57,32 @@
 
     private void OnProjectChanged()
     {
-        CalculateScores();
+        RecalculateCoverage();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void RecalculateCoverage()
+    {
+        _coverage = CoverageSvc.CalculateFrameworkCoverage(ProjectSvc.GetActiveAssessmentsWithSource());
     }
 
     private async Task GenerateReportAsync()
     {
-        var dataSourceScores = ActiveDataSources
-            .Select(ds => new DataSourceScore(
-                ds.Name,
-                (double)ScoringSvc.CalculateReadinessForAssessments(
-                    Assessments.Where(a => a.DataSourceId == ds.Id).ToList()
-                )
-            ))
+        var dataSourceScores = ProjectSvc.DataSources
+            .Where(ds => ds.Enabled)
+            .Select(ds =>
+            {
+                var sourceAssessments = ProjectSvc.GetActiveAssessmentsWithSource()
+                    .Where(a => a.DataSourceId == ds.Id)
+                    .ToList();
+                var sourceCoverage = CoverageSvc.CalculateFrameworkCoverage(sourceAssessments);
+                return new DataSourceScore(ds.Name, (double)sourceCoverage.OverallCoverage);
+            })
             .ToList();
 
-        await PdfReportSvc.GenerateReportAsync(_questionScores, _sectorReadinessScores, _overallReadinessScores, ProjectSvc.Project.Title, dataSourceScores, _indicatorScores);
-    }
-
-    private void CalculateScores()
-    {
-        _questionScores = ScoringSvc.CalculateScoresForActiveData(Assessments);
-
-        _indicatorScores = _questionScores.SelectMany(qs => qs.IndicatorScores).ToList();
-
-        _overallReadinessScores = ScoringSvc.CalculateOverallReadinessScores(Assessments);
-
-        _sectorReadinessScores = ScoringSvc.CalculateSectorReadiness(_questionScores);
-
-        _disaggregateScores = ScoringSvc.CalculateDisaggregateScores(Assessments);
+        await PdfReportSvc.GenerateReportAsync(_coverage,
+            ProjectSvc.Project.Title,
+            dataSourceScores
+        );
     }
 }

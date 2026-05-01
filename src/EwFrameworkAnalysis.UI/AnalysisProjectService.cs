@@ -102,6 +102,15 @@ public class AnalysisProjectService
             // Handle save errors gracefully
         }
     }
+    public IReadOnlyList<ActionItem> ActionItems => Project.ActionItems;
+
+    public async Task SaveActionItemsAsync(List<ActionItem> items)
+    {
+        Project.ActionItems = items;
+        Project.LastModifiedAt = DateTimeOffset.Now;
+        await SaveAsync();
+        Notify();
+    }
 
     public async Task ActivateDemoProjectAsync(string demoJson)
     {
@@ -241,6 +250,25 @@ public class AnalysisProjectService
     {
         var assessment = GetAssessment(assessmentId);
         return assessment?.DataElementAssessments ?? [];
+    }
+
+    public IReadOnlyList<DataSourceAssessmentWithSource> GetActiveAssessmentsWithSource()
+    {
+        return DataSources
+            .Where(ds => ds.Enabled)
+            .SelectMany(ds => ds.Assessments.Select(a => new DataSourceAssessmentWithSource
+            {
+                Id = a.Id,
+                Name = a.Name,
+                ConductedAt = a.ConductedAt,
+                Notes = a.Notes,
+                DataElementAssessments = a.DataElementAssessments,
+                Active = a.Active,
+                DataSourceId = ds.Id,
+                DataSourceType = ds.Type,
+                DataSourceName = ds.Name
+            }))
+            .ToList();
     }
 
     public async Task<Guid> AddAssessmentAsync(DataSourceAssessment assessment, Guid dataSourceId)

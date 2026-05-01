@@ -1,0 +1,325 @@
+@using EwFrameworkAnalysis.Common.Models
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Title="Action Items" Shadow="Card.ShadowSize.XLarge" NoPadding>
+    <div class="px-5 pb-5 flex flex-col gap-4">
+
+        @* Active Item List *@
+        <div class="flex flex-col gap-2 overflow-y-auto max-h-[300px]">
+            @if (!ActiveItems.Any() && !_showCompleted)
+            {
+                <p class="text-sm text-gray-400">No action items. You're all set!</p>
+            }
+
+            @foreach (var item in ActiveItems)
+            {
+                <div class="flex items-start gap-2 group text-sm">
+
+                    @* Resolve toggle *@
+                    <button class="mt-0.5 shrink-0 text-gray-400 hover:text-success transition-colors"
+                            title="@(item.IsResolved ? "Mark incomplete" : "Mark resolved")"
+                            @onclick="() => ToggleResolved(item)">
+                        <i class="fas @(item.IsResolved ? "fa-circle-check text-success" : "fa-circle")"></i>
+                    </button>
+
+                    @* Title + subtitle line *@
+                    <div class="flex-1 min-w-0">
+                        <p class="text-gray-700 whitespace-normal break-words">@item.Title</p>
+                        @if (item.IsSuggested)
+                        {
+                            <p class="text-[11px] text-gray-400 flex items-center gap-1">
+                                <i class="fas fa-magic"></i>Auto-generated suggestion
+                            </p>
+                        }
+                        else if (item.TargetDate.HasValue)
+                        {
+                            <p class="text-[11px] @(item.TargetDate < DateTimeOffset.Now ? "text-error" : "text-gray-400")">
+                                Due @item.TargetDate.Value.ToString("MMM d, yyyy")
+                            </p>
+                        }
+                    </div>
+
+                    @* Actions — visible on hover *@
+                    <div class="shrink-0 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        @if (item.IsSuggested)
+                        {
+                            <button class="text-gray-400 hover:text-warning transition-colors"
+                                    title="Dismiss suggestion"
+                                    @onclick="() => DismissSuggestion(item)">
+                                <i class="fas fa-eye-slash text-xs"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="text-gray-400 hover:text-error transition-colors"
+                                    title="Delete"
+                                    @onclick="() => DeleteItem(item)">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* Completed / Hidden items collapsible section *@
+        @if (CollapsedItems.Any())
+        {
+            <div class="border-t border-gray-100 pt-2">
+                <button class="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                        @onclick="() => _showCompleted = !_showCompleted">
+                    <i class="fas @(_showCompleted ? "fa-chevron-down" : "fa-chevron-right") text-[10px]"></i>
+                    @CollapsedItems.Count() completed / hidden
+                </button>
+
+                @if (_showCompleted)
+                {
+                    <div class="flex flex-col gap-1 mt-2 overflow-y-auto max-h-[200px]">
+                        @foreach (var item in CollapsedItems)
+                        {
+                            <div class="flex items-start gap-2 group text-sm opacity-50">
+
+                                @* Resolve toggle *@
+                                <button class="mt-0.5 shrink-0 text-gray-400 hover:text-success transition-colors"
+                                        title="@(item.IsResolved ? "Mark incomplete" : "Mark resolved")"
+                                        @onclick="() => ToggleResolved(item)">
+                                    <i class="fas @(item.IsResolved ? "fa-circle-check text-success" : "fa-circle")"></i>
+                                </button>
+
+                                @* Title + subtitle *@
+                                <div class="flex-1 min-w-0">
+                                    <p class="@(item.IsResolved ? "line-through text-gray-400" : "text-gray-700") whitespace-normal break-words">
+                                        @item.Title
+                                    </p>
+                                    @if (item.IsSuggested)
+                                    {
+                                        <p class="text-[11px] text-gray-400 flex items-center gap-1">
+                                            <i class="fas fa-magic"></i>Auto-generated suggestion
+                                        </p>
+                                    }
+                                    else if (item.TargetDate.HasValue)
+                                    {
+                                        <p class="text-[11px] text-gray-400">
+                                            Due @item.TargetDate.Value.ToString("MMM d, yyyy")
+                                        </p>
+                                    }
+                                </div>
+
+                                @* Actions — visible on hover *@
+                                <div class="shrink-0 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    @if (!item.IsSuggested)
+                                    {
+                                        <button class="text-gray-400 hover:text-error transition-colors"
+                                                title="Delete permanently"
+                                                @onclick="() => DeleteItem(item)">
+                                            <i class="fas fa-trash text-xs"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @* Add Item Form *@
+        @if (_isAdding)
+        {
+            <div class="flex flex-col gap-2 border-t border-gray-100 pt-3">
+                <textarea class="input w-full resize-none text-sm"
+                          rows="2"
+                          placeholder="Action item title..."
+                          @bind="_newTitle"
+                          @bind:event="oninput"
+                          @onkeydown="HandleKeyDown"
+                          style="field-sizing: content; min-height: 2.25rem; max-height: 8rem;" />
+                <div class="flex gap-2 items-center flex-wrap">
+                    @if (_showTargetDate)
+                    {
+                        <input type="date"
+                               class="input input-sm flex-1 min-w-[130px]"
+                               @bind="_newTargetDate" />
+                    }
+                    else
+                    {
+                        <button class="text-xs text-gray-400 hover:text-blue transition-colors"
+                                @onclick="() => _showTargetDate = true">
+                            <i class="fas fa-calendar-plus text-xs mr-1"></i>Add target date
+                        </button>
+                    }
+                    <div class="flex gap-2 ml-auto">
+                        <button class="btn btn-sm btn-primary"
+                                disabled="@(string.IsNullOrWhiteSpace(_newTitle))"
+                                @onclick="CommitAdd">
+                            Add
+                        </button>
+                        <button class="btn btn-sm btn-ghost" @onclick="CancelAdd">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-sm btn-ghost self-start gap-1 text-blue -ml-2"
+                    @onclick="() => _isAdding = true">
+                <i class="fas fa-plus text-xs"></i> Add item
+            </button>
+        }
+
+    </div>
+</Card>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ActionItem> Items { get; set; } = [];
+    [Parameter] public EventCallback<List<ActionItem>> ItemsChanged { get; set; }
+    [Parameter, EditorRequired] public IReadOnlyList<DataSource> DataSources { get; set; } = [];
+
+    private static readonly TimeSpan StaleProfileThreshold = TimeSpan.FromDays(90);
+
+    private bool _isAdding = false;
+    private bool _showTargetDate = false;
+    private bool _showCompleted = false;
+    private string _newTitle = string.Empty;
+    private DateTimeOffset? _newTargetDate = null;
+
+    // Working copy — we own mutations, parent owns persistence
+    private List<ActionItem> _items = [];
+
+    private IReadOnlyList<ActionItem>? _lastSeenItems = null;
+
+    protected override void OnParametersSet()
+    {
+        // Re-seed whenever the Items reference from the parent changes.
+        // This handles the async init race: the service may deliver an empty
+        // list on the first render, then the real list once InitializeAsync
+        // completes and fires Changed → StateHasChanged on the parent.
+        // We only skip re-seeding if it's the exact same reference, which
+        // means no external change has occurred (just a local mutation cycle).
+        if (!ReferenceEquals(_lastSeenItems, Items))
+        {
+            _lastSeenItems = Items;
+            // Preserve any in-flight local mutations (e.g. a suggestion that was
+            // just dismissed) by merging: start from the incoming persisted items,
+            // then re-apply any local non-suggested state on top.
+            _items = Items.ToList();
+        }
+
+        // Always re-sync suggestions — they are never persisted and must be
+        // re-derived from DataSources on every render.
+        SyncSuggestions();
+    }
+
+    private IEnumerable<ActionItem> ActiveItems =>
+        _items.Where(i => !i.IsDeleted && !i.IsDismissed && !i.IsResolved)
+              .OrderBy(i => i.IsSuggested)
+              .ThenBy(i => i.TargetDate ?? DateTimeOffset.MaxValue)
+              .ThenBy(i => i.CreatedAt);
+
+    private IEnumerable<ActionItem> CollapsedItems =>
+        _items.Where(i => !i.IsDeleted && (i.IsResolved || i.IsDismissed))
+              .OrderByDescending(i => i.CreatedAt);
+
+    private void SyncSuggestions()
+    {
+        var keysToRaise = new List<(string Key, string Title)>();
+
+        if (!DataSources.Any())
+            keysToRaise.Add((SuggestionKeys.NoDataSources, "Add your first data source"));
+
+        if (DataSources.Any() && !DataSources.Any(ds => ds.Type == DataSourceType.EcsState))
+            keysToRaise.Add((SuggestionKeys.NoEcsDataSource, "Consider adding an ECS reference profile data source"));
+
+        foreach (var ds in DataSources.Where(ds => ds.Enabled))
+        {
+            var latest = ds.Assessments.OrderByDescending(a => a.ConductedAt).FirstOrDefault();
+
+            if (latest == null)
+            {
+                keysToRaise.Add((
+                    SuggestionKeys.SourceNotProfiled(ds.Id),
+                    $"\"{ds.Name}\" has not been profiled yet"
+                ));
+            }
+            else if (DateTimeOffset.Now - latest.ConductedAt > StaleProfileThreshold)
+            {
+                var days = (int)(DateTimeOffset.Now - latest.ConductedAt).TotalDays;
+                keysToRaise.Add((
+                    SuggestionKeys.StaleProfile(ds.Id),
+                    $"Consider re-profiling \"{ds.Name}\" — last profiled {days} days ago"
+                ));
+            }
+        }
+
+        foreach (var (key, title) in keysToRaise)
+        {
+            var existing = _items.FirstOrDefault(i => i.SuggestionKey == key);
+            if (existing == null)
+            {
+                _items.Add(new ActionItem
+                {
+                    Title = title,
+                    IsSuggested = true,
+                    SuggestionKey = key,
+                });
+            }
+        }
+
+        var activeKeys = keysToRaise.Select(x => x.Key).ToHashSet();
+        foreach (var item in _items.Where(i => i.IsSuggested && !i.IsResolved && !i.IsDeleted))
+        {
+            if (!activeKeys.Contains(item.SuggestionKey!))
+                item.IsDeleted = true;
+        }
+    }
+
+    private async Task ToggleResolved(ActionItem item)
+    {
+        item.IsResolved = !item.IsResolved;
+        await NotifyChanged();
+    }
+
+    private async Task DismissSuggestion(ActionItem item)
+    {
+        item.IsDismissed = true;
+        await NotifyChanged();
+    }
+
+    private async Task DeleteItem(ActionItem item)
+    {
+        item.IsDeleted = true;
+        await NotifyChanged();
+    }
+
+    private async Task CommitAdd()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle)) return;
+
+        _items.Add(new ActionItem
+        {
+            Title = _newTitle.Trim(),
+            TargetDate = _newTargetDate,
+        });
+
+        CancelAdd();
+        await NotifyChanged();
+    }
+
+    private void CancelAdd()
+    {
+        _isAdding = false;
+        _showTargetDate = false;
+        _newTitle = string.Empty;
+        _newTargetDate = null;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey) await CommitAdd();
+        if (e.Key == "Escape") CancelAdd();
+    }
+
+    private Task NotifyChanged() =>
+        ItemsChanged.InvokeAsync(_items.ToList());
+}

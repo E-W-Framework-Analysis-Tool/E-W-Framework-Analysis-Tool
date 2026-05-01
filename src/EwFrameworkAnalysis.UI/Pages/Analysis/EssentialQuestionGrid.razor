@@ -56,7 +56,7 @@
                 @* List Items *@
                 @foreach (var q in eqContext.List)
                 {
-                    var qs = GetQuestionScoreByNumber(q.QuestionNumber) ?? new QuestionScore();
+                    var qs = GetQuestionScoreByNumber(q.QuestionNumber) ?? new QuestionCoverageScore();
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
                         <input type="checkbox" name="question-check-@q.QuestionNumber" />
@@ -65,12 +65,12 @@
                                 <div class="flex col-span-1 justify-start items-center">@q.QuestionNumber</div>
                                 <div class="flex col-span-17 justify-start items-center">@q.Question</div>
                                 <div class="flex col-span-4 justify-center items-center flex-wrap gap-0.5 mx-4">
-                                    @foreach (var indicatorScore in qs.IndicatorScores.OrderByDescending(x => x.ReadinessScore))
+                                    @foreach (var indicatorScore in qs.IndicatorScores.OrderByDescending(x => x.CoverageScore))
                                     {
-                                        <div class="flex w-2 h-2 rounded-full @GetIndicatorColor(indicatorScore.ReadinessScore)"></div>
+                                        <div class="flex w-2 h-2 rounded-full @GetIndicatorColor(indicatorScore.CoverageScore)"></div>
                                     }
                                 </div>
-                                <div class="flex col-span-2 justify-center items-center text-center"> @qs.ReadinessScore.ToString("0.##%")</div>
+                                <div class="flex col-span-2 justify-center items-center text-center">@qs.CoverageScore.ToString("0.##%")</div>
                             </div>
                         </div>
                         <div class="collapse-content text-sm">
@@ -90,8 +90,8 @@
                                             {
                                                 <div class="col-span-12 md:col-span-6 xl:col-span-4" @onclick="() => ShowIndicatorDetails(indicatorScore)">
                                                     <div class="card border border-gray-300 rounded-md w-full h-full p-4 gap-4 hover:translate-0.5 hover:shadow transition duration-200">
-                                                        <p class="font-semibold">@(indicatorScore.IndicatorCode) (@indicatorScore.ReadinessScore.ToString("0.##%"))</p>
-                                                        <progress class="progress @GetProgressBarColor(indicatorScore.ReadinessScore)" value="@(indicatorScore.ReadinessScore * 100)" max="100"></progress>
+                                                        <p class="font-semibold">@(indicatorScore.IndicatorCode) (@indicatorScore.CoverageScore.ToString("0.##%"))</p>
+                                                        <progress class="progress @GetProgressBarColor(indicatorScore.CoverageScore)" value="@(indicatorScore.CoverageScore * 100)" max="100"></progress>
                                                     </div>
                                                 </div>
                                             }
@@ -109,23 +109,21 @@
     </ChildContent>
 </Card>
 
-
 <IndicatorDetailsModal _indicatorScore="@_selectedIndicatorScore"
                        IsOpen="@_showIndicatorDetails"
                        OnClose="HandleModalClosed"
                        IsOpenChanged="@(x => _showIndicatorDetails = x)" />
 
 @code {
-
     [Parameter]
-    public List<QuestionScore> QuestionScores { get; set; } = new();
+    public IReadOnlyList<QuestionCoverageScore> QuestionScores { get; set; } = [];
 
     private List<EssentialQuestion> _allQuestions = [];
     private string _searchQuery = string.Empty;
     private string? _selectedSector = string.Empty;
 
     private bool _showIndicatorDetails = false;
-    private IndicatorScore? _selectedIndicatorScore;
+    private IndicatorCoverageScore? _selectedIndicatorScore;
 
     private static class SortColumnNames
     {
@@ -137,12 +135,12 @@
     private List<SortColumn<EssentialQuestion>> EssentialQuestionColumnOptions() =>
     [
         new SortColumn<EssentialQuestion> { Key = SortColumnNames.Question, Selector = eq => eq.QuestionNumber, DefaultAscending = true },
-        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Score, Selector = eq => (GetQuestionScoreByNumber(eq.QuestionNumber) ?? new QuestionScore()).ReadinessScore, DefaultAscending = false }
+        new SortColumn<EssentialQuestion> { Key = SortColumnNames.Score, Selector = eq => (GetQuestionScoreByNumber(eq.QuestionNumber) ?? new QuestionCoverageScore()).CoverageScore, DefaultAscending = false }
     ];
 
-    private List<SortColumn<IndicatorScore>> IndicatorColumnOptions() =>
+    private List<SortColumn<IndicatorCoverageScore>> IndicatorColumnOptions() =>
     [
-        new SortColumn<IndicatorScore> { Key = SortColumnNames.Indicators, Selector = i => i.ReadinessScore, DefaultAscending = false }
+        new SortColumn<IndicatorCoverageScore> { Key = SortColumnNames.Indicators, Selector = i => i.CoverageScore, DefaultAscending = false }
     ];
 
     protected override void OnInitialized()
@@ -150,15 +148,12 @@
         _allQuestions = EwFrameworkEssentialQuestions.Questions;
     }
 
-    private QuestionScore? GetQuestionScoreByNumber(int questionNumber)
-    {
-        return QuestionScores.FirstOrDefault(x => x.QuestionNumber == questionNumber);
-    }
+    private QuestionCoverageScore? GetQuestionScoreByNumber(int questionNumber) =>
+        QuestionScores.FirstOrDefault(x => x.QuestionNumber == questionNumber);
 
     private string GetIndicatorColor(decimal score) =>
         score switch
         {
-            // Green (high score) gradient to Red (low score)
             > 0.66m => "bg-success/80",
             > 0.33m => "bg-warning/80",
             > 0m => "bg-error/80",
@@ -168,7 +163,6 @@
     private string GetProgressBarColor(decimal score) =>
         score switch
         {
-            // Green (high score) gradient to Red (low score)
             > 0.66m => "progress-success",
             > 0.33m => "progress-warning",
             > 0m => "progress-error",
@@ -178,16 +172,14 @@
     private IEnumerable<EssentialQuestion> FilteredQuestions =>
         _allQuestions
             .Where(q =>
-                (string.IsNullOrWhiteSpace(_searchQuery) ||
-                    q.Question.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
-                    q.RelatedIndicatorNames.Any(name => name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)))
-            )
+                string.IsNullOrWhiteSpace(_searchQuery) ||
+                q.Question.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                q.RelatedIndicatorNames.Any(name => name.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)))
             .Where(q =>
                 string.IsNullOrWhiteSpace(_selectedSector) ||
-                q.ApplicableSectors.Contains(Enum.Parse<Sector>(_selectedSector))
-            );
+                q.ApplicableSectors.Contains(Enum.Parse<Sector>(_selectedSector)));
 
-    private void ShowIndicatorDetails(IndicatorScore indicatorScore)
+    private void ShowIndicatorDetails(IndicatorCoverageScore indicatorScore)
     {
         _selectedIndicatorScore = indicatorScore;
         _showIndicatorDetails = true;
@@ -198,5 +190,4 @@
         _showIndicatorDetails = false;
         _selectedIndicatorScore = null;
     }
-
 }

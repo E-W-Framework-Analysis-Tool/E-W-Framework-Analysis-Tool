@@ -2,8 +2,10 @@
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Pages.Dashboard
 @inject AnalysisProjectService ProjectSvc
+@inject FrameworkCoverageService FrameworkCoverageSvc
 @inject NavigationManager Nav
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
@@ -11,32 +13,20 @@
     <ProjectHeader ActiveSourceCount="@ActiveSourceCount" />
 
     <!-- Dashboard Overview -->
-    <DashboardOverview OverallScore="@overallScore"
-                       TotalDataSources="@TotalDataSources"
-                       EdFiSourceCount="@EdFiSourceCount"
-                       CedsSourceCount="@CedsSourceCount"
-                       ManualSourceCount="@ManualSourceCount"
-                       ActiveSourceCount="@ActiveSourceCount"
-                       DisabledSourceCount="@DisabledSourceCount"
-                       LastAnalysisTime="@GetLastAnalysisTime()" />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <FrameworkCoverageCard QuestionScores="@_coverage.QuestionScores" />
+        <DataElementStatCard DataSourceCounts="@GetDataElementCounts()" />
+        <ActionItemsCard Items="ProjectSvc.ActionItems"
+                         ItemsChanged="async items => await ProjectSvc.SaveActionItemsAsync(items)"
+                         DataSources="ProjectSvc.DataSources" />
+    </div>
 
     <!-- Main Content Area -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    <div class="mt-6">
         <!-- Data Sources Panel -->
         <DataSourcesList DataSources="@ProjectSvc.DataSources"
                          DataSourceItems="@GetDataSourceItems()"
                          OnAddDataSource="@(() => _isModalOpen = true)" />
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-            <!-- Essential Questions Summary -->
-            <EssentialQuestionsSummary QuestionScores="@questionScores" />
-
-            <!-- Data Coverage -->
-            <DataCoverageSummary ActiveSourceCount="@ActiveSourceCount"
-                                 TotalCharacteristics="@GetTotalCharacteristics()"
-                                 UniqueCharacteristics="@GetUniqueCharacteristics()" />
-        </div>
     </div>
 </div>
 
@@ -46,24 +36,20 @@
                     OnDataSourceTypeSelected="@HandleDataSourceTypeSelected" />
 
 @code {
-    // State variables
-    private List<QuestionScore> questionScores = new();
-    private decimal overallScore = 0.74m;
     private bool _isModalOpen = false;
+    private FrameworkCoverage _coverage = new();
 
-    // Computed properties
     private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
     private int TotalDataSources => ProjectSvc.DataSources?.Count ?? 0;
     private int EdFiSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.EdFiApi) ?? 0;
     private int CedsSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.CedsDw) ?? 0;
     private int ManualSourceCount => ProjectSvc.DataSources?.Count(ds => ds.Type == DataSourceType.Custom) ?? 0;
     private int DisabledSourceCount => ProjectSvc.DataSources?.Count(ds => !ds.Enabled) ?? 0;
-    private bool HasAnyAssessments => ProjectSvc.Assessments?.Any() == true;
 
     protected override void OnInitialized()
     {
         ProjectSvc.Changed += OnProjectChanged;
-        InitializeQuestionScores();
+        RecalculateCoverage();
     }
 
     public void Dispose()
@@ -73,24 +59,13 @@
 
     private void OnProjectChanged()
     {
+        RecalculateCoverage();
         InvokeAsync(StateHasChanged);
     }
 
-    private void InitializeQuestionScores()
+    private void RecalculateCoverage()
     {
-        if (HasAnyAssessments)
-        {
-            questionScores = new List<QuestionScore>
-            {
-                new QuestionScore { QuestionNumber = 1, ReadinessScore = 0.85m },
-                new QuestionScore { QuestionNumber = 2, ReadinessScore = 0.72m },
-                new QuestionScore { QuestionNumber = 3, ReadinessScore = 0.58m }
-            };
-        }
-        else
-        {
-            questionScores = new List<QuestionScore>();
-        }
+        _coverage = FrameworkCoverageSvc.CalculateFrameworkCoverage(ProjectSvc.GetActiveAssessmentsWithSource());
     }
 
     private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
@@ -99,23 +74,11 @@
         Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(createdDataSourceId));
     }
 
-    private string GetLastAnalysisTime()
+    private DateTimeOffset? GetLatestProfileTime()
     {
-        if (ProjectSvc.Assessments == null || !ProjectSvc.Assessments.Any())
-            return "Never";
-
-        var latestAssessment = ProjectSvc.Assessments
+        return ProjectSvc.Assessments
             .OrderByDescending(a => a.ConductedAt)
-            .FirstOrDefault();
-
-        if (latestAssessment == null) return "Never";
-
-        var timeSpan = DateTimeOffset.Now - latestAssessment.ConductedAt;
-        return timeSpan.TotalHours < 1
-            ? $"{(int)timeSpan.TotalMinutes} minutes ago"
-            : timeSpan.TotalDays < 1
-                ? $"{(int)timeSpan.TotalHours} hours ago"
-                : $"{(int)timeSpan.TotalDays} days ago";
+            .FirstOrDefault()?.ConductedAt;
     }
 
     private IReadOnlyList<DataSourcesList.DataSourceListItem> GetDataSourceItems()
@@ -152,30 +115,20 @@
              : $"{(int)timeSpan.TotalDays} days ago";
     }
 
-    private int GetTotalCharacteristics()
+    private IReadOnlyList<DataElementStatCard.DataSourceElementCount> GetDataElementCounts()
     {
-        return ProjectSvc.DataSources?
-            .Where(ds => ds.Enabled)
-            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-                .OrderByDescending(a => a.ConductedAt)
-                .FirstOrDefault())
-            .Where(a => a != null)
-            .SelectMany(a => a!.DataElementAssessments)
-            .SelectMany(d => d.Characteristics)
-            .Count() ?? 0;
-    }
+        if (ProjectSvc.DataSources == null)
+            return Array.Empty<DataElementStatCard.DataSourceElementCount>();
 
-    private int GetUniqueCharacteristics()
-    {
-        return ProjectSvc.DataSources?
+        return ProjectSvc.DataSources
             .Where(ds => ds.Enabled)
-            .Select(ds => ProjectSvc.GetAssessmentsForDataSource(ds.Id)
-                .OrderByDescending(a => a.ConductedAt)
-                .FirstOrDefault())
-            .Where(a => a != null)
-            .SelectMany(a => a!.DataElementAssessments)
-            .SelectMany(d => d.Characteristics.Select(c => new { DataElement = d.DataElementName, CharType = c.GetType().Name }))
-            .Distinct()
-            .Count() ?? 0;
+            .Select(ds => new DataElementStatCard.DataSourceElementCount(
+                DataSourceName: ds.Name,
+                ElementCount: ProjectSvc.GetAssessmentsForDataSource(ds.Id)
+                    .OrderByDescending(a => a.ConductedAt)
+                    .FirstOrDefault()
+                    ?.DataElementAssessments.Count ?? 0
+            ))
+            .ToList();
     }
 }

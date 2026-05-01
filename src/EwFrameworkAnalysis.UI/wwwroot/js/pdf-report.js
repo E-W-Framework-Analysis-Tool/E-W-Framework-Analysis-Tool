@@ -113,12 +113,12 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     // EQ membership per band — thresholds mirror PdfReportService.cs
     const sortByNumber = (a, b) => a.number - b.number;
     const bandEqLists = [
-        questions.filter(q => q.readinessScore >= 0.90).sort(sortByNumber),
-        questions.filter(q => q.readinessScore >= 0.80 && q.readinessScore < 0.90).sort(sortByNumber),
-        questions.filter(q => q.readinessScore >= 0.70 && q.readinessScore < 0.80).sort(sortByNumber),
-        questions.filter(q => q.readinessScore >= 0.60 && q.readinessScore < 0.70).sort(sortByNumber),
-        questions.filter(q => q.readinessScore >= 0.50 && q.readinessScore < 0.60).sort(sortByNumber),
-        questions.filter(q => q.readinessScore < 0.50).sort(sortByNumber),
+        questions.filter(q => q.coverageScore >= 0.90).sort(sortByNumber),
+        questions.filter(q => q.coverageScore >= 0.80 && q.coverageScore < 0.90).sort(sortByNumber),
+        questions.filter(q => q.coverageScore >= 0.70 && q.coverageScore < 0.80).sort(sortByNumber),
+        questions.filter(q => q.coverageScore >= 0.60 && q.coverageScore < 0.70).sort(sortByNumber),
+        questions.filter(q => q.coverageScore >= 0.50 && q.coverageScore < 0.60).sort(sortByNumber),
+        questions.filter(q => q.coverageScore < 0.50).sort(sortByNumber),
     ];
 
     doc.autoTable({
@@ -161,12 +161,12 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 
     // ── Score Distribution bar chart (right half) ────────────────────────────
     const bins = [
-        { label: '90-100%', count: questions.filter(q => q.readinessScore >= 0.90).length,                                             color: THEME.green },
-        { label: '80-90%',  count: questions.filter(q => q.readinessScore >= 0.80 && q.readinessScore < 0.90).length,                  color: THEME.ltGreen },
-        { label: '70-80%',  count: questions.filter(q => q.readinessScore >= 0.70 && q.readinessScore < 0.80).length,                  color: THEME.lime },
-        { label: '60-70%',  count: questions.filter(q => q.readinessScore >= 0.60 && q.readinessScore < 0.70).length,                  color: THEME.amber },
-        { label: '50-60%',  count: questions.filter(q => q.readinessScore >= 0.50 && q.readinessScore < 0.60).length,                  color: THEME.orange },
-        { label: '<50%',    count: questions.filter(q => q.readinessScore < 0.50).length,                                              color: THEME.red },
+        { label: '90-100%', count: questions.filter(q => q.coverageScore >= 0.90).length,                                             color: THEME.green },
+        { label: '80-90%',  count: questions.filter(q => q.coverageScore >= 0.80 && q.coverageScore < 0.90).length,                  color: THEME.ltGreen },
+        { label: '70-80%',  count: questions.filter(q => q.coverageScore >= 0.70 && q.coverageScore < 0.80).length,                  color: THEME.lime },
+        { label: '60-70%',  count: questions.filter(q => q.coverageScore >= 0.60 && q.coverageScore < 0.70).length,                  color: THEME.amber },
+        { label: '50-60%',  count: questions.filter(q => q.coverageScore >= 0.50 && q.coverageScore < 0.60).length,                  color: THEME.orange },
+        { label: '<50%',    count: questions.filter(q => q.coverageScore < 0.50).length,                                              color: THEME.red },
     ];
 
     let maxCount = Math.max.apply(null, bins.map(b => b.count));
@@ -238,7 +238,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
         startY: sectorTableStartY,
         margin: { left: margin },
         head: [['Sector', 'Score']],
-        body: summary.sectorReadiness.map(s => [s.sector, (s.score * 100).toFixed(1) + '%']),
+        body: summary.sectorCoverage.map(s => [s.sector, (s.score * 100).toFixed(1) + '%']),
         styles: { fontSize: 9 },
         headStyles: { fillColor: brandBlue },
         columnStyles: { 1: { halign: 'center', cellWidth: 22 } },
@@ -248,7 +248,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
     const leftFinalY = doc.lastAutoTable.finalY;
 
     // Right: Data Source table
-    const dsRows = (summary.dataSourceReadiness || []).map(ds => [ds.name, (ds.score * 100).toFixed(1) + '%']);
+    const dsRows = (summary.dataSourceCoverage || []).map(ds => [ds.name, (ds.score * 100).toFixed(1) + '%']);
 
     doc.autoTable({
         startY: sectorTableStartY,
@@ -265,7 +265,7 @@ function drawEqReadinessSummary(ctx, summary, questions) {
 }
 
 // ── Overall Readiness ────────────────────────────────────────────────────────────
-function drawOverallReadiness(ctx, overallReadiness) {
+function drawOverallCoverage(ctx, overallCoverage) {
     const doc = ctx.doc;
     const margin = ctx.margin;
     const contentWidth = ctx.contentWidth;
@@ -289,10 +289,10 @@ function drawOverallReadiness(ctx, overallReadiness) {
     ctx.y += 8;
 
     const rows = [
-        { label: 'Custom Manual', value: overallReadiness.manual },
-        { label: 'Automated (Ed-Fi & CEDS)', value: overallReadiness.automated },
-        { label: 'Public Data (ECS)', value: overallReadiness.ecs },
-        { label: 'Combined (All Data Sources)', value: overallReadiness.combined },
+        { label: 'Custom Manual', value: overallCoverage.manual },
+        { label: 'Automated (Ed-Fi & CEDS)', value: overallCoverage.automated },
+        { label: 'Public Data (ECS)', value: overallCoverage.ecs },
+        { label: 'Combined (All Data Sources)', value: overallCoverage.combined },
     ];
 
     const barH = 4;
@@ -340,7 +340,7 @@ function drawOverallReadiness(ctx, overallReadiness) {
     doc.setTextColor.apply(doc, THEME.black);
     doc.text('Data elements whose availability would improve the most indicators', rightX, leftStartY - 1);
 
-    const roiItems = overallReadiness.roiItems || [];
+    const roiItems = overallCoverage.roiItems || [];
 
     if (roiItems.length === 0) {
         doc.setFont('helvetica', 'italic');
@@ -402,7 +402,7 @@ function drawEssentialQuestionsTable(ctx, questions) {
     doc.text('Essential Questions', margin, ctx.y);
     ctx.y += 4;
 
-    const sortedQuestions = questions.slice().sort((a, b) => b.readinessScore - a.readinessScore);
+    const sortedQuestions = questions.slice().sort((a, b) => b.coverageScore - a.coverageScore);
 
     // Keyed by question number for safe lookup inside autoTable callbacks —
     // row.index is page-relative and resets on each page break, so it cannot
@@ -420,7 +420,7 @@ function drawEssentialQuestionsTable(ctx, questions) {
             q.question,
             String(q.indicatorCount),
             '', // drawn via didDrawCell
-            (q.readinessScore * 100).toFixed(1) + '%',
+            (q.coverageScore * 100).toFixed(1) + '%',
         ]),
         styles: { fontSize: 9, valign: 'middle' },
         headStyles: { fillColor: brandBlue },
@@ -438,7 +438,7 @@ function drawEssentialQuestionsTable(ctx, questions) {
             if (data.column.index === 4 && data.row.section === 'body') {
                 const q = questionByNumber[parseInt(data.row.raw[0], 10)];
                 if (!q) return;
-                const pct = q.readinessScore * 100;
+                const pct = q.coverageScore * 100;
                 data.cell.styles.textColor = scoreColor(pct);
             }
         },
@@ -610,7 +610,7 @@ function drawQuestionDetailPage(ctx, q) {
         for (let ic = 0; ic < indRowItems.length; ic++) {
             const indLayout = indRowItems[ic];
             const indItem = indLayout.indItem;
-            const pct = indItem.readinessScore * 100;
+            const pct = indItem.coverageScore * 100;
             const indScoreColor = scoreColor(pct);
             const icellX = margin + ic * (indCellW + indColGap);
             const icellY = y;
@@ -793,7 +793,7 @@ window.generatePdfReport = function (reportData) {
 
     drawHeaderBanner(ctx, reportData.projectTitle);
     drawEqReadinessSummary(ctx, reportData.summary, reportData.questions);
-    drawOverallReadiness(ctx, reportData.overallReadiness);
+    drawOverallCoverage(ctx, reportData.overallCoverage);
     drawEssentialQuestionsTable(ctx, reportData.questions);
 
     const orderedQuestions = reportData.questions.slice().sort((a, b) => a.number - b.number);

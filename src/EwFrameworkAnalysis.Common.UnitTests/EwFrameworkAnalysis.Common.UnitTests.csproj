@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Fixtures\Migrations\project_v1.json" />
+    <EmbeddedResource Include="Fixtures\Migrations\project_v3.json" />
     <EmbeddedResource Include="Fixtures\Migrations\project_v2.json" />
   </ItemGroup>
 

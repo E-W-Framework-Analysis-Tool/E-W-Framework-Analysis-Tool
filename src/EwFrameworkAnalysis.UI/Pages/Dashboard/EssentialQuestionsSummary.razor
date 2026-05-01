@@ -14,10 +14,10 @@
             {
                 @foreach (var question in QuestionScores.Take(3))
                 {
-                    <div class="border-l-4 @GetScoreBorderColor(question.ReadinessScore) pl-3">
+                    <div class="border-l-4 @GetScoreBorderColor(question.CoverageScore) pl-3">
                         <div class="flex items-center justify-between">
                             <span class="text-sm font-medium text-blue">@GetQuestionTitle(question.QuestionNumber)</span>
-                            <span class="text-sm font-semibold @GetScoreTextColor(question.ReadinessScore)">@((question.ReadinessScore * 100).ToString("F0"))%</span>
+                            <span class="text-sm font-semibold @GetScoreTextColor(question.CoverageScore)">@((question.CoverageScore * 100).ToString("F0"))%</span>
                         </div>
                         <p class="text-xs text-gray mt-1">@GetIndicatorSummary(question.IndicatorScores)</p>
                     </div>
@@ -41,7 +41,7 @@
 </Card>
 
 @code {
-    [Parameter] public List<QuestionScore>? QuestionScores { get; set; }
+    [Parameter] public List<QuestionCoverageScore>? QuestionScores { get; set; }
 
     private void NavigateToAnalysis()
     {
@@ -72,10 +72,10 @@
         _ => $"Question {questionNumber}"
     };
 
-    private string GetIndicatorSummary(List<IndicatorScore> indicators)
+    private string GetIndicatorSummary(List<IndicatorCoverageScore> indicators)
     {
         if (indicators?.Any() != true) return "No indicators analyzed";
-        var availableCount = indicators.Count(i => i.ReadinessScore >= 0.5m);
+        var availableCount = indicators.Count(i => i.CoverageScore >= 0.5m);
         var totalCount = indicators.Count;
         return $"{availableCount}/{totalCount} indicators available";
     }
