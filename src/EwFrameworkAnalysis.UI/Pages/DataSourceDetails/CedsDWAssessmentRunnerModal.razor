@@ -306,15 +306,18 @@
 
     protected override void OnInitialized()
     {
-        _assessorCount = Orchestrator.AssessorCount;
+        // Use version-aware count so the UI reflects what will actually be generated
+        var version = DataSource.Version ?? CedsDwVersions.V13;
+        _assessorCount = Orchestrator.AssessorCountForVersion(version);
     }
 
     private async Task DownloadScript()
     {
         try
         {
-            var script = Orchestrator.GenerateProfilerScript();
-            var fileName = $"CEDS_Profiler_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
+            var version = DataSource.Version ?? CedsDwVersions.V13;
+            var script = Orchestrator.GenerateProfilerScript(version);
+            var fileName = $"CEDS_Profiler_{version}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
             await JSRuntime.InvokeVoidAsync("CedsAssessmentHelpers.downloadFile", fileName, script, "text/plain");
         }
         catch (Exception ex)

@@ -24,7 +24,7 @@
                                    OnSave="@HandleDescriptionSave" />
 
                     <!-- Status and Stats row -->
-                    <div class="flex items-center gap-4 text-sm">
+                    <div class="flex items-center gap-4 text-sm flex-wrap">
                         <div class="flex items-center gap-2">
                             @if (DataSource.Enabled)
                             {
@@ -47,6 +47,16 @@
                         <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue text-white">
                             @DataSource.Type.GetDisplayName()
                         </span>
+
+                        @if (DataSource.Version is not null)
+                        {
+                            <div class="divider divider-horizontal mx-0"></div>
+
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+                                <i class="fas fa-tag text-[10px]"></i>
+                                @DataSource.Version
+                            </span>
+                        }
                     </div>
                 </div>
 

@@ -4,7 +4,7 @@
 
 <div class="card bg-white border border-gray-200 shadow-md hover:bg-tan hover:shadow-[2px_4px_8px_0px_rgba(0,0,0,0.1),2px_2px_0px_0px_theme(colors.blue)] hover:-translate-y-1 hover:-translate-x-0.5 transform transition-all duration-200 cursor-pointer"
      @onclick="OnClick"
-    data-walkthrough="@WalkthroughSteps.StepIds.DataSourceItem">
+     data-walkthrough="@WalkthroughSteps.StepIds.DataSourceItem">
     <div class="card-body p-4">
         <div class="flex items-center justify-between w-full">
             <div class="flex items-center space-x-3">
@@ -14,7 +14,15 @@
                 <div class="text-left">
                     <h4 class="text-sm font-semibold text-blue">@DataSource.Name</h4>
                     <p class="text-xs text-gray">@DataSource.Description</p>
-                    <p class="mt-1 text-[11px] text-gray">@AssessmentSummary</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        @if (DataSource.Version is not null)
+                        {
+                            <span class="text-[11px] font-medium text-gray-500 bg-gray-100 rounded px-1.5 py-0.5">
+                                @DataSource.Version
+                            </span>
+                        }
+                        <p class="text-[11px] text-gray">@AssessmentSummary</p>
+                    </div>
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
@@ -49,6 +57,7 @@
         </div>
     </div>
 </div>
+
 @code {
     [Parameter, EditorRequired] public DataSource DataSource { get; set; } = null!;
     [Parameter] public EventCallback OnClick { get; set; }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
@@ -33,7 +34,7 @@ public class MigrationResult
 /// </summary>
 public static class AnalysisProjectMigrator
 {
-    public const int CurrentSchemaVersion = 3;
+    public const int CurrentSchemaVersion = 4;
 
     // Each entry migrates from index N to N+1.
     // _migrations[0] = V1 → V2, _migrations[1] = V2 → V3, etc.
@@ -41,6 +42,7 @@ public static class AnalysisProjectMigrator
     [
         MigrateV1ToV2,
         MigrateV2ToV3,
+        MigrateV3ToV4,
     ];
 
     /// <summary>
@@ -93,6 +95,35 @@ public static class AnalysisProjectMigrator
         // leave it untouched.
         if (!project.ContainsKey("actionItems"))
             project["actionItems"] = new JsonArray();
+
+        return project;
+    }
+
+    // -------------------------------------------------------------------------
+    // V3 → V4: Backfill Version on existing versioned data sources.
+    //   - cedsDw  → "v13" (all existing data was against CEDS DW v13)
+    //   - edFiApi → "7.3" (assumed baseline; not yet used by the assessment runner)
+    // -------------------------------------------------------------------------
+    private static JsonObject MigrateV3ToV4(JsonObject project)
+    {
+        if (project["dataSources"] is not JsonArray dataSources)
+            return project;
+
+        foreach (var node in dataSources)
+        {
+            if (node is not JsonObject ds) continue;
+
+            // Skip if version is already set (defensive — shouldn't happen at V3)
+            if (ds["version"] is not null) continue;
+
+            var type = ds["type"]?.GetValue<string>();
+            ds["version"] = type switch
+            {
+                "cedsDw" => CedsDwVersions.V13,
+                "edFiApi" => EdFiVersions.V73,
+                _ => null
+            };
+        }
 
         return project;
     }

@@ -68,9 +68,9 @@
         _coverage = FrameworkCoverageSvc.CalculateFrameworkCoverage(ProjectSvc.GetActiveAssessmentsWithSource());
     }
 
-    private async Task HandleDataSourceTypeSelected(DataSourceType dataSourceType)
+    private async Task HandleDataSourceTypeSelected((DataSourceType Type, string? Version) selection)
     {
-        var createdDataSourceId = await ProjectSvc.AddDataSourceAsync(dataSourceType);
+        var createdDataSourceId = await ProjectSvc.AddDataSourceAsync(selection.Type, selection.Version);
         Nav.NavigateTo(AppRoutes.DataSourceDetails.ForDataSource(createdDataSourceId));
     }
 

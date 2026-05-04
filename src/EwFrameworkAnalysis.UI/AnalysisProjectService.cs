@@ -142,9 +142,9 @@ public class AnalysisProjectService
 
     public DataSource? GetDataSource(string name) => DataSources.FirstOrDefault(d => d.Name == name);
 
-    public async Task<Guid> AddDataSourceAsync(DataSourceType dataSourceType)
+    public async Task<Guid> AddDataSourceAsync(DataSourceType dataSourceType, string? version = null)
     {
-        var dataSource = CreateDataSource(dataSourceType);
+        var dataSource = CreateDataSource(dataSourceType, version);
         Project.DataSources.Insert(0, dataSource);
         Project.LastModifiedAt = DateTimeOffset.Now;
 
@@ -417,14 +417,25 @@ public class AnalysisProjectService
 
     private void Notify() => Changed?.Invoke();
 
-    private DataSource CreateDataSource(DataSourceType type)
+    private DataSource CreateDataSource(DataSourceType type, string? version = null)
     {
+        // For Ed-Fi, this is locked to v7.3 for now, until IEdFiAssessor's version support is implemented.
+        // For CEDS, use whatever the caller selected.
+        // For unversioned types, leave null.
+        var resolvedVersion = type switch
+        {
+            DataSourceType.EdFiApi => EdFiVersions.V73,
+            DataSourceType.CedsDw => version,
+            _ => null
+        };
+
         return new DataSource
         {
             Id = Guid.NewGuid(),
             Name = type.GetDisplayName(),
             Description = type.GetDisplayDescription(),
             Type = type,
+            Version = resolvedVersion,
             Enabled = true,
             Assessments = []
         };
