@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -35,4 +37,7 @@ FROM IbCourses";
         "Assesses IB course designation by counting distinct StateK12CourseId values " +
         "where CourseLevelCharacteristicCode = '00574' (International Baccalaureate course). " +
         "A non-zero count indicates IB course designation data is present.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

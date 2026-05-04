@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -62,4 +64,7 @@ FROM Base
     public string AssessmentDescription =>
         "Assesses record count, completeness, and numerical range of NumberOfCreditsAttempted " +
         "from RDS.FactPsStudentCourseTranscripts, joined to RDS.DimPeople to scope to valid student records.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

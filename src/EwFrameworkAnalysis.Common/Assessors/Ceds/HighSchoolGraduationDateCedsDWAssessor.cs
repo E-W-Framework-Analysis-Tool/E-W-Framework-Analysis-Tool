@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -52,4 +54,7 @@ FROM AcademicAwardDates";
         "FactK12StudentAcademicAwards. Each source is reported as a separate RecordCount row " +
         "so gaps between sources are visible. A non-zero count in either row indicates " +
         "graduation date data is present in that source.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -140,4 +142,7 @@ FROM Base
         "Assesses record count, completeness, numerical range, and distribution by suspension type " +
         "for K-12 student discipline records with a suspension-type consequence, " +
         "from RDS.FactK12StudentDisciplines joined to RDS.DimDisciplineStatuses.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// <summary>
 /// Profiles postsecondary enrollment status (full-time/part-time) from RDS.FactPsStudentEnrollments,
@@ -63,4 +65,7 @@ GROUP BY PostsecondaryEnrollmentStatusDescription
         "joined to RDS.DimPsEnrollmentStatuses. Reports total record count, completeness of the status " +
         "foreign key (excluding default/unknown dimension values), and distribution across enrollment " +
         "status categories (e.g., Full-time, Less than full-time but at least half-time, etc.).";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

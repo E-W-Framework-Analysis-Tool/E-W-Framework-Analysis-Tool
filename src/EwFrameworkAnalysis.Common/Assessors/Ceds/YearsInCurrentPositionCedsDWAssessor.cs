@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -88,4 +90,7 @@ FROM LeaderBase";
         "School leader classification filter uses partial string matching on K12StaffClassificationCode " +
         "(LIKE '%Principal%', '%Leader%', '%Administrator%') as a placeholder — exact code values require " +
         "confirmation against RDS.DimK12StaffCategories before use in production.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

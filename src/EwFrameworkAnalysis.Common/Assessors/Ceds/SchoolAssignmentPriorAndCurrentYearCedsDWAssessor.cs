@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -61,4 +63,7 @@ GROUP BY SchoolYear";
         "Assesses school assignment records for K-12 staff, covering prior and current year. " +
         "Reports total assignment record count, completeness of the school foreign key, " +
         "and distribution of assignment records across school years.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

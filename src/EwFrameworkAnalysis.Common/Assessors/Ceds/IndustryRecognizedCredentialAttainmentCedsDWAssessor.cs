@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -58,4 +60,7 @@ FROM IndustryCredentialBase";
         "NOTE: Currently uses a placeholder filter on ProfessionalOrTechnicalCredentialConferredCode " +
         "being non-null/non-empty. Confirm the correct code values or alternative column before " +
         "relying on these results. Reports record count and completeness of the award date field.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

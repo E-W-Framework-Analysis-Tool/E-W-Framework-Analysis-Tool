@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -68,4 +70,7 @@ GROUP BY CipFamily
         "across broad instructional program families grouped by two-digit CIP prefix " +
         "(e.g., 27 = Mathematics, 51 = Health Professions). The family distribution " +
         "indicates whether specific program types can be identified in the data.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

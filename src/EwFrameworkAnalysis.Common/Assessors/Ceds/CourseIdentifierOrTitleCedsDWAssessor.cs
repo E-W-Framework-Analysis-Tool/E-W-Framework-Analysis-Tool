@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -51,4 +53,7 @@ FROM CourseCte";
         "Profiles course identifier and title data from RDS.FactK12StudentCourseSections joined to " +
         "RDS.DimK12Courses on StateK12CourseId. Assesses total record count and completeness, where a " +
         "record is considered populated if either CourseIdentifier or CourseTitle is non-empty.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -53,4 +55,7 @@ FROM CohortBase";
         "Reports total record count and completeness of CohortGraduationYearId. Cohort graduation " +
         "year is typically derived from cohort year (+ 4 years) — a completeness gap between the " +
         "two would indicate an ETL or data population issue.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

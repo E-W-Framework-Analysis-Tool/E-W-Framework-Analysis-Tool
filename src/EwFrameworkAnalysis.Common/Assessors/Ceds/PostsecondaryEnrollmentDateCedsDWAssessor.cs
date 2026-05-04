@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -24,4 +26,7 @@ FROM RDS.FactPsStudentEnrollments
         "EnrollmentEntryDateId and EntryDateIntoPostSecondaryId are both non-nullable, " +
         "so completeness is schema-guaranteed. RecordCount reflects the total number of " +
         "postsecondary enrollment records present.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

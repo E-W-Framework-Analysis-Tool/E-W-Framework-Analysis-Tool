@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -70,4 +72,7 @@ FROM PsGpa";
         "Reports total record count, numerical range (min/max) of the term GPA, " +
         "and completeness measured as rows where at least one of the two GPA fields " +
         "(term GPA or cumulative GPA) is populated.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -56,4 +58,7 @@ FROM GraduateBase";
         "filtered to graduate-level PESC award codes (master's, doctoral, first professional, " +
         "post-baccalaureate, and related IPEDS equivalents). Reports record count and completeness " +
         "of the academic award date field.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

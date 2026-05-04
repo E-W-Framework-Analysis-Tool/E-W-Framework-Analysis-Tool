@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -51,4 +53,7 @@ GROUP BY PescAwardLevelTypeDescription
         "covering all postsecondary PESC award levels (certificates through doctoral). Excludes " +
         "secondary/high school (B-series), CEGEP, French Baccalaureate, and the '0.0' catch-all code. " +
         "Reports record count and distribution across PESC award level descriptions.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

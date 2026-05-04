@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -81,4 +83,7 @@ FROM Distribution";
         "closest available proxy for EL classification date in the CEDS DW schema. Reports " +
         "completeness and distribution of populated dates by year. StatusEndDateEnglishLearnerId " +
         "(reclassification/exit date) is also available on the fact table.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

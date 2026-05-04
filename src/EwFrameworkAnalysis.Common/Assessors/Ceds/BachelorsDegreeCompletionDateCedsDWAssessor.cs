@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -35,4 +37,7 @@ FROM BachelorsBase";
         "is '2.4' (Baccalaureate Degree), '2.5' (Baccalaureate Honors Degree), or 'IPEDS5' " +
         "(Bachelor's Degree or equivalent), and AcademicAwardDateId is non-null. " +
         "The record count is the presence signal for this data element.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

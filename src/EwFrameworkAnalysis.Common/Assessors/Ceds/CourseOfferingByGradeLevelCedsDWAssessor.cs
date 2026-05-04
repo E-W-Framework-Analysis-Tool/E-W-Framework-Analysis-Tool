@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -75,4 +77,7 @@ FROM Distribution";
         "via the ScedGradeSpan field (the grade span for which the course is appropriate). Reports " +
         "total distinct course count, completeness of grade span values, and distribution of courses " +
         "across each grade span present in the data.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

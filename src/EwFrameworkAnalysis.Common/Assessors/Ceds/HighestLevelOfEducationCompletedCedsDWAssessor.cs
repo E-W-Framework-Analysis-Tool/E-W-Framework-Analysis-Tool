@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -77,4 +79,7 @@ GROUP BY
         "distribution of staff across education level categories. Distribution labels use " +
         "HighestLevelOfEducationCompletedDescription where populated, falling back to " +
         "HighestLevelOfEducationCompletedCode, then '(Unknown)' if both are absent.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

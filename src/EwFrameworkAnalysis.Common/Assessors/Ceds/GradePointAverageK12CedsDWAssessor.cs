@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -74,4 +76,7 @@ FROM K12Gpa";
         "Reports total record count, numerical range (min/max) of the unweighted non-cumulative GPA, " +
         "and completeness measured as rows where at least one of the four GPA fields " +
         "(weighted, unweighted, cumulative weighted, cumulative unweighted) is populated.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

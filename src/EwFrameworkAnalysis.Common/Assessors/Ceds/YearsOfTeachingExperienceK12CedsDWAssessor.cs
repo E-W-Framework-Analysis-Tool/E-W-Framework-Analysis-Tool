@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -126,4 +128,7 @@ FROM TeachingExp";
         "Assesses total record count, completeness treating 0.00 as not-reported, " +
         "min/max range, and distribution across experience bands " +
         "(not reported, <1, 1–3, 4–9, 10–19, 20+).";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

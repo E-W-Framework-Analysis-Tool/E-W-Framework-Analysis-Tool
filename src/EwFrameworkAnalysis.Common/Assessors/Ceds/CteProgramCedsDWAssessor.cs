@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -105,4 +107,7 @@ FROM Distribution";
         "the relevant CTE-scoping codes (CourseLevelTypeCode 'Vocational', 'TechnicalPreparatory'), " +
         "has no populated foreign key relationship from RDS.FactPsStudentCourseTranscripts in known " +
         "CEDS DW implementations.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

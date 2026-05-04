@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -81,4 +83,7 @@ FROM ActBase";
         "and the minimum and maximum observed scores. Unparseable score values are excluded " +
         "from the numeric range via TRY_CAST but are counted in TotalRecords, making any " +
         "gap between TotalRecords and PopulatedRecords visible.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

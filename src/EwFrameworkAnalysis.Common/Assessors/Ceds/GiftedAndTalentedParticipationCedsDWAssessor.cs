@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -51,4 +53,7 @@ FROM GiftedBase
         "filtered to ProgramTypeCode '04930'. Reports total participation record count and " +
         "completeness of ProgramParticipationStartDateId. Exit date is intentionally excluded " +
         "from completeness as not all participants will have exited the program.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

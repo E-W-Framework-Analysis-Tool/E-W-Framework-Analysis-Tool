@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -79,4 +81,7 @@ GROUP BY GradeLevelDescription";
         "from RDS.DimGradeLevels (GradeLevelDescription) via CourseApplicableEducationLevelId. " +
         "Completeness is measured as records where either subject area or grade level is populated. " +
         "Distributions are reported separately for subject area and grade level, distinguished via Remarks.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

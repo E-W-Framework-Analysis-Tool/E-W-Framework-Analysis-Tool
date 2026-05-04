@@ -30,3 +30,24 @@ public enum DataSourceType
     [Display(Name = "ECS State Reference Profile", Description = "State-specific data that research shows is reported by the state")]
     EcsState
 }
+
+public static class CedsDwVersions
+{
+    public const string V13 = "v13";
+    public const string V14 = "v14";
+
+    /// <summary>
+    /// Returns a sorted list of version strings ordered from earliest to latest
+    /// </summary>
+    public static readonly IReadOnlyList<string> All = [V13, V14];
+}
+
+public static class EdFiVersions
+{
+    public const string V73 = "7.3";
+
+    /// <summary>
+    /// Returns a sorted list of version strings ordered from earliest to latest
+    /// </summary>
+    public static readonly IReadOnlyList<string> All = [V73];
+}

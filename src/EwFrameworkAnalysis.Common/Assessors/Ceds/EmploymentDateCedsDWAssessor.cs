@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -78,4 +80,7 @@ FROM Distribution";
         "Assesses employment start date completeness from RDS.FactQuarterlyEmployments via " +
         "EmploymentStartDateId joined to RDS.DimDates. Distributes populated records by year. " +
         "HireDateId and reference period date fields are also available on this fact table.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

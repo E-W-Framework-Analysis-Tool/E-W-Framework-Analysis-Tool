@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -69,4 +71,7 @@ GROUP BY RaceDescription
         "RDS.BridgeK12StaffEmploymentRaces to RDS.DimRaces. Reports total staff employment " +
         "record count, completeness of race/ethnicity assignment (staff with at least one " +
         "non-missing race entry), and distribution across race/ethnicity categories.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

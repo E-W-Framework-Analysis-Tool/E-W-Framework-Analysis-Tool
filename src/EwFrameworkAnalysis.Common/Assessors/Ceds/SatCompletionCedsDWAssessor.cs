@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -32,4 +34,7 @@ WHERE ase.AssessmentResultScoreValueSATScore IS NOT NULL
         "(via DimAssessmentSubtests.AssessmentLevelForWhichDesigned) and assessment type " +
         "'AchievementTest'. A non-null AssessmentResultScoreValueSATScore is used as a " +
         "proxy for SAT completion.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

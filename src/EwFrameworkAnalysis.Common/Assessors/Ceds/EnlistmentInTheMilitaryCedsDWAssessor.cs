@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -94,4 +96,7 @@ FROM MilitaryBase
         "joined to RDS.DimMilitaryStatuses. Reports the count of actively enlisted students, " +
         "completeness of the military status field across all enrollment records, and distribution " +
         "across all four CEDS status codes: Active, National Guard Or Reserve, Not Active, and Unknown.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

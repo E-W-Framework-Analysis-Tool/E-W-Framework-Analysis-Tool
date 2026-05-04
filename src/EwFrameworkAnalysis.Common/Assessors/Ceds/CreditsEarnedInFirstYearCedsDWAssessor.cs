@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -87,4 +89,7 @@ FROM Distribution";
         "populated records by school year to support first-year cohort analysis. No first-year " +
         "filter is applied at assessment time; first-year identification requires correlating " +
         "school year against student enrollment entry date at analysis time.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

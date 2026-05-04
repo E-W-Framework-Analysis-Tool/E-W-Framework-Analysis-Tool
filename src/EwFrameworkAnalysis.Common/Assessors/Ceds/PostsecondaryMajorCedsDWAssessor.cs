@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -52,4 +54,7 @@ FROM AwardBase
         "Assesses postsecondary major data from RDS.BridgePsStudentAcademicAwardCipCodes joined to " +
         "RDS.FactPsStudentAcademicAwards. Reports total academic award records and the count of awards " +
         "that have at least one CIP code assigned with a program level of 'Major'.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

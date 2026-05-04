@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -35,4 +37,7 @@ FROM DualCreditCourses";
         "Assesses dual credit course designation by counting distinct StateK12CourseId values " +
         "where CourseLevelCharacteristicCode = '73048' (Dual enrollment). " +
         "A non-zero count indicates dual credit course designation data is present.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

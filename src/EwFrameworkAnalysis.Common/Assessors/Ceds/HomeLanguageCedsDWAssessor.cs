@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -66,4 +68,7 @@ GROUP BY Iso6392LanguageCodeDescription";
         "joined to RDS.DimLanguages (on LanguageHomeId), excluding the default sentinel row " +
         "(DimLanguageId = -1). Reports total record count, completeness of the ISO 639-2 " +
         "language code field, and distribution of enrollment records across language descriptions.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

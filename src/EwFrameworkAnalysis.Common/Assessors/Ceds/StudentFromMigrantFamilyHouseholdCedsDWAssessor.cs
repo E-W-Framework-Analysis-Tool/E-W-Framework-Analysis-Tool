@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -87,4 +89,7 @@ SELECT
         "sectors and a per-sector presence indicator (1 = data present, 0 = no data). Pre-K always " +
         "returns 0 as no source table is available. Postsecondary uses FactPsStudentCourseTranscripts " +
         "as the source since MigrantStatusId is available on that table.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -67,4 +69,7 @@ GROUP BY K12StaffClassificationCode";
         "Assesses job title or position type for active K-12 Teacher and Educator staff. " +
         "Reports total record count, completeness of the PositionTitle field, and distribution " +
         "of records across K12StaffClassificationCode categories.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

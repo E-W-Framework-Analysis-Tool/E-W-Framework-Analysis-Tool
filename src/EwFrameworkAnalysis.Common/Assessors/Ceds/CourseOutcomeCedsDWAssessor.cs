@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -81,4 +83,7 @@ FROM ExitDistribution";
         "completeness signal, supplemented by distribution of CourseSectionExitTypeCode (course " +
         "completion circumstance) as a secondary outcome indicator. No grade level or subject area " +
         "filter is applied — all course section records are included.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

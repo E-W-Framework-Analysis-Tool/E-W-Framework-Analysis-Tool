@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -108,4 +110,7 @@ FROM Distribution";
         "of QuarterlyEarnings, min/max range (metric threshold is ~$8,750/quarter for the $35,000/year " +
         "benchmark), and distribution of populated records by reference period year. Post-graduation " +
         "cohort filtering and timing window logic are not applied at assessment time.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

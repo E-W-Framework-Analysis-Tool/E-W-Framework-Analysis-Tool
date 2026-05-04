@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -139,4 +141,7 @@ SELECT
         "combined record count and completeness across all three sources, and a per-sector count " +
         "of records with a populated DisabilityStatusCode as a distribution. Related K-12 indicators " +
         "(IdeaStatusId, PrimaryDisabilityTypeId, SecondaryDisabilityTypeId) are not profiled here.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

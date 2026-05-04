@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -96,4 +98,7 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "AssessmentAcademicSubjectCode = '00560' (Reading), and GradeLevelCode in " +
         "('01', '02'). Reports record count, score completeness, and distribution by " +
         "assessment title. Results may be sparse in states without grade 1-2 benchmarks.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

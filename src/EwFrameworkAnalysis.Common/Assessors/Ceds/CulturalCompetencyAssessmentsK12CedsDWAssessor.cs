@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -110,4 +112,7 @@ FROM RangeCalc";
         "count, completeness of Raw or Scale score values, and min/max numeric range for raw score values. " +
         "Note: no validated K-12 cultural competency instrument has been formally recommended by CEDS; " +
         "referenced assessments are adult proxy tools.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

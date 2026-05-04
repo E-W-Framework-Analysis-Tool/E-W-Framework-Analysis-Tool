@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -82,4 +84,7 @@ FROM Distribution";
         "Assesses course performance data readiness for English Language and Literature (SCED 01) and " +
         "Mathematics (SCED 02) course sections. Completeness is measured over StudentCourseSectionGradeEarned. " +
         "Distribution shows populated grade counts by subject area. No grade level filter is applied.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }

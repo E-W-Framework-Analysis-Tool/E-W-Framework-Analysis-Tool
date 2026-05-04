@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -97,4 +99,7 @@ SELECT
         "joined to RDS.DimFosterCareStatuses. Reports record count, completeness of the foster care " +
         "participation code, and per-sector distribution of populated records. Pre-K and Postsecondary " +
         "sectors emit zero pending schema identification.";
+
+    public string MinVersion => CedsDwVersions.V13;
+    public string? MaxVersion => null;
 }
