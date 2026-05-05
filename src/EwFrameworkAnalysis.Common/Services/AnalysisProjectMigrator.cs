@@ -116,11 +116,11 @@ public static class AnalysisProjectMigrator
             // Skip if version is already set (defensive — shouldn't happen at V3)
             if (ds["version"] is not null) continue;
 
-            var type = ds["type"]?.GetValue<string>();
-            ds["version"] = type switch
+            var type = ds["type"]?.GetValue<int>();
+            ds["version"] = (DataSourceType?)type switch
             {
-                "cedsDw" => CedsDWVersions.V13,
-                "edFiApi" => EdFiVersions.V73,
+                DataSourceType.CedsDw => CedsDWVersions.V13,
+                DataSourceType.EdFiApi => EdFiVersions.V73,
                 _ => null
             };
         }
