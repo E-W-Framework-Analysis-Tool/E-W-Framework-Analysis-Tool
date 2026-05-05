@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -75,4 +77,7 @@ FROM SatBase
         "record count, completeness of AssessmentResultScoreValueSATScore, and numerical range " +
         "(min/max) of score values using TRY_CAST to handle the nvarchar score column. Assessment " +
         "type is filtered to 'AchievementTest' via DimAssessments.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

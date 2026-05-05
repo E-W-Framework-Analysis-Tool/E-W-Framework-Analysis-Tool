@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -129,4 +131,7 @@ FROM BaseData";
         "bands (Full Time, Part Time, Less Than Half Time, Not Employed, Unknown / " +
         "Not Reported). Distribution categories are derived from FullTimeEquivalency " +
         "thresholds pending confirmation of a dedicated FTE status dimension column.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

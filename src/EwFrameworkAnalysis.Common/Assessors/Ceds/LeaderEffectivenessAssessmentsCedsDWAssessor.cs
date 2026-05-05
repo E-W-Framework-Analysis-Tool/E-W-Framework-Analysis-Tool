@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -110,4 +112,7 @@ GROUP BY
         "staff classified as Administrators, SchoolAdministrators, or LeaAdministrators. Reports " +
         "record count, completeness of the overall staff evaluation score or rating, distribution " +
         "by faculty and administration performance level, and distribution by evaluation system name.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

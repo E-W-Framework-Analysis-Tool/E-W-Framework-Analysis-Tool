@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -88,4 +90,6 @@ SELECT
         "juvenile detention center (75000), and school-related arrest (75001). Reports record count " +
         "and distribution by action type. Postsecondary and Workforce sectors emit zero pending " +
         "schema identification.";
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -82,4 +84,7 @@ SELECT
         "joined to RDS.DimRaces. Reports total count of distinct enrollment records with a race " +
         "entry across both sectors and a per-sector presence indicator (1 = data present, " +
         "0 = no data). Pre-K and Workforce always return 0 as no source tables are available.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

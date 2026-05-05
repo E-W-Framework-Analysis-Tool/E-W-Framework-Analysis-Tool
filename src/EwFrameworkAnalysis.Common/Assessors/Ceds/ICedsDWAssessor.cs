@@ -1,5 +1,4 @@
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
-
 /// <summary>
 /// Defines a SQL-based assessor that profiles a CEDS Data Warehouse for a single
 /// E-W Framework data element.
@@ -35,4 +34,21 @@ public interface ICedsDWAssessor
     /// Emitted as a comment above the query in the generated script.
     /// </summary>
     string AssessmentDescription { get; }
+
+    /// <summary>
+    /// The earliest CEDS Data Warehouse version this assessor supports.
+    /// Use a constant from <see cref="CedsDwVersions"/> (e.g. <c>CedsDwVersions.V13</c>).
+    /// The orchestrator excludes this assessor when generating a script for any version
+    /// that precedes this value in <see cref="CedsDwVersions.All"/>.
+    /// </summary>
+    string MinVersion { get; }
+
+    /// <summary>
+    /// The latest CEDS Data Warehouse version this assessor supports, or <c>null</c> if
+    /// the assessor applies to all versions from <see cref="MinVersion"/> onward.
+    /// Use a constant from <see cref="CedsDwVersions"/> (e.g. <c>CedsDwVersions.V13</c>).
+    /// The orchestrator excludes this assessor when generating a script for any version
+    /// that follows this value in <see cref="CedsDwVersions.All"/>.
+    /// </summary>
+    string? MaxVersion { get; }
 }

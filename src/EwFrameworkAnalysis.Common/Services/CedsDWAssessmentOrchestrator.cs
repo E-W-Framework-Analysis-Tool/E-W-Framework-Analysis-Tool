@@ -1,5 +1,6 @@
 using System.Text;
 using EwFrameworkAnalysis.Common.Assessors.Ceds;
+using EwFrameworkAnalysis.Common.Models.Project;
 
 namespace EwFrameworkAnalysis.Common.Services;
 
@@ -13,23 +14,35 @@ public class CedsDWAssessmentOrchestrator
     }
 
     /// <summary>
-    /// Generates a temp-table-based assessment script from all registered assessors.
-    /// Creates #EWFProfilerResults, runs each assessor's Query verbatim, then selects all rows.
-    /// Each assessor is responsible for inserting its own rows via INSERT INTO #EWFProfilerResults.
+    /// Generates a temp-table-based assessment script from all assessors applicable to
+    /// <paramref name="version"/>. Creates #EWFProfilerResults, runs each assessor's
+    /// Query verbatim, then selects all rows.
     /// </summary>
-    public string GenerateProfilerScript()
+    /// <param name="version">
+    /// The target CEDS DW version string (e.g. <see cref="CedsDWVersions.V13"/>).
+    /// Only assessors whose version range includes this value are emitted.
+    /// </param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when no assessors are registered or none apply to <paramref name="version"/>.
+    /// </exception>
+    public string GenerateProfilerScript(string version)
     {
-        var assessors = _assessors.ToList();
+        var applicable = _assessors
+            .Where(a => DataSourceVersionRegistry.IsInRange(
+                DataSourceType.CedsDw, version, a.MinVersion, a.MaxVersion))
+            .ToList();
 
-        if (assessors.Count == 0)
-            throw new InvalidOperationException("No ICedsDWAssessor implementations are registered.");
+        if (applicable.Count == 0)
+            throw new InvalidOperationException(
+                $"No ICedsDWAssessor implementations apply to version '{version}'. " +
+                $"Registered assessors: {_assessors.Count()}.");
 
         var sb = new StringBuilder();
 
-        AppendHeader(sb, assessors.Count);
+        AppendHeader(sb, version, applicable.Count);
         AppendTempTableCreation(sb);
 
-        foreach (var assessor in assessors)
+        foreach (var assessor in applicable)
         {
             sb.AppendLine($"-- {assessor.DataElementName}");
             sb.AppendLine($"-- {assessor.AssessmentDescription}");
@@ -43,7 +56,13 @@ public class CedsDWAssessmentOrchestrator
         return sb.ToString();
     }
 
+    /// <summary>Total number of registered assessors across all versions.</summary>
     public int AssessorCount => _assessors.Count();
+
+    /// <summary>Number of assessors applicable to a specific version.</summary>
+    public int AssessorCountForVersion(string version) =>
+        _assessors.Count(a => DataSourceVersionRegistry.IsInRange(
+            DataSourceType.CedsDw, version, a.MinVersion, a.MaxVersion));
 
     private static void AppendTempTableCreation(StringBuilder sb)
     {
@@ -72,7 +91,7 @@ public class CedsDWAssessmentOrchestrator
         sb.AppendLine("ORDER BY DataElementName, CharacteristicType;");
     }
 
-    private static void AppendHeader(StringBuilder sb, int assessorCount)
+    private static void AppendHeader(StringBuilder sb, string version, int assessorCount)
     {
         sb.AppendLine("/*");
         sb.AppendLine("===================================================================================");
@@ -104,7 +123,8 @@ public class CedsDWAssessmentOrchestrator
         sb.AppendLine("  - SubItemLabel:       Row qualifier for multi-row characteristics (e.g., 'Minimum', 'TotalRecords')");
         sb.AppendLine("  - Remarks:            Optional notes or comments");
         sb.AppendLine();
-        sb.AppendLine($"Generated: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+        sb.AppendLine($"Generated:      {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+        sb.AppendLine($"Target Version: CEDS Data Warehouse {version}");
         sb.AppendLine($"Assessor Count: {assessorCount}");
         sb.AppendLine("===================================================================================");
         sb.AppendLine("*/");

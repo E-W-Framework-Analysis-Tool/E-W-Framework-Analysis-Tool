@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -152,4 +154,7 @@ SELECT
         "joined to RDS.DimHomelessnessStatuses. Reports combined record count and completeness " +
         "across all sectors, and per-sector populated counts as a distribution. Pre-K and Workforce " +
         "sectors emit zero pending schema identification.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

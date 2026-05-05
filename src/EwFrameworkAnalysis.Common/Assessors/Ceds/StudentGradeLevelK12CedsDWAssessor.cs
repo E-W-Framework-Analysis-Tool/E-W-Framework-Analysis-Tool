@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -66,4 +68,7 @@ GROUP BY GradeLevelDescription, GradeLevelCode";
         "Assesses student grade level (K-12) using EntryGradeLevelId from enrollment records. " +
         "Reports total record count, completeness of the entry grade level field, and distribution " +
         "of enrollment records across all grade levels present in the warehouse.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

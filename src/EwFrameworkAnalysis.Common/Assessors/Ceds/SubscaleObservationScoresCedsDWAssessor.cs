@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -69,4 +71,7 @@ GROUP BY StaffEvaluationPartScale
         "Overall evaluation scale and outcome fields (StaffEvaluationScale, StaffEvaluationOutcome) " +
         "are also available on this table but are not profiled here as this element focuses on " +
         "subscale scores specifically.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

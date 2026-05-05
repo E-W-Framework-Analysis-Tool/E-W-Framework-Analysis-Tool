@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -84,4 +86,7 @@ SELECT
         "per-sector presence indicator (1 = data present, 0 = no data). Pre-K always returns 0 " +
         "as no source table is available. Postsecondary uses FactPsStudentAcademicRecord as a " +
         "proxy since FactPsStudentEnrollments does not carry a demographic foreign key.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

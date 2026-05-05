@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 public class SuspensionExpulsionGrades1and2CedsDWAssessor : ICedsDWAssessor
@@ -28,6 +30,9 @@ AND gradeLevel.GradeLevelCode IN ('01', '02')
 ";
 
     public string AssessmentDescription => "Query RDS.FactK12StudentDisciplines where GradeLevel is 01 or 02, and where DisciplinaryActionTakenCode is Expulsion or Suspension option";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }
 
 public class SuspensionExpulsionK12CedsDWAssessor : ICedsDWAssessor
@@ -56,4 +61,7 @@ WHERE discStat.DisciplinaryActionTakenCode IN
 ";
 
     public string AssessmentDescription => "Query RDS.FactK12StudentDisciplines where DisciplinaryActionTakenCode is Expulsion or Suspension option";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

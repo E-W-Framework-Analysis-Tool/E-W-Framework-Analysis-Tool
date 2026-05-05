@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -84,4 +86,7 @@ FROM ObservationBase
         "scores may be inconsistently mapped across state implementations. " +
         "The scale score field is stored as NVARCHAR(70); NumericalRange uses TRY_CAST to DECIMAL " +
         "for correct numeric min/max — unparseable values are silently excluded from the range.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

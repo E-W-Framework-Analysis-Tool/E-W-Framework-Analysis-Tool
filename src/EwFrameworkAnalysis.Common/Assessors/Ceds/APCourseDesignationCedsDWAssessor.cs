@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -35,4 +37,7 @@ FROM ApCourses";
         "Assesses AP course designation by counting distinct StateK12CourseId values " +
         "where CourseLevelCharacteristicCode = '00575' (Advanced placement course). " +
         "A non-zero count indicates AP course designation data is present.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

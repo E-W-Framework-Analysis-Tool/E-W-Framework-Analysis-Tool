@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -68,4 +70,7 @@ GROUP BY MostPrevalentLevelOfInstitutionCode
         "joined to RDS.DimPsInstitutions. Reports total record count, completeness of the " +
         "MostPrevalentLevelOfInstitutionCode field (excluding default/unknown dimension values), " +
         "and distribution across institution classification categories.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

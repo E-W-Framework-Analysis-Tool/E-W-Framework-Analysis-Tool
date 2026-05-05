@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -86,4 +88,7 @@ FROM Distribution";
         "completeness of CourseLevelCharacteristicCode across all course sections and distributing " +
         "records by characteristic description. CTE general (73044) and dual-credit (73045) codes " +
         "will appear in the distribution if present. No pre-filtering to CTE codes is applied.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

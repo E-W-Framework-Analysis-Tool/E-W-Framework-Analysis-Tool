@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -86,4 +88,7 @@ FROM Distribution";
         "(CourseLevelCharacteristicCode 73044 and 73045). Reports completeness of CareerClusterCode " +
         "within the CTE course population and distributes records by career cluster. No grade level " +
         "filter is applied.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

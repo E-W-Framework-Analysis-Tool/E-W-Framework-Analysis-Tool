@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -108,4 +110,7 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "(Mathematics), GradeLevelCode = '03', and AssessmentTypeCode in AchievementTest and " +
         "alternate assessment variants as the closest available proxy for state summative tests. " +
         "Reports record count, score completeness, and distribution by assessment title.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

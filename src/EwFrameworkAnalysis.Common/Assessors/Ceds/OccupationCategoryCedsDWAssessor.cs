@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -63,4 +65,7 @@ GROUP BY MajorGroupCode
         "Assesses record count, completeness, and distribution by O*NET-SOC major group " +
         "(first two digits of the occupation code) for workforce records from " +
         "RDS.FactQuarterlyEmployments, joined to RDS.DimOnetSocOccupationTypes.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

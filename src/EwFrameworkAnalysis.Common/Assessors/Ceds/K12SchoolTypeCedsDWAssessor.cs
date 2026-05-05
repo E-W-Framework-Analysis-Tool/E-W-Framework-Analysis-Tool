@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -86,4 +88,7 @@ GROUP BY CharterSchoolIndicator";
         "Reports total record count, completeness of the school type code field, distribution of " +
         "enrollment records by school type description (e.g. Regular, Charter, Magnet, Alternative), " +
         "and distribution by charter school indicator flag.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

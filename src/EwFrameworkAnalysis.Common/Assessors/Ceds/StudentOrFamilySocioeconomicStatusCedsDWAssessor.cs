@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -69,4 +71,7 @@ GROUP BY EconomicDisadvantageStatusDescription
         "and direct certification indicators rather than a full socioeconomic spectrum. " +
         "Scoring should treat this element as partially available. Distribution across status " +
         "categories indicates whether any gradation beyond a simple flag is present.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

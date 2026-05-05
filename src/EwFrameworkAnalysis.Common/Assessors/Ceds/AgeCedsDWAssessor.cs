@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -76,4 +78,7 @@ FROM PeopleStats
 
     public string AssessmentDescription =>
         "Comprehensive assessment including BirthDate completeness and calculated age range from RDS.DimPeople";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

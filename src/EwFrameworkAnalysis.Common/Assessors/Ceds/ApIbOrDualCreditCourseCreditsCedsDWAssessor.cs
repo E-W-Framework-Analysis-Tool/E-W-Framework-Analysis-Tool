@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -69,4 +71,7 @@ FROM CreditsBase";
         "courses. Reports total student-course record count, completeness of the NumberOfCreditsEarned " +
         "field, and the minimum and maximum credits earned. NumberOfCreditsEarned is a native " +
         "decimal field so no casting is required for numeric aggregation.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

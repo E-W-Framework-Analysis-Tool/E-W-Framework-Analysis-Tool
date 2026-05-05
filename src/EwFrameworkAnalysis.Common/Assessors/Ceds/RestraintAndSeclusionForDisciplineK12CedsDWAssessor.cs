@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -33,4 +35,7 @@ WHERE discStat.DisciplinaryActionTakenCode IN
         "Physical Restraint, or Seclusion, from RDS.FactK12StudentDisciplines. The RDS schema does not " +
         "distinguish between discipline and safety contexts; all restraint and seclusion records in this " +
         "table are disciplinary in nature, so this assessor and the safety assessor return the same result.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

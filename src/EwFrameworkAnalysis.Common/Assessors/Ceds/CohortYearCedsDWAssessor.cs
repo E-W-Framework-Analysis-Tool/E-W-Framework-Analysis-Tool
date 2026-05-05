@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -47,4 +49,7 @@ FROM CohortBase";
     public string AssessmentDescription =>
         "Assesses cohort year for 9th grade students from RDS.FactK12GraduationCohorts. " +
         "Reports total record count and completeness of CohortYearId.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

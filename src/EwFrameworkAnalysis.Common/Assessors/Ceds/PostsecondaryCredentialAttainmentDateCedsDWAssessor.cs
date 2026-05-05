@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -59,4 +61,7 @@ FROM PsCredentialBase";
         "covering all postsecondary PESC award levels (certificates through doctoral). Excludes " +
         "secondary/high school (B-series), CEGEP, French Baccalaureate, and the '0.0' catch-all code. " +
         "Reports record count and completeness of the academic award date field.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

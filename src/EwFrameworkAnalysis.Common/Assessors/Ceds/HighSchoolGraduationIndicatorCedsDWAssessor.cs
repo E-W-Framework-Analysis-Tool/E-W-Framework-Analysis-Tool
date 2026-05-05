@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -33,4 +35,7 @@ FROM GraduationBase";
         "Assesses high school graduation indicator by counting enrollment records where " +
         "ExitOrWithdrawalTypeCode = '01921' (Graduated with regular, advanced, IB, or other " +
         "diploma). The record count is the presence signal for this data element.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

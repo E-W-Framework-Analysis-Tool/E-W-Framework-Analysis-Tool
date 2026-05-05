@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -123,4 +125,7 @@ WHERE d.PescAwardLevelTypeCode IN (
         "award levels. Reports total record count, completeness of the award date field, and a " +
         "distribution of dated award records broken down by PescAwardLevelTypeDescription — providing " +
         "a cross-credential view spanning certificates, associate's, bachelor's, and graduate awards.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

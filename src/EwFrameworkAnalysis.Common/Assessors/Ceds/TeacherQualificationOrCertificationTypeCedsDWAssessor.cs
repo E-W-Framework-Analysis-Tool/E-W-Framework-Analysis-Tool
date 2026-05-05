@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 // MN: This file contains two alternative approaches in separate assessors.
@@ -75,6 +77,9 @@ GROUP BY TeachingCredentialBasisDescription";
         "the credential type field, and distributions across both teaching credential type " +
         "(e.g., Regular/Standard, Provisional, Emergency) and credential basis " +
         "(e.g., Baccalaureate degree, Master's degree).";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }
 
 
@@ -155,4 +160,7 @@ GROUP BY CredentialDefinitionTitle";
         "Covers only staff with credential assessment or award records; see " +
         "TeacherQualificationOrCertificationTypeCedsDWAssessor for the broader staff " +
         "assignment population.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

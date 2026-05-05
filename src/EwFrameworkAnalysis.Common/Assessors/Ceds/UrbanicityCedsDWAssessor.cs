@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -60,4 +62,7 @@ FROM AddressBase
         "indicating that external urbanicity derivation via geocoding or NCES locale lookup is " +
         "feasible. A high completeness rate suggests the data source can support urbanicity-based " +
         "disaggregation.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

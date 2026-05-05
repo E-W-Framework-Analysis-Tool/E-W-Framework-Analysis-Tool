@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -65,4 +67,7 @@ GROUP BY HighSchoolDiplomaTypeDescription, HighSchoolDiplomaTypeCode";
         "HighSchoolDiplomaTypeCode field, and distribution across diploma type values per " +
         "CEDS element 000138 (High School Diploma Type). Diploma type code is populated via " +
         "state-specific ETL mapping through Staging.SourceSystemReferenceData.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

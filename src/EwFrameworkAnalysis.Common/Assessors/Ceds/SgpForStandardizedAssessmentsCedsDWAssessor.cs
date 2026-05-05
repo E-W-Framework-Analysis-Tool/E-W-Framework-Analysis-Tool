@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -72,4 +74,7 @@ GROUP BY AssessmentPerformanceLevelScoreMetric
         "and distribution of AssessmentPerformanceLevelScoreMetric types (e.g., " +
         "Growth/value-added/indexing, Percentile) to indicate how growth data is stored " +
         "and whether SGP derivation is supported.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

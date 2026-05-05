@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -41,4 +43,7 @@ FROM ActBase";
         "AssessmentResultScoreValueACTScore. The record count itself is the completion signal. " +
         "The AchievementTest type filter may include non-ACT assessments — consider narrowing " +
         "by assessment name if the target state records multiple achievement test types.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

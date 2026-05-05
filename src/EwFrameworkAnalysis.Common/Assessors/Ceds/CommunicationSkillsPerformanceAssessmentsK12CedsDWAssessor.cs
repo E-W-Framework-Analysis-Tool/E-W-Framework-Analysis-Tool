@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -96,4 +98,7 @@ FROM RangeCalc";
         "Assesses K-12 communication skills performance assessment records for CCRA+ or equivalent assessments, " +
         "matched by title, short name, or state identifier. Reports total record count, completeness of Raw or " +
         "Scale score values, and min/max numeric range for raw score values.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

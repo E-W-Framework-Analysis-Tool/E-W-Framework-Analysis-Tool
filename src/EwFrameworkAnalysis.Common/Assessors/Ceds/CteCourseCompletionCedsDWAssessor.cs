@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -89,4 +91,7 @@ FROM ExitDistribution";
         "Assesses course outcome data readiness for CTE courses (CourseLevelCharacteristicCode 73044 " +
         "and 73045) using StudentCourseSectionGradeEarned as the primary completeness signal, " +
         "supplemented by distribution of CourseSectionExitTypeCode. No grade level filter is applied.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

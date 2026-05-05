@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -102,4 +104,7 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "thinking title patterns. Reports total record count, completeness of any score " +
         "value (Raw, Scale, Percentile, T, or Z), and distribution of records by matched " +
         "assessment title.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

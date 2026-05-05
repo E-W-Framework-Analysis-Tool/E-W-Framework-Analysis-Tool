@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -192,4 +194,7 @@ FROM Base
         "distribution across all 15 CEDS work-based learning opportunity types for K-12 students " +
         "with active or completed course section enrollments, from RDS.FactK12StudentCourseSections " +
         "joined to RDS.DimWorkBasedLearningStatuses and RDS.DimK12CourseSectionEnrollmentStatuses.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

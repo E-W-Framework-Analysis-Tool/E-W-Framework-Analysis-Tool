@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -67,4 +69,7 @@ FROM AttendanceBase
         "numerical range (min/max) of rate values. The range is particularly useful for " +
         "scorers to determine whether rates are stored on a 0-1 or 0-100 scale and to " +
         "identify potential outliers.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

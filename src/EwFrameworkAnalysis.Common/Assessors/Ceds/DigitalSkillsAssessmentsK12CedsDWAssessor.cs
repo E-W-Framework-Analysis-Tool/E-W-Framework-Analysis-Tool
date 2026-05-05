@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -112,4 +114,7 @@ FROM RangeCalc";
         "score values, and min/max numeric range for raw score values. Note: no validated K-12 digital " +
         "skills instrument is currently available per CEDS; this assessor is expected to return zero or " +
         "near-zero records in most implementations but is included to surface locally-adopted instruments.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

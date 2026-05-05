@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -100,4 +102,7 @@ FROM Counts";
         "populated if either field is present. Per-field populated counts are reported as a " +
         "distribution. Both fields are Yes/No flags. No filter to EL-flagged records is applied " +
         "— all enrollment records are included.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

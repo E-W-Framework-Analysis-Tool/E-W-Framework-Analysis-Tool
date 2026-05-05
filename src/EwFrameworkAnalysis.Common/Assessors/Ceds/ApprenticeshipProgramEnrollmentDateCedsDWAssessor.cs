@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -32,4 +34,7 @@ FROM ApprenticeshipBase";
         "Assesses apprenticeship program enrollment date by counting records where " +
         "WorkBasedLearningOpportunityTypeCode = 'Apprenticeship' and EnrollmentEntryDateId " +
         "is non-null. The record count itself is the presence signal for this data element.";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }

@@ -1,3 +1,5 @@
+using EwFrameworkAnalysis.Common.Models.Project;
+
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
@@ -54,4 +56,7 @@ FROM KindergartenBase";
         "RDS.DimGradeLevels, filtered to GradeLevelCode = 'KG'. Reports total record count and " +
         "completeness of the enrollment entry date field (EnrollmentEntryDateId), excluding the " +
         "default sentinel value (-1).";
+
+    public string MinVersion => CedsDWVersions.V13;
+    public string? MaxVersion => null;
 }
