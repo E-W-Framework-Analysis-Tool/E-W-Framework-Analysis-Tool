@@ -132,10 +132,9 @@
 
     private string GetProgressBarColor(decimal score)
     {
-        // Green (high score) gradient to Red (low score)
-        if (score > 0.66m)
+        if (score >= 0.70m)
             return "progress-success";
-        else if (score > 0.33m)
+        else if (score >= 0.50m)
             return "progress-warning";
         else if (score > 0m)
             return "progress-error";
