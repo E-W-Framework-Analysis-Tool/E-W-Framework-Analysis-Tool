@@ -184,10 +184,10 @@
     private static string GetProgressBarColor(decimal score) =>
         score switch
         {
-            > 0.66m => "progress-success",
-            > 0.33m => "progress-warning",
-            > 0m    => "progress-error",
-            _       => "bg-gray-200"
+            >= 0.70m => "progress-success",
+            >= 0.50m => "progress-warning",
+            > 0m     => "progress-error",
+            _        => "bg-gray-200"
         };
 
     // Mirrors IndicatorGrid: check IsAvailable first, then judgment

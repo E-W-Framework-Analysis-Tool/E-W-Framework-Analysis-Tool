@@ -154,8 +154,8 @@
     private string GetIndicatorColor(decimal score) =>
         score switch
         {
-            > 0.66m => "bg-success/80",
-            > 0.33m => "bg-warning/80",
+            >= 0.70m => "bg-success/80",
+            >= 0.50m => "bg-warning/80",
             > 0m => "bg-error/80",
             _ => "bg-gray-200"
         };
@@ -163,8 +163,8 @@
     private string GetProgressBarColor(decimal score) =>
         score switch
         {
-            > 0.66m => "progress-success",
-            > 0.33m => "progress-warning",
+            >= 0.70m => "progress-success",
+            >= 0.50m => "progress-warning",
             > 0m => "progress-error",
             _ => "bg-gray-200"
         };
