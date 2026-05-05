@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 using FluentAssertions;
 using Xunit.Abstractions;
@@ -14,6 +15,16 @@ public class AnalysisProjectMigratorTests
     {
         _output = output;
     }
+
+    // -------------------------------------------------------------------------
+    // Enum integer values — mirrors the DataSourceType declaration order.
+    // If the enum order ever changes, update these constants and the tests
+    // will catch any migrator breakage automatically.
+    // -------------------------------------------------------------------------
+    private static readonly int EdFiApiTypeValue = (int)DataSourceType.EdFiApi;
+    private static readonly int CedsDWTypeValue = (int)DataSourceType.CedsDw;
+    private static readonly int CustomTypeValue = (int)DataSourceType.Custom;
+    private static readonly int EcsStateTypeValue = (int)DataSourceType.EcsState;
 
     // -------------------------------------------------------------------------
     // Helpers
@@ -31,14 +42,14 @@ public class AnalysisProjectMigratorTests
         return reader.ReadToEnd();
     }
 
-    private static string MakeMinimalProject(int schemaVersion, string extra = "") =>
+    private static string MakeMinimalProject(int schemaVersion, string? extra = null) =>
         $$"""
         {
           "schemaVersion": {{schemaVersion}},
           "id": "test-id",
           "title": "Test Project",
           "dataSources": []
-          {{(string.IsNullOrEmpty(extra) ? "" : "," + extra)}}
+          {{(extra is null ? "" : "," + extra)}}
         }
         """;
 
@@ -56,8 +67,7 @@ public class AnalysisProjectMigratorTests
 
     private static bool ContainsDiscriminator(string json, string discriminator)
     {
-        var node = JsonNode.Parse(json);
-        return ContainsDiscriminatorRecursive(node, discriminator);
+        return ContainsDiscriminatorRecursive(JsonNode.Parse(json), discriminator);
     }
 
     private static bool ContainsDiscriminatorRecursive(JsonNode? node, string discriminator)
@@ -115,7 +125,6 @@ public class AnalysisProjectMigratorTests
     [Fact]
     public void MigrateIfNeeded_AnyVersion_AlwaysReachesCurrentSchemaVersion()
     {
-        // Parameterless: every version from 1 to current-1 should end up at current
         for (var v = 1; v < AnalysisProjectMigrator.CurrentSchemaVersion; v++)
         {
             var json = MakeMinimalProject(v);
@@ -158,7 +167,6 @@ public class AnalysisProjectMigratorTests
 
     // -------------------------------------------------------------------------
     // V1 → V2: IntegerRange → NumericalRange
-    // (Tests what this step does to data — CurrentSchemaVersion is irrelevant here)
     // -------------------------------------------------------------------------
 
     [Fact]
@@ -198,13 +206,11 @@ public class AnalysisProjectMigratorTests
 
     // -------------------------------------------------------------------------
     // V2 → V3: actionItems array added
-    // (Tests what this step does to data — CurrentSchemaVersion is irrelevant here)
     // -------------------------------------------------------------------------
 
     [Fact]
     public void MigrateV2ToV3_AddsEmptyActionItemsArray()
     {
-        // Build a V2 project inline — no fixture dependency for a step-level test
         var json = MakeMinimalProject(2);
         var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
 
@@ -216,12 +222,17 @@ public class AnalysisProjectMigratorTests
     [Fact]
     public void MigrateV2ToV3_PreservesExistingActionItems_WhenAlreadyPresent()
     {
-        var json = MakeMinimalProject(2,
-            extra: """
-            "actionItems": [
+        var json = """
+            {
+              "schemaVersion": 2,
+              "id": "test-id",
+              "title": "Test Project",
+              "dataSources": [],
+              "actionItems": [
                 { "id": "abc", "title": "Existing item", "isResolved": false }
-            ]
-            """);
+              ]
+            }
+            """;
 
         var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
         var items = resultNode["actionItems"]!.AsArray();
@@ -243,18 +254,19 @@ public class AnalysisProjectMigratorTests
 
     // -------------------------------------------------------------------------
     // V3 → V4: Version backfill on data sources
+    // Type is serialized as an integer matching the DataSourceType enum value.
     // -------------------------------------------------------------------------
 
     [Fact]
     public void MigrateV3ToV4_BackfillsCedsDwVersion()
     {
-        var json = """
+        var json = $$"""
             {
               "schemaVersion": 3,
               "id": "test-id",
               "title": "Test",
               "dataSources": [
-                { "id": "ds-1", "type": "cedsDw", "name": "My CEDS DW" }
+                { "id": "ds-1", "type": {{CedsDWTypeValue}}, "name": "My CEDS DW" }
               ],
               "actionItems": []
             }
@@ -263,19 +275,19 @@ public class AnalysisProjectMigratorTests
         var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
         var ds = resultNode["dataSources"]!.AsArray()[0]!.AsObject();
 
-        ds["version"]?.GetValue<string>().Should().Be("v13");
+        ds["version"]?.GetValue<string>().Should().Be(CedsDWVersions.V13);
     }
 
     [Fact]
     public void MigrateV3ToV4_BackfillsEdFiVersion()
     {
-        var json = """
+        var json = $$"""
             {
               "schemaVersion": 3,
               "id": "test-id",
               "title": "Test",
               "dataSources": [
-                { "id": "ds-1", "type": "edFiApi", "name": "My Ed-Fi API" }
+                { "id": "ds-1", "type": {{EdFiApiTypeValue}}, "name": "My Ed-Fi API" }
               ],
               "actionItems": []
             }
@@ -284,20 +296,20 @@ public class AnalysisProjectMigratorTests
         var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
         var ds = resultNode["dataSources"]!.AsArray()[0]!.AsObject();
 
-        ds["version"]?.GetValue<string>().Should().Be("7.3");
+        ds["version"]?.GetValue<string>().Should().Be(EdFiVersions.V73);
     }
 
     [Fact]
     public void MigrateV3ToV4_LeavesVersionNull_ForUnversionedTypes()
     {
-        var json = """
+        var json = $$"""
             {
               "schemaVersion": 3,
               "id": "test-id",
               "title": "Test",
               "dataSources": [
-                { "id": "ds-1", "type": "custom", "name": "Manual" },
-                { "id": "ds-2", "type": "ecsState", "name": "ECS" }
+                { "id": "ds-1", "type": {{CustomTypeValue}},   "name": "Manual" },
+                { "id": "ds-2", "type": {{EcsStateTypeValue}}, "name": "ECS" }
               ],
               "actionItems": []
             }
@@ -310,21 +322,20 @@ public class AnalysisProjectMigratorTests
         {
             ds!.AsObject().TryGetPropertyValue("version", out var v);
             (v is null || v.GetValueKind() == JsonValueKind.Null).Should().BeTrue(
-                because: $"unversioned type '{ds["type"]}' should not have a version");
+                because: $"unversioned type should not have a version");
         }
     }
 
     [Fact]
     public void MigrateV3ToV4_DoesNotOverwriteExistingVersion()
     {
-        // Defensive — if version is already set, leave it alone
-        var json = """
+        var json = $$"""
             {
               "schemaVersion": 3,
               "id": "test-id",
               "title": "Test",
               "dataSources": [
-                { "id": "ds-1", "type": "cedsDw", "name": "My CEDS DW", "version": "v14" }
+                { "id": "ds-1", "type": {{CedsDWTypeValue}}, "name": "My CEDS DW", "version": "v14" }
               ],
               "actionItems": []
             }
@@ -340,7 +351,16 @@ public class AnalysisProjectMigratorTests
     [Fact]
     public void MigrateV3ToV4_HandlesEmptyDataSources()
     {
-        var json = MakeMinimalProject(3, extra: @"""actionItems"": []");
+        var json = """
+            {
+              "schemaVersion": 3,
+              "id": "test-id",
+              "title": "Test Project",
+              "dataSources": [],
+              "actionItems": []
+            }
+            """;
+
         var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
 
         result.Success.Should().BeTrue();
@@ -350,15 +370,15 @@ public class AnalysisProjectMigratorTests
     [Fact]
     public void MigrateV3ToV4_MixedDataSources_BackfillsCorrectly()
     {
-        var json = """
+        var json = $$"""
             {
               "schemaVersion": 3,
               "id": "test-id",
               "title": "Test",
               "dataSources": [
-                { "id": "ds-1", "type": "cedsDw",  "name": "CEDS" },
-                { "id": "ds-2", "type": "edFiApi", "name": "EdFi" },
-                { "id": "ds-3", "type": "custom",  "name": "Manual" }
+                { "id": "ds-1", "type": {{CedsDWTypeValue}},   "name": "CEDS" },
+                { "id": "ds-2", "type": {{EdFiApiTypeValue}},  "name": "EdFi" },
+                { "id": "ds-3", "type": {{CustomTypeValue}},   "name": "Manual" }
               ],
               "actionItems": []
             }
@@ -367,8 +387,8 @@ public class AnalysisProjectMigratorTests
         var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
         var sources = resultNode["dataSources"]!.AsArray();
 
-        sources[0]!["version"]?.GetValue<string>().Should().Be("v13");
-        sources[1]!["version"]?.GetValue<string>().Should().Be("7.3");
+        sources[0]!["version"]?.GetValue<string>().Should().Be(CedsDWVersions.V13);
+        sources[1]!["version"]?.GetValue<string>().Should().Be(EdFiVersions.V73);
 
         sources[2]!.AsObject().TryGetPropertyValue("version", out var customVersion);
         (customVersion is null || customVersion.GetValueKind() == JsonValueKind.Null)

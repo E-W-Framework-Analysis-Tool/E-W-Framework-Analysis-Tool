@@ -8,7 +8,7 @@
     {
       "id": "fixture-ds-001",
       "name": "CEDS Data Warehouse",
-      "type": "CedsDataWarehouse",
+      "type": 0,
       "enabled": true,
       "assessments": [
         {
