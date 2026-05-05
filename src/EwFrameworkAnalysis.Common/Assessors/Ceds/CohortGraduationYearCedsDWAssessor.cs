@@ -56,6 +56,6 @@ FROM CohortBase";
         "year is typically derived from cohort year (+ 4 years) — a completeness gap between the " +
         "two would indicate an ETL or data population issue.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -143,6 +143,6 @@ FROM Base
         "for K-12 student discipline records with a suspension-type consequence, " +
         "from RDS.FactK12StudentDisciplines joined to RDS.DimDisciplineStatuses.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

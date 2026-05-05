@@ -53,7 +53,7 @@
                     </div>
                 </button>
                 <!-- CEDS Data Warehouse — one button per known version -->
-                @foreach (var version in CedsDwVersions.All)
+                @foreach (var version in CedsDWVersions.All)
                 {
                     var v = version; // capture for lambda
                                      <button @onclick="() => HandleSelected(DataSourceType.CedsDw, v)"

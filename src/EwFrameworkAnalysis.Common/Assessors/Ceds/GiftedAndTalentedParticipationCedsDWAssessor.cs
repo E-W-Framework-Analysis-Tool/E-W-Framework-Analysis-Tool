@@ -54,6 +54,6 @@ FROM GiftedBase
         "completeness of ProgramParticipationStartDateId. Exit date is intentionally excluded " +
         "from completeness as not all participants will have exited the program.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

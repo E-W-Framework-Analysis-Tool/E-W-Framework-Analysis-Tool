@@ -71,6 +71,6 @@ GROUP BY CipFamily
         "(e.g., 27 = Mathematics, 51 = Health Professions). The family distribution " +
         "indicates whether specific program types can be identified in the data.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

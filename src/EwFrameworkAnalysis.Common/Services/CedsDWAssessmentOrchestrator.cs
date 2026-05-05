@@ -19,7 +19,7 @@ public class CedsDWAssessmentOrchestrator
     /// Query verbatim, then selects all rows.
     /// </summary>
     /// <param name="version">
-    /// The target CEDS DW version string (e.g. <see cref="CedsDwVersions.V13"/>).
+    /// The target CEDS DW version string (e.g. <see cref="CedsDWVersions.V13"/>).
     /// Only assessors whose version range includes this value are emitted.
     /// </param>
     /// <exception cref="InvalidOperationException">

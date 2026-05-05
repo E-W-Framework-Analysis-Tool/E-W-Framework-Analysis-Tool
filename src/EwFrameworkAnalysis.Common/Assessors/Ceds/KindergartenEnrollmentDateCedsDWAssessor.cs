@@ -57,6 +57,6 @@ FROM KindergartenBase";
         "completeness of the enrollment entry date field (EnrollmentEntryDateId), excluding the " +
         "default sentinel value (-1).";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -92,6 +92,6 @@ FROM Distribution";
         "records with FullTimeEquivalency populated as layered employment signal proxies. " +
         "Distributes populated earnings records by reference period year.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -35,6 +35,6 @@ WHERE ase.AssessmentResultScoreValueSATScore IS NOT NULL
         "'AchievementTest'. A non-null AssessmentResultScoreValueSATScore is used as a " +
         "proxy for SAT completion.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

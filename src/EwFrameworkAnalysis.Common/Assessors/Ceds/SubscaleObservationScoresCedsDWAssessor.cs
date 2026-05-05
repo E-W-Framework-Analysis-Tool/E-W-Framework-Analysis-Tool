@@ -72,6 +72,6 @@ GROUP BY StaffEvaluationPartScale
         "are also available on this table but are not profiled here as this element focuses on " +
         "subscale scores specifically.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

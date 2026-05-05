@@ -54,6 +54,6 @@ FROM CourseCte";
         "RDS.DimK12Courses on StateK12CourseId. Assesses total record count and completeness, where a " +
         "record is considered populated if either CourseIdentifier or CourseTitle is non-empty.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

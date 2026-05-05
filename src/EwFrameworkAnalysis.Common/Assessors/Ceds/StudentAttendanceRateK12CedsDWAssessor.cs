@@ -70,6 +70,6 @@ FROM AttendanceBase
         "scorers to determine whether rates are stored on a 0-1 or 0-100 scale and to " +
         "identify potential outliers.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

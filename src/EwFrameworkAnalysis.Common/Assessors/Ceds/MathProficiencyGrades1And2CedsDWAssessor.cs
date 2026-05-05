@@ -99,6 +99,6 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "('01', '02'). Reports record count, score completeness, and distribution by " +
         "assessment title. Results may be sparse in states without grade 1-2 benchmarks.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

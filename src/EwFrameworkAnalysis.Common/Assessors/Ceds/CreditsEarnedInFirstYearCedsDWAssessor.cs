@@ -90,6 +90,6 @@ FROM Distribution";
         "filter is applied at assessment time; first-year identification requires correlating " +
         "school year against student enrollment entry date at analysis time.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

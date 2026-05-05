@@ -78,7 +78,7 @@ GROUP BY TeachingCredentialBasisDescription";
         "(e.g., Regular/Standard, Provisional, Emergency) and credential basis " +
         "(e.g., Baccalaureate degree, Master's degree).";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }
 
@@ -161,6 +161,6 @@ GROUP BY CredentialDefinitionTitle";
         "TeacherQualificationOrCertificationTypeCedsDWAssessor for the broader staff " +
         "assignment population.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

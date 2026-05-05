@@ -92,6 +92,6 @@ FROM ExitDistribution";
         "and 73045) using StudentCourseSectionGradeEarned as the primary completeness signal, " +
         "supplemented by distribution of CourseSectionExitTypeCode. No grade level filter is applied.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

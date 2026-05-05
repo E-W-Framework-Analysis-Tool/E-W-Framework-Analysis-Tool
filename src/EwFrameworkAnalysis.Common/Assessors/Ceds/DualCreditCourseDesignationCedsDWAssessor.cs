@@ -38,6 +38,6 @@ FROM DualCreditCourses";
         "where CourseLevelCharacteristicCode = '73048' (Dual enrollment). " +
         "A non-zero count indicates dual credit course designation data is present.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -69,6 +69,6 @@ GROUP BY ScedCourseSubjectAreaDescription
         "across course subject areas. The subject area distribution indicates whether specific " +
         "courses such as Algebra 1 (Mathematics, subject area 02) can be identified in the data.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

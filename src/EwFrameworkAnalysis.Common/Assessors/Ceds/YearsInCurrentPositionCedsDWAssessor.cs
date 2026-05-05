@@ -91,6 +91,6 @@ FROM LeaderBase";
         "(LIKE '%Principal%', '%Leader%', '%Administrator%') as a placeholder — exact code values require " +
         "confirmation against RDS.DimK12StaffCategories before use in production.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

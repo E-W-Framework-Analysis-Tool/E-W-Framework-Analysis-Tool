@@ -99,6 +99,6 @@ FROM RangeCalc";
         "matched by title, short name, or state identifier. Reports total record count, completeness of Raw or " +
         "Scale score values, and min/max numeric range for raw score values.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

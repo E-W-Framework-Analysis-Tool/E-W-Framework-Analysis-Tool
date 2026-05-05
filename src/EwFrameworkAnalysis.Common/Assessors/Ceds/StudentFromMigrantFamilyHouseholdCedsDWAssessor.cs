@@ -90,6 +90,6 @@ SELECT
         "returns 0 as no source table is available. Postsecondary uses FactPsStudentCourseTranscripts " +
         "as the source since MigrantStatusId is available on that table.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

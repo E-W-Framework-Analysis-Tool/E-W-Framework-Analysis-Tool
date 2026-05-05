@@ -103,6 +103,6 @@ FROM Counts";
         "distribution. Both fields are Yes/No flags. No filter to EL-flagged records is applied " +
         "— all enrollment records are included.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

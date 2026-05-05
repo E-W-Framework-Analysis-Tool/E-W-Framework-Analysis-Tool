@@ -85,6 +85,6 @@ FROM Distribution";
         "Mathematics (SCED 02) course sections. Completeness is measured over StudentCourseSectionGradeEarned. " +
         "Distribution shows populated grade counts by subject area. No grade level filter is applied.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -157,6 +157,6 @@ SELECT
         "Pre-K and Workforce emit zero pending schema identification. Note: the PS fact table " +
         "contains a typo in the military status FK column name (MilitartyStatusId).";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -63,6 +63,6 @@ FROM AddressBase
         "feasible. A high completeness rate suggests the data source can support urbanicity-based " +
         "disaggregation.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

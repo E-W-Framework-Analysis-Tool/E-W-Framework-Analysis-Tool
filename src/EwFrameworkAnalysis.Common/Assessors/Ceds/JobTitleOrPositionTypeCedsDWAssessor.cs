@@ -70,6 +70,6 @@ GROUP BY K12StaffClassificationCode";
         "Reports total record count, completeness of the PositionTitle field, and distribution " +
         "of records across K12StaffClassificationCode categories.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -119,7 +119,7 @@ public static class AnalysisProjectMigrator
             var type = ds["type"]?.GetValue<string>();
             ds["version"] = type switch
             {
-                "cedsDw" => CedsDwVersions.V13,
+                "cedsDw" => CedsDWVersions.V13,
                 "edFiApi" => EdFiVersions.V73,
                 _ => null
             };

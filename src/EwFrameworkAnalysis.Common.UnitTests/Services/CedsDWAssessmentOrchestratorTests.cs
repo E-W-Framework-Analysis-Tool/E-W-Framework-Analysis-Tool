@@ -19,7 +19,7 @@ public class CedsDWAssessmentOrchestratorTests
         var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var query = orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         // Assert
         query.Should().Contain("UNION ALL");
@@ -32,7 +32,7 @@ public class CedsDWAssessmentOrchestratorTests
         var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var query = orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         // Assert
         foreach (var assessor in AssessorTestFixture.DefaultAssessors())
@@ -48,7 +48,7 @@ public class CedsDWAssessmentOrchestratorTests
         var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var query = orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         // Assert
         query.Should().Contain("INSTRUCTIONS:");
@@ -70,7 +70,7 @@ public class CedsDWAssessmentOrchestratorTests
         var orchestrator = new CedsDWAssessmentOrchestrator(assessors);
 
         // Act
-        var query = orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var query = orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         // Assert
         query.Should().Contain("ORDER BY DataElementName");
@@ -83,7 +83,7 @@ public class CedsDWAssessmentOrchestratorTests
         var orchestrator = new CedsDWAssessmentOrchestrator(AssessorTestFixture.DefaultAssessors());
 
         // Act
-        var query = orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var query = orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         // Assert
         query.Should()
@@ -111,7 +111,7 @@ public class OrchestratorVersionFilterTests
     [Fact]
     public void GenerateProfilerScript_V13_IncludesAlphaAndBeta()
     {
-        var script = BuildOrchestrator().GenerateProfilerScript(CedsDwVersions.V13);
+        var script = BuildOrchestrator().GenerateProfilerScript(CedsDWVersions.V13);
 
         script.Should().Contain(AlphaV13OnlyAssessor.ElementName);
         script.Should().Contain(BetaV13OnwardAssessor.ElementName);
@@ -120,7 +120,7 @@ public class OrchestratorVersionFilterTests
     [Fact]
     public void GenerateProfilerScript_V13_ExcludesGamma()
     {
-        var script = BuildOrchestrator().GenerateProfilerScript(CedsDwVersions.V13);
+        var script = BuildOrchestrator().GenerateProfilerScript(CedsDWVersions.V13);
 
         script.Should().NotContain(GammaV14OnlyAssessor.ElementName);
     }
@@ -128,7 +128,7 @@ public class OrchestratorVersionFilterTests
     [Fact]
     public void GenerateProfilerScript_V14_IncludesBetaAndGamma()
     {
-        var script = BuildOrchestrator().GenerateProfilerScript(CedsDwVersions.V14);
+        var script = BuildOrchestrator().GenerateProfilerScript(CedsDWVersions.V14);
 
         script.Should().Contain(BetaV13OnwardAssessor.ElementName);
         script.Should().Contain(GammaV14OnlyAssessor.ElementName);
@@ -137,7 +137,7 @@ public class OrchestratorVersionFilterTests
     [Fact]
     public void GenerateProfilerScript_V14_ExcludesAlpha()
     {
-        var script = BuildOrchestrator().GenerateProfilerScript(CedsDwVersions.V14);
+        var script = BuildOrchestrator().GenerateProfilerScript(CedsDWVersions.V14);
 
         script.Should().NotContain(AlphaV13OnlyAssessor.ElementName);
     }
@@ -156,7 +156,7 @@ public class OrchestratorVersionFilterTests
     {
         var orchestrator = new CedsDWAssessmentOrchestrator([]);
 
-        var act = () => orchestrator.GenerateProfilerScript(CedsDwVersions.V13);
+        var act = () => orchestrator.GenerateProfilerScript(CedsDWVersions.V13);
 
         act.Should().Throw<InvalidOperationException>();
     }
@@ -164,23 +164,23 @@ public class OrchestratorVersionFilterTests
     [Fact]
     public void GenerateProfilerScript_IncludesTargetVersionInHeader()
     {
-        var script = BuildOrchestrator().GenerateProfilerScript(CedsDwVersions.V14);
+        var script = BuildOrchestrator().GenerateProfilerScript(CedsDWVersions.V14);
 
-        script.Should().Contain($"CEDS Data Warehouse {CedsDwVersions.V14}");
+        script.Should().Contain($"CEDS Data Warehouse {CedsDWVersions.V14}");
     }
 
     [Fact]
     public void AssessorCountForVersion_V13_ReturnsOnlyApplicableCount()
     {
         // Alpha (V13 only) + Beta (V13 onward) = 2; Gamma excluded
-        BuildOrchestrator().AssessorCountForVersion(CedsDwVersions.V13).Should().Be(2);
+        BuildOrchestrator().AssessorCountForVersion(CedsDWVersions.V13).Should().Be(2);
     }
 
     [Fact]
     public void AssessorCountForVersion_V14_ReturnsOnlyApplicableCount()
     {
         // Beta (V13 onward) + Gamma (V14 only) = 2; Alpha excluded
-        BuildOrchestrator().AssessorCountForVersion(CedsDwVersions.V14).Should().Be(2);
+        BuildOrchestrator().AssessorCountForVersion(CedsDWVersions.V14).Should().Be(2);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class OrchestratorVersionFilterTests
         public const string ElementName = "TestElement_Alpha";
         public string DataElementName => ElementName;
         public string AssessmentDescription => "Alpha — V13 only";
-        public string MinVersion => CedsDwVersions.V13;
-        public string? MaxVersion => CedsDwVersions.V13;
+        public string MinVersion => CedsDWVersions.V13;
+        public string? MaxVersion => CedsDWVersions.V13;
         public string Query => $"INSERT INTO #EWFProfilerResults SELECT '{ElementName}','RecordCount','0',NULL,NULL";
     }
 
@@ -209,7 +209,7 @@ public class OrchestratorVersionFilterTests
         public const string ElementName = "TestElement_Beta";
         public string DataElementName => ElementName;
         public string AssessmentDescription => "Beta — V13 onward";
-        public string MinVersion => CedsDwVersions.V13;
+        public string MinVersion => CedsDWVersions.V13;
         public string? MaxVersion => null;
         public string Query => $"INSERT INTO #EWFProfilerResults SELECT '{ElementName}','RecordCount','0',NULL,NULL";
     }
@@ -219,8 +219,8 @@ public class OrchestratorVersionFilterTests
         public const string ElementName = "TestElement_Gamma";
         public string DataElementName => ElementName;
         public string AssessmentDescription => "Gamma — V14 only";
-        public string MinVersion => CedsDwVersions.V14;
-        public string? MaxVersion => CedsDwVersions.V14;
+        public string MinVersion => CedsDWVersions.V14;
+        public string? MaxVersion => CedsDWVersions.V14;
         public string Query => $"INSERT INTO #EWFProfilerResults SELECT '{ElementName}','RecordCount','0',NULL,NULL";
     }
 }

@@ -64,6 +64,6 @@ GROUP BY SchoolYear";
         "Reports total assignment record count, completeness of the school foreign key, " +
         "and distribution of assignment records across school years.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

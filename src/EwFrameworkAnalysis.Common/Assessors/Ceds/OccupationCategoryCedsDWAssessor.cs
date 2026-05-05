@@ -66,6 +66,6 @@ GROUP BY MajorGroupCode
         "(first two digits of the occupation code) for workforce records from " +
         "RDS.FactQuarterlyEmployments, joined to RDS.DimOnetSocOccupationTypes.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

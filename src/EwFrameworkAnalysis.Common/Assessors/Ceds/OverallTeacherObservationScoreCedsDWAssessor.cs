@@ -87,6 +87,6 @@ FROM ObservationBase
         "The scale score field is stored as NVARCHAR(70); NumericalRange uses TRY_CAST to DECIMAL " +
         "for correct numeric min/max — unparseable values are silently excluded from the range.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

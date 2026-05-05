@@ -105,6 +105,6 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "value (Raw, Scale, Percentile, T, or Z), and distribution of records by matched " +
         "assessment title.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

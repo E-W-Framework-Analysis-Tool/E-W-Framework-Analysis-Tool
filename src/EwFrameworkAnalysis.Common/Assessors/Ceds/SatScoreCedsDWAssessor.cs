@@ -78,6 +78,6 @@ FROM SatBase
         "(min/max) of score values using TRY_CAST to handle the nvarchar score column. Assessment " +
         "type is filtered to 'AchievementTest' via DimAssessments.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -84,6 +84,6 @@ FROM ExitDistribution";
         "completion circumstance) as a secondary outcome indicator. No grade level or subject area " +
         "filter is applied — all course section records are included.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

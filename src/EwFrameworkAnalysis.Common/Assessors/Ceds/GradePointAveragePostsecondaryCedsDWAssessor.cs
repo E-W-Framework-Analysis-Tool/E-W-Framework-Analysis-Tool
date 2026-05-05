@@ -73,6 +73,6 @@ FROM PsGpa";
         "and completeness measured as rows where at least one of the two GPA fields " +
         "(term GPA or cumulative GPA) is populated.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -27,6 +27,6 @@ FROM RDS.FactPsStudentEnrollments
         "so completeness is schema-guaranteed. RecordCount reflects the total number of " +
         "postsecondary enrollment records present.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

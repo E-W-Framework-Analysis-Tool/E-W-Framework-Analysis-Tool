@@ -155,6 +155,6 @@ SELECT
         "across all sectors, and per-sector populated counts as a distribution. Pre-K and Workforce " +
         "sectors emit zero pending schema identification.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

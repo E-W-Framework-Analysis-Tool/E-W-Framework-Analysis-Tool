@@ -44,6 +44,6 @@ FROM ActBase";
         "The AchievementTest type filter may include non-ACT assessments — consider narrowing " +
         "by assessment name if the target state records multiple achievement test types.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -84,6 +84,6 @@ FROM ActBase";
         "from the numeric range via TRY_CAST but are counted in TotalRecords, making any " +
         "gap between TotalRecords and PopulatedRecords visible.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

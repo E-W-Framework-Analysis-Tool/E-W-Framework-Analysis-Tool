@@ -71,6 +71,6 @@ GROUP BY MostPrevalentLevelOfInstitutionCode
         "MostPrevalentLevelOfInstitutionCode field (excluding default/unknown dimension values), " +
         "and distribution across institution classification categories.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

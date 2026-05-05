@@ -75,6 +75,6 @@ GROUP BY AssessmentPerformanceLevelScoreMetric
         "Growth/value-added/indexing, Percentile) to indicate how growth data is stored " +
         "and whether SGP derivation is supported.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

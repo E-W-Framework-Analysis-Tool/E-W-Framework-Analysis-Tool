@@ -69,6 +69,6 @@ GROUP BY GradeLevelDescription, GradeLevelCode";
         "Reports total record count, completeness of the entry grade level field, and distribution " +
         "of enrollment records across all grade levels present in the warehouse.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

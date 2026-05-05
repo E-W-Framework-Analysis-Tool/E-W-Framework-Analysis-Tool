@@ -307,7 +307,7 @@
     protected override void OnInitialized()
     {
         // Use version-aware count so the UI reflects what will actually be generated
-        var version = DataSource.Version ?? CedsDwVersions.V13;
+        var version = DataSource.Version ?? CedsDWVersions.V13;
         _assessorCount = Orchestrator.AssessorCountForVersion(version);
     }
 
@@ -315,7 +315,7 @@
     {
         try
         {
-            var version = DataSource.Version ?? CedsDwVersions.V13;
+            var version = DataSource.Version ?? CedsDWVersions.V13;
             var script = Orchestrator.GenerateProfilerScript(version);
             var fileName = $"CEDS_Profiler_{version}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
             await JSRuntime.InvokeVoidAsync("CedsAssessmentHelpers.downloadFile", fileName, script, "text/plain");

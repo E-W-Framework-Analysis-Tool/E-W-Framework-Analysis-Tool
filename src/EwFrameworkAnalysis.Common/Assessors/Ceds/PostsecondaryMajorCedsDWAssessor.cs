@@ -55,6 +55,6 @@ FROM AwardBase
         "RDS.FactPsStudentAcademicAwards. Reports total academic award records and the count of awards " +
         "that have at least one CIP code assigned with a program level of 'Major'.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

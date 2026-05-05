@@ -36,6 +36,6 @@ WHERE discStat.DisciplinaryActionTakenCode IN
         "distinguish between discipline and safety contexts; all restraint and seclusion records in this " +
         "table are disciplinary in nature, so this assessor and the safety assessor return the same result.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

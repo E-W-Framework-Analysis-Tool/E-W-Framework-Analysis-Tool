@@ -87,6 +87,6 @@ SELECT
         "as no source table is available. Postsecondary uses FactPsStudentAcademicRecord as a " +
         "proxy since FactPsStudentEnrollments does not carry a demographic foreign key.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -89,6 +89,6 @@ GROUP BY CharterSchoolIndicator";
         "enrollment records by school type description (e.g. Regular, Charter, Magnet, Alternative), " +
         "and distribution by charter school indicator flag.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -72,6 +72,6 @@ FROM CreditsBase";
         "field, and the minimum and maximum credits earned. NumberOfCreditsEarned is a native " +
         "decimal field so no casting is required for numeric aggregation.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

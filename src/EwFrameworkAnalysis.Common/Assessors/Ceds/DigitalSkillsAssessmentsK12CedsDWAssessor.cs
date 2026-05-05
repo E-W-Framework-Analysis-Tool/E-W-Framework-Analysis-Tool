@@ -115,6 +115,6 @@ FROM RangeCalc";
         "skills instrument is currently available per CEDS; this assessor is expected to return zero or " +
         "near-zero records in most implementations but is included to surface locally-adopted instruments.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

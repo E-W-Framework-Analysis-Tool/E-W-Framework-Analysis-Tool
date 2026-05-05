@@ -50,6 +50,6 @@ FROM CohortBase";
         "Assesses cohort year for 9th grade students from RDS.FactK12GraduationCohorts. " +
         "Reports total record count and completeness of CohortYearId.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

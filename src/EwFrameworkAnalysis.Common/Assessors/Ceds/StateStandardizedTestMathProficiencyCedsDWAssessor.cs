@@ -111,6 +111,6 @@ LEFT JOIN TitleCounts t ON 1 = 1";
         "alternate assessment variants as the closest available proxy for state summative tests. " +
         "Reports record count, score completeness, and distribution by assessment title.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

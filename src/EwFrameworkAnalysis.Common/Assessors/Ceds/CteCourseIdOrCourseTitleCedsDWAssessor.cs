@@ -89,6 +89,6 @@ FROM Distribution";
         "records by characteristic description. CTE general (73044) and dual-credit (73045) codes " +
         "will appear in the distribution if present. No pre-filtering to CTE codes is applied.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

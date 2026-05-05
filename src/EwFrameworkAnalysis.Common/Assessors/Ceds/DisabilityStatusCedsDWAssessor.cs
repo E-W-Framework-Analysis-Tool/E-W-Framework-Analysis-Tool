@@ -142,6 +142,6 @@ SELECT
         "of records with a populated DisabilityStatusCode as a distribution. Related K-12 indicators " +
         "(IdeaStatusId, PrimaryDisabilityTypeId, SecondaryDisabilityTypeId) are not profiled here.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

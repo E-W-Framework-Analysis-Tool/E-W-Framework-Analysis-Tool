@@ -132,6 +132,6 @@ FROM BaseData";
         "Not Reported). Distribution categories are derived from FullTimeEquivalency " +
         "thresholds pending confirmation of a dedicated FTE status dimension column.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

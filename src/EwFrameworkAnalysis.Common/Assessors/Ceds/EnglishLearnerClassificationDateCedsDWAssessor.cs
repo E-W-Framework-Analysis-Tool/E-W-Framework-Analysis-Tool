@@ -84,6 +84,6 @@ FROM Distribution";
         "completeness and distribution of populated dates by year. StatusEndDateEnglishLearnerId " +
         "(reclassification/exit date) is also available on the fact table.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -89,6 +89,6 @@ FROM Distribution";
         "within the CTE course population and distributes records by career cluster. No grade level " +
         "filter is applied.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

@@ -78,6 +78,6 @@ FROM Distribution";
         "total distinct course count, completeness of grade span values, and distribution of courses " +
         "across each grade span present in the data.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

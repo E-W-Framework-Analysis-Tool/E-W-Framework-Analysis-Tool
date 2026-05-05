@@ -79,6 +79,6 @@ FROM PeopleStats
     public string AssessmentDescription =>
         "Comprehensive assessment including BirthDate completeness and calculated age range from RDS.DimPeople";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

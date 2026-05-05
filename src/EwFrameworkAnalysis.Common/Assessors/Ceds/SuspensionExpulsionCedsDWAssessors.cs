@@ -31,7 +31,7 @@ AND gradeLevel.GradeLevelCode IN ('01', '02')
 
     public string AssessmentDescription => "Query RDS.FactK12StudentDisciplines where GradeLevel is 01 or 02, and where DisciplinaryActionTakenCode is Expulsion or Suspension option";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }
 
@@ -62,6 +62,6 @@ WHERE discStat.DisciplinaryActionTakenCode IN
 
     public string AssessmentDescription => "Query RDS.FactK12StudentDisciplines where DisciplinaryActionTakenCode is Expulsion or Suspension option";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

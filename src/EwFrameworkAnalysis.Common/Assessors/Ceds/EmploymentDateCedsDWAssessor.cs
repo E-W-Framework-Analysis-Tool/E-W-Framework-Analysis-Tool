@@ -81,6 +81,6 @@ FROM Distribution";
         "EmploymentStartDateId joined to RDS.DimDates. Distributes populated records by year. " +
         "HireDateId and reference period date fields are also available on this fact table.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

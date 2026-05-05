@@ -111,6 +111,6 @@ FROM Distribution";
         "benchmark), and distribution of populated records by reference period year. Post-graduation " +
         "cohort filtering and timing window logic are not applied at assessment time.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

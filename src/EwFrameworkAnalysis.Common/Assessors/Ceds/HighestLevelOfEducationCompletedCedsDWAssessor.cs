@@ -80,6 +80,6 @@ GROUP BY
         "HighestLevelOfEducationCompletedDescription where populated, falling back to " +
         "HighestLevelOfEducationCompletedCode, then '(Unknown)' if both are absent.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

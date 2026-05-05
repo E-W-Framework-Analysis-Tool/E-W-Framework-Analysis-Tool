@@ -65,6 +65,6 @@ FROM Base
         "Assesses record count, completeness, and numerical range of NumberOfCreditsEarned " +
         "from RDS.FactPsStudentCourseTranscripts, joined to RDS.DimPeople to scope to valid student records.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

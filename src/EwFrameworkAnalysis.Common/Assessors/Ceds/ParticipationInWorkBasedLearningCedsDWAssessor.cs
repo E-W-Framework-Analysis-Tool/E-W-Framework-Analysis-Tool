@@ -195,6 +195,6 @@ FROM Base
         "with active or completed course section enrollments, from RDS.FactK12StudentCourseSections " +
         "joined to RDS.DimWorkBasedLearningStatuses and RDS.DimK12CourseSectionEnrollmentStatuses.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

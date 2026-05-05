@@ -35,6 +35,6 @@ FROM ApprenticeshipBase";
         "WorkBasedLearningOpportunityTypeCode = 'Apprenticeship' and EnrollmentEntryDateId " +
         "is non-null. The record count itself is the presence signal for this data element.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

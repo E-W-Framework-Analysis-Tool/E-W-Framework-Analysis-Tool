@@ -59,6 +59,6 @@ FROM GraduateBase";
         "post-baccalaureate, and related IPEDS equivalents). Reports record count and completeness " +
         "of the academic award date field.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

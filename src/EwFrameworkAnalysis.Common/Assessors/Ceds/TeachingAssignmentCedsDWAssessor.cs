@@ -82,6 +82,6 @@ GROUP BY GradeLevelDescription";
         "Completeness is measured as records where either subject area or grade level is populated. " +
         "Distributions are reported separately for subject area and grade level, distinguished via Remarks.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

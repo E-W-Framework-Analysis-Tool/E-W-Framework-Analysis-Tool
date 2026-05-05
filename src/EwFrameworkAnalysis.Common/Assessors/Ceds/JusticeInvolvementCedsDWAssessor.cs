@@ -90,6 +90,6 @@ SELECT
         "juvenile detention center (75000), and school-related arrest (75001). Reports record count " +
         "and distribution by action type. Postsecondary and Workforce sectors emit zero pending " +
         "schema identification.";
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

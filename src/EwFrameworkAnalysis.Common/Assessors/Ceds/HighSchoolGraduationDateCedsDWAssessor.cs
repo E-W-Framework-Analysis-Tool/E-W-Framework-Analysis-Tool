@@ -55,6 +55,6 @@ FROM AcademicAwardDates";
         "so gaps between sources are visible. A non-zero count in either row indicates " +
         "graduation date data is present in that source.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

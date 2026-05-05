@@ -38,6 +38,6 @@ FROM IbCourses";
         "where CourseLevelCharacteristicCode = '00574' (International Baccalaureate course). " +
         "A non-zero count indicates IB course designation data is present.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

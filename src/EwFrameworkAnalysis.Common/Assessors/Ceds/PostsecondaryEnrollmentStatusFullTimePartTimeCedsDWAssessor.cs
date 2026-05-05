@@ -66,6 +66,6 @@ GROUP BY PostsecondaryEnrollmentStatusDescription
         "foreign key (excluding default/unknown dimension values), and distribution across enrollment " +
         "status categories (e.g., Full-time, Less than full-time but at least half-time, etc.).";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

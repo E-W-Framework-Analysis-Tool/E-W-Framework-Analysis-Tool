@@ -72,6 +72,6 @@ GROUP BY EconomicDisadvantageStatusDescription
         "Scoring should treat this element as partially available. Distribution across status " +
         "categories indicates whether any gradation beyond a simple flag is present.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

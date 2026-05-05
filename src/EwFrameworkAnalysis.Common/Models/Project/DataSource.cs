@@ -14,7 +14,7 @@ public class DataSource
 
     /// <summary>
     /// The version of this data source, if applicable. Populated at creation time
-    /// for versioned source types (e.g. <see cref="CedsDwVersions"/>, <see cref="EdFiVersions"/>).
+    /// for versioned source types (e.g. <see cref="CedsDWVersions"/>, <see cref="EdFiVersions"/>).
     /// Null for unversioned types such as <see cref="DataSourceType.Custom"/>.
     /// Use <see cref="DataSourceVersionRegistry.GetVersions"/> to determine whether
     /// a given type supports versioning.
@@ -36,7 +36,7 @@ public enum DataSourceType
     EcsState
 }
 
-public static class CedsDwVersions
+public static class CedsDWVersions
 {
     public const string V13 = "v13";
     public const string V14 = "v14";
@@ -61,7 +61,7 @@ public static class DataSourceVersionRegistry
 {
     private static readonly Dictionary<DataSourceType, List<string>> _versions = new()
     {
-        [DataSourceType.CedsDw] = [.. CedsDwVersions.All],
+        [DataSourceType.CedsDw] = [.. CedsDWVersions.All],
         [DataSourceType.EdFiApi] = [.. EdFiVersions.All],
     };
 

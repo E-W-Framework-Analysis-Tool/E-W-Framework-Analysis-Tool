@@ -61,6 +61,6 @@ FROM IndustryCredentialBase";
         "being non-null/non-empty. Confirm the correct code values or alternative column before " +
         "relying on these results. Reports record count and completeness of the award date field.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

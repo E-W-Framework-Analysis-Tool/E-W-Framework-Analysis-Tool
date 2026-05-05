@@ -100,6 +100,6 @@ SELECT
         "participation code, and per-sector distribution of populated records. Pre-K and Postsecondary " +
         "sectors emit zero pending schema identification.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

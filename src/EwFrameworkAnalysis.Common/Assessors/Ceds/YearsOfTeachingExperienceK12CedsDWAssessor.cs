@@ -129,6 +129,6 @@ FROM TeachingExp";
         "min/max range, and distribution across experience bands " +
         "(not reported, <1, 1–3, 4–9, 10–19, 20+).";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

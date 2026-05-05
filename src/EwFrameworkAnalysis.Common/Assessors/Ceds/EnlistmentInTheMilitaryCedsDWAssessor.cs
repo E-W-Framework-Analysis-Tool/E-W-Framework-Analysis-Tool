@@ -97,6 +97,6 @@ FROM MilitaryBase
         "completeness of the military status field across all enrollment records, and distribution " +
         "across all four CEDS status codes: Active, National Guard Or Reserve, Not Active, and Unknown.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

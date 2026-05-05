@@ -38,6 +38,6 @@ FROM ApCourses";
         "where CourseLevelCharacteristicCode = '00575' (Advanced placement course). " +
         "A non-zero count indicates AP course designation data is present.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

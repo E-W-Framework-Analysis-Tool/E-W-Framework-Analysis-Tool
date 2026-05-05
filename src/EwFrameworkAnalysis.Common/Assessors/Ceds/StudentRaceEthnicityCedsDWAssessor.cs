@@ -85,6 +85,6 @@ SELECT
         "entry across both sectors and a per-sector presence indicator (1 = data present, " +
         "0 = no data). Pre-K and Workforce always return 0 as no source tables are available.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

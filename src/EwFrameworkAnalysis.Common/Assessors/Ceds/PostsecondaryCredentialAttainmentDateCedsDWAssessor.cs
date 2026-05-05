@@ -62,6 +62,6 @@ FROM PsCredentialBase";
         "secondary/high school (B-series), CEGEP, French Baccalaureate, and the '0.0' catch-all code. " +
         "Reports record count and completeness of the academic award date field.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

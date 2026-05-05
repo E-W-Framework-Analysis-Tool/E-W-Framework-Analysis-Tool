@@ -113,6 +113,6 @@ FROM RangeCalc";
         "Note: no validated K-12 cultural competency instrument has been formally recommended by CEDS; " +
         "referenced assessments are adult proxy tools.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

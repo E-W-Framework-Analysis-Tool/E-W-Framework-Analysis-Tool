@@ -72,6 +72,6 @@ GROUP BY RaceDescription
         "record count, completeness of race/ethnicity assignment (staff with at least one " +
         "non-missing race entry), and distribution across race/ethnicity categories.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }

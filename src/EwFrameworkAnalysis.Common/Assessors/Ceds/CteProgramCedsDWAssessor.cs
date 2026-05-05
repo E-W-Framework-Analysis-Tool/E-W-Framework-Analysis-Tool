@@ -108,6 +108,6 @@ FROM Distribution";
         "has no populated foreign key relationship from RDS.FactPsStudentCourseTranscripts in known " +
         "CEDS DW implementations.";
 
-    public string MinVersion => CedsDwVersions.V13;
+    public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;
 }
