@@ -190,11 +190,3 @@ public static class EwFrameworkDisaggregates
         }
     ];
 }
-
-public class Disaggregate
-{
-    public required string Name { get; init; }
-    public required string Description { get; init; }
-    public required List<Sector> Sectors { get; init; }
-    public List<string> DataElementNames { get; init; } = [];
-}
