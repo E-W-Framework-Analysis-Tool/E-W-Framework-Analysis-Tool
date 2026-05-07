@@ -2328,13 +2328,14 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Number of years a staff member has served in their current role at their current school. Used in the Educator Retention indicator for school leaders: the target metric categorizes leaders by tenure (fewer than 2 years, 2-3 years, 4+ years). Also underlies teacher retention calculations alongside School assignment."
             },
-        ["Years of teaching experience"] = new DataElement
-        {
-            Name = "Years of teaching experience",
-            ClusterOnlyCategory = "Teaching Effectiveness",
-            DataElementCategory = "Staff & Educators",
-            RelatedSectors = [Sector.K12],
-            AdditionalNotes = "Total years of teaching experience, regardless of school. Used in the Teacher Experience indicator, which categorizes teachers as having fewer than 1 year, 1-5 years, or 5+ years of experience. Distinct from Years in current position, which tracks tenure at a specific school."
-        },
+        ["Years of teaching experience"] =
+            new DataElement
+            {
+                Name = "Years of teaching experience",
+                ClusterOnlyCategory = "Teaching Effectiveness",
+                DataElementCategory = "Staff & Educators",
+                RelatedSectors = [Sector.K12],
+                AdditionalNotes = "Total years of teaching experience, regardless of school. Used in the Teacher Experience indicator, which categorizes teachers as having fewer than 1 year, 1-5 years, or 5+ years of experience. Distinct from Years in current position, which tracks tenure at a specific school."
+            },
     };
 }
