@@ -19,9 +19,9 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Course performance (English and Math)",
-                    "Student attendance rate (PK)",
-                    "Student grade level (PK)",
                     "Suspensions and expulsions (K-12)",
+                    "Student attendance rate (K-12)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["8th grade on track"] =
@@ -38,9 +38,9 @@ public static class EwFrameworkIndicators
                 [
                     "Course performance (English and Math)",
                     "Grade point average (K-12)",
-                    "Student attendance rate (PK)",
-                    "Student grade level (PK)",
                     "Suspensions and expulsions (K-12)",
+                    "Student grade level (K-12)",
+                    "Student attendance rate (K-12)",
                 ]
             },
         ["9th grade on track"] =
@@ -56,8 +56,10 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Course outcome",
-                    "Student attendance rate (PK)",
-                    "Student grade level (PK)",
+                    "Grade point average (K-12)",
+                    "Suspensions and expulsions (K-12)",
+                    "Student attendance rate (K-12)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Access to affordable housing"] =
@@ -107,9 +109,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Advising and counseling service utilization",
-                    "Job title or position type",
-                    "Staff FTE status",
+                    "Number of students enrolled per school (Grades 9-12)",
+                    "Number of FTE counselors per school (Grades 9-12)",
+                    "Student utilization of academic advising services (Postsecondary)",
+                    "Student utilization of career counseling services (Postsecondary)",
                 ]
             },
         ["Access to college preparatory coursework"] =
@@ -124,8 +127,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12],
                 DataElementNames =
                 [
-                    "Course department",
-                    "Course identifier or title",
+                    "Course subject area",
                     "Course offering by grade level",
                 ]
             },
@@ -141,12 +143,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "AP course designation",
-                    "AP, IB, or Dual Credit course credits",
-                    "Course identifier or title",
-                    "Dual credit course designation",
-                    "IB course designation",
+                    "AP, IB, or Dual Credit course designation",
+                    "Course subject area",
                     "Student course enrollment record",
+                    "End-of-course exam participation",
                 ]
             },
         ["Access to early intervention screening"] =
@@ -161,10 +161,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Date of services provided",
+                    "Date of early intervention services provided",
                     "Early intervention screening results",
                     "Early intervention screening services referral status",
-                    "Indicator of whether services were provided",
                     "Kindergarten enrollment date",
                 ]
             },
@@ -180,8 +179,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12],
                 DataElementNames =
                 [
-                    "Kindergarten program days per week",
-                    "Kindergarten program hours per day",
+                    "Kindergarten program schedule",
                 ]
             },
         ["Access to full-day pre-K"] =
@@ -196,9 +194,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Kindergarten enrollment date",
-                    "Pre-K program days per week",
-                    "Pre-K program hours per day",
+                    "Pre-K program schedule",
+                    "Pre-K program funding source",
                 ]
             },
         ["Access to health, mental health, and social supports"] =
@@ -216,7 +213,7 @@ public static class EwFrameworkIndicators
                     "EAP or mental health services provided",
                     "Health services offered",
                     "IECMHC services offered",
-                    "Job title or position type",
+                    "Staff position type",
                     "Mental health services offered",
                     "Social services offered",
                     "Staff FTE status",
@@ -235,7 +232,8 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "CTE program",
-                    "In-demand status",
+                    "Occupational demand by region",
+                    "Program CIP code",
                 ]
             },
         ["Access to jobs paying a living wage"] =
@@ -266,7 +264,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.WF],
                 DataElementNames =
                 [
-                    "Learning and development plan offered",
+                    "Employee learning and development plan offered",
                     "On-the-job training offered",
                 ]
             },
@@ -283,6 +281,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Pre-K program QRIS rating",
+                    "Pre-K program funding source",
                 ]
             },
         ["Access to quality, culturally responsive curricula"] =
@@ -297,11 +296,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Percentage of teachers regularly using standards-aligned; culturally responsive curricula",
-                    "Expenditures per student (K-12)",
-                    "Expenditures per student (PK)",
-                    "Expenditures per student (Postsecondary)",
-                    "Student FTE status",
+                    "Curriculum quality rating",
+                    "Curriculum adoption",
+                    "Culturally responsive curriculum assessment",
                 ]
             },
         ["Access to technology"] =
@@ -348,7 +345,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Number of ACEs",
+                    "Number of Adverse Childhood Experiences (ACEs)",
                 ]
             },
         ["Civic engagement"] =
@@ -381,10 +378,9 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Teacher-child interaction measure (PK)",
-                    "Instructor observations",
-                    "Overall teacher observation score",
-                    "Subscale observation scores",
-                    "Teacher-child interaction measure (K-12)",
+                    "Teacher observation scores (K-12)",
+                    "Teacher observation subscale scores (K-12)",
+                    "Teacher observation scores (Postsecondary)",
                 ]
             },
         ["College applications"] =
@@ -400,7 +396,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Postsecondary applications submitted",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["College preparatory coursework completion"] =
@@ -415,7 +411,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12],
                 DataElementNames =
                 [
-                    "Course identifier or title",
+                    "Course subject area",
                     "Course outcome",
                     "High school graduation indicator",
                 ]
@@ -451,6 +447,7 @@ public static class EwFrameworkIndicators
                 [
                     "Student attendance rate (K-12)",
                     "Student attendance rate (PK)",
+                    "Student attendance rate (Postsecondary)",
                 ]
             },
         ["CTE pathway concentration"] =
@@ -465,12 +462,12 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Course identifier or title",
-                    "CTE course completion",
-                    "CTE course ID or course title",
+                    "Course subject area",
                     "CTE pathway or career cluster associated with CTE course",
                     "Student course enrollment record",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
+                    "Number of credits earned",
+                    "CTE program",
                 ]
             },
         ["Cultural competency"] =
@@ -502,7 +499,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Median student debt",
+                    "Student loan debt balance",
                 ]
             },
         ["Digital skills"] =
@@ -534,8 +531,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "AP, IB, or Dual Credit course credits",
                     "Student course enrollment record",
+                    "AP, IB, or Dual Credit course designation",
+                    "Course outcome",
+                    "End-of-course exam participation",
                 ]
             },
         ["Early grades on track"] =
@@ -550,13 +549,11 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12],
                 DataElementNames =
                 [
-                    "Kindergarten program days per week",
-                    "Kindergarten program hours per day",
-                    "State standardized test (Math proficiency)",
-                    "State standardized test (Reading proficiency)",
-                    "Student attendance rate (PK)",
-                    "Student grade level (PK)",
                     "Suspensions and expulsions (K-12)",
+                    "Student grade level (K-12)",
+                    "Student attendance rate (K-12)",
+                    "Math proficiency (Grades 1 and 2)",
+                    "Reading proficiency (Grades 1 and 2)",
                 ]
             },
         ["Economic mobility"] =
@@ -573,7 +570,7 @@ public static class EwFrameworkIndicators
                 [
                     "Earnings",
                     "High school graduation date",
-                    "Graduate credential attainment date",
+                    "Postsecondary credential award date",
                 ]
             },
         ["Economic security"] =
@@ -590,7 +587,7 @@ public static class EwFrameworkIndicators
                 [
                     "High school graduation date",
                     "Net worth",
-                    "Graduate credential attainment date",
+                    "Postsecondary credential award date",
                 ]
             },
         ["Educator retention"] =
@@ -605,7 +602,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
-                    "Years in current position",
+                    "Educator tenure in current position",
                 ]
             },
         ["Effective program and school leadership"] =
@@ -620,7 +617,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
-                    "Leader effectiveness assessments",
+                    "School leader evaluation rating",
                 ]
             },
         ["Employment in a quality job"] =
@@ -667,9 +664,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Bachelor's degree completion date",
-                    "Graduate program enrollment date",
-                    "Post-baccalaureate program enrollment date",
+                    "Postsecondary enrollment date",
+                    "Postsecondary credential award date",
                 ]
             },
         ["Enrollment in quality public pre-K"] =
@@ -684,19 +680,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Date of services provided",
-                    "Early intervention screening results",
-                    "Early intervention screening services referral status",
-                    "Family eligibility for child care subsidies",
-                    "Indicator of whether services were provided",
-                    "Kindergarten enrollment date",
-                    "Pre-K program days per week",
-                    "Pre-K program hours per day",
-                    "Pre-K program QRIS rating",
-                    "Receipt of child care subsidies",
                     "Age",
-                    "Enrollment in public pre-K",
+                    "Pre-K enrollment date",
                     "Pre-K eligibility status",
+                    "Pre-K program funding source",
                 ]
             },
         ["Equitable discipline practices"] =
@@ -715,8 +702,10 @@ public static class EwFrameworkIndicators
                     "Office referrals (PK)",
                     "Number of days suspended (K-12)",
                     "Office referrals (K-12)",
-                    "Restraint and seclusion for safety (K-12)",
                     "Suspensions and expulsions (K-12)",
+                    "Restraint and seclusion for discipline (PK)",
+                    "Restraint and seclusion for discipline (K-12)",
+                    "Suspensions and expulsions (PK)",
                 ]
             },
         ["Equitable placement in rigorous coursework"] =
@@ -733,6 +722,8 @@ public static class EwFrameworkIndicators
                 [
                     "Gifted and talented participation",
                     "Student course enrollment record",
+                    "Course subject area",
+                    "AP, IB, or Dual Credit course designation",
                 ]
             },
         ["Expenditures on workforce development programs"] =
@@ -748,7 +739,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Funding dedicated to workforce development programs",
-                    "Total educational funding",
+                    "Total state educational funding",
                 ]
             },
         ["Expenditures per student"] =
@@ -766,7 +757,7 @@ public static class EwFrameworkIndicators
                     "Expenditures per student (K-12)",
                     "Expenditures per student (PK)",
                     "Expenditures per student (Postsecondary)",
-                    "Student FTE status",
+                    "Postsecondary enrollment status (Full time/part time)",
                 ]
             },
         ["Exposure to neighborhood crime"] =
@@ -799,7 +790,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "FAFSA completion date",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["First-year credit accumulation"] =
@@ -832,9 +823,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Course identifier or title",
+                    "Course subject area",
                     "Number of credits earned",
                     "Postsecondary enrollment date",
+                    "Meta-major classifications",
                 ]
             },
         ["Food security"] =
@@ -851,8 +843,8 @@ public static class EwFrameworkIndicators
                 [
                     "SNAP eligibility",
                     "SNAP participation",
-                    "USDA Food Access Research Atlas Access Level Flag",
-                    "USDA Food Security Survey ratings",
+                    "Food access level by census tract",
+                    "Food security survey rating",
                 ]
             },
         ["Gateway course completion"] =
@@ -867,9 +859,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Course identifier or title",
-                    "Number of credits earned",
+                    "Course subject area",
                     "Postsecondary enrollment date",
+                    "Course outcome",
                 ]
             },
         ["Grade point average"] =
@@ -886,7 +878,7 @@ public static class EwFrameworkIndicators
                 [
                     "Grade point average (K-12)",
                     "Grade point average (Postsecondary)",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Graduate degree completion"] =
@@ -902,7 +894,9 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Postsecondary enrollment date",
-                    "Postsecondary credential earned",
+                    "Postsecondary credential type",
+                    "Postsecondary degree program length",
+                    "Postsecondary credential award date",
                 ]
             },
         ["Growth mindset"] =
@@ -936,7 +930,7 @@ public static class EwFrameworkIndicators
                 [
                     "CHIP eligibility status",
                     "CHIP enrollment",
-                    "Insured status",
+                    "Health insurance coverage status",
                     "Medicaid eligibility status",
                     "Medicaid enrollment",
                 ]
@@ -955,9 +949,8 @@ public static class EwFrameworkIndicators
                 [
                     "Cohort graduation year",
                     "Cohort year",
-                    "Diploma or credential award date",
-                    "Enrollment date",
                     "High school diploma type",
+                    "High school graduation date",
                 ]
             },
         ["Higher-order thinking skills"] =
@@ -989,11 +982,11 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Sense of belonging surveys",
                     "Sense of belonging surveys (K-12)",
                     "Sense of belonging surveys (PK)",
                     "Sense of belonging surveys (Postsecondary)",
-                    "Sociocultural observational assessments",
+                    "Sociocultural observational assessments (PK)",
+                    "Sense of belonging surveys (Workforce)",
                 ]
             },
         ["Industry-recognized credential"] =
@@ -1008,10 +1001,12 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Industry-recognized credential attainment",
+                    "Industry-recognized credential indicator",
                     "Student course enrollment record",
-                    "Student grade level (PK)",
                     "Workforce development program participation",
+                    "Student grade level (K-12)",
+                    "CTE program",
+                    "Postsecondary credential type",
                 ]
             },
         ["Institutions' contributions to student outcomes"] =
@@ -1042,8 +1037,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Direct child assessments of executive function",
-                    "Reported kindergarten readiness (behavioral skills)",
+                    "Direct child assessments (executive function)",
+                    "Teacher-reported kindergarten readiness (behavioral skills)",
                     "Teacher reports of executive function",
                 ]
             },
@@ -1060,7 +1055,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Direct child assessments (cognition)",
-                    "Kindergarten readiness assessments (cognition)",
+                    "Teacher-reported kindergarten readiness (cognition)",
                 ]
             },
         ["Kindergarten readiness: language and literacy"] =
@@ -1076,7 +1071,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Direct child assessments (language and literacy)",
-                    "Reported kindergarten readiness (language and literacy)",
+                    "Teacher-reported kindergarten readiness (language and literacy)",
                 ]
             },
         ["Kindergarten readiness: perceptual, motor, and physical development"] =
@@ -1091,8 +1086,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Direct child assessments of physical development",
-                    "Reported kindergarten readiness (physical development)",
+                    "Direct child assessments (physical development)",
+                    "Teacher-reported kindergarten readiness (physical development)",
                 ]
             },
         ["Kindergarten readiness: social-emotional development"] =
@@ -1107,7 +1102,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK],
                 DataElementNames =
                 [
-                    "Reported kindergarten readiness (social-emotional skills)",
+                    "Teacher-reported kindergarten readiness (social-emotional skills)",
                     "Teacher reports of social-emotional development",
                 ]
             },
@@ -1125,7 +1120,7 @@ public static class EwFrameworkIndicators
                 [
                     "State standardized test (Math proficiency)",
                     "State standardized test (Reading proficiency)",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Math and reading proficiency in grade 8"] =
@@ -1142,7 +1137,7 @@ public static class EwFrameworkIndicators
                 [
                     "State standardized test (Math proficiency)",
                     "State standardized test (Reading proficiency)",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Math and reading proficiency in high school"] =
@@ -1159,7 +1154,7 @@ public static class EwFrameworkIndicators
                 [
                     "State standardized test (Math proficiency)",
                     "State standardized test (Reading proficiency)",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Mental and emotional well-being"] =
@@ -1174,10 +1169,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Age",
-                    "Developmental screening results",
+                    "Developmental screening results (PK)",
                     "Mental and emotional well-being assessments",
-                    "Universal screening results",
+                    "Universal mental health screening results (K-12)",
                 ]
             },
         ["Minimum economic return"] =
@@ -1194,8 +1188,8 @@ public static class EwFrameworkIndicators
                 [
                     "Earnings",
                     "High school graduation date",
-                    "Graduate credential attainment date",
                     "Total net price of education plus interest",
+                    "Postsecondary credential award date",
                 ]
             },
         ["Neighborhood economic diversity"] =
@@ -1242,8 +1236,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Geographical indicator",
-                    "Student race/ethnicity",
+                    "Census tract or neighborhood identifier",
+                    "Race and ethnicity (individual)",
+                    "Neighborhood exposure index",
                 ]
             },
         ["Participation in work-based learning"] =
@@ -1258,10 +1253,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Enrollment in workforce training program",
                     "Participation in work-based learning",
                     "Student grade level (K-12)",
-                    "Student grade level (PK)",
+                    "Workforce development program participation",
+                    "Postsecondary enrollment status (Full time/part time)",
                 ]
             },
         ["Physical development and well-being"] =
@@ -1278,8 +1273,8 @@ public static class EwFrameworkIndicators
                 [
                     "Health-Related Quality of Life Scale scores",
                     "Physical health surveys (K-12)",
-                    "Physical health surveys (Postsecondary)",
-                    "Physical health surveys (Workforce)",
+                    "Teacher-reported kindergarten readiness (physical development)",
+                    "Direct child assessments (physical development)",
                 ]
             },
         ["Positive behavior"] =
@@ -1296,6 +1291,8 @@ public static class EwFrameworkIndicators
                 [
                     "Restraint and seclusion for discipline (K-12)",
                     "Suspensions and expulsions (K-12)",
+                    "Restraint and seclusion for discipline (PK)",
+                    "Suspensions and expulsions (PK)",
                 ]
             },
         ["Postsecondary certificate or degree completion"] =
@@ -1310,9 +1307,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Graduate credential attainment date",
-                    "Graduate program enrollment date",
-                    "Postsecondary credential attainment date",
+                    "Postsecondary credential award date",
                     "Postsecondary degree program length",
                     "Postsecondary enrollment date",
                 ]
@@ -1345,9 +1340,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Enrollment status (current and prior years)",
-                    "Postsecondary credential attainment date",
+                    "Postsecondary credential award date",
                     "Postsecondary degree program length",
+                    "Postsecondary enrollment date",
                 ]
             },
         ["Representational racial and ethnic diversity of educators"] =
@@ -1362,8 +1357,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Staff race/ethnicity",
-                    "Student race/ethnicity",
+                    "Race and ethnicity (staff/educator)",
+                    "Race and ethnicity (individual)",
                 ]
             },
         ["SAT and ACT participation and performance"] =
@@ -1382,7 +1377,8 @@ public static class EwFrameworkIndicators
                     "ACT score",
                     "SAT completion",
                     "SAT score",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
+                    "Number of students enrolled per school (Grades 9-12)",
                 ]
             },
         ["School and workplace racial and ethnic diversity"] =
@@ -1397,8 +1393,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Employee race/ethnicity",
-                    "Student race/ethnicity",
+                    "Race and ethnicity (individual)",
                 ]
             },
         ["School and workplace socioeconomic diversity"] =
@@ -1413,9 +1408,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Employee income level",
-                    "Student or family socioeconomic status",
-                    "Student socioeconomic status",
+                    "Income level (individual/family)",
                 ]
             },
         ["School safety"] =
@@ -1432,6 +1425,7 @@ public static class EwFrameworkIndicators
                 [
                     "Campus climate surveys (K-12)",
                     "Campus climate surveys (Postsecondary)",
+                    "Campus safety incident reports (Postsecondary)",
                 ]
             },
         ["School-family engagement"] =
@@ -1462,10 +1456,12 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "High school graduation indicator",
                     "Institution graduation rate",
-                    "Postsecondary enrollment date",
-                    "Postsecondary Institution ID",
+                    "Cohort graduation year",
+                    "Race and ethnicity (individual)",
+                    "Pell grant receipt",
+                    "Postsecondary enrollment status (Full time/part time)",
+                    "Postsecondary admissions decision",
                 ]
             },
         ["Self-efficacy"] =
@@ -1514,9 +1510,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "High school graduation indicator",
                     "Postsecondary enrollment date",
                     "Reported intent to enroll in postsecondary education",
+                    "High school graduation date",
                 ]
             },
         ["Social awareness"] =
@@ -1531,10 +1527,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Self-management surveys (K-12)",
                     "Social awareness teacher ratings",
                     "Social proficiency performance assessments (Postsecondary)",
                     "Social proficiency performance assessments (Workforce)",
+                    "Social awareness surveys (K-12)",
                 ]
             },
         ["Social capital"] =
@@ -1566,8 +1562,8 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS, Sector.WF],
                 DataElementNames =
                 [
-                    "Repayment phase start date",
-                    "Repayment status",
+                    "Student loan repayment phase start date",
+                    "Student loan repayment status",
                 ]
             },
         ["Student perceptions of teaching"] =
@@ -1618,11 +1614,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12],
                 DataElementNames =
                 [
-                    "Student grade level",
-                    "Course identifier or title",
+                    "Course subject area",
                     "Course outcome",
-                    "First-time 9th grade student status",
-                    "Student grade level (PK)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Teacher credentials"] =
@@ -1637,11 +1631,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
-                    "Credential or certification type",
                     "Highest level of education completed",
                     "Teacher qualification or certification type",
-                    "Course identifier or title",
-                    "Job title or position type",
+                    "Course subject area",
+                    "Staff position type",
                     "Staff FTE status",
                     "Teaching assignment",
                 ]
@@ -1659,6 +1652,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Years of teaching experience",
+                    "Staff position type",
                 ]
             },
         ["Teachers' contributions to student learning growth"] =
@@ -1674,7 +1668,8 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "SGP for standardized assessments",
-                    "VAM for subject specific assessment",
+                    "Teacher value-added",
+                    "Teaching assignment",
                 ]
             },
         ["Transfer (if applicable)"] =
@@ -1689,10 +1684,9 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PS],
                 DataElementNames =
                 [
-                    "Enrollment status (current and prior years)",
                     "Postsecondary degree program length",
-                    "Postsecondary institution ID (current and prior years)",
-                    "Transfer indicator or transfer student status",
+                    "Postsecondary enrollment date",
+                    "Postsecondary credential type",
                 ]
             },
         ["Unmet financial need"] =
