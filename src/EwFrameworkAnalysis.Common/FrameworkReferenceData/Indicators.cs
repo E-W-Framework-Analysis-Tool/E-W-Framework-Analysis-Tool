@@ -1378,7 +1378,6 @@ public static class EwFrameworkIndicators
                     "SAT completion",
                     "SAT score",
                     "Student grade level (K-12)",
-                    "Number of students enrolled per school (Grades 9-12)",
                 ]
             },
         ["School and workplace racial and ethnic diversity"] =
