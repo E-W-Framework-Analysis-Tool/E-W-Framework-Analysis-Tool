@@ -3,16 +3,16 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class CourseIdentifierEdFiAssessor : IEdFiAssessor
+public class CourseSubjectAreaEdFiAssessor : IEdFiAssessor
 {
     private readonly EdFiCourseProvider _courseProvider;
 
-    public CourseIdentifierEdFiAssessor(EdFiCourseProvider courseProvider)
+    public CourseSubjectAreaEdFiAssessor(EdFiCourseProvider courseProvider)
     {
         _courseProvider = courseProvider;
     }
 
-    public string DataElementName => "Course identifier or title";
+    public string DataElementName => "Course subject area";
 
     public string AssessmentDescription =>
         "Analyzes courses for academic subject distribution and title completeness";

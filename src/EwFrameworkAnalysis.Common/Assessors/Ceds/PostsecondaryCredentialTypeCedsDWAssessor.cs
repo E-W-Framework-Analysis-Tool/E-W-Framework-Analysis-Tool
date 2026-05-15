@@ -3,19 +3,19 @@ using EwFrameworkAnalysis.Common.Models.Project;
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
-/// Profiles postsecondary credential attainment dates from RDS.FactPsStudentAcademicAwards,
+/// Profiles postsecondary credentials earned from RDS.FactPsStudentAcademicAwards,
 /// joined to RDS.DimPsAcademicAwardStatuses. Includes all postsecondary award levels,
 /// excluding secondary/high school codes (B-series), CEGEP, French Baccalaureate, and
-/// the catch-all '0.0' code. Assesses record count and completeness of AcademicAwardDateId.
+/// the catch-all '0.0' code. Assesses record count and distribution across PESC award levels.
 /// </summary>
-public class PostsecondaryCredentialAttainmentDateCedsDWAssessor : ICedsDWAssessor
+public class PostsecondaryCredentialTypeCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Postsecondary credential attainment date";
-
+    public string DataElementName => "Postsecondary credential type";
     public string Query => $@"
 WITH PsCredentialBase AS (
     SELECT
-        f.AcademicAwardDateId
+        d.PescAwardLevelTypeCode,
+        d.PescAwardLevelTypeDescription
     FROM RDS.FactPsStudentAcademicAwards f
     JOIN RDS.DimPsAcademicAwardStatuses d ON f.PsAcademicAwardStatusId = d.DimPsAcademicAwardStatusId
     WHERE d.PescAwardLevelTypeCode IN (
@@ -38,29 +38,21 @@ SELECT
     NULL                            AS Remarks
 FROM PsCredentialBase
 UNION ALL
--- Completeness - TotalRecords
+-- Distribution - by PESC award level
 SELECT
-    '{DataElementName}'             AS DataElementName,
-    'Completeness'                  AS CharacteristicType,
-    CAST(COUNT(*) AS NVARCHAR(MAX)) AS Value,
-    'TotalRecords'                  AS SubItemLabel,
-    NULL                            AS Remarks
+    '{DataElementName}'                     AS DataElementName,
+    'Distribution'                          AS CharacteristicType,
+    CAST(COUNT(*) AS NVARCHAR(MAX))         AS Value,
+    PescAwardLevelTypeDescription           AS SubItemLabel,
+    NULL                                    AS Remarks
 FROM PsCredentialBase
-UNION ALL
--- Completeness - PopulatedRecords
-SELECT
-    '{DataElementName}'             AS DataElementName,
-    'Completeness'                  AS CharacteristicType,
-    CAST(COUNT(AcademicAwardDateId) AS NVARCHAR(MAX)) AS Value,
-    'PopulatedRecords'              AS SubItemLabel,
-    NULL                            AS Remarks
-FROM PsCredentialBase";
-
+GROUP BY PescAwardLevelTypeDescription
+";
     public string AssessmentDescription =>
-        "Assesses postsecondary credential attainment date from RDS.FactPsStudentAcademicAwards, " +
+        "Assesses postsecondary credentials earned from RDS.FactPsStudentAcademicAwards, " +
         "covering all postsecondary PESC award levels (certificates through doctoral). Excludes " +
         "secondary/high school (B-series), CEGEP, French Baccalaureate, and the '0.0' catch-all code. " +
-        "Reports record count and completeness of the academic award date field.";
+        "Reports record count and distribution across PESC award level descriptions.";
 
     public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;

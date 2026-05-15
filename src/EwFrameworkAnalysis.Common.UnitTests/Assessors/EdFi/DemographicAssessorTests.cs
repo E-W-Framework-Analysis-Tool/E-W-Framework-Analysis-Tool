@@ -86,11 +86,11 @@ public class DemographicAssessorTests
         };
 
         var provider = CreateProviderWithData(data);
-        var assessor = new StudentRaceEthnicityEdFiAssessor(provider);
+        var assessor = new RaceAndEthnicityIndividualEdFiAssessor(provider);
 
         var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
 
-        result.DataElementName.Should().Be("Student race/ethnicity");
+        result.DataElementName.Should().Be("Race and ethnicity (individual)");
         var distribution = result.Characteristics.OfType<Distribution>().First();
         distribution.Counts["White"].Should().Be(2);
         distribution.Counts["Black - African American"].Should().Be(1);
@@ -209,11 +209,11 @@ public class DemographicAssessorTests
         };
 
         var provider = CreateProviderWithData(data);
-        var assessor = new StudentMilitaryStatusEdFiAssessor(provider);
+        var assessor = new MilitaryStatusIndividualFamilyEdFiAssessor(provider);
 
         var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
 
-        result.DataElementName.Should().Be("Individual or family military status");
+        result.DataElementName.Should().Be("Military status (individual/family)");
         var distribution = result.Characteristics.OfType<Distribution>().First();
         distribution.Counts["Military Connected"].Should().Be(1);
         distribution.Counts["Not Reported"].Should().Be(1);
@@ -262,11 +262,11 @@ public class DemographicAssessorTests
         };
 
         var provider = CreateProviderWithData(data);
-        var assessor = new StudentIncomeLevelEdFiAssessor(provider);
+        var assessor = new IncomeLevelIndividualFamilyEdFiAssessor(provider);
 
         var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
 
-        result.DataElementName.Should().Be("Income level");
+        result.DataElementName.Should().Be("Income level (individual/family)");
         var distribution = result.Characteristics.OfType<Distribution>().First();
         distribution.Counts["Economic Disadvantaged"].Should().Be(1);
         distribution.Counts["Not Economic Disadvantaged"].Should().Be(1);
@@ -280,15 +280,15 @@ public class DemographicAssessorTests
 
         var assessors = new IEdFiAssessor[]
         {
-            new StudentRaceEthnicityEdFiAssessor(emptyProvider),
+            new RaceAndEthnicityIndividualEdFiAssessor(emptyProvider),
             new StudentGenderEdFiAssessor(emptyProvider),
             new StudentDisabilityStatusEdFiAssessor(emptyProvider),
-            new StudentIncomeLevelEdFiAssessor(emptyProvider),
+            new IncomeLevelIndividualFamilyEdFiAssessor(emptyProvider),
             new StudentEnglishLearnerEdFiAssessor(emptyProvider),
             new StudentHomeLanguageEdFiAssessor(emptyProvider),
             new StudentMigrantStatusEdFiAssessor(emptyProvider),
             new StudentHomelessnessEdFiAssessor(emptyProvider),
-            new StudentMilitaryStatusEdFiAssessor(emptyProvider),
+            new MilitaryStatusIndividualFamilyEdFiAssessor(emptyProvider),
             new SchoolTypeEdFiAssessor(),
             new SchoolUrbanicityEdFiAssessor()
         };

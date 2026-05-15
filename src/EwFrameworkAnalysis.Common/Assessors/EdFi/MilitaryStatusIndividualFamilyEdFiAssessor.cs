@@ -3,18 +3,18 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentMilitaryStatusEdFiAssessor : IEdFiAssessor
+public class MilitaryStatusIndividualFamilyEdFiAssessor : IEdFiAssessor
 {
     private static readonly string _militaryDescriptor = "Military";
 
     private readonly EdFiStudentDemographicsProvider _demographicsProvider;
 
-    public StudentMilitaryStatusEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
+    public MilitaryStatusIndividualFamilyEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
     {
         _demographicsProvider = demographicsProvider;
     }
 
-    public string DataElementName => "Individual or family military status";
+    public string DataElementName => "Military status (individual/family)";
 
     public string AssessmentDescription =>
         "Distribution of students by military connected status from studentEducationOrganizationAssociations";

@@ -4,9 +4,9 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StaffRaceEthnicityEdFiAssessor : IEdFiAssessor
+public class RaceAndEthnicityStaffEducatorEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Staff race/ethnicity";
+    public string DataElementName => "Race and ethnicity (staff/educator)";
 
     public string AssessmentDescription =>
         "Distribution of staff by race/ethnicity from staffs";

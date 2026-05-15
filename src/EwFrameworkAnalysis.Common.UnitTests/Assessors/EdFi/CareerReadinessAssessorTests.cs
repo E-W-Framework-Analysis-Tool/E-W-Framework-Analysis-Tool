@@ -41,43 +41,6 @@ public class CareerReadinessAssessorTests
     // --- CTE Assessor Tests ---
 
     [Fact]
-    public async Task Should_ProduceReasonExitedDistribution_When_CTECompletionAssessed()
-    {
-        var data = new List<EdFiStudentCTEProgramAssociation>
-        {
-            new(beginDate: new DateOnly(2024, 1, 1),
-                educationOrganizationReference: new EdFiEducationOrganizationReference(1),
-                programReference: new EdFiProgramReference(1, "CTE Program A", "uri://ed-fi.org/ProgramTypeDescriptor#CTE"),
-                studentReference: new EdFiStudentReference("student1"),
-                endDate: new DateOnly(2024, 6, 1),
-                reasonExitedDescriptor: "uri://ed-fi.org/ReasonExitedDescriptor#Completed"),
-            new(beginDate: new DateOnly(2024, 1, 1),
-                educationOrganizationReference: new EdFiEducationOrganizationReference(1),
-                programReference: new EdFiProgramReference(1, "CTE Program B", "uri://ed-fi.org/ProgramTypeDescriptor#CTE"),
-                studentReference: new EdFiStudentReference("student2"),
-                reasonExitedDescriptor: "uri://ed-fi.org/ReasonExitedDescriptor#Transferred")
-        };
-
-        var provider = CreateCTEProviderWithData(data);
-        var assessor = new CTECourseCompletionEdFiAssessor(provider);
-
-        var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
-
-        result.DataElementName.Should().Be("CTE course completion");
-        result.Characteristics.Should().Contain(c => c is RecordCount);
-        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
-
-        var distribution = result.Characteristics.OfType<Distribution>().First(d => d.Label == "Reason Exited");
-        distribution.Counts["Completed"].Should().Be(1);
-        distribution.Counts["Transferred"].Should().Be(1);
-
-        var completeness = result.Characteristics.OfType<Completeness>().First();
-        completeness.TotalRecords.Should().Be(2);
-        completeness.PopulatedRecords.Should().Be(1);
-        completeness.AttributeName.Should().Be("EndDate");
-    }
-
-    [Fact]
     public async Task Should_ProduceProgramDistribution_When_CTEPathwayAssessed()
     {
         var data = new List<EdFiStudentCTEProgramAssociation>
@@ -166,45 +129,16 @@ public class CareerReadinessAssessorTests
         };
 
         var provider = CreateCourseProviderWithData(data);
-        var assessor = new CourseIdentifierEdFiAssessor(provider);
+        var assessor = new CourseSubjectAreaEdFiAssessor(provider);
 
         var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
 
-        result.DataElementName.Should().Be("Course identifier or title");
+        result.DataElementName.Should().Be("Course subject area");
         result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(3);
 
         var subjectDist = result.Characteristics.OfType<Distribution>().First();
         subjectDist.Counts["Mathematics"].Should().Be(1);
         subjectDist.Counts["English Language Arts"].Should().Be(1);
-
-        var completeness = result.Characteristics.OfType<Completeness>().First();
-        completeness.PopulatedRecords.Should().Be(2);
-        completeness.TotalRecords.Should().Be(3);
-    }
-
-    [Fact]
-    public async Task Should_ProducePathwayDistribution_When_CTECourseIdAssessed()
-    {
-        var data = new List<EdFiCourse>
-        {
-            CreateCourse("CTE001", "Welding",
-                careerPathwayDescriptor: "uri://ed-fi.org/CareerPathwayDescriptor#Manufacturing"),
-            CreateCourse("CTE002", "Nursing",
-                careerPathwayDescriptor: "uri://ed-fi.org/CareerPathwayDescriptor#Health Science"),
-            CreateCourse("MATH101", "Algebra")
-        };
-
-        var provider = CreateCourseProviderWithData(data);
-        var assessor = new CTECourseIdEdFiAssessor(provider);
-
-        var result = await assessor.AssessAsync(_httpClient, _dataSource, _context);
-
-        result.DataElementName.Should().Be("CTE course ID or course title");
-        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(3);
-
-        var pathwayDist = result.Characteristics.OfType<Distribution>().First();
-        pathwayDist.Counts["Manufacturing"].Should().Be(1);
-        pathwayDist.Counts["Health Science"].Should().Be(1);
 
         var completeness = result.Characteristics.OfType<Completeness>().First();
         completeness.PopulatedRecords.Should().Be(2);
@@ -243,66 +177,6 @@ public class CareerReadinessAssessorTests
         completeness.TotalRecords.Should().Be(3);
         completeness.PopulatedRecords.Should().Be(2);
         completeness.AttributeName.Should().Be("Non-Homeroom Enrollments");
-    }
-
-    [Fact]
-    public async Task Should_FindCteCompletersAndAchievementCategories_When_IndustryCredentialAssessed()
-    {
-        var testData = new List<EdFiStudentAcademicRecord>
-        {
-            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
-                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
-                studentReference: new EdFiStudentReference("student1"),
-                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
-                diplomas:
-                [
-                    new EdFiStudentAcademicRecordDiploma(
-                        diplomaAwardDate: new DateOnly(2024, 5, 25),
-                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#CTE certificate",
-                        cteCompleter: true)
-                ]),
-            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
-                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
-                studentReference: new EdFiStudentReference("student2"),
-                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
-                diplomas:
-                [
-                    new EdFiStudentAcademicRecordDiploma(
-                        diplomaAwardDate: new DateOnly(2024, 5, 25),
-                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#Vocational certificate",
-                        achievementCategoryDescriptor:
-                            "uri://ed-fi.org/AchievementCategoryDescriptor#Industry-recognized certification")
-                ]),
-            new(educationOrganizationReference: new EdFiEducationOrganizationReference(1),
-                schoolYearTypeReference: new EdFiSchoolYearTypeReference(2024),
-                studentReference: new EdFiStudentReference("student3"),
-                termDescriptor: "uri://ed-fi.org/TermDescriptor#Spring Semester",
-                diplomas:
-                [
-                    new EdFiStudentAcademicRecordDiploma(
-                        diplomaAwardDate: new DateOnly(2024, 5, 25),
-                        diplomaTypeDescriptor: "uri://ed-fi.org/DiplomaTypeDescriptor#Regular diploma")
-                ])
-        };
-
-        using var httpClient = CreateHttpClientWithJsonResponse(testData);
-        var assessor = new IndustryCredentialEdFiAssessor();
-
-        var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
-
-        result.DataElementName.Should().Be("Industry-recognized credential attainment");
-
-        // Only the CTE completer and achievement-category diploma should be counted (not the regular diploma)
-        result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(2);
-
-        var achievementDist = result.Characteristics.OfType<Distribution>()
-            .First(d => d.Label == "Achievement Category");
-        achievementDist.Counts["Industry-recognized certification"].Should().Be(1);
-
-        var typeDist = result.Characteristics.OfType<Distribution>()
-            .First(d => d.Label == "Diploma Type");
-        typeDist.Counts["CTE certificate"].Should().Be(1);
-        typeDist.Counts["Vocational certificate"].Should().Be(1);
     }
 
     [Fact]
@@ -504,11 +378,8 @@ public class CareerReadinessAssessorTests
         var assessors = new IEdFiAssessor[]
         {
             new StudentCourseEnrollmentEdFiAssessor(),
-            new CourseIdentifierEdFiAssessor(emptyCourseProvider),
-            new CTECourseCompletionEdFiAssessor(emptyCteProvider),
-            new CTECourseIdEdFiAssessor(emptyCourseProvider),
+            new CourseSubjectAreaEdFiAssessor(emptyCourseProvider),
             new CTEPathwayEdFiAssessor(emptyCteProvider),
-            new IndustryCredentialEdFiAssessor(),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new CommunicationSkillsAssessmentsEdFiAssessor(),
@@ -532,11 +403,8 @@ public class CareerReadinessAssessorTests
         var assessors = new IEdFiAssessor[]
         {
             new StudentCourseEnrollmentEdFiAssessor(),
-            new CourseIdentifierEdFiAssessor(emptyCourseProvider),
-            new CTECourseCompletionEdFiAssessor(emptyCteProvider),
-            new CTECourseIdEdFiAssessor(emptyCourseProvider),
+            new CourseSubjectAreaEdFiAssessor(emptyCourseProvider),
             new CTEPathwayEdFiAssessor(emptyCteProvider),
-            new IndustryCredentialEdFiAssessor(),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
             new HighSchoolGraduationDateEdFiAssessor(),
             new CommunicationSkillsAssessmentsEdFiAssessor(),

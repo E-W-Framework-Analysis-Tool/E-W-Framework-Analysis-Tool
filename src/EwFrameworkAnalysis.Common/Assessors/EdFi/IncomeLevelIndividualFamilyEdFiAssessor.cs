@@ -3,18 +3,18 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentIncomeLevelEdFiAssessor : IEdFiAssessor
+public class IncomeLevelIndividualFamilyEdFiAssessor : IEdFiAssessor
 {
     private static readonly string _economicDisadvantagedDescriptor = "Economic Disadvantaged";
 
     private readonly EdFiStudentDemographicsProvider _demographicsProvider;
 
-    public StudentIncomeLevelEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
+    public IncomeLevelIndividualFamilyEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
     {
         _demographicsProvider = demographicsProvider;
     }
 
-    public string DataElementName => "Income level";
+    public string DataElementName => "Income level (individual/family)";
 
     public string AssessmentDescription =>
         "Distribution of students by economic disadvantaged status from studentEducationOrganizationAssociations";

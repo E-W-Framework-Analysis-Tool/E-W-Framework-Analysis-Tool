@@ -3,16 +3,16 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentRaceEthnicityEdFiAssessor : IEdFiAssessor
+public class RaceAndEthnicityIndividualEdFiAssessor : IEdFiAssessor
 {
     private readonly EdFiStudentDemographicsProvider _demographicsProvider;
 
-    public StudentRaceEthnicityEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
+    public RaceAndEthnicityIndividualEdFiAssessor(EdFiStudentDemographicsProvider demographicsProvider)
     {
         _demographicsProvider = demographicsProvider;
     }
 
-    public string DataElementName => "Student race/ethnicity";
+    public string DataElementName => "Race and ethnicity (individual)";
 
     public string AssessmentDescription =>
         "Distribution of students by race/ethnicity from studentEducationOrganizationAssociations";

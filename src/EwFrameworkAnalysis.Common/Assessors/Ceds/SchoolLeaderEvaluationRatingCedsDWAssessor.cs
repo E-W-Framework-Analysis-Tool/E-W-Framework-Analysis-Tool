@@ -14,9 +14,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// uses additional or different codes for principals or other school leaders, extend
 /// the WHERE clause accordingly.
 /// </summary>
-public class LeaderEffectivenessAssessmentsCedsDWAssessor : ICedsDWAssessor
+public class SchoolLeaderEvaluationRatingCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Leader effectiveness assessments";
+    public string DataElementName => "School leader evaluation rating";
 
     public string Query => $@"
 WITH LeaderEvalBase AS (

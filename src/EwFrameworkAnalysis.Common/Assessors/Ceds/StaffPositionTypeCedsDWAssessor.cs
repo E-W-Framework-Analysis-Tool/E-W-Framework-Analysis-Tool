@@ -8,9 +8,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// Assesses record count, completeness of PositionTitle, and distribution across
 /// K12StaffClassificationCode values.
 /// </summary>
-public class JobTitleOrPositionTypeCedsDWAssessor : ICedsDWAssessor
+public class StaffPositionTypeCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Job title or position type";
+    public string DataElementName => "Staff position type";
 
     public string Query => $@"
 WITH StaffBase AS (

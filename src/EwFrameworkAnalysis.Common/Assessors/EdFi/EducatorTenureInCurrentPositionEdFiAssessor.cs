@@ -4,9 +4,9 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class YearsInCurrentPositionEdFiAssessor : IEdFiAssessor
+public class EducatorTenureInCurrentPositionEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Years in current position";
+    public string DataElementName => "Educator tenure in current position";
 
     public string AssessmentDescription =>
         "Distribution of staff by years in current position calculated from beginDate in staffEducationOrganizationAssignmentAssociations";

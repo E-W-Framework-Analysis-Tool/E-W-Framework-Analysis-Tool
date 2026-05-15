@@ -3,70 +3,73 @@ using EwFrameworkAnalysis.Common.Models.Project;
 namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 
 /// <summary>
-/// Profiles individual or family military status as a disaggregate across K-12,
-/// postsecondary, and adult education populations from RDS.FactK12StudentEnrollments,
-/// RDS.FactPsStudentCourseTranscripts, and RDS.FactAeStudentEnrollments respectively,
-/// each joined to RDS.DimMilitaryStatuses. Pre-K and Workforce sectors are represented
-/// with zero counts as no supporting schema was identified. Assesses combined record
-/// count and completeness across all sectors, and per-sector populated counts as a
-/// distribution.
-/// Note: FactPsStudentCourseTranscripts contains a typo in the FK column name
-/// (MilitartyStatusId — extra 't'); the query uses the actual column name as-is.
+/// Profiles income level (economic disadvantage status) as a disaggregate across
+/// K-12, postsecondary, and adult education populations from
+/// RDS.FactK12StudentEnrollments, RDS.FactPsStudentCourseTranscripts, and
+/// RDS.FactAeStudentEnrollments respectively, each joined to
+/// RDS.DimEconomicallyDisadvantagedStatuses. Pre-K and Workforce sectors are
+/// represented with zero counts as no supporting schema was identified.
+/// Assesses combined record count and completeness across all sectors, and per-sector
+/// populated counts as a distribution. Pre-K and Workforce sectors are represented
+/// with zero counts as no supporting schema was identified.
 /// </summary>
-public class IndividualOrFamilyMilitaryStatusCedsDWAssessor : ICedsDWAssessor
+public class IncomeLevelIndividualFamiliyCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Individual or family military status";
+    public string DataElementName => "Income level (individual/family)";
 
     public string Query => $@"
 WITH K12Base AS (
     SELECT
-        d.MilitaryConnectedStudentIndicatorCode
+        d.EconomicDisadvantageStatusCode,
+        d.EconomicDisadvantageStatusDescription
     FROM RDS.FactK12StudentEnrollments f
-    JOIN RDS.DimMilitaryStatuses d
-        ON f.MilitaryStatusId = d.DimMilitaryStatusId
+    JOIN RDS.DimEconomicallyDisadvantagedStatuses d
+        ON f.EconomicallyDisadvantagedStatusId = d.DimEconomicallyDisadvantagedStatusId
 ),
 PsBase AS (
     SELECT
-        d.MilitaryConnectedStudentIndicatorCode
+        d.EconomicDisadvantageStatusCode,
+        d.EconomicDisadvantageStatusDescription
     FROM RDS.FactPsStudentCourseTranscripts f
-    JOIN RDS.DimMilitaryStatuses d
-        ON f.MilitartyStatusId = d.DimMilitaryStatusId
+    JOIN RDS.DimEconomicallyDisadvantagedStatuses d
+        ON f.EconomicallyDisadvantagedStatusId = d.DimEconomicallyDisadvantagedStatusId
 ),
 AeBase AS (
     SELECT
-        d.MilitaryConnectedStudentIndicatorCode
+        d.EconomicDisadvantageStatusCode,
+        d.EconomicDisadvantageStatusDescription
     FROM RDS.FactAeStudentEnrollments f
-    JOIN RDS.DimMilitaryStatuses d
-        ON f.MilitaryStatusId = d.DimMilitaryStatusId
+    JOIN RDS.DimEconomicallyDisadvantagedStatuses d
+        ON f.EconomicallyDisadvantagedStatusId = d.DimEconomicallyDisadvantagedStatusId
 ),
 K12Counts AS (
     SELECT
-        COUNT(*) AS TotalRecords,
+        COUNT(*)                                                        AS TotalRecords,
         COUNT(CASE
-            WHEN MilitaryConnectedStudentIndicatorCode IS NOT NULL
-             AND MilitaryConnectedStudentIndicatorCode <> ''
-             AND MilitaryConnectedStudentIndicatorCode <> 'MISSING'
-            THEN 1 END) AS PopulatedRecords
+            WHEN EconomicDisadvantageStatusCode IS NOT NULL
+             AND EconomicDisadvantageStatusCode <> ''
+             AND EconomicDisadvantageStatusCode <> 'MISSING'
+            THEN 1 END)                                                 AS PopulatedRecords
     FROM K12Base
 ),
 PsCounts AS (
     SELECT
-        COUNT(*) AS TotalRecords,
+        COUNT(*)                                                        AS TotalRecords,
         COUNT(CASE
-            WHEN MilitaryConnectedStudentIndicatorCode IS NOT NULL
-             AND MilitaryConnectedStudentIndicatorCode <> ''
-             AND MilitaryConnectedStudentIndicatorCode <> 'MISSING'
-            THEN 1 END) AS PopulatedRecords
+            WHEN EconomicDisadvantageStatusCode IS NOT NULL
+             AND EconomicDisadvantageStatusCode <> ''
+             AND EconomicDisadvantageStatusCode <> 'MISSING'
+            THEN 1 END)                                                 AS PopulatedRecords
     FROM PsBase
 ),
 AeCounts AS (
     SELECT
-        COUNT(*) AS TotalRecords,
+        COUNT(*)                                                        AS TotalRecords,
         COUNT(CASE
-            WHEN MilitaryConnectedStudentIndicatorCode IS NOT NULL
-             AND MilitaryConnectedStudentIndicatorCode <> ''
-             AND MilitaryConnectedStudentIndicatorCode <> 'MISSING'
-            THEN 1 END) AS PopulatedRecords
+            WHEN EconomicDisadvantageStatusCode IS NOT NULL
+             AND EconomicDisadvantageStatusCode <> ''
+             AND EconomicDisadvantageStatusCode <> 'MISSING'
+            THEN 1 END)                                                 AS PopulatedRecords
     FROM AeBase
 )
 INSERT INTO #EWFProfilerResults
@@ -107,8 +110,8 @@ SELECT
     NULL                                                                AS Remarks
 UNION ALL
 -- Distribution - Pre-K (no supporting schema identified)
--- NOTE: No PreK fact table with MilitaryStatusId was found in the known schema.
--- Replace this stub if FactElChildEnrollments or similar becomes available.
+-- NOTE: No PreK fact table with EconomicallyDisadvantagedStatusId was found in the
+-- known schema. Replace this stub if FactElChildEnrollments or similar becomes available.
 SELECT
     '{DataElementName}'                                                 AS DataElementName,
     'Distribution'                                                      AS CharacteristicType,
@@ -141,21 +144,21 @@ SELECT
     NULL                                                                AS Remarks
 UNION ALL
 -- Distribution - Workforce (no supporting schema identified)
--- NOTE: No workforce fact table with MilitaryStatusId was found in the known schema.
--- Replace this stub if FactWfProgramParticipation or similar becomes available.
+-- NOTE: No workforce fact table with EconomicallyDisadvantagedStatusId was found in the
+-- known schema. Replace this stub if FactWfProgramParticipation or similar becomes available.
 SELECT
     '{DataElementName}'                                                 AS DataElementName,
     'Distribution'                                                      AS CharacteristicType,
     CAST(0 AS NVARCHAR(MAX))                                            AS Value,
     'Workforce'                                                         AS SubItemLabel,
-    'No source table available for Workforce sector'                    AS Remarks";
+    'No source table available for Workforce sector'                    AS Remarks
+";
 
     public string AssessmentDescription =>
-        "Assesses individual or family military status across K-12, postsecondary, and adult " +
-        "education populations joined to RDS.DimMilitaryStatuses. Reports combined record count " +
-        "and completeness across all sectors, and per-sector populated counts as a distribution. " +
-        "Pre-K and Workforce emit zero pending schema identification. Note: the PS fact table " +
-        "contains a typo in the military status FK column name (MilitartyStatusId).";
+        "Assesses income level (economic disadvantage status) across K-12, postsecondary, and " +
+        "adult education populations joined to RDS.DimEconomicallyDisadvantagedStatuses. Reports " +
+        "combined record count and completeness across all sectors, and per-sector populated counts " +
+        "as a distribution. Pre-K and Workforce emit zero pending schema identification.";
 
     public string MinVersion => CedsDWVersions.V13;
     public string? MaxVersion => null;

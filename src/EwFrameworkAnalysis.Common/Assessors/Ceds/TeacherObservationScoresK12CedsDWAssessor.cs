@@ -17,9 +17,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// before relying on this assessor:
 ///   SELECT DISTINCT AssessmentTypeCode, AssessmentTypeDescription FROM RDS.DimAssessments ORDER BY 1
 /// </summary>
-public class OverallTeacherObservationScoreCedsDWAssessor : ICedsDWAssessor
+public class TeacherObservationScoresK12CedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Overall teacher observation score";
+    public string DataElementName => "Teacher observation scores (K-12)";
 
     public string Query => $@"
 WITH ObservationBase AS (

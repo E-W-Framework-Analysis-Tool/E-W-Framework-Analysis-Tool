@@ -9,9 +9,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// Assesses record count, completeness of subscale score/rating, and distribution
 /// across evaluation part scales to indicate which observation frameworks are present.
 /// </summary>
-public class SubscaleObservationScoresCedsDWAssessor : ICedsDWAssessor
+public class TeacherObservationSubscaleScoresK12CedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Subscale observation scores";
+    public string DataElementName => "Teacher observation subscale scores (K-12)";
 
     public string Query => $@"
 WITH EvalPartBase AS (

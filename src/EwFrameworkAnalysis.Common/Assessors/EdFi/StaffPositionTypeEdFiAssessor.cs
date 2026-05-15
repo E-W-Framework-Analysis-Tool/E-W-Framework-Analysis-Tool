@@ -4,9 +4,9 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class JobTitlePositionTypeEdFiAssessor : IEdFiAssessor
+public class StaffPositionTypeEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Job title or position type";
+    public string DataElementName => "Staff position type";
 
     public string AssessmentDescription =>
         "Distribution of staff by classification from staffEducationOrganizationAssignmentAssociations";

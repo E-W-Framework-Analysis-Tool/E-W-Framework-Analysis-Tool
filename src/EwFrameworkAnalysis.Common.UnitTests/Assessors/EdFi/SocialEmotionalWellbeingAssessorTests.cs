@@ -19,7 +19,7 @@ public class SocialEmotionalWellbeingAssessorTests
         // Health & Wellness
         new DevelopmentalScreeningResultsEdFiAssessor(),
         new MentalEmotionalWellBeingAssessmentsEdFiAssessor(),
-        new UniversalScreeningResultsEdFiAssessor(),
+        new UniversalMentalHealthScreeningResultsK12EdFiAssessor(),
         new HealthRelatedQualityOfLifeEdFiAssessor(),
         new PhysicalHealthSurveysK12EdFiAssessor()
     ];

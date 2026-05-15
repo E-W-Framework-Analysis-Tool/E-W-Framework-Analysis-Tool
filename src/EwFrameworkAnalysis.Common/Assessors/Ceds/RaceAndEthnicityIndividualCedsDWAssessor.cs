@@ -8,9 +8,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// are included as sectors in the distribution but always emit zero as no source
 /// tables are available.
 /// </summary>
-public class StudentRaceEthnicityCedsDWAssessor : ICedsDWAssessor
+public class RaceAndEthnicityIndividualCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Student race/ethnicity";
+    public string DataElementName => "Race and ethnicity (individual)";
 
     public string Query => $@"
 WITH K12Race AS (

@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class UniversalScreeningResultsEdFiAssessor : IEdFiAssessor
+public class UniversalMentalHealthScreeningResultsK12EdFiAssessor : IEdFiAssessor
 {
     // Keywords for K-12 universal mental / emotional health screening tools suitable
     // for school-based use (per the E-W Framework reference to Mental Health Screening
@@ -46,7 +46,7 @@ public class UniversalScreeningResultsEdFiAssessor : IEdFiAssessor
         "SWIFT"                              // Social and Emotional Health Survey (panorama / SWIFT variants)
     ];
 
-    public string DataElementName => "Universal screening results";
+    public string DataElementName => "Universal mental health screening results (K-12)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to K-12 universal mental / emotional health screening tools " +

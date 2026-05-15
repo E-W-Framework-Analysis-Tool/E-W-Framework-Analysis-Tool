@@ -11,9 +11,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// start date, and integer range of calculated tenure years.
 /// NOTE: School leader classification filter requires confirmation — see inline comment.
 /// </summary>
-public class YearsInCurrentPositionCedsDWAssessor : ICedsDWAssessor
+public class EducatorTenureInCurrentPositionCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Years in current position";
+    public string DataElementName => "Educator tenure in current position";
 
     public string Query => $@"
 WITH LeaderBase AS (

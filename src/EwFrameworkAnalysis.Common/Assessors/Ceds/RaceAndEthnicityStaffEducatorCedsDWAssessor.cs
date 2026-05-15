@@ -8,9 +8,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// staff employment records, completeness of race/ethnicity assignment, and
 /// distribution across race/ethnicity categories.
 /// </summary>
-public class StaffRaceEthnicityCedsDWAssessor : ICedsDWAssessor
+public class RaceAndEthnicityStaffEducatorCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Staff race/ethnicity";
+    public string DataElementName => "Race and ethnicity (staff/educator)";
 
     public string Query => $@"
 WITH StaffRaceBase AS (
