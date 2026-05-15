@@ -1,0 +1,779 @@
+@page "/framework-diff"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using System.Text
+@using System.Text.Json
+@inject IJSRuntime JS
+
+<PageTitle>PR Diff</PageTitle>
+
+<div class="min-h-screen bg-base-200 font-sans text-sm">
+
+    <div class="navbar bg-base-100 border-b border-base-300 px-4 min-h-10">
+        <div class="flex-1">
+            <span class="font-bold text-base">🔀 PR Diff Tool</span>
+        </div>
+        <div class="flex gap-2 items-center">
+            <InputFile id="mapping-upload" style="display:none" OnChange="LoadMappingFile" accept=".json" />
+            <label for="mapping-upload" class="btn btn-sm btn-ghost">📂 Load Mapping</label>
+            @if (_loadFeedback != null)
+            {
+                <span class="text-xs @(_loadFeedback.StartsWith("✓") ? "text-success" : "text-error")">@_loadFeedback</span>
+            }
+
+            @if (_phase == Phase.Link)
+            {
+                <span class="text-xs text-base-content/50">
+                    @_matches.Count pair(s) · @UnmatchedBefore.Count unmatched before · @UnmatchedAfter.Count unmatched after
+                </span>
+                <button class="btn btn-sm btn-primary" @onclick="@(() => _phase = Phase.Diff)">→ View Diff</button>
+            }
+            @if (_phase == Phase.Diff)
+            {
+                <button class="btn btn-sm btn-ghost" @onclick="@(() => _phase = Phase.Link)">← Back to Linking</button>
+                <button class="btn btn-sm btn-primary" @onclick="CopyHtml">📋 Copy HTML</button>
+                @if (_copyFeedback)
+                {
+                    <span class="text-success text-xs">✓ Copied!</span>
+                }
+            }
+        </div>
+    </div>
+
+    @* ══ PHASE: LINK ══ *@
+    @if (_phase == Phase.Link)
+    {
+        <div class="p-3">
+            <div class="alert alert-info py-2 mb-3 text-xs">
+                Click elements to select them (multi-select supported), then click <strong>Link Selected</strong> to create a group.
+                One-to-one, many-to-one, one-to-many, and many-to-many are all supported.
+                Click a match chip's × to remove a specific pairing. Exact-name matches are linked automatically.
+            </div>
+
+            <div class="flex gap-2 mb-3">
+                @if (_selectedBefores.Any() || _selectedAfters.Any())
+                {
+                    <button class="btn btn-sm btn-primary" @onclick="LinkSelected">
+                        Link @(_selectedBefores.Count) before + @(_selectedAfters.Count) after
+                    </button>
+                    <button class="btn btn-sm btn-ghost" @onclick="ClearSelection">Clear selection</button>
+                }
+            </div>
+
+            <div class="tabs tabs-bordered mb-3">
+                <a class="tab @(_linkTab == 0 ? "tab-active" : "")" @onclick="@(() => _linkTab = 0)">Elements</a>
+                <a class="tab @(_linkTab == 1 ? "tab-active" : "")" @onclick="@(() => _linkTab = 1)">Indicators preview</a>
+                <a class="tab @(_linkTab == 2 ? "tab-active" : "")" @onclick="@(() => _linkTab = 2)">Disaggregates preview</a>
+            </div>
+            @if (_linkTab == 0)
+            {
+                <div class="grid gap-4" style="grid-template-columns: 1fr 1fr;">
+
+                    @* ── BEFORE column ── *@
+                    <div>
+                        <div class="text-xs font-bold uppercase text-base-content/50 mb-2">
+                            Before (@_beforeElements.Count)
+                        </div>
+                        @foreach (var key in BeforeElementOrder)
+                        {
+                            var groups = MatchGroupsForBefore(key);
+                            var isSel = _selectedBefores.Contains(key);
+                            <div class="bg-base-100 border border-base-300 rounded px-3 py-2 mb-1 cursor-pointer
+                                        @(isSel ? "ring-2 ring-amber-400 bg-amber-50" : "hover:border-primary")"
+                                 @onclick="@(() => ToggleBefore(key))">
+                                <div class="flex items-start gap-1 flex-wrap">
+                                    <span class="font-medium text-xs flex-1">@key</span>
+                                    @foreach (var g in groups)
+                                    {
+                                        @foreach (var afterKey in g.AfterKeys.OrderBy(k => k))
+                                        {
+                                            var capturedG = g;
+                                            var capturedAfterKey = afterKey;
+                                            <span class="inline-flex items-center gap-1 text-xs bg-violet-100 border border-violet-300 rounded px-1">
+                                                → @afterKey
+                                                <button class="hover:text-error leading-none"
+                                                        @onclick:stopPropagation
+                                                        @onclick="@(() => RemoveEdge(capturedG, key, capturedAfterKey))">
+                                                    ×
+                                                </button>
+                                            </span>
+                                        }
+                                    }
+                                </div>
+                                <div class="text-base-content/50 text-xs">
+                                    @_beforeElements[key].DataElementCategory · @string.Join(", ", _beforeElements[key].RelatedSectors)
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @* ── AFTER column ── *@
+                    <div>
+                        <div class="text-xs font-bold uppercase text-base-content/50 mb-2">
+                            After (@_afterElements.Count)
+                        </div>
+                        @foreach (var key in AfterElementOrder)
+                        {
+                            var groups = MatchGroupsForAfter(key);
+                            var isSel = _selectedAfters.Contains(key);
+                            <div class="bg-base-100 border border-base-300 rounded px-3 py-2 mb-1 cursor-pointer
+                                        @(isSel ? "ring-2 ring-amber-400 bg-amber-50" : "hover:border-primary")"
+                                 @onclick="@(() => ToggleAfter(key))">
+                                <div class="flex items-start gap-1 flex-wrap">
+                                    <span class="font-medium text-xs flex-1">@key</span>
+                                    @foreach (var g in groups)
+                                    {
+                                        @foreach (var beforeKey in g.BeforeKeys.OrderBy(k => k))
+                                        {
+                                            var capturedG = g;
+                                            var capturedBeforeKey = beforeKey;
+                                            <span class="inline-flex items-center gap-1 text-xs bg-violet-100 border border-violet-300 rounded px-1">
+                                                ← @beforeKey
+                                                <button class="hover:text-error leading-none"
+                                                        @onclick:stopPropagation
+                                                        @onclick="@(() => RemoveEdge(capturedG, capturedBeforeKey, key))">
+                                                    ×
+                                                </button>
+                                            </span>
+                                        }
+                                    }
+                                </div>
+                                <div class="text-base-content/50 text-xs">
+                                    @_afterElements[key].DataElementCategory · @string.Join(", ", _afterElements[key].RelatedSectors)
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            }
+            @if (_linkTab == 1)
+            {
+                <div class="text-xs text-base-content/50 mb-3">Preview of indicator element list changes based on current linking.</div>
+                @foreach (var kv in ChangedIndicators)
+                {
+                    var before = _beforeIndicators.TryGetValue(kv.Key, out var bi) ? bi.DataElementNames : new();
+                    var added = kv.Value.DataElementNames.Except(before.SelectMany(ResolveAfterNames)).ToList();
+                    var removed = before.Where(n => !kv.Value.DataElementNames.Intersect(ResolveAfterNames(n)).Any()).ToList();
+                    <div class="bg-base-100 border border-base-300 rounded p-3 mb-2">
+                        <div class="font-bold text-xs mb-1">@kv.Key</div>
+                        @foreach (var n in removed)
+                        {
+                            <div class="text-xs text-error">− @n</div>
+                        }
+                        @foreach (var n in added)
+                        {
+                            <div class="text-xs text-success">+ @n</div>
+                        }
+                    </div>
+                }
+            }
+
+            @if (_linkTab == 2)
+            {
+                <div class="text-xs text-base-content/50 mb-3">Preview of disaggregate element list changes based on current linking.</div>
+                @foreach (var after in ChangedDisaggregates)
+                {
+                    var before = _beforeDisaggregates.FirstOrDefault(d => d.Name == after.Name);
+                    var beforeEls = before?.DataElementNames ?? new();
+                    var added = after.DataElementNames.Except(beforeEls.SelectMany(ResolveAfterNames)).ToList();
+                    var removed = beforeEls.Where(n => !after.DataElementNames.Intersect(ResolveAfterNames(n)).Any()).ToList();
+                    <div class="bg-base-100 border border-base-300 rounded p-3 mb-2">
+                        <div class="font-bold text-xs mb-1">@after.Name</div>
+                        @foreach (var n in removed)
+                        {
+                            <div class="text-xs text-error">− @n</div>
+                        }
+                        @foreach (var n in added)
+                        {
+                            <div class="text-xs text-success">+ @n</div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    @* ══ PHASE: DIFF ══ *@
+    @if (_phase == Phase.Diff)
+    {
+        <div class="p-4" id="diff-output">
+            @DiffOutput
+        </div>
+    }
+
+</div>
+
+@code {
+
+    // ── Enums / phase ─────────────────────────────────────────────────────
+
+    enum Phase { Link, Diff }
+    Phase _phase = Phase.Link;
+    int _linkTab = 0;
+    bool _copyFeedback = false;
+
+    // ── Data ──────────────────────────────────────────────────────────────
+
+    Dictionary<string, DataElement> _beforeElements = new();
+    Dictionary<string, DataElement> _afterElements = new();
+    Dictionary<string, Indicator> _beforeIndicators = new();
+    Dictionary<string, Indicator> _afterIndicators = new();
+    List<Disaggregate> _beforeDisaggregates = new();
+    List<Disaggregate> _afterDisaggregates = new();
+
+    // ── Match groups ──────────────────────────────────────────────────────
+    // A MatchGroup represents a many-to-many relationship between before and after keys.
+    // A single exact-name match is stored as BeforeKeys={k}, AfterKeys={k}.
+
+    class MatchGroup
+    {
+        public HashSet<string> BeforeKeys { get; } = new();
+        public HashSet<string> AfterKeys { get; } = new();
+    }
+
+    List<MatchGroup> _matches = new();
+
+    // Selection state for building new groups
+    HashSet<string> _selectedBefores = new();
+    HashSet<string> _selectedAfters = new();
+
+    // ── Computed helpers ──────────────────────────────────────────────────
+
+    List<string> UnmatchedBefore => _beforeElements.Keys
+        .Where(k => !_matches.Any(g => g.BeforeKeys.Contains(k))).ToList();
+
+    List<string> UnmatchedAfter => _afterElements.Keys
+        .Where(k => !_matches.Any(g => g.AfterKeys.Contains(k))).ToList();
+
+    // Unmatched first, then matched — sorted within each group
+    List<string> BeforeElementOrder =>
+        UnmatchedBefore.OrderBy(k => k)
+            .Concat(_matches.SelectMany(g => g.BeforeKeys).OrderBy(k => k))
+            .ToList();
+
+    List<string> AfterElementOrder =>
+        UnmatchedAfter.OrderBy(k => k)
+            .Concat(_matches.SelectMany(g => g.AfterKeys).OrderBy(k => k))
+            .ToList();
+
+    List<MatchGroup> MatchGroupsForBefore(string key) =>
+        _matches.Where(g => g.BeforeKeys.Contains(key)).ToList();
+
+    List<MatchGroup> MatchGroupsForAfter(string key) =>
+        _matches.Where(g => g.AfterKeys.Contains(key)).ToList();
+
+    // All after-names a before-name resolves to (may be multiple in splits)
+    IEnumerable<string> ResolveAfterNames(string beforeKey)
+    {
+        var groups = MatchGroupsForBefore(beforeKey);
+        return groups.Any()
+            ? groups.SelectMany(g => g.AfterKeys)
+            : new[] { beforeKey }; // unmatched: treat as same name
+    }
+
+    // Filtered collections for the diff view
+    IEnumerable<KeyValuePair<string, Indicator>> ChangedIndicators =>
+        _afterIndicators
+            .Where(kv =>
+            {
+                var before = _beforeIndicators.TryGetValue(kv.Key, out var bi) ? bi.DataElementNames : new();
+                var resolvedBefore = before.SelectMany(ResolveAfterNames).ToHashSet();
+                return !resolvedBefore.SetEquals(kv.Value.DataElementNames.ToHashSet());
+            })
+            .OrderBy(kv => kv.Key);
+
+    IEnumerable<Disaggregate> ChangedDisaggregates =>
+        _afterDisaggregates
+            .Where(a =>
+            {
+                var before = _beforeDisaggregates.FirstOrDefault(d => d.Name == a.Name);
+                var beforeEls = (before?.DataElementNames ?? new()).SelectMany(ResolveAfterNames).ToHashSet();
+                return !beforeEls.SetEquals(a.DataElementNames.ToHashSet());
+            })
+            .OrderBy(d => d.Name);
+
+    // ── Lifecycle ─────────────────────────────────────────────────────────
+
+    protected override Task OnInitializedAsync()
+    {
+        _beforeElements = PreviousDataForComparison.Elements;
+        _afterElements = EwFrameworkDataElements.Elements;
+        _beforeIndicators = PreviousDataForComparison.Indicators;
+        _afterIndicators = EwFrameworkIndicators.Indicators;
+        _beforeDisaggregates = PreviousDataForComparison.Disaggregates.ToList();
+        _afterDisaggregates = EwFrameworkDisaggregates.Disaggregates.ToList();
+
+        BuildSuggestedMatches();
+        return Task.CompletedTask;
+    }
+
+    // ── Matching heuristic ────────────────────────────────────────────────
+
+    void BuildSuggestedMatches()
+    {
+        _matches.Clear();
+
+        // Exact key matches
+        var exactKeys = _beforeElements.Keys.Intersect(_afterElements.Keys).ToHashSet();
+        foreach (var key in exactKeys)
+        {
+            var g = new MatchGroup();
+            g.BeforeKeys.Add(key);
+            g.AfterKeys.Add(key);
+            _matches.Add(g);
+        }
+
+        // Fuzzy candidates for remainder
+        var beforeUsage = _beforeElements.Keys.ToDictionary(k => k,
+            k => _beforeIndicators.Where(i => i.Value.DataElementNames.Contains(k)).Select(i => i.Key).ToHashSet());
+        var afterUsage = _afterElements.Keys.ToDictionary(k => k,
+            k => _afterIndicators.Where(i => i.Value.DataElementNames.Contains(k)).Select(i => i.Key).ToHashSet());
+
+        var unmatchedB = _beforeElements.Keys.Except(exactKeys).ToList();
+        var unmatchedA = _afterElements.Keys.Except(exactKeys).ToList();
+
+        var candidates = new List<(string B, string A, double Score)>();
+        foreach (var b in unmatchedB)
+            foreach (var a in unmatchedA)
+            {
+                var nameSim = 1.0 - (double)Levenshtein(b, a) / Math.Max(b.Length, a.Length);
+                var bu = beforeUsage[b];
+                var au = afterUsage[a];
+                var union = bu.Union(au).Count();
+                var jaccard = union == 0 ? 0.0 : (double)bu.Intersect(au).Count() / union;
+                var catHit = _beforeElements[b].DataElementCategory == _afterElements[a].DataElementCategory ? 0.1 : 0.0;
+                var score = 0.4 * nameSim + 0.5 * jaccard + catHit;
+                if (score > 0.35) candidates.Add((b, a, score));
+            }
+
+        // Greedy 1:1 suggestions — user can adjust to M:N manually
+        var usedB = new HashSet<string>();
+        var usedA = new HashSet<string>();
+        foreach (var (b, a, _) in candidates.OrderByDescending(c => c.Score))
+        {
+            if (usedB.Contains(b) || usedA.Contains(a)) continue;
+            var g = new MatchGroup();
+            g.BeforeKeys.Add(b);
+            g.AfterKeys.Add(a);
+            _matches.Add(g);
+            usedB.Add(b);
+            usedA.Add(a);
+        }
+    }
+
+    static int Levenshtein(string s, string t)
+    {
+        var d = new int[s.Length + 1, t.Length + 1];
+        for (var i = 0; i <= s.Length; i++) d[i, 0] = i;
+        for (var j = 0; j <= t.Length; j++) d[0, j] = j;
+        for (var i = 1; i <= s.Length; i++)
+            for (var j = 1; j <= t.Length; j++)
+                d[i, j] = s[i - 1] == t[j - 1]
+                    ? d[i - 1, j - 1]
+                    : 1 + Math.Min(d[i - 1, j - 1], Math.Min(d[i - 1, j], d[i, j - 1]));
+        return d[s.Length, t.Length];
+    }
+
+    // ── Link UI interactions ──────────────────────────────────────────────
+
+    void ToggleBefore(string key)
+    {
+        if (!_selectedBefores.Add(key)) _selectedBefores.Remove(key);
+    }
+
+    void ToggleAfter(string key)
+    {
+        if (!_selectedAfters.Add(key)) _selectedAfters.Remove(key);
+    }
+
+    void LinkSelected()
+    {
+        if (!_selectedBefores.Any() && !_selectedAfters.Any()) return;
+
+        // Find any existing groups that contain any of the selected keys
+        var overlapping = _matches
+            .Where(g => g.BeforeKeys.Intersect(_selectedBefores).Any()
+                     || g.AfterKeys.Intersect(_selectedAfters).Any())
+            .ToList();
+
+        // Merge all overlapping groups + selections into one
+        var merged = new MatchGroup();
+        foreach (var g in overlapping)
+        {
+            foreach (var k in g.BeforeKeys) merged.BeforeKeys.Add(k);
+            foreach (var k in g.AfterKeys) merged.AfterKeys.Add(k);
+            _matches.Remove(g);
+        }
+        foreach (var k in _selectedBefores) merged.BeforeKeys.Add(k);
+        foreach (var k in _selectedAfters) merged.AfterKeys.Add(k);
+
+        _matches.Add(merged);
+        ClearSelection();
+    }
+
+    void ClearSelection()
+    {
+        _selectedBefores.Clear();
+        _selectedAfters.Clear();
+    }
+
+    void RemoveEdge(MatchGroup g, string beforeKey, string afterKey)
+    {
+        // Remove this specific pairing
+        // If after removing, either side has keys no longer connected to anything
+        // in this group, clean them up
+        var otherBefores = g.BeforeKeys.Where(k => k != beforeKey).ToList();
+        var otherAfters = g.AfterKeys.Where(k => k != afterKey).ToList();
+
+        // Simple case: this was the only connection for one or both sides
+        // — just remove the whole group and re-add without these keys if others remain
+        _matches.Remove(g);
+
+        // Reconstitute remaining edges: if it was truly M:N we need to decide
+        // what "remove one edge" means. We treat it as: split into two groups —
+        // one containing beforeKey linked to remaining afters (minus afterKey),
+        // one containing remaining befores linked to afterKey (minus beforeKey),
+        // and the remaining befores+afters stay linked.
+        // Simplest correct interpretation: remove beforeKey↔afterKey,
+        // keep everything else in the group together.
+
+        var newBeforeKeys = g.BeforeKeys.Where(k => k != beforeKey).ToHashSet();
+        var newAfterKeys = g.AfterKeys.Where(k => k != afterKey).ToHashSet();
+
+        // The removed before key still links to other afters in the group
+        if (g.BeforeKeys.Contains(beforeKey) && newAfterKeys.Any())
+        {
+            var g1 = new MatchGroup();
+            g1.BeforeKeys.Add(beforeKey);
+            foreach (var k in newAfterKeys) g1.AfterKeys.Add(k);
+            _matches.Add(g1);
+        }
+
+        // The removed after key still links to other befores in the group
+        if (g.AfterKeys.Contains(afterKey) && newBeforeKeys.Any())
+        {
+            var g2 = new MatchGroup();
+            foreach (var k in newBeforeKeys) g2.BeforeKeys.Add(k);
+            g2.AfterKeys.Add(afterKey);
+            _matches.Add(g2);
+        }
+
+        // The remaining befores+afters stay linked together
+        if (newBeforeKeys.Any() && newAfterKeys.Any())
+        {
+            var g3 = new MatchGroup();
+            foreach (var k in newBeforeKeys) g3.BeforeKeys.Add(k);
+            foreach (var k in newAfterKeys) g3.AfterKeys.Add(k);
+            _matches.Add(g3);
+        }
+    }
+
+    // ── Diff output ───────────────────────────────────────────────────────
+
+    RenderFragment DiffOutput => @<div style="font-family:system-ui,sans-serif;max-width:960px;margin:0 auto;">
+
+@* ── Indicators ── *@
+    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;">
+        Indicator Element Mapping Changes
+    </h2>
+
+@if (!ChangedIndicators.Any())
+    {
+    <p style="color:#6b7280;font-size:0.8rem;">No indicator element mapping changes.</p>
+    }
+
+@foreach (var kv in ChangedIndicators)
+    {
+    var indBefore = _beforeIndicators.TryGetValue(kv.Key, out var bi) ? bi.DataElementNames : new();
+    var indAfter = kv.Value.DataElementNames;
+    var resolvedB = indBefore.SelectMany(ResolveAfterNames).ToHashSet();
+    var added = indAfter.Where(n => !resolvedB.Contains(n)).ToList();
+    var removed = indBefore.Where(n => !indAfter.Intersect(ResolveAfterNames(n)).Any()).ToList();
+    var renamedB = indBefore.Where(n =>
+    {
+        var resolved = ResolveAfterNames(n).ToList();
+        return resolved.Count == 1 && resolved[0] != n && indAfter.Contains(resolved[0]);
+    }).ToList();
+
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:14px;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">@kv.Key</div>
+        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:10px;line-height:1.5;">
+            <span style="font-weight:600;text-transform:uppercase;font-size:0.68rem;color:#9ca3af;margin-right:4px;">Recommended Metrics:</span>@kv.Value.RecommendedMetrics
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:#fef2f2;border-radius:4px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Before</div>
+                @foreach (var el in indBefore.OrderBy(e => e))
+                                {
+                                var isRem = removed.Contains(el);
+                    var isRen = renamedB.Contains(el);
+                    var resolvedNames = ResolveAfterNames(el).ToList();
+                    var isSplit = resolvedNames.Count > 1;
+                    var color = isRem ? "#dc2626" : (isRen || isSplit) ? "#7c3aed" : "#374151";
+                    var prefix = isRem ? "−" : (isRen || isSplit) ? "~" : " ";
+                    var suffix = isRen ? $" → {resolvedNames[0]}"
+                    : isSplit ? $" → {string.Join(", ", resolvedNames)}"
+                    : "";
+                    <div style="font-size:0.75rem;color:@color;padding:1px 0;">@prefix @el@suffix</div>
+                }
+            </div>
+            <div style="background:#f0fdf4;border-radius:4px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">After</div>
+                @foreach (var el in indAfter.OrderBy(e => e))
+                {
+                    var isAdd = added.Contains(el);
+                    var mergedFrom = _matches.Where(g => g.AfterKeys.Contains(el) && g.BeforeKeys.Count > 1)
+                    .SelectMany(g => g.BeforeKeys).ToList();
+                    var renamedFrom = _matches.Where(g => g.AfterKeys.Contains(el) && g.BeforeKeys.Count == 1
+                    && g.AfterKeys.Count == 1
+                    && !g.BeforeKeys.Contains(el))
+                    .SelectMany(g => g.BeforeKeys).FirstOrDefault();
+                    var isMerge = mergedFrom.Any();
+                    var color = isAdd ? "#16a34a" : (renamedFrom != null || isMerge) ? "#7c3aed" : "#374151";
+                    var prefix = isAdd ? "+" : (renamedFrom != null || isMerge) ? "~" : " ";
+                    var suffix = renamedFrom != null ? $" (was: {renamedFrom})"
+                    : isMerge ? $" (merged from: {string.Join(", ", mergedFrom)})"
+                    : "";
+                    <div style="font-size:0.75rem;color:@color;padding:1px 0;">@prefix @el@suffix</div>
+                }
+            </div>
+        </div>
+    </div>
+    }
+
+@* ── Element property changes ── *@
+    <h2 style="font-size:1.1rem;font-weight:700;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;">
+        Data Element Property Changes
+    </h2>
+
+@* Added *@
+@foreach (var key in UnmatchedAfter.OrderBy(k => k))
+{
+    var el = _afterElements[key];
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px;margin-bottom:8px;">
+            <div style="font-weight:600;font-size:0.85rem;color:#16a34a;margin-bottom:6px;">+ @key <span style="font-weight:400;font-size:0.75rem;">(new)</span></div>
+            @ElPropRow("Category", null, el.DataElementCategory)
+            @ElPropRow("Cluster", null, el.ClusterOnlyCategory)
+            @ElPropRow("Sectors", null, string.Join(", ", el.RelatedSectors))
+            @if (el.AdditionalNotes != null)
+            {
+                @ElPropRow("Notes", null, el.AdditionalNotes)
+            }
+        </div>
+}
+
+@* Removed *@
+@foreach (var key in UnmatchedBefore.OrderBy(k => k))
+{
+    var el = _beforeElements[key];
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:12px;margin-bottom:8px;">
+            <div style="font-weight:600;font-size:0.85rem;color:#dc2626;margin-bottom:6px;">− @key <span style="font-weight:400;font-size:0.75rem;">(removed)</span></div>
+            @ElPropRow("Category", el.DataElementCategory, null)
+            @ElPropRow("Cluster", el.ClusterOnlyCategory, null)
+            @ElPropRow("Sectors", string.Join(", ", el.RelatedSectors), null)
+            @if (el.AdditionalNotes != null)
+            {
+                @ElPropRow("Notes", el.AdditionalNotes, null)
+            }
+        </div>
+}
+
+@* Changed matched groups *@
+@foreach (var g in _matches.OrderBy(g => string.Join(",", g.BeforeKeys.OrderBy(k => k))))
+{
+    var beforeEls = g.BeforeKeys.Where(k => _beforeElements.ContainsKey(k)).Select(k => _beforeElements[k]).ToList();
+    var afterEls = g.AfterKeys.Where(k => _afterElements.ContainsKey(k)).Select(k => _afterElements[k]).ToList();
+
+    @* Only show groups that have property changes *@
+    var isSimple1to1 = g.BeforeKeys.Count == 1 && g.AfterKeys.Count == 1;
+    var b1 = beforeEls.FirstOrDefault();
+    var a1 = afterEls.FirstOrDefault();
+    var hasChange = !isSimple1to1
+    || g.BeforeKeys.First() != g.AfterKeys.First()
+    || b1?.DataElementCategory != a1?.DataElementCategory
+    || b1?.ClusterOnlyCategory != a1?.ClusterOnlyCategory
+    || (b1 != null && a1 != null && !b1.RelatedSectors.SequenceEqual(a1.RelatedSectors))
+    || b1?.AdditionalNotes != a1?.AdditionalNotes
+    || b1?.ScoringRuleName != a1?.ScoringRuleName;
+
+    @if (hasChange)
+    {
+        var headerBefore = string.Join(", ", g.BeforeKeys.OrderBy(k => k));
+        var headerAfter = string.Join(", ", g.AfterKeys.OrderBy(k => k));
+        var headerText = headerBefore == headerAfter ? $"~ {headerBefore}" : $"~ {headerBefore} → {headerAfter}";
+
+            <div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:6px;padding:12px;margin-bottom:8px;">
+                <div style="font-weight:600;font-size:0.85rem;color:#7c3aed;margin-bottom:8px;">@headerText</div>
+
+                @if (isSimple1to1 && b1 != null && a1 != null)
+                {
+                    @ElPropRow("Category", b1.DataElementCategory, a1.DataElementCategory)
+                    @ElPropRow("Cluster", b1.ClusterOnlyCategory, a1.ClusterOnlyCategory)
+                    @ElPropRow("Sectors", string.Join(", ", b1.RelatedSectors), string.Join(", ", a1.RelatedSectors))
+                    @ElPropRow("Notes", b1.AdditionalNotes, a1.AdditionalNotes)
+                    @ElPropRow("Scoring", b1.ScoringRuleName, a1.ScoringRuleName)
+                }
+                else
+                {
+                    @* Multi-element group — show each side as a list, no per-prop diff *@
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:#9ca3af;margin-bottom:4px;">Before</div>
+                            @foreach (var el in beforeEls)
+                            {
+                                <div style="font-size:0.75rem;color:#374151;padding:1px 0;">@el.Name</div>
+                                <div style="font-size:0.7rem;color:#6b7280;padding-left:8px;">@el.DataElementCategory · @string.Join(", ", el.RelatedSectors)</div>
+                            }
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:#9ca3af;margin-bottom:4px;">After</div>
+                            @foreach (var el in afterEls)
+                            {
+                                <div style="font-size:0.75rem;color:#374151;padding:1px 0;">@el.Name</div>
+                                <div style="font-size:0.7rem;color:#6b7280;padding-left:8px;">@el.DataElementCategory · @string.Join(", ", el.RelatedSectors)</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+    }
+}
+
+@* ── Disaggregates ── *@
+    <h2 style="font-size:1.1rem;font-weight:700;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;">
+        Disaggregate Element Mapping Changes
+    </h2>
+
+@if (!ChangedDisaggregates.Any())
+{
+        <p style="color:#6b7280;font-size:0.8rem;">No disaggregate element mapping changes.</p>
+}
+
+@foreach (var after in ChangedDisaggregates)
+{
+    var before = _beforeDisaggregates.FirstOrDefault(d => d.Name == after.Name);
+    var beforeEls = before?.DataElementNames ?? new();
+    var resolvedB = beforeEls.SelectMany(ResolveAfterNames).ToHashSet();
+    var added = after.DataElementNames.Where(n => !resolvedB.Contains(n)).ToList();
+    var removed = beforeEls.Where(n => !after.DataElementNames.Intersect(ResolveAfterNames(n)).Any()).ToList();
+    var renamedB = beforeEls.Where(n =>
+    {
+        var r = ResolveAfterNames(n).ToList();
+        return r.Count == 1 && r[0] != n && after.DataElementNames.Contains(r[0]);
+    }).ToList();
+
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:14px;margin-bottom:12px;">
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:8px;">@after.Name</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:#fef2f2;border-radius:4px;padding:10px;">
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Before</div>
+                    @foreach (var el in beforeEls.OrderBy(e => e))
+                    {
+                        var isRem = removed.Contains(el);
+                        var isRen = renamedB.Contains(el);
+                        var resolved = ResolveAfterNames(el).ToList();
+                        var isSplit = resolved.Count > 1;
+                        var color = isRem ? "#dc2626" : (isRen || isSplit) ? "#7c3aed" : "#374151";
+                        var prefix = isRem ? "−" : (isRen || isSplit) ? "~" : " ";
+                        var suffix = isRen ? $" → {resolved[0]}" : isSplit ? $" → {string.Join(", ", resolved)}" : "";
+                        <div style="font-size:0.75rem;color:@color;padding:1px 0;">@prefix @el@suffix</div>
+                    }
+                </div>
+                <div style="background:#f0fdf4;border-radius:4px;padding:10px;">
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">After</div>
+                    @foreach (var el in after.DataElementNames.OrderBy(e => e))
+                    {
+                        var isAdd = added.Contains(el);
+                        var mergedFrom = _matches.Where(g => g.AfterKeys.Contains(el) && g.BeforeKeys.Count > 1)
+                        .SelectMany(g => g.BeforeKeys).ToList();
+                        var renamedFrom = _matches.Where(g => g.AfterKeys.Contains(el) && g.BeforeKeys.Count == 1
+                        && g.AfterKeys.Count == 1 && !g.BeforeKeys.Contains(el))
+                        .SelectMany(g => g.BeforeKeys).FirstOrDefault();
+                        var color = isAdd ? "#16a34a" : (renamedFrom != null || mergedFrom.Any()) ? "#7c3aed" : "#374151";
+                        var prefix = isAdd ? "+" : (renamedFrom != null || mergedFrom.Any()) ? "~" : " ";
+                        var suffix = renamedFrom != null ? $" (was: {renamedFrom})"
+                        : mergedFrom.Any() ? $" (merged from: {string.Join(", ", mergedFrom)})"
+                        : "";
+                        <div style="font-size:0.75rem;color:@color;padding:1px 0;">@prefix @el@suffix</div>
+                    }
+                </div>
+            </div>
+        </div>
+}
+
+</div>;
+
+// ── ElPropRow helper ──────────────────────────────────────────────────
+
+RenderFragment ElPropRow(string label, string? before, string? after) => @<div>
+@if (before != after)
+{
+        <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:4px;font-size:0.75rem;margin-bottom:3px;align-items:start;">
+            <span style="color:#9ca3af;font-size:0.68rem;font-weight:600;text-transform:uppercase;padding-top:2px;">@label</span>
+            <span style="background:#fef2f2;color:#dc2626;border-radius:3px;padding:2px 5px;">@(before ?? "—")</span>
+            <span style="background:#f0fdf4;color:#16a34a;border-radius:3px;padding:2px 5px;">@(after ?? "—")</span>
+        </div>
+}
+</div>;
+
+// ── HTML export ───────────────────────────────────────────────────────
+
+async Task CopyHtml()
+{
+    var html = await JS.InvokeAsync<string>("eval", @"
+            (function() {
+                var el = document.getElementById('diff-output');
+                return '<!DOCTYPE html><html><head><meta charset=""utf-8""><title>PR Diff</title>' +
+                    '<style>body{font-family:system-ui,sans-serif;max-width:960px;margin:40px auto;padding:0 20px;background:#f9fafb;font-size:14px;}</style>' +
+                    '</head><body>' + el.innerHTML + '</body></html>';
+            })()
+        ");
+    await JS.InvokeVoidAsync("navigator.clipboard.writeText", html);
+    _copyFeedback = true; StateHasChanged();
+    await Task.Delay(2000);
+    _copyFeedback = false; StateHasChanged();
+}
+
+
+string? _loadFeedback = null;
+
+// Plain DTO — matches the JSON shape exactly
+record MappingDto(List<string> BeforeKeys, List<string> AfterKeys);
+
+async Task LoadMappingFile(InputFileChangeEventArgs e)
+{
+    _loadFeedback = null;
+    try
+    {
+        await using var stream = e.File.OpenReadStream(maxAllowedSize: 2 * 1024 * 1024);
+        var dtos = await JsonSerializer.DeserializeAsync<List<MappingDto>>(stream,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        if (dtos == null || dtos.Count == 0)
+        {
+            _loadFeedback = "⚠ No mappings found in file.";
+            return;
+        }
+
+        _matches.Clear();
+        foreach (var dto in dtos)
+        {
+            var g = new MatchGroup();
+            foreach (var k in dto.BeforeKeys) g.BeforeKeys.Add(k);
+            foreach (var k in dto.AfterKeys) g.AfterKeys.Add(k);
+            _matches.Add(g);
+        }
+
+        _loadFeedback = $"✓ Loaded {_matches.Count} group(s)";
+        StateHasChanged();
+        await Task.Delay(3000);
+        _loadFeedback = null;
+        StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+        _loadFeedback = $"✗ {ex.Message}";
+    }
+}
+}
