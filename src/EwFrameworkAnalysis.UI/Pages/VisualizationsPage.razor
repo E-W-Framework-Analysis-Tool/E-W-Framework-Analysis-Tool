@@ -1,0 +1,398 @@
+@page "/learn/visualizations"
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<VisualizationsOptions> VisualizationsOptions
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+
+    <!-- Page Header -->
+    <Card AdditionalClasses="mb-6">
+        <ChildContent>
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-title font-bold text-blue mb-2">Sample Power BI Visualizations</h1>
+                    <p class="text-gray-600 text-base max-w-3xl">
+                        Power BI visualizations have been created to show how several Essential Questions and their
+                        related Indicators can be answered by data. Below is information about each visualization and
+                        its report pages. You can use the provided sample CEDS Data Warehouse or connect your own to
+                        power the visualizations.
+                    </p>
+                    <div class="flex flex-wrap gap-3 mt-4">
+                        <a href="@AppRoutes.VisualizationsSetup"
+                           class="btn btn-sm btn-outline border-blue text-blue hover:bg-blue hover:text-white">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 4a2 2 0 100 4m0-4a2 2 0 110 4m6-4a2 2 0 100 4m0-4a2 2 0 110 4" />
+                            </svg>
+                            Setup Guide
+                        </a>
+                        <a href="@_opts.GitHubRepoUrl"
+                           target="_blank" rel="noopener noreferrer"
+                           class="btn btn-sm btn-outline border-blue text-blue hover:bg-blue hover:text-white">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                      clip-rule="evenodd" />
+                            </svg>
+                            GitHub Repository
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- What You Will Find -->
+    <Card AdditionalClasses="mb-6">
+        <ChildContent>
+            <h2 class="text-xl font-title font-semibold text-blue mb-4">What You Will Find on Each Visualization</h2>
+            <p class="text-gray-600 mb-4">Each Power BI visualization includes several report pages to help you make your data come to life.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                @foreach (var reportPage in _reportPageTypes)
+                {
+                    <div class="flex gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                        <div class="text-blue mt-0.5 shrink-0">@((MarkupString)reportPage.Icon)</div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">@reportPage.Name</p>
+                            <p class="text-sm text-gray-600">@reportPage.Description</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- EQ Tabs -->
+    <div class="tabs tabs-border !rounded-none">
+
+        @foreach (var eq in _eqs)
+        {
+            <input type="radio"
+                   name="viz_tabs"
+                   class="tab text-lg bg-white !rounded-b-none font-title font-semibold text-blue"
+                   aria-label="@eq.TabLabel"
+                   checked="@(eq.Id == "EQ12")" />
+
+            <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">
+                <ChildContent>
+
+                    @if (eq.Embed.IsConfigured)
+                    {
+                        <div class="mb-8">
+                            <div class="aspect-video w-full rounded-lg overflow-hidden border border-gray-200 shadow">
+                                <iframe src="@eq.Embed.EmbedUrl"
+                                        class="w-full h-full"
+                                        allowfullscreen
+                                        title="@(eq.Title) Power BI Report">
+                                </iframe>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1 text-right">Interactive embed — requires Power BI access</p>
+                        </div>
+                    }
+
+                    <!-- EQ Title -->
+                    <h2 class="text-2xl font-title font-bold text-blue mb-1">@eq.Title</h2>
+                    <p class="text-sm text-gray-500 font-medium mb-5">@eq.Subtitle</p>
+
+                    <!-- About -->
+                    <CollapsibleSection Title="About this Essential Question"
+                                        IsExpanded="true"
+                                        AdditionalClasses="mb-3">
+                        <p class="text-sm text-gray-700 mb-3">@eq.About</p>
+                        @if (!string.IsNullOrEmpty(eq.ExternalUrl))
+                        {
+                            <a href="@eq.ExternalUrl" target="_blank" rel="noopener noreferrer"
+                               class="text-sm link link-hover text-blue">
+                                Visit the E-W Framework site for more on @eq.Id →
+                            </a>
+                        }
+                    </CollapsibleSection>
+
+                    <!-- Related Indicators -->
+                    <CollapsibleSection Title="Related Indicators" AdditionalClasses="mb-3">
+                        @if (eq.IndicatorGroups.Any())
+                        {
+                            <p class="text-sm text-gray-600 mb-3">
+                                The following indicators were used to create the dashboard visualization reports:
+                            </p>
+                            @foreach (var group in eq.IndicatorGroups)
+                            {
+                                <p class="text-sm font-semibold text-gray-800 mt-3 mb-1">@group.GroupName</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                                    @foreach (var indicator in group.Indicators)
+                                    {
+                                        <li>@indicator</li>
+                                    }
+                                </ul>
+                            }
+                            <p class="text-sm text-gray-600 mt-4">
+                                Follow the links on the E-W Framework site for each indicator to find the CEDS Connections,
+                                including required data elements and applicable disaggregates. CEDS Connection PDFs and
+                                Excel files are available for download from the Collaborative Exchange.
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500 italic">Indicators coming soon.</p>
+                        }
+                    </CollapsibleSection>
+
+                    <!-- Report Pages -->
+                    <CollapsibleSection Title="Report Pages" AdditionalClasses="mb-3">
+                        @if (eq.ReportPages.Any())
+                        {
+                            <p class="text-sm text-gray-600 mb-4">
+                                The Power BI dashboard connects to the CEDS Data Warehouse via SQL, performing
+                                calculations to transform data into reportable form. Each report page is described below.
+                            </p>
+                            <div class="space-y-6">
+                                @foreach (var rp in eq.ReportPages)
+                                {
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-gray-800 mb-1">@rp.Name</h4>
+                                        <p class="text-sm text-gray-700 mb-3">@rp.Description</p>
+                                        @if (rp.ShowScreenshot)
+                                        {
+                                            <div class="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center py-8 text-gray-400">
+                                                <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <span class="text-xs">Screenshot — @rp.Name</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500 italic">Report page details coming soon.</p>
+                        }
+                    </CollapsibleSection>
+
+                    <!-- Dashboard Features -->
+                    <CollapsibleSection Title="Dashboard Features" AdditionalClasses="mb-3">
+                        <p class="text-sm text-gray-700 mb-4">
+                            Adjustable filters allow you to dynamically slice and dice data for deeper insights.
+                            Default filters are set to <strong>Current Year</strong> for Cohort and
+                            <strong>Race &amp; Ethnicity</strong> for Disaggregates.
+                        </p>
+
+                        <p class="text-sm font-semibold text-gray-800 mb-2">Page-Level Filters</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 mb-4">
+                            <li><strong>Organization</strong> — Switch between State Education Agency (SEA), Local Education Agency (LEA), and K–12 School views.</li>
+                            <li><strong>Disaggregates</strong> — Filter by Race &amp; Ethnicity, Gender, Disability Status, Economic Disadvantage, English Learner, Foster Care, Homelessness, Neglected Status, and Urbanicity.</li>
+                            <li><strong>Cohort / School Year</strong> — Defaults to Current Year; select historical years for trend comparison.</li>
+                            <li><strong>Grade Level</strong> — Available on select pages to compare 11th and 12th grade results.</li>
+                            <li><strong>Course Type</strong> — Available on select pages to filter by AP, IB, Dual Credit, or Assessment type.</li>
+                        </ul>
+
+                        <div class="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center py-8 text-gray-400 mb-4">
+                            <span class="text-xs">Screenshot — filter panel overview</span>
+                        </div>
+
+                        <p class="text-sm font-semibold text-gray-800 mb-2">Clicking on Disaggregate Bars</p>
+                        <p class="text-sm text-gray-700">
+                            Clicking an individual disaggregate bar (e.g., "Black or African American" within Race &amp; Ethnicity)
+                            highlights that subgroup's results and shows a comparison to overall results in the upper-left tile,
+                            with only that value shown in the upper-right trend line.
+                        </p>
+                        <p class="text-sm text-gray-500 mt-2 italic">
+                            Note: Filters apply only to the specific report page and are not universally applied across all report pages.
+                        </p>
+                    </CollapsibleSection>
+
+                    <!-- Setup CTA -->
+                    <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <p class="text-sm font-semibold text-blue">Ready to get started?</p>
+                            <p class="text-sm text-gray-600 mt-0.5">
+                                Follow the Setup Guide to install the required software, restore the sample database,
+                                and connect Power BI to your data source.
+                            </p>
+                            <a href="@AppRoutes.VisualizationsSetup"
+                               class="text-sm link link-hover text-blue mt-1 inline-block">
+                                View the Setup Guide →
+                            </a>
+                        </div>
+                    </div>
+
+                </ChildContent>
+            </Card>
+        }
+
+    </div>
+</div>
+
+@code {
+    private VisualizationsOptions _opts => VisualizationsOptions.Value;
+
+    // ── Report page type descriptors (shared across EQs) ─────────────────────
+
+    private record ReportPageType(string Icon, string Name, string Description);
+
+    private readonly List<ReportPageType> _reportPageTypes =
+    [
+        new(
+            Icon: """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>""",
+            Name: "Summary Page",
+            Description: "A visual landing page with a collection of graphs from the individual Indicator Analysis pages."
+        ),
+        new(
+            Icon: """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>""",
+            Name: "Reference Page",
+            Description: "A listing of the Indicators reported on within the visualization, with links to each."
+        ),
+        new(
+            Icon: """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>""",
+            Name: "Indicator Analysis Pages",
+            Description: "Interactive dashboards filterable by Cohort/School Year, Disaggregates, Organization level, and more."
+        ),
+        new(
+            Icon: """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>""",
+            Name: "Resource Page",
+            Description: "Additional context about the Essential Question and its underlying Indicators, including useful links."
+        ),
+    ];
+
+    // ── EQ data ───────────────────────────────────────────────────────────────
+
+    private record IndicatorGroup(string GroupName, List<string> Indicators);
+    private record ReportPage(string Name, string Description, bool ShowScreenshot = true);
+
+    private record EqDefinition(
+        string Id,
+        string TabLabel,
+        string Title,
+        string Subtitle,
+        string About,
+        string ExternalUrl,
+        List<IndicatorGroup> IndicatorGroups,
+        List<ReportPage> ReportPages,
+        EqEmbedOptions Embed
+    );
+
+    private List<EqDefinition> _eqs = [];
+
+    protected override void OnInitialized()
+    {
+        _eqs =
+        [
+        new(
+            Id: "EQ12",
+            TabLabel: "EQ 12",
+            Title: "Essential Question 12",
+            Subtitle: "Do students have access to and complete rigorous and accelerated college preparatory coursework?",
+            About: "This question examines students' access to and participation in challenging academic coursework " +
+                   "that prepares them for success after high school. In many states, the requirements for a high " +
+                   "school diploma fall short of the admissions criteria at many four-year colleges and universities. " +
+                   "Not meeting these requirements can limit students' college options or land them in remedial or " +
+                   "developmental courses that do not count toward a postsecondary degree. Engaging in rigorous " +
+                   "coursework during high school, including Advanced Placement, International Baccalaureate, and " +
+                   "dual credit courses, is associated with future college success. Not all student groups are equally " +
+                   "likely to have access to rigorous coursework. School administrators, counselors, and district " +
+                   "leaders can use this question to understand variation in course offerings, identify barriers to " +
+                   "course access and completion, and develop strategies to expand opportunities for all students.",
+            ExternalUrl: "https://educationtoworkforce.org/essential-question-12",
+            IndicatorGroups:
+            [
+                new("Outcomes & Milestones",
+                [
+                    "Successful completion of Algebra I by 9th grade",
+                    "College preparatory coursework completion",
+                    "Early college coursework completion",
+                    "SAT and ACT participation and performance",
+                ]),
+                new("E-W System Conditions",
+                [
+                    "Access to college preparatory coursework",
+                    "Access to early college coursework",
+                    "Equitable placement in gifted programs and rigorous coursework",
+                    "Access to quality, culturally responsive curricula",
+                    "Access to college and career advising",
+                ]),
+            ],
+            ReportPages:
+            [
+                new("Summary Page",
+                    "A landing page incorporating graphs of several Indicators, including Successful completion of " +
+                    "Algebra I by 9th grade, College preparatory coursework completion, Early college coursework " +
+                    "completion, and SAT and ACT participation and performance."),
+                new("Reference Page",
+                    "A visual and textual representation of each Indicator and its corresponding report page — " +
+                    "acts as a map of the report pages."),
+                new("Successful completion of Algebra I by 9th grade",
+                    "Insights into the percentage of first-time grade 9 students who complete Algebra I or an " +
+                    "equivalent course by the end of their 9th-grade year. The selected Cohort year appears in " +
+                    "the top-left tile; a historical trend line is in the upper-right tile; Disaggregate results " +
+                    "are shown in the bottom tile."),
+                new("College preparatory coursework completion",
+                    "Insights into the percentage of high school graduates who successfully complete the coursework " +
+                    "required for admission to a four-year college or university: four years of English, four years " +
+                    "of math, three years of laboratory science, two years of social sciences, two years of foreign " +
+                    "language, and one year of visual or performing arts. Note: when using sample data, an early " +
+                    "ramp-up in results is expected due to how the sample cohorts were constructed."),
+                new("Early college coursework completion",
+                    "Insights into the percentage of high-school students who pass at least one AP, IB, or Dual " +
+                    "Credit course, with an additional comparison of 11th and 12th grade results."),
+                new("Early college coursework completion — course type",
+                    "Further breakdown of early college coursework completion by course type (AP, IB, Dual Credit), " +
+                    "with filters for both grade level and course type."),
+                new("SAT and ACT participation",
+                    "Insights into the percentage of grade 11–12 students who take the SAT and ACT, with " +
+                    "participation levels shown for each exam type."),
+                new("SAT and ACT performance",
+                    "Insights into the percentage of grade 11–12 students who earn a college-ready score based on " +
+                    "SAT and ACT benchmarks, with filters for grade level and assessment type."),
+                new("Access to college preparatory coursework",
+                    "Three measures of access: the percentage of middle schools offering Algebra I; the percentage " +
+                    "of high schools offering the full college-prep course sequence; and the percentage of schools " +
+                    "offering AP, IB, and Dual Enrollment courses."),
+                new("Access to college advising",
+                    "The ratio of students to full-time equivalent (FTE) counselors, providing insights into the " +
+                    "availability of college counseling services in high schools."),
+                new("Equitable placement in gifted programs and rigorous coursework",
+                    "Whether students from various demographic subgroups are proportionally represented in rigorous " +
+                    "courses and programs relative to their share of the school population, including Algebra I in " +
+                    "middle school, higher-level math in high school, and early college courses. Note: only one " +
+                    "organization can be displayed at a time; use the upper-right filter to select SEA or a specific " +
+                    "LEA or K–12 School."),
+                new("Resource Page",
+                    "A high-level overview of the Essential Question with context on what to know about the " +
+                    "measurement, plus links that pertain directly to this report."),
+            ],
+            Embed: GetEmbed("EQ12")
+        ),
+        new(
+            Id: "EQ18",
+            TabLabel: "EQ 18",
+            Title: "Essential Question 18",
+            Subtitle: "Placeholder — update with EQ 18 subtitle",
+            About: "Placeholder — update with EQ 18 description.",
+            ExternalUrl: "",
+            IndicatorGroups: [],
+            ReportPages: [],
+            Embed: GetEmbed("EQ18")
+        ),
+        new(
+            Id: "EQ19",
+            TabLabel: "EQ 19",
+            Title: "Essential Question 19",
+            Subtitle: "Placeholder — update with EQ 19 subtitle",
+            About: "Placeholder — update with EQ 19 description.",
+            ExternalUrl: "",
+            IndicatorGroups: [],
+            ReportPages: [],
+            Embed: GetEmbed("EQ19")
+        ),
+        ];
+    }
+
+    private EqEmbedOptions GetEmbed(string eqId) =>
+        _opts.Embeds.TryGetValue(eqId, out var embed) ? embed : new EqEmbedOptions();
+}

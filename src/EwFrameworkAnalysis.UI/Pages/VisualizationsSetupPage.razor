@@ -1,0 +1,350 @@
+@page "/learn/visualizations/setup"
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<VisualizationsOptions> VisualizationsOptions
+
+<div class="container mx-auto max-w-5xl p-4 lg:p-8">
+
+    <!-- Breadcrumb -->
+    <div class="text-sm breadcrumbs text-gray-500 mb-4">
+        <ul>
+            <li><a href="@AppRoutes.Visualizations" class="link link-hover text-blue">Visualizations</a></li>
+            <li>Setup Guide</li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <Card AdditionalClasses="mb-6">
+        <ChildContent>
+            <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
+            <p class="text-gray-600 max-w-3xl">
+                Follow these steps to install the required software, connect to a data source, and begin
+                using the Power BI dashboard visualizations. You can use the provided sample CEDS Data
+                Warehouse or connect your own.
+            </p>
+            <p class="text-sm text-gray-500 mt-3">
+                A full README with additional technical detail is also available in the
+                <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                   class="link link-hover text-blue">GitHub repository</a>.
+            </p>
+        </ChildContent>
+    </Card>
+
+    <!-- Requirements -->
+    <CollapsibleSection Title="Requirements" IsExpanded="true" AdditionalClasses="mb-3">
+        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+            <li>A local instance of SQL Server is installed</li>
+            <li>SQL Server Management Studio (SSMS) is installed</li>
+            <li>Sample database restored <em>(for sample data)</em>, or your own CEDS Data Warehouse</li>
+            <li>The latest version of Power BI Desktop is installed</li>
+            <li>GitHub Desktop and a GitHub account</li>
+            <li>VPN access established, if required by your network</li>
+        </ul>
+    </CollapsibleSection>
+
+    <!-- Step 1: Download Software -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">1</span>
+                Download Required Software
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <div class="space-y-5 text-sm text-gray-700">
+
+                <div>
+                    <p class="font-semibold mb-1">SQL Server</p>
+                    <p class="mb-2">Download and install the latest version of SQL Server (the database engine).</p>
+                    <ul class="list-disc list-inside space-y-1 ml-2">
+                        <li>Edition: Standard Developer Edition (minimum)</li>
+                        <li>Run the SQL Server installer -> Install type: <strong>Basic</strong> (creates a local instance)</li>
+                        <li>Complete installation with default settings</li>
+                    </ul>
+                    <p class="mt-2 text-gray-500 italic">
+                        Important: At the end of installation, note your Instance name (e.g., <code class="bg-gray-100 px-1 rounded">MSSQLSERVER02</code>).
+                    </p>
+                </div>
+
+                <div>
+                    <p class="font-semibold mb-1">SQL Server Management Studio (SSMS)</p>
+                    <p>Download and install the latest version of SSMS. It can be launched from the SQL Server installer or installed separately. No optional components are required.</p>
+                </div>
+
+                <div>
+                    <p class="font-semibold mb-1">Power BI Desktop</p>
+                    <p>Download and install the latest version of Power BI Desktop for use on your machine.</p>
+                </div>
+
+                <div>
+                    <p class="font-semibold mb-1">GitHub Desktop</p>
+                    <p>Download and install the latest version of GitHub Desktop for use on your machine.</p>
+                </div>
+
+            </div>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 2: Connect SSMS -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">2</span>
+                Connect to SQL Server in SSMS
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>Open SSMS. If prompted to sign in, you can select <strong>Skip for now and add later</strong>.</li>
+                <li>Select <strong>Connect to Server</strong> or <strong>Connect Object Explorer</strong>.</li>
+                <li>
+                    Use these settings:
+                    <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li><strong>Server type:</strong> Database Engine</li>
+                        <li>
+                            <strong>Server name:</strong>
+                            <code class="bg-gray-100 px-1 rounded">localhost\&lt;INSTANCE_NAME&gt;</code>
+                            — e.g., <code class="bg-gray-100 px-1 rounded">localhost\MSSQLSERVER02</code>
+                        </li>
+                        <li><strong>Authentication:</strong> Windows Authentication</li>
+                        <li><strong>Trust Certificate:</strong> Trust Server</li>
+                    </ul>
+                </li>
+                <li>Click <strong>Connect</strong>.</li>
+            </ol>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 3: Restore Sample DB -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">3</span>
+                Restore the Sample Database
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-3">
+                Follow these steps if you want to connect the visualizations to the provided sample database.
+            </p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>
+                    Download the provided <code class="bg-gray-100 px-1 rounded">.bak</code> file for the EQ you
+                    wish to explore. This can be found in the
+                    <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">GitHub repository</a>.
+                </li>
+                <li>In SSMS, right-click <strong>Databases</strong> and select <strong>Restore Database</strong>.</li>
+                <li>Choose <strong>Device</strong>, then browse and select the <code class="bg-gray-100 px-1 rounded">.bak</code> file.</li>
+                <li>Click <strong>OK</strong>.</li>
+                <li>Confirm that the <strong>Dashboards</strong> database now appears under Databases.</li>
+            </ol>
+            <div class="mt-4 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center py-8 text-gray-400">
+                <span class="text-xs">Screenshot — SSMS Restore Database options panel</span>
+            </div>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 4: Connect Power BI to GitHub -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">4</span>
+                Connect Power BI Desktop to GitHub
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-4">There are two ways to open the Power BI report files from the repository.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">Path A — via GitHub Desktop</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2 mb-5">
+                <li>Open Power BI Desktop.</li>
+                <li>Open GitHub Desktop and go to <strong>Repository -> Find in File Explorer</strong>.</li>
+                <li>Navigate to <code class="bg-gray-100 px-1 rounded">PowerBI &gt; EQ-12</code> (or whichever EQ you want).</li>
+                <li>Open the <code class="bg-gray-100 px-1 rounded">.pbip</code> file — Power BI will load the dashboard.</li>
+                <li>In GitHub Desktop, select <strong>Pull origin</strong> or <strong>Fetch origin</strong> to pull in any updates.</li>
+            </ol>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">Path B — via GitHub web browser</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>
+                    Log in to GitHub and navigate to the
+                    <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">E-W-Indicator-Analytics repository</a>.
+                </li>
+                <li>Click the green <strong>Code</strong> button and select <strong>Open with GitHub Desktop</strong>.</li>
+                <li>In GitHub Desktop, confirm the repository shown in the top-left is <strong>E-W-Indicator-Analytics</strong>.</li>
+                <li>Select branch <strong>Main</strong> and click <strong>Fetch Origin</strong>.</li>
+                <li>Open Power BI Desktop and open the <code class="bg-gray-100 px-1 rounded">.pbip</code> file from the cloned folder.</li>
+            </ol>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 5: Connect Power BI to SQL (Sample Data) -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">5</span>
+                Connect Power BI to SQL Server (Sample Data)
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-4">Use either path below to point Power BI at your local SQL Server instance.</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">Path A</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2 mb-5">
+                <li>Open Power BI and go to <strong>Home -> Transform Data -> Data source settings</strong>.</li>
+                <li>Select <strong>SQL Server</strong>.</li>
+                <li>
+                    Enter:
+                    <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li><strong>Server:</strong> <code class="bg-gray-100 px-1 rounded">localhost\&lt;INSTANCE_NAME&gt;</code> (find this in SSMS — it's the last phrase in parentheses at the top of the object tree). The port suffix <code class="bg-gray-100 px-1 rounded">:1433</code> is optional for standard instances.</li>
+                        <li><strong>Database:</strong> <code class="bg-gray-100 px-1 rounded">Dashboards</code></li>
+                        <li><strong>Data Connectivity mode:</strong> Import (default, faster) or Direct Query (real-time, no size limit)</li>
+                    </ul>
+                </li>
+                <li>Click <strong>OK</strong>, choose <strong>Windows Authentication</strong>, and click <strong>Connect</strong>.</li>
+            </ol>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">Path B</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>Open Power BI and click <strong>Transform Data -> Data Source Settings</strong>.</li>
+                <li>Select <strong>Change Source</strong>.</li>
+                <li>Confirm your <code class="bg-gray-100 px-1 rounded">localhost</code> name and <code class="bg-gray-100 px-1 rounded">Dashboards</code> database are selected, then choose <strong>Use current credentials</strong>.</li>
+                <li>Click <strong>Close</strong>. Data will begin loading; click <strong>OK</strong> if a modal appears.</li>
+                <li>If a warning appears, click <strong>Apply Changes</strong>.</li>
+            </ol>
+
+            <div class="mt-4 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center py-8 text-gray-400">
+                <span class="text-xs">Screenshot / GIF — Power BI data source settings</span>
+            </div>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 6: Connect your own data source -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">6</span>
+                Connecting Power BI to Your Own Data Source
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-3">
+                To use your own CEDS Data Warehouse instance, two additional steps are required before
+                connecting Power BI. Both projects are present in the
+                <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                   class="link link-hover text-blue">GitHub repository</a>.
+                Remember to connect to VPN first if required by your network administrators.
+            </p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-3 mb-4">
+                <li>
+                    <strong>Deploy the Database schema:</strong> Open and deploy
+                    <code class="bg-gray-100 px-1 rounded">Dashboards.Database/Dashboards.Database.sqlproj</code>
+                    to your SQL instance. This creates an empty database with the required table structures.
+                </li>
+                <li>
+                    <strong>Run the ETL:</strong> Open
+                    <code class="bg-gray-100 px-1 rounded">Dashboards.Database.ETL/Master.dtsx</code>,
+                    update the <strong>Project.Params</strong> variables to point to your CEDS Data Warehouse
+                    (Source) and the Dashboards DataMart (Destination), then execute the Master SSIS package.
+                    This moves data from your CEDS instance into the Dashboards database.
+                </li>
+                <li>
+                    <strong>Update the Power BI data source:</strong> Open Power BI, go to
+                    <strong>Home -> Data Source Settings -> Change Source</strong>, and replace the Server and
+                    Database fields with your organization's credentials. Click <strong>OK</strong>.
+                </li>
+                <li>
+                    The report will refresh and cache with your data. After it completes, click the
+                    <strong>Save</strong> icon to preserve the connection.
+                </li>
+            </ol>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Distribution -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">7</span>
+                Distribution
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-700 mb-3">
+                Ensure this report is shared only with authorized individuals. Refer to your agency's policies
+                and procedures before sharing. While the <code class="bg-gray-100 px-1 rounded">.pbix</code> file
+                can be sent to individuals with Power BI Desktop, distributing through an
+                <strong>Online Power BI Workspace</strong> is recommended — it limits access to approved
+                individuals, prevents unintended edits, and provides multiple sharing options.
+            </p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-2">Setting Up an Online Power BI Workspace</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>Sign into <a href="https://office.com" target="_blank" rel="noopener noreferrer" class="link link-hover text-blue">office.com</a> and select <strong>Power BI</strong> from the top-left menu.</li>
+                <li>Click <strong>Workspace</strong> at the bottom of the left menu bar, then <strong>+ New workspace</strong>. Fill in the required fields and click <strong>Apply</strong>.</li>
+                <li>To import the report, select <strong>Import -> Report or Paginated Report</strong> and choose your <code class="bg-gray-100 px-1 rounded">.pbix</code> file.</li>
+                <li>Manage permissions, data refresh schedules, and distribution from within the workspace.</li>
+            </ol>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Data Refresh -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">8</span>
+                Data Refresh
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-700 mb-4">Administrators can refresh data in two ways:</p>
+
+            <p class="text-sm font-semibold text-gray-800 mb-1">Option 1 — From Power BI Desktop</p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-1 mb-4">
+                <li>Open the <code class="bg-gray-100 px-1 rounded">.pbix</code> file and click the <strong>Refresh</strong> icon in the Home tab.</li>
+                <li>After refreshing, click <strong>Publish</strong>, select your Power BI workspace, and click <strong>Select</strong>. Click <strong>Replace</strong> if prompted.</li>
+            </ol>
+
+            <p class="text-sm font-semibold text-gray-800 mb-1">Option 2 — From Online Power BI Workspace</p>
+            <p class="text-sm text-gray-700">
+                In your Power BI Workspace, click the <strong>Refresh</strong> icon to the left of the Semantic model type.
+            </p>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Support -->
+    <Card AdditionalClasses="mt-6" Border="@(new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left))">
+        <ChildContent>
+            <h2 class="text-lg font-title font-semibold text-blue mb-2">Support</h2>
+            <p class="text-sm text-gray-700 mb-3">
+                For help with downloading, installing the report, or resolving technical issues, please reach
+                out to the Education-to-Workforce Framework Analysis Tool support team.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <a href="mailto:support@example.com" class="link link-hover text-blue">
+                        support@example.com
+                    </a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
+                    </svg>
+                    <a href="https://educationtoworkforce.org" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">
+                        educationtoworkforce.org
+                    </a>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+</div>

@@ -29,6 +29,10 @@ var deploymentInfoOptions = new DeploymentInfoOptions();
 builder.Configuration.GetSection("DeploymentInfo").Bind(deploymentInfoOptions);
 builder.Services.AddSingleton(Options.Create(deploymentInfoOptions));
 
+var visualizationsOptions = new VisualizationsOptions();
+builder.Configuration.GetSection(VisualizationsOptions.SectionName).Bind(visualizationsOptions);
+builder.Services.AddSingleton(Options.Create(visualizationsOptions));
+
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
 builder.Services.AddScoped<EdFiCTEProgramProvider>();
