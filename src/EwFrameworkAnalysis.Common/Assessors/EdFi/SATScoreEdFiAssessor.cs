@@ -29,7 +29,7 @@ public class SATScoreEdFiAssessor : IEdFiAssessor
             assessment =>
             {
                 var isSat = _satCategories.Contains(assessment.AssessmentCategoryDescriptor ?? "")
-                    || (assessment.AssessmentTitle ?? "").Contains("SAT", StringComparison.OrdinalIgnoreCase);
+                    || (assessment.AssessmentTitle ?? "").Contains("SAT", StringComparison.Ordinal);
 
                 if (isSat)
                     assessmentIdentifiers.Add(assessment.AssessmentIdentifier);

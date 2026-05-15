@@ -29,7 +29,7 @@ public class ACTCompletionEdFiAssessor : IEdFiAssessor
             assessment =>
             {
                 var isAct = _actCategories.Contains(assessment.AssessmentCategoryDescriptor ?? "")
-                    || (assessment.AssessmentTitle ?? "").Contains("ACT", StringComparison.OrdinalIgnoreCase);
+                    || (assessment.AssessmentTitle ?? "").Contains("ACT", StringComparison.Ordinal);
 
                 if (isAct)
                 {
