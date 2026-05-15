@@ -9,8 +9,8 @@ it into per-state JSON files consumed by the EW Framework.
 
 1. **Reads the Excel file** — opens the first worksheet and iterates every row starting at row 2.
 2. **Inherits reported status** — ECS metadata for Data Reported (col U) is incomplete at the Data Element level. A
-   first pass collects the reported status of each Metric row (col 9 = `Metric`), keyed by state + Unique Order Key
-   (col AK). During Data Element processing, if reported is blank, the tool looks up the Parent Metric Key (col AM) and
+   first pass collects the reported status of each Metric row (col 9 = `Metric`), keyed by state + Unique Order Key (col
+   AK). During Data Element processing, if reported is blank, the tool looks up the Parent Metric Key (col AM) and
    inherits the parent Metric's reported status.
 3. **Filters rows** — skips rows where:
    - The state column (col 2) is blank
@@ -124,21 +124,21 @@ dotnet run --project eng\dev-dependencies\ecs-state-data-import-tool\import.cspr
 
 ## Script Parameters
 
-| Parameter           | Required | Default                | Description                                     |
-| ------------------- | -------- | ---------------------- | ----------------------------------------------- |
-| `-ExcelPath`        | Yes      | —                      | Path to the ECS Excel file                      |
-| `-States`           | No       | _(all states)_         | State names to include; omit to export all      |
-| `-OutputDir`        | No       | `src/.../EcsStateData` | Directory for JSON output files                 |
+| Parameter           | Required | Default                | Description                                      |
+| ------------------- | -------- | ---------------------- | ------------------------------------------------ |
+| `-ExcelPath`        | Yes      | —                      | Path to the ECS Excel file                       |
+| `-States`           | No       | _(all states)_         | State names to include; omit to export all       |
+| `-OutputDir`        | No       | `src/.../EcsStateData` | Directory for JSON output files                  |
 | `-IncludeCollected` | No       | `false`                | Include the `collected` field in the JSON output |
 
 ---
 
 ## Output Files
 
-| File               | Description                                                              |
-| ------------------ | ------------------------------------------------------------------------ |
-| `<StateName>.json` | Array of data element records for that state, each with `sector`,          |
-|                    | `indicator`, `elementName`, `srcElementName`, and `reported` fields.       |
+| File               | Description                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| `<StateName>.json` | Array of data element records for that state, each with `sector`,           |
+|                    | `indicator`, `elementName`, `srcElementName`, and `reported` fields.        |
 |                    | The `collected` field is included only when `--include-collected` is passed |
 
 ---
