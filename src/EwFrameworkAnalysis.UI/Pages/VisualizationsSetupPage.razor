@@ -4,30 +4,37 @@
 @using Microsoft.Extensions.Options
 @inject IOptions<VisualizationsOptions> VisualizationsOptions
 
-<div class="container mx-auto max-w-5xl p-4 lg:p-8">
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
 
-    <!-- Breadcrumb -->
-    <div class="text-sm breadcrumbs text-gray-500 mb-4">
-        <ul>
-            <li><a href="@AppRoutes.Visualizations" class="link link-hover text-blue">Visualizations</a></li>
-            <li>Setup Guide</li>
-        </ul>
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="@AppRoutes.Visualizations"
+           class="btn btn-sm btn-ghost text-blue gap-2 pl-0 hover:bg-transparent hover:underline">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Visualizations
+        </a>
     </div>
 
     <!-- Header -->
-    <Card AdditionalClasses="mb-6">
+    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
         <ChildContent>
-            <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
-            <p class="text-gray-600 max-w-3xl">
-                Follow these steps to install the required software, connect to a data source, and begin
-                using the Power BI dashboard visualizations. You can use the provided sample CEDS Data
-                Warehouse or connect your own.
-            </p>
-            <p class="text-sm text-gray-500 mt-3">
-                A full README with additional technical detail is also available in the
-                <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
-                   class="link link-hover text-blue">GitHub repository</a>.
-            </p>
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
+                    <p class="text-gray-600 text-base max-w-3xl">
+                        Follow these steps to install the required software, connect to a data source, and begin
+                        using the Power BI dashboard visualizations. You can use the provided sample CEDS Data
+                        Warehouse or connect your own.
+                    </p>
+                    <p class="text-sm text-gray-500 mt-3">
+                        A full README with additional technical detail is also available in the
+                        <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                           class="link link-hover text-blue">GitHub repository</a>.
+                    </p>
+                </div>
+            </div>
         </ChildContent>
     </Card>
 
@@ -264,7 +271,7 @@
         </ChildContent>
     </CollapsibleSection>
 
-    <!-- Distribution -->
+    <!-- Step 7: Distribution -->
     <CollapsibleSection AdditionalClasses="mb-3">
         <TitleContent>
             <span class="flex items-center gap-2 text-sm font-medium text-blue">
@@ -291,7 +298,7 @@
         </ChildContent>
     </CollapsibleSection>
 
-    <!-- Data Refresh -->
+    <!-- Step 8: Data Refresh -->
     <CollapsibleSection AdditionalClasses="mb-3">
         <TitleContent>
             <span class="flex items-center gap-2 text-sm font-medium text-blue">
@@ -316,7 +323,7 @@
     </CollapsibleSection>
 
     <!-- Support -->
-    <Card AdditionalClasses="mt-6" Border="@(new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left))">
+    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mt-6" Border="@(new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left))">
         <ChildContent>
             <h2 class="text-lg font-title font-semibold text-blue mb-2">Support</h2>
             <p class="text-sm text-gray-700 mb-3">
