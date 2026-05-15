@@ -31,7 +31,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
-                AdditionalNotes = "Numerical age as of point in time, or birth date. In the PK context, age is particularly important for determining eligibility for public pre-K programs (typically 3- and 4-year-olds) and for interpreting developmental screening results."
+                AdditionalNotes = "May be stored as date of birth or a calculated age at a defined point in time. In the PK context, age is particularly important for determining program eligibility (typically 3- and 4-year-olds) and interpreting developmental screening results."
             },
         ["AP, IB, or Dual Credit course designation"] =
             new DataElement
@@ -40,16 +40,16 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Indicates whether a course is designated as Advanced Placement (AP), International Baccalaureate (IB), or dual credit/dual enrollment. Used to identify early college coursework offerings and participation across K-12 and postsecondary contexts."
+                AdditionalNotes = "Indicates whether a course is designated as Advanced Placement (AP), International Baccalaureate (IB), or dual credit/dual enrollment. Used to identify access to and participation in early college coursework."
             },
         ["Apprenticeship program enrollment date"] =
             new DataElement
             {
                 Name = "Apprenticeship program enrollment date",
                 ClusterOnlyCategory = "Workforce Transitions",
-                DataElementCategory = "Career & Technical Education (CTE)",
+                DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
-                AdditionalNotes = "Date a student or worker enrolled in a registered apprenticeship program. Used as an indicator of successful career transition after high school (alongside employment, military enlistment, and noncredit CTE enrollment). The relevant post-graduation window for the associated indicator is before October 31 following graduation."
+                AdditionalNotes = "Date a participant enrolled in a registered apprenticeship program. Used to identify successful career transitions following high school graduation; the relevant window closes October 31 of the graduation year."
             },
         ["Average cost of attendance"] =
             new DataElement
@@ -85,7 +85,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.WF],
-                AdditionalNotes = "Community-level average wage used in the Access to Jobs Paying a Living Wage indicator. The metric computes the ratio of average pay to location-adjusted cost of living; a ratio greater than 1 indicates jobs paying a living wage. This is an area-level aggregate sourced from labor market data, not an individual earnings value."
+                AdditionalNotes = "Community-level average wage at the county or MSA level, sourced from labor market data. Used in computing access to jobs paying a living wage relative to local cost of living. This is an area-level aggregate, not an individual earnings value."
             },
         ["Basic skills level"] =
             new DataElement
@@ -112,15 +112,15 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "School Climate",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Student-reported perceptions of physical safety and freedom from harassment and discrimination on campus. Example instrument: National Survey of Student Engagement (NSSE). Used for the School Safety indicator in the PS context."
+                AdditionalNotes = "Student-reported perceptions of physical safety and freedom from harassment and discrimination on campus. Example instrument: National Survey of Student Engagement (NSSE)."
             },
         ["Campus safety incident reports (Postsecondary)"] =
             new DataElement
             {
                 Name = "Campus safety incident reports (Postsecondary)",
-                ClusterOnlyCategory = "School Climate",
+                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "School Climate",
-                RelatedSectors = [],
+                RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Count of reported on-campus crimes, sourced from institutional reporting to the U.S. Department of Education's Campus Safety and Security Reporting System (Clery Act data). Used in the School Safety indicator as an administrative complement to campus climate surveys. Note that administrative records typically underreport victimization; anonymous survey data is recommended alongside this element for a more complete picture."
             },
         ["Census tract or neighborhood identifier"] =
@@ -136,7 +136,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "CHIP eligibility status",
-                ClusterOnlyCategory = "School Climate",
+                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Indicator of whether a child meets income and residency requirements for the Children's Health Insurance Program. Used in the Health Insurance Coverage indicator alongside Medicaid eligibility and actual enrollment."
@@ -201,8 +201,8 @@ public static class EwFrameworkDataElements
                 Name = "Cohort year",
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [Sector.K12, Sector.PS],
-                AdditionalNotes = "The year a student first entered a specific cohort (e.g., first-time 9th grade entry year for K-12; first postsecondary enrollment year for PS). Used alongside cohort graduation year to compute on-time completion rates and persistence metrics."
+                RelatedSectors = [Sector.K12],
+                AdditionalNotes = "The year a student first entered a cohort (e.g., first-time 9th grade entry year). Used alongside cohort graduation year to compute on-time completion rates."
             },
         ["College value-added"] =
             new DataElement
@@ -218,16 +218,16 @@ public static class EwFrameworkDataElements
             {
                 Name = "Communication skills performance assessments (K-12)",
                 ClusterOnlyCategory = "Social-Emotional Learning",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Score or proficiency level on an assessment of oral, written, nonverbal, and listening skills. Example instrument: College and Career Readiness Assessment (CCRA+) for grades 6-12, which measures critical thinking, problem solving, and written communication."
+                AdditionalNotes = "Score or proficiency level on an assessment of oral, written, nonverbal, and listening skills. Example instrument: College and Career Readiness Assessment (CCRA+), available for grades 6–12."
             },
         ["Communication skills performance assessments (Postsecondary)"] =
             new DataElement
             {
                 Name = "Communication skills performance assessments (Postsecondary)",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Score or proficiency on communication assessments at the PS level. Example instruments: Collegiate Learning Assessment (CLA+), Success Skills Assessment (SSA+), HEIghten Outcomes Assessment for Written Communication."
             },
@@ -236,7 +236,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Communication skills performance assessments (Workforce)",
                 ClusterOnlyCategory = "Workforce Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Score or proficiency on workforce communication assessments. Example instrument: National Work Readiness Credential Essential Soft Skills assessment."
             },
@@ -244,7 +244,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Commute time",
-                ClusterOnlyCategory = "Workforce Transitions",
+                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Transportation",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Average commute time to work, school, or college. One of two metrics for the Access to Transportation indicator (the other being the Low Transportation Cost Index). May be individual-reported or area-level aggregate depending on data source."
@@ -274,7 +274,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade or pass/fail result specifically in English language arts and math courses. Used in the 6th and 8th grade on-track indicators, which require no Ds or Fs in ELA or math as a criterion. Consider whether this should be broadened to all subjects or kept as a targeted ELA+Math flag to match the indicator definition precisely."
+                AdditionalNotes = "Grade or pass/fail result specifically in English language arts and math courses. Used in the 6th and 8th grade on-track indicators, which require no Ds or Fs in ELA or math as a criterion."
             },
         ["Course subject area"] =
             new DataElement
@@ -283,7 +283,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
-                AdditionalNotes = "The local course code or name used to identify a specific course. Critical for determining course type (e.g., Algebra I, AP Biology, dual enrollment English) across multiple indicators including college prep coursework completion, CTE pathway concentration, gateway course completion, and early college access."
+                AdditionalNotes = "Standardized classification of a course by subject area, using a local or state taxonomy (e.g., SCED course codes). Used to identify course type across multiple indicators including college prep completion, CTE pathway concentration, gateway course completion, and early college access. Distinct from a local course name or section identifier."
             },
         ["Credential-seeking status"] =
             new DataElement
@@ -310,32 +310,32 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
-                AdditionalNotes = "The CTE program a student is enrolled in. Used in the Access to In-Demand CTE Pathways indicator, which evaluates whether CTE program offerings align to in-demand occupations. Also used to determine enrollment for industry-recognized credential and work-based learning metrics."
+                AdditionalNotes = "Name or identifier of the CTE program in which a student is enrolled. Used to evaluate whether program offerings align to in-demand occupations, and to determine enrollment for industry-recognized credential and work-based learning metrics."
             },
         ["Cultural competency assessments (K-12)"] =
             new DataElement
             {
                 Name = "Cultural competency assessments (K-12)",
                 ClusterOnlyCategory = "Social-Emotional Learning",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Score or proficiency level on an assessment measuring intercultural competency. Example instruments: HEIghten Outcomes Assessment for Intercultural Competency & Diversity, Intercultural Development Inventory (IDI)."
+                AdditionalNotes = "Score or proficiency level on an assessment measuring intercultural competency. No widely adopted K–12 specific instruments currently exist; adult tools may be adapted for use with youth. Example instruments (developed for PS/WF contexts): Intercultural Development Inventory (IDI), HEIghten Outcomes Assessment for Intercultural Competency & Diversity."
             },
         ["Cultural competency assessments (Postsecondary)"] =
             new DataElement
             {
                 Name = "Cultural competency assessments (Postsecondary)",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Score or proficiency on intercultural competency assessments at the PS level. Example instrument: Intercultural Development Inventory (IDI)."
+                AdditionalNotes = "Score or proficiency level on an assessment measuring intercultural competency. Example instruments: Intercultural Development Inventory (IDI), HEIghten Outcomes Assessment for Intercultural Competency & Diversity."
             },
         ["Cultural competency assessments (Workforce)"] =
             new DataElement
             {
                 Name = "Cultural competency assessments (Workforce)",
                 ClusterOnlyCategory = "Workforce Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Score or proficiency on intercultural competency assessments in the workforce context. Example instrument: Intercultural Development Inventory (IDI)."
             },
@@ -343,16 +343,16 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Culturally responsive curriculum assessment",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
-                AdditionalNotes = "A rating or evaluation of the degree to which a curriculum centers the lived experiences, heritage, and cultural backgrounds of students from diverse ethnic and racial groups. Typically survey-derived or rubric-based; no universal standardized tool currently exists across sectors. Available tools include the Culturally Responsive Curriculum Scorecards and Mathematica's math-specific review tool. Assessments are subjective in nature and may vary across raters. Expected completeness is low given the absence of systematic data collection in this area."
+                AdditionalNotes = "A rating or evaluation of the degree to which a curriculum reflects the lived experiences, heritage, and cultural backgrounds of students from diverse ethnic and racial groups. Typically survey-derived or rubric-based; no universal standardized tool exists across sectors. Available tools include the Culturally Responsive Curriculum Scorecards and Mathematica's math-specific review tool. Ratings are subjective and may vary across raters. Systematic data collection in this area is limited; many institutions may not yet have a formal assessment on record."
             },
         ["Curriculum adoption"] =
             new DataElement
             {
                 Name = "Curriculum adoption",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = "Records which curriculum materials have been formally adopted for use at the school, district, or institution level. Serves as the foundational linking record for curriculum quality and cultural responsiveness assessments — ratings and assessments cannot be meaningfully applied without first establishing which curricula are in use. Administrative tracking of curriculum adoption is not yet systematic in most pre-K, K–12, or postsecondary contexts; data collection in this area is emerging."
@@ -361,7 +361,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Curriculum quality rating",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PK, Sector.PS],
                 AdditionalNotes = "A rating or classification of a curriculum's alignment to academic standards, usability, and coherence, as assessed by an external review tool such as EdReports (K–12) or equivalent frameworks for pre-K and postsecondary contexts. Used to determine whether curricula in use meet quality benchmarks. Ratings are typically assigned at the curriculum material level rather than the school or classroom level, and must be linked to curriculum adoption records to assess coverage across programs or institutions. No universal standard exists across sectors; rating tools and criteria vary."
@@ -481,7 +481,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
-                AdditionalNotes = "Results of early intervention screening for developmental, sensory, and behavioral concerns in young children. Used to determine whether a referral for services is warranted. Distinct from Developmental screening results — confirm whether these two elements capture results from different instruments or serve distinct purposes, as they are used in overlapping indicators."
+                AdditionalNotes = "Results of a screening process used to identify developmental, sensory, and behavioral concerns in young children. Distinct from Developmental screening results, which capture scores from standardized instruments; this element records the outcome determination of the screening process (e.g., concern identified or not). See also: Early intervention screening services referral status, which captures whether a referral was subsequently made."
             },
         ["Early intervention screening services referral status"] =
             new DataElement
@@ -515,7 +515,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Eligibility for federal rental assistance",
                 ClusterOnlyCategory = "School Climate",
-                DataElementCategory = "Demographics",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Indicator of whether a household meets income requirements for federal rental assistance programs (e.g., Section 8/Housing Choice Voucher). Used alongside receipt of assistance to compute uptake rates for the Access to Affordable Housing indicator."
             },
@@ -541,7 +541,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Employment status",
-                ClusterOnlyCategory = "Workforce Transitions",
+                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Current employment status of an individual (e.g., employed full-time, employed part-time, unemployed, not in labor force). Used in the Employment in a Quality Job indicator. Note that this element captures whether someone is employed; job quality attributes (benefits, schedule, pay) are captured in separate elements."
@@ -607,7 +607,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK],
-                AdditionalNotes = "State expenditures per child enrolled in public pre-K. Program-level aggregate used in the Expenditures per Student and Access to Quality Culturally Responsive Curricula indicators."
+                AdditionalNotes = "State expenditures per child enrolled in public pre-K. Program-level aggregate used in the Expenditures per Student indicator."
             },
         ["Expenditures per student (Postsecondary)"] =
             new DataElement
@@ -632,7 +632,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Family eligibility for child care subsidies",
                 ClusterOnlyCategory = "Kindergarten Readiness",
-                DataElementCategory = "Demographics",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Indicator of whether a family meets income and other criteria to receive child care subsidy assistance. Used alongside receipt of subsidies to compute uptake rates for the Access to Child Care Subsidies indicator."
             },
@@ -661,7 +661,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Indicator that neither of a student's parents completed a bachelor's degree. Used as a demographic disaggregate and equity lens across postsecondary access, persistence, and completion indicators. Related to Parental education level — confirm whether both are needed or if one can be derived from the other."
+                AdditionalNotes = "Indicator that neither of a student's parents completed a bachelor's degree. Used as a demographic disaggregate and equity lens across postsecondary access, persistence, and completion indicators. May be derivable from Parental education level if that element is available in the same system."
             },
         ["Food access level by census tract"] =
             new DataElement
@@ -685,7 +685,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Funding dedicated to workforce development programs",
-                ClusterOnlyCategory = "Workforce Transitions",
+                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Dollar amount of government funding allocated to workforce development programs (apprenticeships, job training, etc.) in a state. Used as the numerator in the Expenditures on Workforce Development Programs indicator; the denominator is Total educational funding."
@@ -721,10 +721,10 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Grade point average (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Cumulative GPA for postsecondary students. The Grade Point Average indicator targets a GPA of 3.0 or higher for college students as sufficient to graduate and obtain jobs. Note: this element is categorized under Postsecondary Transitions but is used in Postsecondary Success indicators — verify cluster category assignment."
+                AdditionalNotes = "Cumulative GPA for postsecondary students. The Grade Point Average indicator targets a GPA of 3.0 or higher as sufficient to graduate and obtain employment."
             },
         ["Growth mindset surveys (K-12)"] =
             new DataElement
@@ -794,7 +794,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "High school graduation date",
                 ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Academic Performance",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Date a student received their high school diploma. Used as the starting reference point for post-graduation transition indicators: postsecondary enrollment must occur by October 31 following graduation; career transition outcomes (employment, apprenticeship, military, noncredit CTE) must also be achieved before that date."
             },
@@ -803,7 +803,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "High school graduation indicator",
                 ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Academic Performance",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Binary flag indicating whether a student has graduated from high school with a regular diploma. Used across multiple transition indicators (college applications, FAFSA completion, postsecondary enrollment, well-matched institution selection) as a prerequisite filter. Closely related to High school graduation date and High school diploma type — all three may be needed together."
             },
@@ -812,16 +812,16 @@ public static class EwFrameworkDataElements
             {
                 Name = "Higher-order thinking skills performance assessments (K-12)",
                 ClusterOnlyCategory = "Social-Emotional Learning",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Score or proficiency on assessments of critical thinking, problem solving, and decision-making. Example instrument: College and Career Readiness Assessment (CLA+) for grades 6-12."
+                AdditionalNotes = "Score or proficiency on assessments of critical thinking, problem solving, and decision-making. Example instrument: College and Career Readiness Assessment (CLA+), designed for grades 6–12."
             },
         ["Higher-order thinking skills performance assessments (Postsecondary)"] =
             new DataElement
             {
                 Name = "Higher-order thinking skills performance assessments (Postsecondary)",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Score or proficiency on higher-order thinking assessments at the PS level. Example instruments: CLA+, Success Skills Assessment (SSA+), HEIghten Outcomes Assessment for Critical Thinking."
             },
@@ -830,18 +830,18 @@ public static class EwFrameworkDataElements
             {
                 Name = "Higher-order thinking skills performance assessments (Workforce)",
                 ClusterOnlyCategory = "Workforce Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Score or proficiency on higher-order thinking assessments in the workforce context. Example instrument: Watson Glaser Critical Thinking Appraisal (scenario-based, used by employers for candidate evaluation)."
             },
-        ["Highest level of education completed"] =
+        ["Highest level of education completed (staff/educator)"] =
             new DataElement
             {
-                Name = "Highest level of education completed",
+                Name = "Highest level of education completed (staff/educator)",
                 ClusterOnlyCategory = "Teaching Effectiveness",
-                DataElementCategory = "Demographics",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
-                AdditionalNotes = "Highest educational credential earned. In the Teaching Effectiveness context, this refers specifically to educators — the Teacher Credentials indicator measures the percentage of pre-K lead teachers with at least a bachelor's degree. The WF sector tag appears broad; confirm whether this element is intended to capture educator credentials only or also individual student/worker attainment."
+                DataElementCategory = "Staff & Educators",
+                RelatedSectors = [Sector.PK, Sector.K12],
+                AdditionalNotes = "Highest educational credential earned by a staff member or educator. The Teacher Credentials indicator measures the percentage of pre-K lead teachers with at least a bachelor's degree."
             },
         ["Home language"] =
             new DataElement
@@ -868,7 +868,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
-                AdditionalNotes = "Income classification of an individual or family, used as a demographic disaggregate. Overlaps conceptually with Student or family socioeconomic status and Student socioeconomic status — confirm whether these elements capture different granularities (e.g., categorical income bands vs. free/reduced lunch eligibility vs. Pell eligibility) or are redundant."
+                AdditionalNotes = "Income classification of an individual or family, used as a demographic disaggregate across sectors. May be captured as categorical income bands, a poverty level threshold, or derived from program eligibility (e.g., free/reduced lunch, Pell Grant). Confirm which form is available in each source system, as granularity varies."
             },
         ["Indicator of access to desktop or laptop at home"] =
             new DataElement
@@ -949,7 +949,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Classification of a K-12 school (e.g., traditional public, charter, magnet, private). Relevant for contextualizing per-pupil expenditure and resource comparisons. Consider whether this belongs under Finance & Resources or a more general institutional characteristics category."
+                AdditionalNotes = "Classification of a K-12 school by governance or program type (e.g., traditional public, charter, magnet, private). Used as a disaggregate to contextualize per-pupil expenditure and resource comparisons across school types."
             },
         ["Kindergarten enrollment date"] =
             new DataElement
@@ -984,8 +984,8 @@ public static class EwFrameworkDataElements
                 Name = "Location-adjusted cost of living in county or MSA",
                 ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Community Context",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
-                AdditionalNotes = "Area-level cost of living index adjusted for geographic location. Used in the Access to Jobs Paying a Living Wage indicator, where it serves as the denominator in a ratio with average pay. The PK/K12/PS sector tags appear broad for what is primarily a workforce metric — confirm intended use across sectors."
+                RelatedSectors = [Sector.WF],
+                AdditionalNotes = "Area-level cost of living index adjusted for geographic location, at the county or MSA level. Used as the denominator in the ratio with average pay to determine whether jobs in an area pay a living wage."
             },
         ["Low Transportation Cost Index"] =
             new DataElement
@@ -1046,9 +1046,9 @@ public static class EwFrameworkDataElements
             {
                 Name = "Meta-major classifications",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "A mapping of courses or programs of study to broad interdisciplinary groupings (meta-majors) used to determine whether a student's first-year course-taking is concentrated within a single area of study. Meta-major definitions are institution-defined and derived from course data and degree requirements rather than stored as a native administrative field. Functions as a reference crosswalk joined to course enrollment records at the time of metric calculation. Institutions may reference the Nguyen et al. methodology or the National Student Clearinghouse Postsecondary Data Partnership for guidance on consistent classification approaches. Expected completeness is low; institutions must define and maintain this mapping as a prerequisite to calculating first-year program concentration metrics."
+                AdditionalNotes = "A mapping of courses or programs of study to broad interdisciplinary groupings used to determine whether a student's first-year course-taking is concentrated within a single area of study. Meta-major definitions are institution-defined and derived from course data and degree requirements rather than stored as a native administrative field; this element functions as a reference crosswalk joined to course enrollment records at the time of metric calculation. Institutions may reference the Nguyen et al. methodology or the National Student Clearinghouse Postsecondary Data Partnership for consistent classification guidance. Many institutions will need to define and maintain this mapping before this metric can be calculated."
             },
         ["Military status (individual/family)"] =
             new DataElement
@@ -1073,7 +1073,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Net worth",
                 ClusterOnlyCategory = "Workforce Success",
-                DataElementCategory = "Employment & Earnings",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = "Total assets minus total liabilities for an individual. Used in the Economic Security indicator, which measures whether individuals reach median wealth levels 10, 15, 20, and 30 years after completing education. This is a difficult-to-capture individual-level measure; confirm whether administrative sources can provide this or if survey data is required."
             },
@@ -1090,7 +1090,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Number of affordable housing units in city or county",
-                ClusterOnlyCategory = "Workforce Transitions",
+                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Count of housing units in an area where monthly costs do not exceed 30% of a household's income. Used as the numerator in the Access to Affordable Housing indicator; the denominator is the number of households with low (below 80% AMI) and very low (below 50% AMI) incomes."
@@ -1118,7 +1118,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Number of credits attempted",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Academic Performance",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Total credits a student enrolled in during a given term or year. Used alongside Number of credits earned in the First-Year Credit Accumulation indicator to compute a completion ratio and assess whether students are attempting sufficient credits for on-time graduation."
             },
@@ -1127,9 +1127,9 @@ public static class EwFrameworkDataElements
             {
                 Name = "Number of credits earned",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Academic Performance",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Total credits successfully completed by a student. Used in First-Year Credit Accumulation (30 credits full-time / 15 credits part-time in year one), First-Year Program of Study Concentration (9+ credits within a meta-major), and Gateway Course Completion indicators. Distinct from Credits earned in first year — verify whether that element is a subset or redundant."
+                AdditionalNotes = "Total credits successfully completed by a student. Used in First-Year Credit Accumulation (30 credits for full-time / 15 credits for part-time students in year one), First-Year Program of Study Concentration (9+ credits within a meta-major), and Gateway Course Completion indicators. See also: Credits earned in first year, which may capture a time-bounded subset of this element depending on how source systems store credit history."
             },
         ["Number of days suspended (K-12)"] =
             new DataElement
@@ -1153,8 +1153,8 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Number of FTE counselors per school (Grades 9-12)",
-                ClusterOnlyCategory = "",
-                DataElementCategory = "",
+                ClusterOnlyCategory = "Postsecondary Transitions",
+                DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
             },
@@ -1183,7 +1183,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12],
-                AdditionalNotes = "Count of juvenile arrests in a city or county. Used with City or county population to compute the juvenile arrest rate per 100,000 residents for the Neighborhood Juvenile Arrests indicator. Note: the indicator lists all sectors in scope but this element only tags PK and K12 — verify whether WF and PS should be included."
+                AdditionalNotes = "Count of juvenile arrests in a city or county. Used with City or county population to compute the juvenile arrest rate per 100,000 residents for the Neighborhood Juvenile Arrests indicator."
             },
         ["Number of property felonies in city or county"] =
             new DataElement
@@ -1264,7 +1264,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
-                AdditionalNotes = "Highest level of education completed by a student's parent(s) or guardian(s). Used as a demographic disaggregate and is the basis for the First-generation college student flag (neither parent completed a bachelor's degree). Consider whether both this element and First-generation college student are needed or if one can be derived from the other."
+                AdditionalNotes = "Highest level of education completed by a student's parent(s) or guardian(s). Used as a demographic disaggregate. The First-generation college student flag is derivable from this element when parental education is stored in sufficient detail; both may be needed if source systems store only the derived binary flag rather than the underlying education level."
             },
         ["Participation in work-based learning"] =
             new DataElement
@@ -1307,9 +1307,9 @@ public static class EwFrameworkDataElements
             {
                 Name = "Postsecondary applications submitted",
                 ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12, Sector.PS],
-                AdditionalNotes = "Count of postsecondary applications submitted by a grade 12 student. The College Applications indicator requires submission of at least three applications for a student to count as meeting the target. The PS sector tag may reflect tracking of transfer applications — confirm intended use."
+                AdditionalNotes = "Count of postsecondary applications submitted by a student. The College Applications indicator requires submission of at least three applications to meet the target. In the PS context, this element may capture transfer applications; confirm availability in source systems."
             },
         ["Postsecondary credential award date"] =
             new DataElement
@@ -1318,7 +1318,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Date a student earned a postsecondary credential (certificate, associate's, or bachelor's degree). Used in Postsecondary Persistence (to determine if a student completed rather than dropped out) and Postsecondary Certificate or Degree Completion indicators. Closely related to Bachelor's degree completion date and Graduate credential attainment date — consider whether a single credential attainment date with a credential type field could replace all three."
+                AdditionalNotes = "Date a student earned a postsecondary credential (certificate, associate's, or bachelor's degree). Used to determine completion vs. dropout in persistence metrics and to calculate time-to-completion. See also: Bachelor's degree completion date and Graduate credential attainment date, which capture credential-specific milestones and may overlap with this element depending on how source systems record credential history."
             },
         ["Postsecondary credential type"] =
             new DataElement
@@ -1334,7 +1334,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Postsecondary degree program length",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "The nominal intended length of a postsecondary degree program (e.g., 2-year associate's, 4-year bachelor's). Critical for computing on-time completion metrics — outcomes are measured at 100%, 150%, and 200% of program length. This is the denominator for all time-based completion and persistence calculations."
             },
@@ -1345,7 +1345,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Date a student first enrolled in a postsecondary institution. Used in multiple indicators: Postsecondary Enrollment Directly After High School Graduation (must be by October 31 after HS graduation), First-Year Credit Accumulation, First-Year Program of Study Concentration, Gateway Course Completion, and Postsecondary Certificate or Degree Completion."
+                AdditionalNotes = "Date a student first enrolled in a postsecondary institution. Used across multiple persistence, completion, and transition indicators. For the Postsecondary Enrollment Directly After High School Graduation indicator, enrollment must occur by October 31 following high school graduation."
             },
         ["Postsecondary enrollment status (Full time/part time)"] =
             new DataElement
@@ -1361,7 +1361,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Postsecondary institution classification",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Classification of a postsecondary institution by type (e.g., Carnegie Classification: research university, liberal arts college, community college, for-profit). Used to contextualize outcomes and as a control variable in value-added and well-matched institution analyses."
             },
@@ -1423,7 +1423,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Program CIP code",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PS, Sector.K12],
                 AdditionalNotes = "A six-digit Classification of Instructional Programs (CIP) code assigned to a program offering, used to classify educational programs by subject matter and content. Provides a standardized reference for linking program offerings to occupational classifications via CIP-to-SOC crosswalks, enabling alignment analysis against labor market demand data. Maintained by the National Center for Education Statistics (NCES)."
@@ -1461,15 +1461,15 @@ public static class EwFrameworkDataElements
                 Name = "Receipt of child care subsidies",
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Financial Aid & Affordability",
-                RelatedSectors = [Sector.PK, Sector.K12],
-                AdditionalNotes = "Indicator of whether a family is currently receiving child care subsidy assistance. Used alongside Family eligibility for child care subsidies to compute uptake rates. The K-12 sector tag may reflect tracking into early elementary — confirm intended scope."
+                RelatedSectors = [Sector.PK],
+                AdditionalNotes = "Indicator of whether a family is currently receiving child care subsidy assistance. Used alongside Family eligibility for child care subsidies to compute uptake rates for the Access to Child Care Subsidies indicator."
             },
         ["Receipt of federal rental assistance"] =
             new DataElement
             {
                 Name = "Receipt of federal rental assistance",
                 ClusterOnlyCategory = "School Climate",
-                DataElementCategory = "Financial Aid & Affordability",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Indicator of whether a household is currently receiving federal rental assistance (e.g., Section 8/Housing Choice Voucher). Used alongside eligibility data to compute uptake rates for the Access to Affordable Housing indicator."
             },
@@ -1478,7 +1478,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Reported intent to enroll in postsecondary education",
                 ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Student-reported intention to enroll in postsecondary education. Used as a filter in the Senior Summer On Track indicator — only students who report intent to enroll are counted in the denominator. This distinguishes between students who planned to enroll and then did not (summer melt) versus those who always intended alternative pathways."
             },
@@ -1532,7 +1532,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "School value-added",
                 ClusterOnlyCategory = "School Climate",
-                DataElementCategory = "Academic Performance",
+                DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "School-level value-added measure representing a school's contribution to student outcomes (achievement, attendance, SEL, college enrollment, earnings) beyond what would be predicted by student characteristics. Derived metric computed using statistical models. Used in the Institutions' Contributions to Student Outcomes indicator."
             },
@@ -1570,7 +1570,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Student self-report of ability to regulate emotions, thoughts, and behaviors. Example instruments: CORE Districts SEL Survey self-management scale (grades 5-12), Shift and Persist scale for children. Note: this element also appears in the Social Awareness indicator data element list — verify whether that is intentional or an error."
+                AdditionalNotes = "Student self-report of ability to regulate emotions, thoughts, and behaviors. Example instruments: CORE Districts SEL Survey self-management scale (grades 5–12), Shift and Persist scale for children."
             },
         ["Self-management surveys (Postsecondary)"] =
             new DataElement
@@ -1594,7 +1594,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Sense of belonging surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
+                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Student self-report of belonging and connection at school. Example instruments: CORE Districts school culture and climate survey (Sense of Belonging subscale), Panorama Student Survey (Classroom Belonging subscale)."
@@ -1603,7 +1603,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Sense of belonging surveys (PK)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
+                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = "Assessment or observational measure of a pre-K child's sense of belonging. Example instrument: CASEL's How I Feel About My School questionnaire, or ACSES observational assessment of equitable classroom interactions."
@@ -1612,7 +1612,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "Sense of belonging surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
+                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "Student self-report of belonging on campus. Example instruments: HERI Diverse Learning Environments Survey, NITE Culturally Engaging Campus Environments Survey."
@@ -1630,7 +1630,7 @@ public static class EwFrameworkDataElements
             new DataElement
             {
                 Name = "SGP for standardized assessments",
-                ClusterOnlyCategory = "Postsecondary Transitions",
+                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Student growth percentile (SGP) on state standardized assessments, computed separately for reading/literacy, math, and science. SGPs measure a student's growth relative to academically similar peers. Used in the Teachers' Contributions to Student Learning Growth indicator alongside VAM as a measure of educator effectiveness."
@@ -1640,7 +1640,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "SNAP eligibility",
                 ClusterOnlyCategory = "School Climate",
-                DataElementCategory = "Financial Aid & Affordability",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Indicator of whether an individual meets income and other criteria for the Supplemental Nutrition Assistance Program. Used alongside SNAP participation to compute uptake rates for the Food Security indicator."
             },
@@ -1649,7 +1649,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "SNAP participation",
                 ClusterOnlyCategory = "School Climate",
-                DataElementCategory = "Financial Aid & Affordability",
+                DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Indicator of whether an individual is actively receiving SNAP benefits. The Food Security indicator measures the percentage of eligible individuals participating in SNAP."
             },
@@ -1703,16 +1703,16 @@ public static class EwFrameworkDataElements
             {
                 Name = "Social proficiency performance assessments (Postsecondary)",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Score or proficiency on an assessment of social skills at the PS level. Used in the Social Awareness indicator. Note: the indicator also references this element for PS/WF but the K-12 Social Awareness metric uses teacher ratings rather than performance assessments — confirm whether a K-12 performance assessment version is also needed."
+                AdditionalNotes = "Score or proficiency on an assessment of social skills at the postsecondary level. Used in the Social Awareness indicator alongside other social awareness measures."
             },
         ["Social proficiency performance assessments (Workforce)"] =
             new DataElement
             {
                 Name = "Social proficiency performance assessments (Workforce)",
                 ClusterOnlyCategory = "Workforce Success",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
+                DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Score or proficiency on a social skills performance assessment in the workforce context. Example instrument: National Work Readiness Credential Essential Soft Skills assessment."
             },
@@ -1730,9 +1730,9 @@ public static class EwFrameworkDataElements
             {
                 Name = "Sociocultural observational assessments (PK)",
                 ClusterOnlyCategory = "Social-Emotional Learning",
-                DataElementCategory = "Social-Emotional Learning (SEL)",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
-                AdditionalNotes = "Results of an observational assessment measuring equitable sociocultural interactions. Example instrument: Assessing Classroom Sociocultural Equity Scale (ACSES). Used in the Inclusive Environments indicator to measure whether classroom interactions are equitable. The WF sector tag appears broad — confirm intended use."
+                DataElementCategory = "School Climate",
+                RelatedSectors = [Sector.PK],
+                AdditionalNotes = "Results of an observational assessment measuring equitable sociocultural interactions. Example instrument: Assessing Classroom Sociocultural Equity Scale (ACSES). Used in the Inclusive Environments indicator to measure whether classroom interactions are equitable."
             },
         ["Staff FTE status"] =
             new DataElement
@@ -1749,7 +1749,7 @@ public static class EwFrameworkDataElements
                 Name = "Staff position type",
                 ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
+                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = "The classification of a staff member's role or position (e.g., lead teacher, substitute teacher, school nurse, psychologist, social worker, employee assistance program counselor). Used to identify staff role distinctions in the Teacher Credentials indicator (e.g., lead vs. substitute teachers, certified vs. emergency license holders) and to compute student-to-staff ratios for specific service types in the Access to Health, Mental Health, and Social Supports indicator."
             },
         ["State standardized test (Math proficiency)"] =
@@ -1786,7 +1786,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PK],
-                AdditionalNotes = "Percentage of enrolled days a pre-K student was present. Used in the Consistent Attendance indicator (90% threshold). Note: this element is also listed as a data element for the Early Grades On Track, 6th Grade On Track, 8th Grade On Track, and 9th Grade On Track K-12 indicators — verify whether \"Student attendance rate (PK)\" is the correct element name for those references or if \"Student attendance rate (K-12)\" was intended."
+                AdditionalNotes = "Percentage of enrolled days a pre-K student was present. Used in the Consistent Attendance indicator, which targets attendance above 90% of enrolled days."
             },
         ["Student attendance rate (Postsecondary)"] =
             new DataElement
@@ -1794,7 +1794,7 @@ public static class EwFrameworkDataElements
                 Name = "Student attendance rate (Postsecondary)",
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [],
+                RelatedSectors = [Sector.PS],
                 AdditionalNotes = "The percentage of enrolled days or scheduled class sessions attended by a postsecondary student within a given term. Used to identify students present for more than 90 percent of enrolled time. Tracking methods vary by institution and program type; attendance data may be more consistently available in contexts where it is required for financial aid compliance or in structured programs such as clinical or vocational training."
             },
         ["Student course enrollment record"] =
@@ -1804,7 +1804,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
-                AdditionalNotes = "A record of all courses a student is or was enrolled in. Serves as the core transcript element underlying multiple indicators: CTE pathway concentration, industry-recognized credential, early college access, equitable placement in rigorous coursework, and work-based learning participation. Consider whether this should be split into K-12 and PS versions, as the underlying data systems and record structures typically differ."
+                AdditionalNotes = "A record of all courses a student is or was enrolled in, serving as the core transcript element underlying multiple indicators including CTE pathway concentration, early college access, equitable placement in rigorous coursework, and work-based learning participation. Record structure and source systems typically differ between K12 and PS contexts; confirm availability and format in each."
             },
         ["Student from migrant family household"] =
             new DataElement
@@ -1822,7 +1822,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
-                AdditionalNotes = "The current grade level of a K-12 student (K through 12). Used across many indicators to filter to specific grade cohorts (e.g., grade 12 for FAFSA completion, grades 11-12 for SAT/ACT). See also: Student grade level — appears duplicative."
+                AdditionalNotes = "The current grade level of a K-12 student (kindergarten through grade 12). Used across many indicators to filter to specific grade cohorts (e.g., grade 12 for FAFSA completion, grades 11–12 for SAT/ACT participation)."
             },
         ["Student loan debt balance"] =
             new DataElement
@@ -1867,7 +1867,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "The percentage of postsecondary students who have used academic advising services at their institution during a given term or academic year. Typically survey-derived; administrative tracking varies by institution."
+                AdditionalNotes = "Indicator of whether a postsecondary student has used academic advising services at their institution during a given term or academic year. Typically survey-derived; administrative tracking of individual advising utilization varies by institution."
             },
         ["Student utilization of career counseling services (Postsecondary)"] =
             new DataElement
@@ -1876,7 +1876,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "The percentage of postsecondary students who have used career counseling services at their institution during a given term or academic year. Typically survey-derived; administrative tracking varies by institution."
+                AdditionalNotes = "Indicator of whether a postsecondary student has used career counseling services at their institution during a given term or academic year. Typically survey-derived; administrative tracking of individual utilization varies by institution."
             },
         ["Suspensions and expulsions (K-12)"] =
             new DataElement
@@ -1930,7 +1930,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "A score or rating from a peer or administrative observation of instructional practice at the postsecondary level. No widely used standardized rubric currently exists for college teaching observation; instruments and criteria vary by institution. Expected completeness is low. Where available, scores may be derived from locally developed rubrics or emerging frameworks for peer observation of college teaching."
+                AdditionalNotes = "A score or rating from a peer or administrative observation of instructional practice at the postsecondary level. No widely adopted standardized rubric currently exists for college teaching observation; instruments and criteria vary by institution. Where available, scores may be derived from locally developed rubrics or emerging frameworks for peer observation of college teaching. Many institutions may not have formal observation data on record."
             },
         ["Teacher observation subscale scores (K-12)"] =
             new DataElement
@@ -1948,7 +1948,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
-                AdditionalNotes = "The type of teaching qualification or state certification held by an educator (e.g., standard, emergency, provisional, subject-area endorsement). Used in the Teacher Credentials indicator. Distinct from Credential or certification type — both appear to capture teacher credentials; consider consolidating."
+                AdditionalNotes = "The type of teaching qualification or state certification held by an educator (e.g., standard, emergency, provisional, subject-area endorsement). Used in the Teacher Credentials indicator to distinguish fully certified teachers from those holding emergency or provisional licenses."
             },
         ["Teacher reports of executive function"] =
             new DataElement
@@ -1957,7 +1957,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
-                AdditionalNotes = "Teacher-reported assessment of a pre-K child's executive function abilities. Example instrument: CBRS. Used in the Kindergarten Readiness: Approaches to Learning indicator. Distinct from Direct child assessments of executive function (which uses direct assessment tools like HTKS or MEFS)."
+                AdditionalNotes = "Teacher-reported assessment of a pre-K child's executive function abilities. Example instrument: Comprehensive Behavior Rating Scale (CBRS). Used in the Kindergarten Readiness: Approaches to Learning indicator. Distinct from Direct child assessments of executive function (which uses direct assessment tools like HTKS or MEFS)."
             },
         ["Teacher reports of social-emotional development"] =
             new DataElement
@@ -1966,7 +1966,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
-                AdditionalNotes = "Teacher-reported assessment of a pre-K child's social-emotional development. Example instruments: CBRS, DECA-P2. Used in the Kindergarten Readiness: Social-Emotional Development indicator."
+                AdditionalNotes = "Teacher-reported assessment of a pre-K child's social-emotional development. Example instruments: Comprehensive Behavior Rating Scale (CBRS), Devereux Early Childhood Assessment for Preschoolers (DECA-P2). Used in the Kindergarten Readiness: Social-Emotional Development indicator."
             },
         ["Teacher value-added"] =
             new DataElement
@@ -2038,7 +2038,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
-                AdditionalNotes = "The subject area(s) and/or grade level(s) a teacher is assigned to teach. Used in the Teacher Credentials indicator to determine whether a teacher is certified to teach their assigned subject or grade level. The spirit of this element is \"qualification to teach a particular assigned course\" — a mismatch between assignment and certification is the key metric."
+                AdditionalNotes = "The subject area(s) and grade level(s) a teacher is assigned to teach. Used in the Teacher Credentials indicator to determine whether a teacher holds appropriate certification for their assigned subject or grade level; a mismatch between assignment and certification is the key metric of interest."
             },
         ["Total net price of education plus interest"] =
             new DataElement
@@ -2055,7 +2055,7 @@ public static class EwFrameworkDataElements
                 Name = "Total state educational funding",
                 ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Finance & Resources",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
+                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Total state-level funding allocated to education. Used as the denominator in the Expenditures on Workforce Development Programs indicator (workforce development funding as a percentage of total educational funding). In other contexts, serves as a top-line funding figure."
             },
         ["Transfer enrollment status"] =
@@ -2063,9 +2063,9 @@ public static class EwFrameworkDataElements
             {
                 Name = "Transfer enrollment status",
                 ClusterOnlyCategory = "Postsecondary Success",
-                DataElementCategory = "Postsecondary Outcomes",
+                DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
-                AdditionalNotes = "Indicator of whether a student has transferred to a different postsecondary institution. Used in persistence metrics, where transfer to another institution (including upward transfer) counts as a positive outcome. Distinct from Transfer indicator or transfer student status — confirm whether both are needed or if one captures the same information."
+                AdditionalNotes = "Indicator of whether a student has transferred to a different postsecondary institution. In persistence metrics, transfer to another institution (including upward transfer) counts as a positive outcome rather than dropout. See also: Transfer (if applicable) indicator and transfer student status elements, which may capture overlapping information depending on source system."
             },
         ["Universal mental health screening results (K-12)"] =
             new DataElement
@@ -2092,7 +2092,7 @@ public static class EwFrameworkDataElements
                 ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.WF],
-                AdditionalNotes = "Indicator that an individual has participated in a workforce development program. Used as a denominator context in the Industry-Recognized Credential indicator (percentage of program participants earning a credential). Distinct from Enrollment in workforce training program — confirm whether these represent different stages (enrollment vs. active participation) or are redundant."
+                AdditionalNotes = "Indicator that an individual has participated in a workforce development program. Used as a population denominator in the Industry-Recognized Credential indicator (percentage of participants earning a credential) and in work-based learning participation metrics. Distinct from program enrollment — participation typically implies active engagement rather than initial registration; confirm how source systems distinguish these stages."
             },
         ["Years of teaching experience"] =
             new DataElement

@@ -1631,7 +1631,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
-                    "Highest level of education completed",
+                    "Highest level of education completed (staff/educator)",
                     "Teacher qualification or certification type",
                     "Course subject area",
                     "Staff position type",
