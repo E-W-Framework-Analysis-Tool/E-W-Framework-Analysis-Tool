@@ -14,7 +14,7 @@ const THEME = {
 };
 
 function scoreColor(pct) {
-    return pct >= 66 ? THEME.green : pct >= 33 ? THEME.amber : THEME.red;
+    return pct >= 70 ? THEME.green : pct >= 50 ? THEME.amber : THEME.red;
 }
 
 // ── Shared context ─────────────────────────────────────────────────────────────
