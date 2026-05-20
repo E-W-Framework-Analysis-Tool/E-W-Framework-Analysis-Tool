@@ -106,6 +106,12 @@ if ($Publish) {
     Write-Host "Running: dotnet publish $webProjectPath --no-build --configuration $Configuration --output $PublishPath"
     dotnet publish $webProjectPath --no-build --configuration $Configuration --output $PublishPath || Fail ".NET publish failed."
     Write-Host "Published successfully to: $PublishPath"
+
+    # Fingerprint CSS/JS files so browsers fetch fresh assets after each deployment
+    $publishedWwwRoot = Join-Path $PublishPath "wwwroot"
+    $fingerprintScript = Join-Path $PSScriptRoot "fingerprint-static-assets.ps1"
+    Write-Host "`nFingerprinting static assets in: $publishedWwwRoot"
+    & $fingerprintScript -WwwRootPath $publishedWwwRoot || Fail "Static asset fingerprinting failed."
 }
 
 Pop-Location
