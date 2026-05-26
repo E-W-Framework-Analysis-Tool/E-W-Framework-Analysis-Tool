@@ -1,4 +1,3 @@
-using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -6,39 +5,52 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class ParentalEducationLevelEdFiAssessor : IEdFiAssessor
 {
+    private static readonly string[] _targetDescriptors =
+    [
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Associate's Degree (two years or more)",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Bachelor's",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Did Not Graduate High School",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Doctorate",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#High School Diploma",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Master's",
+        "uri://ed-fi.org/LevelOfEducationDescriptor#Some College No Degree"
+    ];
+
     public string DataElementName => "Parental education level";
 
     public string AssessmentDescription =>
-        "Distribution of parent/contact highest completed education levels from the " +
-        "Ed-Fi contacts endpoint (HighestCompletedLevelOfEducationDescriptor).";
+        "Count of contacts (parents/guardians) whose HighestCompletedLevelOfEducationDescriptor " +
+        "matches one of the recognized E-W Framework education level values.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Loading contacts (parents/guardians)...");
+        context.ReportProgress(0, "Counting contacts by education level...");
 
-        var totalContacts = 0;
-        var withEducationLevel = 0;
+        var totalMatching = 0;
         var distribution = new Dictionary<string, int>();
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiContact>(
-            httpClient,
-            "ed-fi/contacts",
-            contact =>
-            {
-                totalContacts++;
+        for (var i = 0; i < _targetDescriptors.Length; i++)
+        {
+            var descriptor = _targetDescriptors[i];
+            var label = EdFiDescriptorHelper.ParseDescriptorValue(descriptor);
 
-                var descriptor = contact.HighestCompletedLevelOfEducationDescriptor;
-                if (string.IsNullOrWhiteSpace(descriptor))
-                    return;
+            var count = await EdFiApiPatterns.CountFromHeaderAsync(
+                httpClient,
+                "ed-fi/contacts",
+                new Dictionary<string, string>
+                {
+                    ["highestCompletedLevelOfEducationDescriptor"] = descriptor
+                });
 
-                withEducationLevel++;
-                var level = EdFiDescriptorHelper.ParseDescriptorValue(descriptor);
-                distribution[level] = distribution.GetValueOrDefault(level) + 1;
-            },
-            context);
+            distribution[label] = count;
+            totalMatching += count;
 
-        context.Log($"Found {withEducationLevel:N0} contacts with education level out of {totalContacts:N0} total");
+            var progress = (int)(((i + 1) * 100.0) / _targetDescriptors.Length);
+            context.ReportProgress(progress, $"Counted {label}: {count:N0}");
+        }
+
+        context.Log($"Found {totalMatching:N0} contacts across {_targetDescriptors.Length} recognized education levels");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -46,8 +58,7 @@ public class ParentalEducationLevelEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalContacts),
-                new Completeness(totalContacts, withEducationLevel, "HighestCompletedLevelOfEducation"),
+                new RecordCount(totalMatching),
                 new Distribution(distribution, "Education Level")
             ]
         };
