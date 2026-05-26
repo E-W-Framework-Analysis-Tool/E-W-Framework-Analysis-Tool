@@ -37,6 +37,7 @@ builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
 builder.Services.AddScoped<EdFiCTEProgramProvider>();
 builder.Services.AddScoped<EdFiCourseProvider>();
+builder.Services.AddScoped<EdFiStudentInterventionProvider>();
 builder.Services.AddScoped<CedsDWAssessmentOrchestrator>();
 builder.Services.AddScoped<DataSourceAssessmentFileParser>();
 builder.Services.AddScoped<EcsStateDataParser>();
