@@ -1,3 +1,4 @@
+using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -5,49 +6,103 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class IndicatorOfServicesProvidedEdFiAssessor : IEdFiAssessor
 {
-    private readonly EdFiStudentInterventionProvider _interventionProvider;
-
-    public IndicatorOfServicesProvidedEdFiAssessor(EdFiStudentInterventionProvider interventionProvider)
-    {
-        _interventionProvider = interventionProvider;
-    }
+    private static readonly string[] _targetDescriptors =
+    [
+        "uri://ed-fi.org/InterventionClassDescriptor#Curriculum",
+        "uri://ed-fi.org/InterventionClassDescriptor#Other",
+        "uri://ed-fi.org/InterventionClassDescriptor#Practice",
+        "uri://ed-fi.org/InterventionClassDescriptor#Supplement"
+    ];
 
     public string DataElementName => "Indicator of whether services were provided";
 
     public string AssessmentDescription =>
-        "Counts the total student intervention associations as an indicator of whether " +
-        "services were provided. The presence of records indicates services have been delivered.";
+        "Indicates whether services were provided by checking each catalog intervention " +
+        "(filtered by InterventionClassDescriptor — Curriculum, Other, Practice, Supplement) " +
+        "for at least one student intervention association. An intervention with one or more " +
+        "associations is considered as having services provided.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Loading student intervention associations...");
+        context.ReportProgress(0, "Loading interventions by class descriptor...");
 
-        var associations = await _interventionProvider.GetAssociationsAsync(httpClient, context);
+        var totalInterventions = 0;
+        var interventionsWithServices = 0;
+        var distribution = new Dictionary<string, int>();
 
-        var totalAssociations = associations.Count;
-        var uniqueStudents = associations
-            .Where(a => a.StudentReference != null)
-            .Select(a => a.StudentReference!.StudentUniqueId)
-            .Distinct()
-            .Count();
-
-        context.Log($"Found {totalAssociations:N0} intervention records for {uniqueStudents:N0} unique students");
-        context.ReportProgress(100, "Complete");
-
-        var distribution = new Dictionary<string, int>
+        for (var i = 0; i < _targetDescriptors.Length; i++)
         {
-            ["Students With Services"] = uniqueStudents
-        };
+            var descriptor = _targetDescriptors[i];
+            var label = EdFiDescriptorHelper.ParseDescriptorValue(descriptor);
+            var classProvidedCount = 0;
+
+            var interventionsInClass = new List<(long? EdOrgId, string? Code)>();
+
+            await EdFiApiPatterns.PageAndProcessAsync<EdFiIntervention>(
+                httpClient,
+                "ed-fi/interventions",
+                intervention =>
+                {
+                    totalInterventions++;
+                    interventionsInClass.Add((
+                        intervention.EducationOrganizationReference?.EducationOrganizationId,
+                        intervention.InterventionIdentificationCode));
+                },
+                context,
+                queryParams: new Dictionary<string, string>
+                {
+                    ["interventionClassDescriptor"] = descriptor
+                });
+
+            foreach (var (edOrgId, code) in interventionsInClass)
+            {
+                if (await HasAnyAssociationAsync(httpClient, edOrgId, code))
+                {
+                    interventionsWithServices++;
+                    classProvidedCount++;
+                }
+            }
+
+            distribution[label] = classProvidedCount;
+
+            var progress = (int)(((i + 1) * 100.0) / _targetDescriptors.Length);
+            context.ReportProgress(progress, $"{label}: {classProvidedCount:N0} interventions with services");
+        }
+
+        context.Log($"Services provided for {interventionsWithServices:N0} of {totalInterventions:N0} interventions");
+        context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalAssociations),
-                new Distribution(distribution, "Service Status")
+                new RecordCount(interventionsWithServices),
+                new Distribution(distribution, "Intervention Class")
             ]
         };
+    }
+
+    private static async Task<bool> HasAnyAssociationAsync(
+        HttpClient httpClient,
+        long? educationOrganizationId,
+        string? interventionIdentificationCode,
+        CancellationToken ct = default)
+    {
+        if (educationOrganizationId is null || string.IsNullOrWhiteSpace(interventionIdentificationCode))
+            return false;
+
+        var count = await EdFiApiPatterns.CountFromHeaderAsync(
+            httpClient,
+            "ed-fi/studentInterventionAssociations",
+            new Dictionary<string, string>
+            {
+                ["educationOrganizationId"] = educationOrganizationId.Value.ToString(),
+                ["interventionIdentificationCode"] = interventionIdentificationCode
+            },
+            ct);
+
+        return count > 0;
     }
 }
