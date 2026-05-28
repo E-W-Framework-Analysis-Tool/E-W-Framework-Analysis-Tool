@@ -1,0 +1,339 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@inject IJSRuntime JS
+
+<!-- Header -->
+<div class="px-6 pt-6 pb-2">
+    <div class="flex items-start gap-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
+            <i class="fas fa-robot text-blue text-xl"></i>
+        </div>
+        <div class="flex-1">
+            <h3 class="font-title text-lg font-semibold text-blue">LLM-Assisted Entry</h3>
+            <p class="mt-1 text-sm text-gray">
+                Use an AI assistant to pre-fill a data source profile from your schema or data dictionary.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Body -->
+<div class="px-6 pb-4 space-y-4">
+
+    <!-- How it works -->
+    <div class="rounded-xl bg-blue/5 border border-blue/20 p-4 text-sm text-gray space-y-2">
+        <p class="font-medium text-blue">How it works</p>
+        <ol class="list-decimal list-inside space-y-1.5">
+            <li>Copy the prompt below.</li>
+            <li>Paste it into your LLM of choice (ChatGPT, Claude, Gemini, etc.).</li>
+            <li>Append your schema or data dictionary at the bottom where indicated.</li>
+            <li>Save the response as a <code class="bg-blue/10 px-1 rounded">.json</code> file.</li>
+            <li>Return here and use <span class="font-medium text-blue">Import</span> to load it as a new data source.</li>
+        </ol>
+    </div>
+
+    <!-- Expandable tips -->
+    <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <button @onclick="() => _tipsExpanded = !_tipsExpanded"
+                type="button"
+                class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700
+                       hover:bg-gray-50 transition-colors">
+            <span class="flex items-center gap-2">
+                <i class="fas fa-lightbulb text-yellow-400 text-xs"></i>
+                Tips for better results
+            </span>
+            <i class="fas fa-chevron-@(_tipsExpanded ? "up" : "down") text-gray-400 text-xs transition-transform"></i>
+        </button>
+
+        @if (_tipsExpanded)
+        {
+            <div class="border-t border-gray-100 px-4 py-3 space-y-2 text-xs text-gray bg-gray-50/60">
+                <p>
+                    <span class="font-medium text-gray-700">Keep it lean.</span>
+                    Column names, data types, and brief descriptions are all the LLM needs. Full table dumps
+                    or sample rows add noise without improving accuracy and consume context window space.
+                    If your schema is large, trim tables that are clearly unrelated to education or workforce data.
+                </p>
+                <p>
+                    <span class="font-medium text-gray-700">Annotate opaque fields.</span>
+                    If your schema has cryptic column names (e.g. <code class="bg-gray-200 px-1 rounded">fld_047</code>,
+                    <code class="bg-gray-200 px-1 rounded">exit_cd</code>), add a brief inline note explaining what they
+                    contain. The LLM can only match what it can interpret.
+                </p>
+                <p>
+                    <span class="font-medium text-gray-700">Include domain context.</span>
+                    Naming conventions, abbreviations, or any relevant background about your system
+                    (e.g. "this is a postsecondary SIS" or "exit codes follow the CEDS taxonomy") help the
+                    LLM make more accurate judgments.
+                </p>
+            </div>
+        }
+    </div>
+
+    <!-- Prompt textarea with copy button -->
+    <div class="relative">
+        <div class="absolute top-2 right-2 z-10">
+            <button @onclick="CopyPrompt"
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-md bg-white border border-gray-200
+                           px-2.5 py-1.5 text-xs font-medium text-gray-600 shadow-sm
+                           hover:bg-gray-50 hover:text-blue transition-colors">
+                @if (_copied)
+                {
+                    <i class="fas fa-check text-green-500"></i>
+                    <span class="text-green-600">Copied!</span>
+                }
+                else
+                {
+                    <i class="fas fa-copy"></i>
+                    <span>Copy prompt</span>
+                }
+            </button>
+        </div>
+        <textarea readonly
+                  class="w-full h-72 resize-none rounded-xl border border-gray-200 bg-gray-50
+                         p-3 pt-10 text-xs font-mono text-gray-700 leading-relaxed
+                         focus:outline-none overflow-y-auto">@_prompt</textarea>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl">
+    <div class="flex justify-between items-center">
+        <button @onclick="OnBack"
+                type="button"
+                class="inline-flex items-center gap-2 rounded-md border border-gray-300
+                       bg-white px-4 py-2 text-sm font-medium text-gray-700
+                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+            <i class="fas fa-arrow-left text-xs"></i>
+            Back
+        </button>
+        <button @onclick="OnCancel"
+                type="button"
+                class="inline-flex items-center justify-center rounded-md border border-gray-300
+                       bg-white px-4 py-2 text-sm font-medium text-gray-700
+                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+            Cancel
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public EventCallback OnBack { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+
+    private bool _tipsExpanded = false;
+    private bool _copied = false;
+
+    // Generated once on init — stays stable for the lifetime of this component instance.
+    private string _prompt = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _prompt = GeneratePrompt();
+    }
+
+    private async Task CopyPrompt()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _prompt);
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+
+    private static string GeneratePrompt()
+    {
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine("## SYSTEM PROMPT");
+        sb.AppendLine();
+        sb.AppendLine("You are an expert data analyst specializing in education and workforce data systems. Your task is to assess which E-W Framework data elements are available in a provided data source schema or data dictionary, and produce a structured JSON assessment in a specific format.");
+        sb.AppendLine();
+        sb.AppendLine("You will be working with two inputs:");
+        sb.AppendLine("1. **E-W Framework Data Elements** — a list of data elements with their names, categories, sectors, and descriptions, provided below.");
+        sb.AppendLine("2. **Data Source Schema or Data Dictionary** — a description of the data source to be assessed, provided at the end of this prompt.");
+        sb.AppendLine();
+        sb.AppendLine("Your job is to evaluate each data element and determine its availability in the provided schema using only the evidence present in the schema. Do not assume data exists unless there is a reasonable direct or inferrable match.");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## AVAILABILITY JUDGMENT RULES");
+        sb.AppendLine();
+        sb.AppendLine("For each data element, assign one of these four values:");
+        sb.AppendLine();
+        sb.AppendLine("| Value | When to use |");
+        sb.AppendLine("|-------|-------------|");
+        sb.AppendLine("| `0` (Available) | A field or combination of fields clearly and directly captures this element. The match is unambiguous. |");
+        sb.AppendLine("| `1` (PartiallyAvailable) | A related or overlapping field exists but may not fully capture the element (wrong granularity, proxy measure, partial composite, or requires derivation). |");
+        sb.AppendLine("| `2` (NotAvailable) | No field appears to capture this element and there is no reasonable inference path. |");
+        sb.AppendLine("| `3` (InsufficientData) | The schema metadata is too sparse or ambiguous to make a determination. |");
+        sb.AppendLine();
+        sb.AppendLine("**Default conservatively.** When in doubt between `Available` and `PartiallyAvailable`, choose `PartiallyAvailable`. When in doubt between `NotAvailable` and `InsufficientData`, choose `InsufficientData`. Only use `Available` when the match is clear and direct.");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## REMARKS GUIDANCE");
+        sb.AppendLine();
+        sb.AppendLine("The `remarks` field appears in two places in the output.");
+        sb.AppendLine();
+        sb.AppendLine("**`characteristics[0].remarks`** — Populate when:");
+        sb.AppendLine("- The element was marked `PartiallyAvailable` and the reasoning is non-obvious (e.g., granularity mismatch, proxy field, derivation required)");
+        sb.AppendLine("- A near-match field exists that was ultimately not counted but may be worth a follow-up look");
+        sb.AppendLine("- The match required meaningful interpretation a reviewer should be aware of");
+        sb.AppendLine();
+        sb.AppendLine("Do **not** populate when the element is clearly `Available` with a straightforward match, or `NotAvailable` with nothing notable.");
+        sb.AppendLine();
+        sb.AppendLine("**`assessment.notes`** — Populate only if there is a meaningful observation about the schema as a whole (e.g., \"Schema appears to be workforce-only; all K-12 elements are not available\"). Leave `null` otherwise.");
+        sb.AppendLine();
+        sb.AppendLine("`remarks` at the `dataElementAssessment` level and `availabilityUserOverride` should always be `null`.");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## OUTPUT FORMAT");
+        sb.AppendLine();
+        sb.AppendLine("Produce a single valid JSON object conforming exactly to this structure. Do not include any explanation, markdown, or text outside of the JSON object (except for the reasoning scratchpad described at the end).");
+        sb.AppendLine();
+        sb.AppendLine("Use newly generated UUIDs (v4 format) for all `id` fields — every UUID must be unique.");
+        sb.AppendLine("Use the current UTC timestamp in ISO 8601 format for all date fields.");
+        sb.AppendLine();
+        sb.AppendLine("Defaults:");
+        sb.AppendLine("- `title`: `\"LLM-Assisted Data Profiling\"`");
+        sb.AppendLine("- `dataSources[0].name`: Infer from the schema input; otherwise use `\"Unknown Data Source\"`");
+        sb.AppendLine("- `dataSources[0].description`: `\"Flexible checklist for manual review\"`");
+        sb.AppendLine("- `assessments[0].name`: `\"LLM-Assisted Data Source Profiling\"`");
+        sb.AppendLine();
+        sb.AppendLine("```json");
+        sb.AppendLine("{");
+        sb.AppendLine("  \"id\": \"<new UUID>\",");
+        sb.AppendLine("  \"schemaVersion\": 4,");
+        sb.AppendLine("  \"title\": \"LLM-Assisted Data Profiling\",");
+        sb.AppendLine("  \"createdAt\": \"<current timestamp>\",");
+        sb.AppendLine("  \"lastModifiedAt\": \"<current timestamp>\",");
+        sb.AppendLine("  \"dataSources\": [");
+        sb.AppendLine("    {");
+        sb.AppendLine("      \"id\": \"<new UUID>\",");
+        sb.AppendLine("      \"name\": \"<inferred or 'Unknown Data Source'>\",");
+        sb.AppendLine("      \"description\": \"Flexible checklist for manual review\",");
+        sb.AppendLine("      \"enabled\": true,");
+        sb.AppendLine("      \"type\": 2,");
+        sb.AppendLine("      \"version\": null,");
+        sb.AppendLine("      \"assessments\": [");
+        sb.AppendLine("        {");
+        sb.AppendLine("          \"id\": \"<new UUID>\",");
+        sb.AppendLine("          \"name\": \"LLM-Assisted Data Source Profiling\",");
+        sb.AppendLine("          \"conductedAt\": \"<current timestamp>\",");
+        sb.AppendLine("          \"notes\": \"<null, or brief observation about overall schema coverage>\",");
+        sb.AppendLine("          \"active\": true,");
+        sb.AppendLine("          \"dataElementAssessments\": [");
+        sb.AppendLine("            {");
+        sb.AppendLine("              \"id\": \"<new UUID>\",");
+        sb.AppendLine("              \"dataElementName\": \"<exact Name value from the data elements list>\",");
+        sb.AppendLine("              \"assessedAt\": \"<current timestamp>\",");
+        sb.AppendLine("              \"characteristics\": [");
+        sb.AppendLine("                {");
+        sb.AppendLine("                  \"$type\": \"ReportedAvailability\",");
+        sb.AppendLine("                  \"value\": 0,");
+        sb.AppendLine("                  \"id\": \"<new UUID>\",");
+        sb.AppendLine("                  \"remarks\": \"<null, or concise reasoning per remarks guidance>\",");
+        sb.AppendLine("                  \"measuredAt\": \"<current timestamp>\"");
+        sb.AppendLine("                }");
+        sb.AppendLine("              ],");
+        sb.AppendLine("              \"remarks\": null,");
+        sb.AppendLine("              \"availabilityUserOverride\": null");
+        sb.AppendLine("            }");
+        sb.AppendLine("          ]");
+        sb.AppendLine("        }");
+        sb.AppendLine("      ]");
+        sb.AppendLine("    }");
+        sb.AppendLine("  ],");
+        sb.AppendLine("  \"dataSourceAssessments\": [],");
+        sb.AppendLine("  \"actionItems\": []");
+        sb.AppendLine("}");
+        sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("**Critical requirements:**");
+        sb.AppendLine("- `dataElementName` must be copied **exactly** as it appears in the list below — do not paraphrase, normalize, or abbreviate");
+        sb.AppendLine("- **Only include entries for elements assessed as `Available` (0), `PartiallyAvailable` (1), or `InsufficientData` (3).** Omit any element assessed as `NotAvailable` (2) — absence from the list implicitly means not available");
+        sb.AppendLine("- `value` must be an integer (`0`, `1`, or `3`) — not a string");
+        sb.AppendLine("- All UUIDs must be unique — do not reuse any UUID across the document");
+        sb.AppendLine("- `remarks` and `availabilityUserOverride` at the `dataElementAssessment` level must always be `null`");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## REASONING APPROACH");
+        sb.AppendLine();
+        sb.AppendLine("Before producing the JSON, reason through the schema systematically:");
+        sb.AppendLine();
+        sb.AppendLine("1. **Scan for direct matches** — field names that clearly correspond to a data element name");
+        sb.AppendLine("2. **Scan for semantic matches** — fields using different terminology but capturing the same concept (e.g., `dob` → \"Age\", `grad_dt` → \"High school graduation date\")");
+        sb.AppendLine("3. **Identify ambiguous fields** — fields with generic names, no descriptions, or unclear scope");
+        sb.AppendLine("4. **Note sector gaps** — categories or sectors that appear entirely absent from the schema");
+        sb.AppendLine();
+        sb.AppendLine("Include this reasoning as a brief scratchpad before the JSON, clearly delimited:");
+        sb.AppendLine();
+        sb.AppendLine("```");
+        sb.AppendLine("=== REASONING (not part of output) ===");
+        sb.AppendLine("[your analysis here]");
+        sb.AppendLine("=== END REASONING ===");
+        sb.AppendLine("```");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## IMPORTING YOUR RESULTS");
+        sb.AppendLine();
+        sb.AppendLine("Once the LLM has produced its JSON output:");
+        sb.AppendLine("1. Copy the JSON (everything from `{` to the final `}`).");
+        sb.AppendLine("2. Save it as a `.json` file on your computer.");
+        sb.AppendLine("3. Open the **E-W Framework Analysis Tool** and ensure a project is active.");
+        sb.AppendLine("4. Click **Import** in the data sources section.");
+        sb.AppendLine("5. Select your saved file and choose the data source to import.");
+        sb.AppendLine("The profile will load as a new Manual Entry data source, ready for review and refinement.");
+        sb.AppendLine();
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## DATA ELEMENTS");
+        sb.AppendLine();
+        sb.AppendLine("The following elements must each be assessed. `dataElementName` in your output must match the `Name` field exactly.");
+        sb.AppendLine();
+
+        foreach (var el in EwFrameworkDataElements.Elements.Values)
+        {
+            sb.AppendLine($"### {el.Name}");
+            sb.AppendLine($"- **Category:** {el.DataElementCategory}");
+            if (!string.IsNullOrWhiteSpace(el.ClusterOnlyCategory))
+                sb.AppendLine($"- **Cluster:** {el.ClusterOnlyCategory}");
+            if (el.RelatedSectors?.Count > 0)
+                sb.AppendLine($"- **Sectors:** {string.Join(", ", el.RelatedSectors)}");
+            if (!string.IsNullOrWhiteSpace(el.AdditionalNotes))
+                sb.AppendLine($"- **Description:** {el.AdditionalNotes}");
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("## DATA SOURCE SCHEMA");
+        sb.AppendLine();
+        sb.AppendLine("Paste your schema, data dictionary, or field listing below. Accepted formats include SQL DDL,");
+        sb.AppendLine("CSV/Excel exports of a data dictionary, API field listings, ERD descriptions, or plain-text");
+        sb.AppendLine("column-level documentation. If this section is left blank, the LLM will mark all elements");
+        sb.AppendLine("as InsufficientData rather than proceeding.");
+        sb.AppendLine();
+        sb.AppendLine("Only share schema metadata you are authorized to share and that complies with your");
+        sb.AppendLine("organization's data governance policies. Do not include row-level data or PII.");
+        sb.AppendLine();
+        sb.AppendLine("Data source name (optional — will be inferred from schema if omitted):");
+        sb.AppendLine("[Your data source name here]");
+        sb.AppendLine();
+        sb.AppendLine("Schema or data dictionary:");
+        sb.AppendLine("[Paste your schema here]");
+
+        return sb.ToString();
+    }
+}
