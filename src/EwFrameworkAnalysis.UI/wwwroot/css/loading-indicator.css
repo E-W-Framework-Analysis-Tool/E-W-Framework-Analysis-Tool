@@ -1,0 +1,175 @@
+/* ─────────────────────────────────────────────
+   E-W Framework loading indicator
+   Used by EwLoadingIndicator.razor and EwLoadingOverlay.razor
+───────────────────────────────────────────── */
+
+/* ── Splash screen (index.html) ── */
+#blazor-loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background-color: #ffffff;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+}
+
+    #blazor-loading.fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+.loading-wordmark {
+    font-family: 'Zilla Slab', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0b2949;
+    letter-spacing: 0.01em;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+    .loading-wordmark span {
+        color: #f1b51c;
+    }
+
+/* ── Indicator layout ── */
+.ew-loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(6px * var(--ew-scale, 1));
+}
+
+.ew-top {
+    width: calc(174px * var(--ew-scale, 1));
+    height: calc(28px * var(--ew-scale, 1));
+    background: #e0d4b5;
+    border-radius: calc(5px * var(--ew-scale, 1));
+    position: relative;
+}
+
+.ew-row {
+    display: flex;
+    gap: calc(6px * var(--ew-scale, 1));
+}
+
+.ew-block {
+    width: calc(39px * var(--ew-scale, 1));
+    height: calc(52px * var(--ew-scale, 1));
+    border-radius: calc(5px * var(--ew-scale, 1));
+    position: relative;
+    will-change: transform;
+}
+
+.ew-b1 {
+    background: #5b6771;
+}
+
+.ew-b2 {
+    background: #12885e;
+}
+
+.ew-b3 {
+    background: #0b2949;
+}
+
+.ew-b4 {
+    background: #f1b51c;
+}
+
+/* Static shadows on pseudo-elements so they are never caught
+   in a style recalc during Blazor's init */
+.ew-top::after,
+.ew-block::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.ew-top::after {
+    box-shadow: 0 4px 0 #b8ad8e, 0 5px 8px rgba(0,0,0,0.12);
+}
+
+.ew-b1::after {
+    box-shadow: 0 4px 0 #3a4248, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b2::after {
+    box-shadow: 0 4px 0 #0a5c3f, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b3::after {
+    box-shadow: 0 4px 0 #071829, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b4::after {
+    box-shadow: 0 4px 0 #c0900e, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+/* ── Animation ── */
+@keyframes ew-press {
+    0% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(calc(4px * var(--ew-scale, 1)));
+    }
+
+    55% {
+        transform: translateY(calc(-1px * var(--ew-scale, 1)));
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.ew-dur {
+    animation-name: ew-press;
+    animation-duration: 1.8s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    will-change: transform;
+}
+
+.ew-top {
+    animation-delay: 0s;
+}
+
+.ew-b1 {
+    animation-delay: 0.36s;
+}
+
+.ew-b2 {
+    animation-delay: 0.72s;
+}
+
+.ew-b3 {
+    animation-delay: 1.08s;
+}
+
+.ew-b4 {
+    animation-delay: 1.44s;
+}
+
+/* ── Overlay ── */
+.ew-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 50;
+    border-radius: inherit;
+}

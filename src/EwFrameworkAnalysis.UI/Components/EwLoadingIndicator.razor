@@ -1,0 +1,19 @@
+@* 
+    Standalone E-W Framework loading indicator.
+    Drop-in anywhere: <EwLoadingIndicator />
+    Optional size scale via the Scale parameter (default 1.0).
+*@
+
+<div class="ew-loading-indicator" style="--ew-scale: @Scale;">
+    <div class="ew-top ew-dur"></div>
+    <div class="ew-row">
+        <div class="ew-block ew-b1 ew-dur"></div>
+        <div class="ew-block ew-b2 ew-dur"></div>
+        <div class="ew-block ew-b3 ew-dur"></div>
+        <div class="ew-block ew-b4 ew-dur"></div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public double Scale { get; set; } = 1.0;
+}

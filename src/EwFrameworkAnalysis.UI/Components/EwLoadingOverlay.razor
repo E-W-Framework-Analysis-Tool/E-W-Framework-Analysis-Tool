@@ -1,0 +1,23 @@
+@*
+    Full-screen (or parent-relative) loading overlay.
+    Usage:
+        <EwLoadingOverlay IsLoading="@_isLoading" />
+
+    Wrap a relative-positioned container to scope it to a section
+    rather than the full viewport, e.g.:
+        <div class="relative">
+            @Body
+            <EwLoadingOverlay IsLoading="@_isLoading" />
+        </div>
+*@
+
+@if (IsLoading)
+{
+    <div class="ew-overlay" role="status" aria-label="Loading">
+        <EwLoadingIndicator Scale="1.2" />
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsLoading { get; set; }
+}
