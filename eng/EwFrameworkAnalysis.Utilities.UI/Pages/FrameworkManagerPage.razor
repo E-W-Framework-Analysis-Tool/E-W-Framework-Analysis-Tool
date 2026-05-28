@@ -1,0 +1,1495 @@
+@page "/framework-manager"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using System.Text
+@using System.Text.Json
+@using CsvHelper
+@using System.Globalization;
+@inject IJSRuntime JS
+
+<PageTitle>Framework Manager</PageTitle>
+
+<div class="min-h-screen bg-base-200 font-sans text-sm">
+
+    <div class="navbar bg-base-100 border-b border-base-300 px-4 min-h-10">
+        <div class="flex-1">
+            <span class="font-bold text-base">⚙ EW Framework Manager</span>
+            <span class="text-base-content/50 text-xs ml-2">(dev tool)</span>
+        </div>
+        <div class="flex gap-2">
+            <button class="btn btn-sm btn-ghost" @onclick="@(() => _showResetConfirm = true)">↺ Reset to Source</button>
+            <button class="btn btn-sm btn-success" @onclick="@(() => _tab = Tab.Export)">⬇ Export C#</button>
+            <button class="btn btn-sm btn-ghost" @onclick="DownloadReviewCsv">⬇ Reviews CSV</button>
+        </div>
+    </div>
+
+    <div class="tabs tabs-bordered px-4 pt-2 bg-base-100">
+        <a class="tab @(_tab == Tab.Elements ? "tab-active" : "")" @onclick="@(() => _tab = Tab.Elements)">
+            Data Elements
+            <span class="badge badge-sm ml-1">@_elements.Count</span>
+            @if (OrphanElements.Any())
+            {
+                <span class="badge badge-sm badge-warning ml-1">@OrphanElements.Count orphans</span>
+            }
+            @if (MissingElementNames.Any())
+            {
+                <span class="badge badge-sm badge-error ml-1">@MissingElementNames.Count missing</span>
+            }
+        </a>
+        <a class="tab @(_tab == Tab.Indicators ? "tab-active" : "")" @onclick="@(() => _tab = Tab.Indicators)">
+            Indicators
+            <span class="badge badge-sm ml-1">@_indicators.Count</span>
+            @if (IndicatorsWithNoElements.Any())
+            {
+                <span class="badge badge-sm badge-warning ml-1">@IndicatorsWithNoElements.Count empty</span>
+            }
+        </a>
+        <a class="tab @(_tab == Tab.EQ ? "tab-active" : "")" @onclick="@(() => _tab = Tab.EQ)">
+            Essential Questions
+            <span class="badge badge-sm ml-1">@_questions.Count</span>
+            @if (MissingIndicatorNamesInEQ.Any())
+            {
+                <span class="badge badge-sm badge-error ml-1">@MissingIndicatorNamesInEQ.Count broken</span>
+            }
+        </a>
+        <a class="tab @(_tab == Tab.Disaggregates ? "tab-active" : "")" @onclick="@(() => _tab = Tab.Disaggregates)">
+            Disaggregates
+            <span class="badge badge-sm ml-1">@_disaggregates.Count</span>
+            @if (DisaggregatesWithNoElements.Any())
+            {
+                <span class="badge badge-sm badge-warning ml-1">@DisaggregatesWithNoElements.Count empty</span>
+            }
+        </a>
+        <a class="tab @(_tab == Tab.Diagnostics ? "tab-active" : "")" @onclick="@(() => _tab = Tab.Diagnostics)">🔍 Diagnostics</a>
+        <a class="tab @(_tab == Tab.Export ? "tab-active" : "")" @onclick="@(() => _tab = Tab.Export)">⬇ Export</a>
+    </div>
+
+    <div class="p-3" style="height: calc(100vh - 88px); overflow: hidden;">
+
+        @* ══ ELEMENTS TAB ══ *@
+        @if (_tab == Tab.Elements)
+        {
+            <div class="flex flex-wrap gap-2 mb-2 items-center">
+                <input class="input input-sm input-bordered w-52" placeholder="Search elements…"
+                       @bind="_elSearch" @bind:event="oninput" />
+                <select class="select select-sm select-bordered" @bind="_elSectorFilter">
+                    <option value="">All sectors</option>
+                    @foreach (var s in Enum.GetValues<Sector>())
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+                <select class="select select-sm select-bordered" @bind="_elCategoryFilter">
+                    <option value="">All categories</option>
+                    @foreach (var c in AllElementCategories)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+                <select class="select select-sm select-bordered" @bind="_elStatusFilter">
+                    <option value="">All statuses</option>
+                    <option value="orphan">Orphans only</option>
+                </select>
+                <select class="select select-sm select-bordered" @bind="_elReviewFilter">
+                    <option value="">All review states</option>
+                    @foreach (var r in Enum.GetValues<ReviewStatus>())
+                    {
+                        <option value="@r">@ReviewLabel(r)</option>
+                    }
+                </select>
+                <div class="flex gap-1 flex-1">
+                    <input class="input input-sm input-bordered flex-1" placeholder="New element name…"
+                           @bind="_addElementName"
+                           @onkeydown="@(e => { if (e.Key == "Enter") AddNewElement(); })" />
+                    <button class="btn btn-sm btn-primary" @onclick="AddNewElement">+ Add</button>
+                </div>
+            </div>
+
+            <div class="grid gap-3" style="grid-template-columns: 300px 1fr; height: calc(100% - 44px);">
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto">
+                    @foreach (var kv in FilteredElements())
+                    {
+                        var isOrphan = ElementIsOrphan(kv.Key);
+                        var selectedClass = _selectedElementKey == kv.Key ? "bg-primary/10 border-l-4 border-primary" : "";
+                        var statusBorder = isOrphan ? "border-l-4 border-warning" : "";
+                        var rs = GetReview(ReviewKind.Element, kv.Key);
+                        <div class="px-3 py-1.5 cursor-pointer border-b border-base-200 hover:bg-base-200 @selectedClass @((_selectedElementKey != kv.Key) ? statusBorder : "")"
+                             @onclick="@(() => TrySelectElement(kv.Key))">
+                            <div class="flex items-center gap-1">
+                                <span class="font-medium text-xs leading-tight flex-1 truncate">@kv.Key</span>
+                                <span class="@ReviewPillClass(rs.Status) shrink-0">@ReviewLabel(rs.Status)</span>
+                            </div>
+                            <div class="text-base-content/50 text-xs">@kv.Value.DataElementCategory · @string.Join(", ", kv.Value.RelatedSectors)</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto p-4">
+                    @if (!string.IsNullOrEmpty(_selectedElementKey) && _elements.ContainsKey(_selectedElementKey))
+                    {
+                        var usedByIndicators = IndicatorsUsingElement(_selectedElementKey);
+                        var usedByDisaggregates = DisaggregatesUsingElement(_selectedElementKey);
+                        var isOrphanEl = usedByIndicators.Count == 0 && usedByDisaggregates.Count == 0;
+
+                        @* ── Item title ── *@
+                        <div class="text-base font-bold mb-3">@_selectedElementKey</div>
+
+                        <button class="btn btn-xs btn-ghost border border-base-300 mb-3" @onclick="CopyElementContext">📋 Copy Context</button>
+
+                        @if (_elHasChanges)
+                        {
+                            <div class="alert alert-warning py-2 mb-3 text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                                <span>Unsaved changes</span>
+                            </div>
+                        }
+                        @if (isOrphanEl)
+                        {
+                            <div class="alert alert-warning py-2 mb-3 text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                                <span>⚠ This element is not referenced by any indicator or disaggregate.</span>
+                            </div>
+                        }
+
+                        @ReviewBar(ReviewKind.Element, _selectedElementKey)
+
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Name — renaming updates all indicator references</span></label>
+                            <input class="input input-sm input-bordered w-full" type="text"
+                                   value="@_elEditName"
+                                   @oninput="@(e => { _elEditName = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Cluster Category</span></label>
+                                <input class="input input-sm input-bordered w-full" type="text"
+                                       list="cluster-cat-list"
+                                       value="@_elEditCluster"
+                                       @oninput="@(e => { _elEditCluster = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
+                                <datalist id="cluster-cat-list">
+                                    @foreach (var c in AllClusterCategories)
+                                    {
+                                        <option value="@c" />
+                                    }
+                                </datalist>
+                            </div>
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Data Element Category</span></label>
+                                <input class="input input-sm input-bordered w-full" type="text"
+                                       list="de-cat-list"
+                                       placeholder="Select or type new…"
+                                       value="@_elEditCategory"
+                                       @oninput="@(e => { _elEditCategory = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
+                                <datalist id="de-cat-list">
+                                    @foreach (var c in AllElementCategories)
+                                    {
+                                        <option value="@c" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Related Sectors</span></label>
+                            <div class="flex flex-wrap gap-1 mb-1">
+                                @foreach (var s in _elEditSectors)
+                                {
+                                    <span class="badge badge-success gap-1">
+                                        @s
+                                        <button class="text-xs leading-none hover:text-error" @onclick="@(() => { _elEditSectors.Remove(s); MarkElDirty(); })">×</button>
+                                    </span>
+                                }
+                            </div>
+                            <div class="flex gap-1">
+                                <select class="select select-sm select-bordered flex-1" @bind="_elNewSector">
+                                    <option value="">Add sector…</option>
+                                    @foreach (var s in Enum.GetValues<Sector>().Where(s => !_elEditSectors.Contains(s)))
+                                    {
+                                        <option value="@s">@s</option>
+                                    }
+                                </select>
+                                <button class="btn btn-sm btn-ghost" @onclick="AddSectorToElement">Add</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Notes</span></label>
+                            <textarea class="textarea textarea-bordered w-full text-sm" value="@_elEditNotes"
+                                      @oninput="@(e => { _elEditNotes = e.Value?.ToString() ?? ""; MarkElDirty(); })"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Scoring Rule Name</span></label>
+                            <input class="input input-sm input-bordered w-full" type="text" placeholder="optional"
+                                   value="@_elEditScoring"
+                                   @oninput="@(e => { _elEditScoring = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <button class="btn btn-sm btn-primary" disabled="@(!_elHasChanges)" @onclick="SaveElement">💾 Save Changes</button>
+                            <button class="btn btn-sm btn-error" @onclick="DeleteElement">🗑 Delete</button>
+                        </div>
+                        <div class="divider text-xs font-bold uppercase text-base-content/50 my-2">Referenced by @usedByIndicators.Count indicator(s)</div>
+                        @if (usedByIndicators.Count == 0)
+                        {
+                            <div class="text-xs text-base-content/40">None</div>
+                        }
+                        @foreach (var ind in usedByIndicators)
+                        {
+                            <div class="py-1 border-b border-base-200 text-xs"><span class="badge badge-info badge-sm">@ind</span></div>
+                        }
+                        <div class="divider text-xs font-bold uppercase text-base-content/50 my-2">Referenced by @usedByDisaggregates.Count disaggregate(s)</div>
+                        @if (usedByDisaggregates.Count == 0)
+                        {
+                            <div class="text-xs text-base-content/40">None</div>
+                        }
+                        @foreach (var d in usedByDisaggregates)
+                        {
+                            <div class="py-1 border-b border-base-200 text-xs"><span class="badge badge-secondary badge-sm">@d</span></div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-base-content/40 p-4">Select an element to view and edit details.</div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ══ INDICATORS TAB ══ *@
+        @if (_tab == Tab.Indicators)
+        {
+            <div class="flex flex-wrap gap-2 mb-2 items-center">
+                <input class="input input-sm input-bordered w-52" placeholder="Search indicators…"
+                       @bind="_indSearch" @bind:event="oninput" />
+                <select class="select select-sm select-bordered" @bind="_indDomainFilter">
+                    <option value="">All domains</option>
+                    @foreach (var d in Enum.GetValues<IndicatorDomain>())
+                    {
+                        <option value="@d">@d</option>
+                    }
+                </select>
+                <select class="select select-sm select-bordered" @bind="_indTypeFilter">
+                    <option value="">All types</option>
+                    @foreach (var t in Enum.GetValues<IndicatorType>())
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </select>
+                <select class="select select-sm select-bordered" @bind="_indReviewFilter">
+                    <option value="">All review states</option>
+                    @foreach (var r in Enum.GetValues<ReviewStatus>())
+                    {
+                        <option value="@r">@ReviewLabel(r)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="grid gap-3" style="grid-template-columns: 300px 1fr; height: calc(100% - 44px);">
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto">
+                    @foreach (var kv in FilteredIndicators())
+                    {
+                        var hasMissing = kv.Value.DataElementNames.Any(n => !_elements.ContainsKey(n));
+                        var isEmpty = !kv.Value.DataElementNames.Any();
+                        var statusBorder = isEmpty ? "border-l-4 border-warning" : hasMissing ? "border-l-4 border-error" : "";
+                        var selectedClass = _selectedIndicatorKey == kv.Key ? "bg-primary/10 border-l-4 border-primary" : statusBorder;
+                        var rs = GetReview(ReviewKind.Indicator, kv.Key);
+                        <div class="px-3 py-1.5 cursor-pointer border-b border-base-200 hover:bg-base-200 @selectedClass"
+                             @onclick="@(() => SelectIndicator(kv.Key))">
+                            <div class="flex items-center gap-1">
+                                <span class="font-medium text-xs leading-tight flex-1 truncate">@kv.Key</span>
+                                <span class="@ReviewPillClass(rs.Status) shrink-0">@ReviewLabel(rs.Status)</span>
+                            </div>
+                            <div class="text-base-content/50 text-xs">@kv.Value.Domain · @kv.Value.Type · @kv.Value.DataElementNames.Count elements</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto p-4">
+                    @if (!string.IsNullOrEmpty(_selectedIndicatorKey) && _indicators.TryGetValue(_selectedIndicatorKey, out var selInd))
+                    {
+                        @* ── Item title ── *@
+                        <div class="text-base font-bold mb-3">@_selectedIndicatorKey</div>
+
+                        <button class="btn btn-xs btn-ghost border border-base-300 mb-3" @onclick="CopyIndicatorContext">📋 Copy Context</button>
+                        @ReviewBar(ReviewKind.Indicator, _selectedIndicatorKey)
+
+                        <div class="text-xs font-bold uppercase text-base-content/50 border-b border-base-200 pb-1 mb-3">Metadata (read-only)</div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Type</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">@selInd.Type</div>
+                            </div>
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Domain</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">@selInd.Domain</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Definition</span></label>
+                            <div class="bg-base-200 rounded px-2 py-1 text-xs leading-relaxed">@selInd.Definition</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Recommended Metrics</span></label>
+                            <div class="bg-base-200 rounded px-2 py-1 text-xs text-base-content/70">@selInd.RecommendedMetrics</div>
+                        </div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <div class="flex-1">
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Sectors</span></label>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach (var s in selInd.Sectors)
+                                    {
+                                        <span class="badge badge-info badge-sm">@s</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Data Needed</span></label>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach (var d in selInd.DataNeeded)
+                                    {
+                                        <span class="badge badge-warning badge-sm">@d</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-xs font-bold uppercase text-base-content/50 border-b border-base-200 pb-1 mb-2">Data Elements (auto-saved)</div>
+                        @if (selInd.DataElementNames.Any(n => !_elements.ContainsKey(n)))
+                        {
+                            <div class="alert alert-error py-2 mb-2 text-xs">⚠ Some referenced elements don't exist in the dictionary.</div>
+                        }
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            @foreach (var el in _indEditElements.OrderBy(e => e))
+                            {
+                                var chipClass = _elements.ContainsKey(el) ? "badge-success" : "badge-error";
+                                <span class="badge @chipClass gap-1">
+                                    @el
+                                    <button class="text-xs leading-none hover:text-error" @onclick="@(() => RemoveElementFromIndicatorAndSave(el))">×</button>
+                                </span>
+                            }
+                        </div>
+                        <div class="flex gap-1">
+                            <input class="input input-sm input-bordered flex-1" list="el-datalist"
+                                   placeholder="Add element…"
+                                   @bind="_indAddElement" @bind:event="oninput"
+                                   @onchange="@(e => { _indAddElement = e.Value?.ToString() ?? ""; if (_elements.ContainsKey(_indAddElement)) AddElementToIndicatorAndSave(); })"
+                                   @onkeydown="@(e => { if (e.Key == "Enter") AddElementToIndicatorAndSave(); })" />
+                            <datalist id="el-datalist">
+                                @foreach (var k in _elements.Keys.OrderBy(k => k))
+                                {
+                                    <option value="@k" />
+                                }
+                            </datalist>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="text-base-content/40 p-4">Select an indicator to view and edit its data elements.</div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ══ EQ TAB ══ *@
+        @if (_tab == Tab.EQ)
+        {
+            <div class="grid gap-3" style="grid-template-columns: 300px 1fr; height: 100%;">
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto">
+                    @foreach (var q in _questions.OrderBy(q => q.QuestionNumber))
+                    {
+                        var hasMissing = q.RelatedIndicatorNames.Any(n => !_indicators.ContainsKey(n));
+                        var statusBorder = hasMissing ? "border-l-4 border-error" : "";
+                        var selectedClass = _selectedEQNumber == q.QuestionNumber ? "bg-primary/10 border-l-4 border-primary" : statusBorder;
+                        var rs = GetReview(ReviewKind.EQ, q.QuestionNumber.ToString());
+                        <div class="px-3 py-1.5 cursor-pointer border-b border-base-200 hover:bg-base-200 @selectedClass"
+                             @onclick="@(() => SelectEQ(q.QuestionNumber))">
+                            <div class="flex items-center gap-1">
+                                <span class="font-medium text-xs leading-tight flex-1 truncate">Q@(q.QuestionNumber): @q.QuestionSummary</span>
+                                <span class="@ReviewPillClass(rs.Status) shrink-0">@ReviewLabel(rs.Status)</span>
+                            </div>
+                            <div class="text-base-content/50 text-xs">@string.Join(", ", q.ApplicableSectors) · @q.RelatedIndicatorNames.Count indicators</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto p-4">
+                    @{
+                        var selQ = _questions.FirstOrDefault(q => q.QuestionNumber == _selectedEQNumber);
+                    }
+                    @if (selQ != null)
+                    {
+                        @* ── Item title ── *@
+                        <div class="text-base font-bold mb-3">Q@(selQ.QuestionNumber): @selQ.QuestionSummary</div>
+
+                        @ReviewBar(ReviewKind.EQ, _selectedEQNumber.ToString())
+
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Question</span></label>
+                            <div class="bg-base-200 rounded px-2 py-1 text-xs leading-relaxed">@selQ.Question</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Summary</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">@selQ.QuestionSummary</div>
+                            </div>
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Sectors</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">@string.Join(", ", selQ.ApplicableSectors)</div>
+                            </div>
+                        </div>
+                        <div class="text-xs font-bold uppercase text-base-content/50 border-b border-base-200 pb-1 mb-2">Related Indicators (editable)</div>
+                        @if (_eqEditIndicators.Any(n => !_indicators.ContainsKey(n)))
+                        {
+                            <div class="alert alert-error py-2 mb-2 text-xs">⚠ Some indicator names don't match the Indicators dictionary.</div>
+                        }
+                        <div class="flex flex-col gap-0.5 mb-2">
+                            @foreach (var name in _eqEditIndicators)
+                            {
+                                var chipClass = _indicators.ContainsKey(name) ? "badge-success" : "badge-error";
+                                <div class="flex items-center gap-2 py-1 border-b border-base-200">
+                                    <span class="badge @chipClass badge-sm flex-1 justify-start">@name</span>
+                                    <button class="btn btn-xs btn-ghost" @onclick="@(() => RemoveIndicatorFromEQ(name))">×</button>
+                                </div>
+                            }
+                        </div>
+                        <div class="flex gap-1 mb-2">
+                            <input class="input input-sm input-bordered flex-1" list="ind-datalist"
+                                   placeholder="Add indicator…"
+                                   @bind="_eqAddIndicator"
+                                   @onkeydown="@(e => { if (e.Key == "Enter") AddIndicatorToEQ(); })" />
+                            <datalist id="ind-datalist">
+                                @foreach (var k in _indicators.Keys.OrderBy(k => k))
+                                {
+                                    <option value="@k" />
+                                }
+                            </datalist>
+                            <button class="btn btn-sm btn-primary" @onclick="AddIndicatorToEQ">Add</button>
+                        </div>
+                        <button class="btn btn-sm btn-primary" @onclick="SaveEQIndicators">💾 Save Indicator List</button>
+                    }
+                    else
+                    {
+
+                        <div class="text-base-content/40 p-4">Select a question to review and fix indicator references.</div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ══ DISAGGREGATES TAB ══ *@
+        @if (_tab == Tab.Disaggregates)
+        {
+            <div class="flex flex-wrap gap-2 mb-2 items-center">
+                <input class="input input-sm input-bordered w-52" placeholder="Search disaggregates…"
+                       @bind="_disagSearch" @bind:event="oninput" />
+                <select class="select select-sm select-bordered" @bind="_disagSectorFilter">
+                    <option value="">All sectors</option>
+                    @foreach (var s in Enum.GetValues<Sector>())
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+                <select class="select select-sm select-bordered" @bind="_disagReviewFilter">
+                    <option value="">All review states</option>
+                    @foreach (var r in Enum.GetValues<ReviewStatus>())
+                    {
+                        <option value="@r">@ReviewLabel(r)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="grid gap-3" style="grid-template-columns: 300px 1fr; height: calc(100% - 44px);">
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto">
+                    @foreach (var d in FilteredDisaggregates())
+                    {
+                        var hasMissing = d.DataElementNames.Any(n => !_elements.ContainsKey(n));
+                        var isEmpty = !d.DataElementNames.Any();
+                        var statusBorder = isEmpty ? "border-l-4 border-warning" : hasMissing ? "border-l-4 border-error" : "";
+                        var selectedClass = _selectedDisaggregateName == d.Name ? "bg-primary/10 border-l-4 border-primary" : statusBorder;
+                        var rs = GetReview(ReviewKind.Disaggregate, d.Name);
+                        <div class="px-3 py-1.5 cursor-pointer border-b border-base-200 hover:bg-base-200 @selectedClass"
+                             @onclick="@(() => SelectDisaggregate(d.Name))">
+                            <div class="flex items-center gap-1">
+                                <span class="font-medium text-xs leading-tight flex-1 truncate">@d.Name</span>
+                                <span class="@ReviewPillClass(rs.Status) shrink-0">@ReviewLabel(rs.Status)</span>
+                            </div>
+                            <div class="text-base-content/50 text-xs">@string.Join(", ", d.Sectors) · @d.DataElementNames.Count elements</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="bg-base-100 border border-base-300 rounded-box overflow-y-auto p-4">
+                    @if (!string.IsNullOrEmpty(_selectedDisaggregateName) && _disaggregates.FirstOrDefault(d => d.Name == _selectedDisaggregateName) is { } selDisag)
+                    {
+                        @* ── Item title ── *@
+                        <div class="text-base font-bold mb-3">@_selectedDisaggregateName</div>
+
+                        @ReviewBar(ReviewKind.Disaggregate, _selectedDisaggregateName)
+
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Name</span></label>
+                            <div class="bg-base-200 rounded px-2 py-1 text-xs">@selDisag.Name</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Description</span></label>
+                            <div class="bg-base-200 rounded px-2 py-1 text-xs leading-relaxed">@selDisag.Description</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Sectors</span></label>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach (var s in selDisag.Sectors)
+                                {
+                                    <span class="badge badge-info badge-sm">@s</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="text-xs font-bold uppercase text-base-content/50 border-b border-base-200 pb-1 mb-2">Data Elements (auto-saved)</div>
+                        @if (selDisag.DataElementNames.Any(n => !_elements.ContainsKey(n)))
+                        {
+                            <div class="alert alert-error py-2 mb-2 text-xs">⚠ Some referenced elements don't exist in the dictionary.</div>
+                        }
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            @foreach (var el in _disagEditElements.OrderBy(e => e))
+                            {
+                                var chipClass = _elements.ContainsKey(el) ? "badge-success" : "badge-error";
+                                <span class="badge @chipClass gap-1">
+                                    @el
+                                    <button class="text-xs leading-none hover:text-error" @onclick="@(() => RemoveElementFromDisaggregateAndSave(el))">×</button>
+                                </span>
+                            }
+                        </div>
+                        <div class="flex gap-1">
+                            <input class="input input-sm input-bordered flex-1" list="el-datalist-disag"
+                                   placeholder="Add element…"
+                                   @bind="_disagAddElement" @bind:event="oninput"
+                                   @onchange="@(e => { _disagAddElement = e.Value?.ToString() ?? ""; if (_elements.ContainsKey(_disagAddElement)) AddElementToDisaggregateAndSave(); })"
+                                   @onkeydown="@(e => { if (e.Key == "Enter") AddElementToDisaggregateAndSave(); })" />
+                            <datalist id="el-datalist-disag">
+                                @foreach (var k in _elements.Keys.OrderBy(k => k))
+                                {
+                                    <option value="@k" />
+                                }
+                            </datalist>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="text-base-content/40 p-4">Select a disaggregate to view and edit its data elements.</div>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ══ DIAGNOSTICS TAB ══ *@
+        @if (_tab == Tab.Diagnostics)
+        {
+            var usedSet = _indicators.Values.SelectMany(i => i.DataElementNames)
+            .Concat(_disaggregates.SelectMany(d => d.DataElementNames))
+            .ToHashSet();
+            var orphans = _elements.Values.Where(e => !usedSet.Contains(e.Name)).OrderBy(e => e.Name).ToList();
+            var missingEls = _indicators.Values
+            .SelectMany(i => i.DataElementNames.Where(n => !_elements.ContainsKey(n)).Select(n => (Indicator: i.Name, Element: n)))
+            .OrderBy(x => x.Indicator).ToList();
+            var emptyInds = _indicators.Values.Where(i => !i.DataElementNames.Any()).OrderBy(i => i.Name).ToList();
+            var missingIndInEQ = _questions
+            .SelectMany(q => q.RelatedIndicatorNames.Where(n => !_indicators.ContainsKey(n)).Select(n => (EQ: $"Q{q.QuestionNumber}", Indicator: n)))
+            .OrderBy(x => x.EQ).ToList();
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="bg-base-100 border border-base-300 rounded-box p-3">
+                    <h4 class="font-bold text-xs mb-2">🟡 Orphan Elements (@orphans.Count)</h4>
+                    @if (!orphans.Any())
+                    {
+                        <div class="text-xs text-success">✓ None</div>
+                    }
+                    @foreach (var e in orphans)
+                    {
+                        <div class="py-1 border-b border-base-200 text-xs"><strong>@e.Name</strong> <span class="text-base-content/40">@e.DataElementCategory</span></div>
+                    }
+                </div>
+                <div class="bg-base-100 border border-base-300 rounded-box p-3">
+                    <h4 class="font-bold text-xs mb-2">🔴 Missing Elements (@missingEls.Count)</h4>
+                    @if (!missingEls.Any())
+                    {
+                        <div class="text-xs text-success">✓ None</div>
+                    }
+                    @foreach (var x in missingEls)
+                    {
+                        <div class="py-1 border-b border-base-200 text-xs"><strong>@x.Element</strong> <span class="text-base-content/40">← @x.Indicator</span></div>
+                    }
+                </div>
+                <div class="bg-base-100 border border-base-300 rounded-box p-3">
+                    <h4 class="font-bold text-xs mb-2">🟡 Indicators with No Elements (@emptyInds.Count)</h4>
+                    @if (!emptyInds.Any())
+                    {
+                        <div class="text-xs text-success">✓ None</div>
+                    }
+                    @foreach (var i in emptyInds)
+                    {
+                        <div class="py-1 border-b border-base-200 text-xs">@i.Name <span class="text-base-content/40">@i.Domain</span></div>
+                    }
+                </div>
+                <div class="bg-base-100 border border-base-300 rounded-box p-3">
+                    <h4 class="font-bold text-xs mb-2">🔴 Broken EQ → Indicator References (@missingIndInEQ.Count)</h4>
+                    @if (!missingIndInEQ.Any())
+                    {
+                        <div class="text-xs text-success">✓ None</div>
+                    }
+                    @foreach (var x in missingIndInEQ)
+                    {
+                        <div class="py-1 border-b border-base-200 text-xs"><strong>@x.Indicator</strong> <span class="text-base-content/40">← @x.EQ</span></div>
+                    }
+                </div>
+            </div>
+            <div class="bg-base-100 border border-base-300 rounded-box p-3">
+                <h4 class="font-bold text-xs mb-2">📊 Summary</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-8">
+                    <div class="py-1 border-b border-base-200 text-xs">Total data elements: <strong>@_elements.Count</strong></div>
+                    <div class="py-1 border-b border-base-200 text-xs">Total indicators: <strong>@_indicators.Count</strong></div>
+                    <div class="py-1 border-b border-base-200 text-xs">Total essential questions: <strong>@_questions.Count</strong></div>
+                    <div class="py-1 border-b border-base-200 text-xs">Elements used by ≥1 indicator: <strong>@usedSet.Intersect(_elements.Keys).Count()</strong></div>
+                    <div class="py-1 border-b border-base-200 text-xs">Unique element names referenced: <strong>@usedSet.Count</strong></div>
+                </div>
+            </div>
+        }
+
+        @* ══ EXPORT TAB ══ *@
+        @if (_tab == Tab.Export)
+        {
+            <div class="flex gap-1 mb-2">
+                <button class="btn btn-sm @(_exportTab == 0 ? "btn-primary" : "btn-ghost")" @onclick="@(() => _exportTab = 0)">Data Elements</button>
+                <button class="btn btn-sm @(_exportTab == 1 ? "btn-primary" : "btn-ghost")" @onclick="@(() => _exportTab = 1)">Indicators</button>
+                <button class="btn btn-sm @(_exportTab == 2 ? "btn-primary" : "btn-ghost")" @onclick="@(() => _exportTab = 2)">Essential Questions</button>
+                <button class="btn btn-sm @(_exportTab == 3 ? "btn-primary" : "btn-ghost")" @onclick="@(() => _exportTab = 3)">Disaggregates</button>
+            </div>
+            <div class="flex gap-2 items-center mb-2">
+                <button class="btn btn-sm btn-primary" @onclick="CopyExport">📋 Copy to Clipboard</button>
+                @if (_copyFeedback)
+                {
+                    <span class="text-success text-xs">✓ Copied!</span>
+                }
+            </div>
+            <pre class="font-mono text-xs bg-neutral text-neutral-content p-4 rounded-box overflow-auto"
+                 style="height: calc(100vh - 200px);">@ExportText</pre>
+        }
+
+    </div>
+</div>
+
+@* ══ Unsaved element changes modal ══ *@
+@if (_pendingNavigateToKey != null)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-sm">Unsaved Changes</h3>
+            <p class="py-3 text-sm">You have unsaved changes to <strong>@_selectedElementKey</strong>. Discard them and continue?</p>
+            <div class="modal-action">
+                <button class="btn btn-sm btn-ghost" @onclick="@(() => _pendingNavigateToKey = null)">Cancel</button>
+                <button class="btn btn-sm btn-error" @onclick="ConfirmNavigateAway">Discard & Continue</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" @onclick="@(() => _pendingNavigateToKey = null)"></div>
+    </div>
+}
+
+@* ══ Reset to Source confirmation modal ══ *@
+@if (_showResetConfirm)
+{
+    <div class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-sm">Reset to Source?</h3>
+            <p class="py-3 text-sm">This will reload all elements, indicators, essential questions, and disaggregates from the compiled source data, discarding any edits you have made to mappings and element details.</p>
+            <p class="pb-3 text-sm text-base-content/60">Review statuses and notes will be preserved.</p>
+            <div class="modal-action">
+                <button class="btn btn-sm btn-ghost" @onclick="@(() => _showResetConfirm = false)">Cancel</button>
+                <button class="btn btn-sm btn-error" @onclick="ConfirmResetToSource">Reset</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" @onclick="@(() => _showResetConfirm = false)"></div>
+    </div>
+}
+
+@code {
+
+    // ── Enums ─────────────────────────────────────────────────────────────
+
+    enum Tab { Elements, Indicators, EQ, Disaggregates, Diagnostics, Export }
+    Tab _tab = Tab.Elements;
+
+    public enum ReviewStatus { Unreviewed, Reviewed, ChangesNeeded, Updated }
+    public enum ReviewKind { Element, Indicator, EQ, Disaggregate }
+
+    // ── Review model ──────────────────────────────────────────────────────
+
+    public class ReviewEntry
+    {
+        public ReviewStatus Status { get; set; } = ReviewStatus.Unreviewed;
+        public string Notes { get; set; } = "";
+    }
+
+    Dictionary<string, ReviewEntry> _reviews = new();
+    const string StorageKey = "ew-framework-reviews";
+    const string WorkingStateKey = "ew-framework-working-state";
+
+    // ── Working data ──────────────────────────────────────────────────────
+
+    Dictionary<string, DataElement> _elements = new();
+    Dictionary<string, Indicator> _indicators = new();
+    List<EssentialQuestion> _questions = new();
+    List<Disaggregate> _disaggregates = new();
+
+    // Elements tab
+    string _elSearch = "", _elSectorFilter = "", _elCategoryFilter = "",
+           _elStatusFilter = "", _elReviewFilter = "";
+    string _selectedElementKey = "", _addElementName = "";
+    string _elEditName = "", _elEditCluster = "", _elEditCategory = "",
+           _elEditNotes = "", _elEditScoring = "";
+    List<Sector> _elEditSectors = new();
+    string _elNewSector = "";
+    bool _elHasChanges = false;
+    string? _pendingNavigateToKey = null;
+
+    // Indicators tab
+    string _indSearch = "", _indDomainFilter = "", _indTypeFilter = "", _indReviewFilter = "";
+    string _selectedIndicatorKey = "";
+    List<string> _indEditElements = new();
+    string _indAddElement = "";
+
+    // Disaggregates tab
+    string _disagSearch = "", _disagSectorFilter = "", _disagReviewFilter = "";
+    string _selectedDisaggregateName = "";
+    List<string> _disagEditElements = new();
+    string _disagAddElement = "";
+
+    // EQ tab
+    int _selectedEQNumber = -1;
+    List<string> _eqEditIndicators = new();
+    string _eqAddIndicator = "";
+
+    // Export tab
+    int _exportTab = 0;
+    bool _copyFeedback = false;
+
+    // Reset confirmation
+    bool _showResetConfirm = false;
+
+    // ── Working state DTO (localStorage blob) ────────────────────────────
+
+    class WorkingState
+    {
+        public Dictionary<string, DataElementDto> Elements { get; set; } = new();
+        public Dictionary<string, List<string>> IndicatorElements { get; set; } = new();
+        public Dictionary<int, List<string>> EQIndicators { get; set; } = new();
+        public Dictionary<string, List<string>> DisaggregateElements { get; set; } = new();
+    }
+
+    // Minimal DTO — only the fields that can be edited in-tool
+    class DataElementDto
+    {
+        public string Name { get; set; } = "";
+        public string ClusterOnlyCategory { get; set; } = "";
+        public string DataElementCategory { get; set; } = "";
+        public List<string> RelatedSectors { get; set; } = new();
+        public string? AdditionalNotes { get; set; }
+        public string? ScoringRuleName { get; set; }
+    }
+
+    // ── Lifecycle ─────────────────────────────────────────────────────────
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadSourceData();
+        await LoadReviewsAsync();
+        await LoadWorkingStateAsync();
+    }
+
+    // Loads (or reloads) the four collections from compiled source — no localStorage touch.
+    void LoadSourceData()
+    {
+        _elements = EwFrameworkDataElements.Elements.ToDictionary(k => k.Key, v => CloneElement(v.Value));
+        _indicators = EwFrameworkIndicators.Indicators.ToDictionary(k => k.Key, v => CloneIndicator(v.Value));
+        _questions = EwFrameworkEssentialQuestions.Questions.Select(CloneQuestion).ToList();
+        _disaggregates = EwFrameworkDisaggregates.Disaggregates.Select(CloneDisaggregate).ToList();
+    }
+
+    void ResetSelections()
+    {
+        _selectedElementKey = "";
+        _selectedIndicatorKey = "";
+        _selectedEQNumber = -1;
+        _selectedDisaggregateName = "";
+        _elHasChanges = false;
+        _pendingNavigateToKey = null;
+    }
+
+    async void ConfirmResetToSource()
+    {
+        _showResetConfirm = false;
+        LoadSourceData();
+        ResetSelections();
+        await PersistWorkingStateAsync();
+        StateHasChanged();
+    }
+
+    // ── localStorage — reviews ────────────────────────────────────────────
+
+    async Task LoadReviewsAsync()
+    {
+        try
+        {
+            var json = await JS.InvokeAsync<string?>("localStorage.getItem", StorageKey);
+            if (!string.IsNullOrEmpty(json))
+                _reviews = JsonSerializer.Deserialize<Dictionary<string, ReviewEntry>>(json) ?? new();
+        }
+        catch { }
+    }
+
+    async Task PersistReviewsAsync()
+    {
+        var json = JsonSerializer.Serialize(_reviews);
+        await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
+    }
+
+    // ── localStorage — working state ──────────────────────────────────────
+
+    async Task LoadWorkingStateAsync()
+    {
+        try
+        {
+            var json = await JS.InvokeAsync<string?>("localStorage.getItem", WorkingStateKey);
+            if (string.IsNullOrEmpty(json)) return;
+            var ws = JsonSerializer.Deserialize<WorkingState>(json);
+            if (ws == null) return;
+
+            // Elements — apply saved field values; fall back to source for keys not in saved state
+            foreach (var kv in ws.Elements)
+            {
+                var dto = kv.Value;
+                var el = new DataElement
+                {
+                    Name = dto.Name,
+                    ClusterOnlyCategory = dto.ClusterOnlyCategory,
+                    DataElementCategory = dto.DataElementCategory,
+                    RelatedSectors = dto.RelatedSectors
+                                            .Select(s => Enum.TryParse<Sector>(s, out var sv) ? sv : (Sector?)null)
+                                            .Where(s => s.HasValue).Select(s => s!.Value).ToList(),
+                    AdditionalNotes = dto.AdditionalNotes,
+                    ScoringRuleName = dto.ScoringRuleName
+                };
+                _elements[kv.Key] = el;
+            }
+            // Remove elements deleted during a previous session
+            foreach (var key in _elements.Keys.Except(ws.Elements.Keys).ToList())
+                _elements.Remove(key);
+
+            // Indicator element lists
+            foreach (var kv in ws.IndicatorElements)
+                if (_indicators.TryGetValue(kv.Key, out var ind))
+                    ind.DataElementNames = kv.Value.ToList();
+
+            // EQ indicator lists
+            foreach (var kv in ws.EQIndicators)
+            {
+                var q = _questions.FirstOrDefault(q => q.QuestionNumber == kv.Key);
+                if (q != null) q.RelatedIndicatorNames = kv.Value.ToList();
+            }
+
+            // Disaggregate element lists
+            foreach (var kv in ws.DisaggregateElements)
+            {
+                var d = _disaggregates.FirstOrDefault(d => d.Name == kv.Key);
+                if (d != null) d.DataElementNames = kv.Value.ToList();
+            }
+        }
+        catch { }
+    }
+
+    async Task PersistWorkingStateAsync()
+    {
+        var ws = new WorkingState
+        {
+            Elements = _elements.ToDictionary(
+                kv => kv.Key,
+                kv => new DataElementDto
+                {
+                    Name = kv.Value.Name,
+                    ClusterOnlyCategory = kv.Value.ClusterOnlyCategory,
+                    DataElementCategory = kv.Value.DataElementCategory,
+                    RelatedSectors = kv.Value.RelatedSectors.Select(s => s.ToString()).ToList(),
+                    AdditionalNotes = kv.Value.AdditionalNotes,
+                    ScoringRuleName = kv.Value.ScoringRuleName
+                }),
+            IndicatorElements = _indicators.ToDictionary(kv => kv.Key, kv => kv.Value.DataElementNames.ToList()),
+            EQIndicators = _questions.ToDictionary(q => q.QuestionNumber, q => q.RelatedIndicatorNames.ToList()),
+            DisaggregateElements = _disaggregates.ToDictionary(d => d.Name, d => d.DataElementNames.ToList())
+        };
+        var json = JsonSerializer.Serialize(ws);
+        await JS.InvokeVoidAsync("localStorage.setItem", WorkingStateKey, json);
+    }
+
+    string ReviewKey(ReviewKind kind, string itemKey) => $"{kind}:{itemKey}";
+
+    ReviewEntry GetReview(ReviewKind kind, string itemKey) =>
+        _reviews.TryGetValue(ReviewKey(kind, itemKey), out var r) ? r : new ReviewEntry();
+
+    async void SaveReview(ReviewKind kind, string itemKey, ReviewEntry entry)
+    {
+        _reviews[ReviewKey(kind, itemKey)] = entry;
+        await PersistReviewsAsync();
+        StateHasChanged();
+    }
+
+    // ── ReviewBar — inline RenderFragment ────────────────────────────────
+
+    RenderFragment ReviewBar(ReviewKind kind, string itemKey)
+    {
+        var entry = GetReview(kind, itemKey);
+        return @<div class="bg-base-200 border border-base-300 rounded-box p-3 mb-4 flex flex-wrap gap-3 items-start">
+            <div class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/50 mb-0.5">Review Status</span>
+                <div class="join">
+                    @foreach (var s in Enum.GetValues<ReviewStatus>())
+                    {
+                        var active = entry.Status == s;
+                        var color = s switch
+                        {
+                            ReviewStatus.Reviewed => active ? "btn-success" : "btn-ghost",
+                            ReviewStatus.ChangesNeeded => active ? "btn-error" : "btn-ghost",
+                            ReviewStatus.Updated => active ? "btn-info" : "btn-ghost",
+                            _ => active ? "btn-neutral" : "btn-ghost"
+                        };
+                        var label = ReviewLabel(s);
+                        var capture = s;
+                        <button class="btn btn-xs join-item @color"
+                                @onclick="@(() => SaveReview(kind, itemKey, new ReviewEntry { Status = capture, Notes = entry.Notes }))">
+                            @label
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="flex-1 min-w-48 flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/50">Review Notes</span>
+                <textarea class="textarea textarea-bordered textarea-xs w-full text-xs resize-none"
+                          rows="2"
+                          placeholder="Optional notes…"
+                          value="@entry.Notes"
+                          @oninput="@(e => SaveReview(kind, itemKey, new ReviewEntry { Status = entry.Status, Notes = e.Value?.ToString() ?? "" }))">
+                        </textarea>
+            </div>
+        </div>;
+    }
+
+    // ── Review label / pill helpers ───────────────────────────────────────
+
+    static string ReviewLabel(ReviewStatus s) => s switch
+    {
+        ReviewStatus.Reviewed => "Reviewed",
+        ReviewStatus.ChangesNeeded => "Changes Needed",
+        ReviewStatus.Updated => "Updated",
+        _ => "Unreviewed"
+    };
+
+    static string ReviewPillClass(ReviewStatus s) => s switch
+    {
+        ReviewStatus.Reviewed => "badge badge-xs badge-success",
+        ReviewStatus.ChangesNeeded => "badge badge-xs badge-error",
+        ReviewStatus.Updated => "badge badge-xs badge-info",
+        _ => "hidden"
+    };
+
+    // ── Dirty tracking ────────────────────────────────────────────────────
+
+    void MarkElDirty() => _elHasChanges = true;
+
+    // ── Diagnostics ───────────────────────────────────────────────────────
+
+    List<string> MissingElementNames =>
+        _indicators.Values.SelectMany(i => i.DataElementNames)
+            .Where(n => !_elements.ContainsKey(n)).Distinct().OrderBy(n => n).ToList();
+
+    List<DataElement> OrphanElements
+    {
+        get
+        {
+            var used = _indicators.Values.SelectMany(i => i.DataElementNames)
+                .Concat(_disaggregates.SelectMany(d => d.DataElementNames))
+                .ToHashSet();
+            return _elements.Values.Where(e => !used.Contains(e.Name)).ToList();
+        }
+    }
+
+    List<Indicator> IndicatorsWithNoElements => _indicators.Values.Where(i => !i.DataElementNames.Any()).ToList();
+    List<Disaggregate> DisaggregatesWithNoElements => _disaggregates.Where(d => !d.DataElementNames.Any()).ToList();
+
+    List<string> MissingIndicatorNamesInEQ =>
+        _questions.SelectMany(q => q.RelatedIndicatorNames)
+            .Where(n => !_indicators.ContainsKey(n)).Distinct().OrderBy(n => n).ToList();
+
+    // ── Elements tab helpers ──────────────────────────────────────────────
+
+    List<string> AllElementCategories =>
+        _elements.Values.Select(e => e.DataElementCategory)
+            .Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
+
+    List<string> AllClusterCategories =>
+        _elements.Values.Select(e => e.ClusterOnlyCategory)
+            .Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
+
+    IEnumerable<KeyValuePair<string, DataElement>> FilteredElements()
+    {
+        var used = _indicators.Values.SelectMany(i => i.DataElementNames)
+            .Concat(_disaggregates.SelectMany(d => d.DataElementNames))
+            .ToHashSet();
+        return _elements
+            .Where(kv =>
+                (string.IsNullOrEmpty(_elSearch) || kv.Key.Contains(_elSearch, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(_elSectorFilter) || kv.Value.RelatedSectors.Any(s => s.ToString() == _elSectorFilter)) &&
+                (string.IsNullOrEmpty(_elCategoryFilter) || kv.Value.DataElementCategory == _elCategoryFilter) &&
+                (_elStatusFilter != "orphan" || !used.Contains(kv.Key)) &&
+                (string.IsNullOrEmpty(_elReviewFilter) || GetReview(ReviewKind.Element, kv.Key).Status.ToString() == _elReviewFilter))
+            .OrderBy(kv => kv.Key);
+    }
+
+    bool ElementIsOrphan(string key)
+    {
+        var used = _indicators.Values.SelectMany(i => i.DataElementNames)
+            .Concat(_disaggregates.SelectMany(d => d.DataElementNames))
+            .ToHashSet();
+        return !used.Contains(key);
+    }
+
+    List<string> IndicatorsUsingElement(string elementName) =>
+        _indicators.Where(kv => kv.Value.DataElementNames.Contains(elementName))
+            .Select(kv => kv.Key).OrderBy(n => n).ToList();
+
+    // NEW: disaggregates that reference this element
+    List<string> DisaggregatesUsingElement(string elementName) =>
+        _disaggregates.Where(d => d.DataElementNames.Contains(elementName))
+            .Select(d => d.Name).OrderBy(n => n).ToList();
+
+    void TrySelectElement(string key)
+    {
+        if (key == _selectedElementKey) return;
+        if (_elHasChanges) { _pendingNavigateToKey = key; return; }
+        SelectElement(key);
+    }
+
+    void ConfirmNavigateAway()
+    {
+        var key = _pendingNavigateToKey!;
+        _pendingNavigateToKey = null;
+        _elHasChanges = false;
+        SelectElement(key);
+    }
+
+    void SelectElement(string key)
+    {
+        _selectedElementKey = key;
+        _elHasChanges = false;
+        if (!_elements.TryGetValue(key, out var e)) return;
+        _elEditName = e.Name;
+        _elEditCluster = e.ClusterOnlyCategory;
+        _elEditCategory = e.DataElementCategory;
+        _elEditNotes = e.AdditionalNotes ?? "";
+        _elEditScoring = e.ScoringRuleName ?? "";
+        _elEditSectors = e.RelatedSectors.ToList();
+    }
+
+    void AddSectorToElement()
+    {
+        if (Enum.TryParse<Sector>(_elNewSector, out var sv) && !_elEditSectors.Contains(sv))
+        {
+            _elEditSectors.Add(sv);
+            _elNewSector = "";
+            MarkElDirty();
+        }
+    }
+
+    void SaveElement()
+    {
+        if (!_elements.ContainsKey(_selectedElementKey)) return;
+        var newKey = _elEditName.Trim();
+        if (string.IsNullOrEmpty(newKey)) return;
+        var updated = new DataElement
+        {
+            Name = newKey,
+            ClusterOnlyCategory = _elEditCluster,
+            DataElementCategory = _elEditCategory,
+            RelatedSectors = _elEditSectors.ToList(),
+            AdditionalNotes = string.IsNullOrWhiteSpace(_elEditNotes) ? null : _elEditNotes,
+            ScoringRuleName = string.IsNullOrWhiteSpace(_elEditScoring) ? null : _elEditScoring
+        };
+        if (newKey != _selectedElementKey)
+        {
+            foreach (var ind in _indicators.Values)
+            {
+                var idx = ind.DataElementNames.IndexOf(_selectedElementKey);
+                if (idx >= 0) ind.DataElementNames[idx] = newKey;
+            }
+            foreach (var d in _disaggregates)
+            {
+                var idx = d.DataElementNames.IndexOf(_selectedElementKey);
+                if (idx >= 0) d.DataElementNames[idx] = newKey;
+            }
+            var oldRk = ReviewKey(ReviewKind.Element, _selectedElementKey);
+            if (_reviews.TryGetValue(oldRk, out var rv))
+            {
+                _reviews.Remove(oldRk);
+                _reviews[ReviewKey(ReviewKind.Element, newKey)] = rv;
+                _ = PersistReviewsAsync();
+            }
+            _elements.Remove(_selectedElementKey);
+            _selectedElementKey = newKey;
+        }
+        _elements[_selectedElementKey] = updated;
+        _elHasChanges = false;
+        _ = PersistWorkingStateAsync();
+    }
+
+    void DeleteElement()
+    {
+        if (!_elements.ContainsKey(_selectedElementKey)) return;
+        foreach (var ind in _indicators.Values)
+            ind.DataElementNames.Remove(_selectedElementKey);
+        foreach (var d in _disaggregates)
+            d.DataElementNames.Remove(_selectedElementKey);
+        _reviews.Remove(ReviewKey(ReviewKind.Element, _selectedElementKey));
+        _ = PersistReviewsAsync();
+        _elements.Remove(_selectedElementKey);
+        _selectedElementKey = "";
+        _elHasChanges = false;
+        _ = PersistWorkingStateAsync();
+    }
+
+    void AddNewElement()
+    {
+        var n = _addElementName.Trim();
+        if (string.IsNullOrEmpty(n) || _elements.ContainsKey(n)) return;
+        _elements[n] = new DataElement { Name = n, ClusterOnlyCategory = "", DataElementCategory = "", RelatedSectors = new(), AdditionalNotes = null };
+        _addElementName = "";
+        _ = PersistWorkingStateAsync();
+        TrySelectElement(n);
+    }
+
+    // ── Indicators tab ────────────────────────────────────────────────────
+
+    IEnumerable<KeyValuePair<string, Indicator>> FilteredIndicators() =>
+        _indicators
+            .Where(kv =>
+                (string.IsNullOrEmpty(_indSearch) || kv.Key.Contains(_indSearch, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(_indDomainFilter) || kv.Value.Domain.ToString() == _indDomainFilter) &&
+                (string.IsNullOrEmpty(_indTypeFilter) || kv.Value.Type.ToString() == _indTypeFilter) &&
+                (string.IsNullOrEmpty(_indReviewFilter) || GetReview(ReviewKind.Indicator, kv.Key).Status.ToString() == _indReviewFilter))
+            .OrderBy(kv => kv.Key);
+
+    void SelectIndicator(string key)
+    {
+        _selectedIndicatorKey = key;
+        _indEditElements = _indicators.TryGetValue(key, out var ind) ? ind.DataElementNames.ToList() : new();
+    }
+
+    void AddElementToIndicatorAndSave()
+    {
+        var n = _indAddElement.Trim();
+        if (string.IsNullOrEmpty(n) || _indEditElements.Contains(n)) return;
+        _indEditElements.Add(n);
+        _indAddElement = "";
+        PersistIndicatorElements();
+    }
+
+    void RemoveElementFromIndicatorAndSave(string el) { _indEditElements.Remove(el); PersistIndicatorElements(); }
+
+    void PersistIndicatorElements()
+    {
+        if (_indicators.TryGetValue(_selectedIndicatorKey, out var ind))
+            ind.DataElementNames = _indEditElements.ToList();
+        _ = PersistWorkingStateAsync();
+    }
+
+    // ── Disaggregates tab ─────────────────────────────────────────────────
+
+    IEnumerable<Disaggregate> FilteredDisaggregates() =>
+        _disaggregates
+            .Where(d =>
+                (string.IsNullOrEmpty(_disagSearch) || d.Name.Contains(_disagSearch, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrEmpty(_disagSectorFilter) || d.Sectors.Any(s => s.ToString() == _disagSectorFilter)) &&
+                (string.IsNullOrEmpty(_disagReviewFilter) || GetReview(ReviewKind.Disaggregate, d.Name).Status.ToString() == _disagReviewFilter))
+            .OrderBy(d => d.Name);
+
+    void SelectDisaggregate(string name)
+    {
+        _selectedDisaggregateName = name;
+        var d = _disaggregates.FirstOrDefault(d => d.Name == name);
+        _disagEditElements = d?.DataElementNames.ToList() ?? new();
+    }
+
+    void AddElementToDisaggregateAndSave()
+    {
+        var n = _disagAddElement.Trim();
+        if (string.IsNullOrEmpty(n) || _disagEditElements.Contains(n)) return;
+        _disagEditElements.Add(n);
+        _disagAddElement = "";
+        PersistDisaggregateElements();
+    }
+
+    void RemoveElementFromDisaggregateAndSave(string el) { _disagEditElements.Remove(el); PersistDisaggregateElements(); }
+
+    void PersistDisaggregateElements()
+    {
+        var d = _disaggregates.FirstOrDefault(d => d.Name == _selectedDisaggregateName);
+        if (d != null) d.DataElementNames = _disagEditElements.ToList();
+        _ = PersistWorkingStateAsync();
+    }
+
+    // ── EQ tab ────────────────────────────────────────────────────────────
+
+    void SelectEQ(int num)
+    {
+        _selectedEQNumber = num;
+        var q = _questions.FirstOrDefault(q => q.QuestionNumber == num);
+        _eqEditIndicators = q?.RelatedIndicatorNames.ToList() ?? new();
+    }
+
+    void AddIndicatorToEQ()
+    {
+        var n = _eqAddIndicator.Trim();
+        if (string.IsNullOrEmpty(n) || _eqEditIndicators.Contains(n)) return;
+        _eqEditIndicators.Add(n);
+        _eqAddIndicator = "";
+    }
+
+    void RemoveIndicatorFromEQ(string name) => _eqEditIndicators.Remove(name);
+
+    void SaveEQIndicators()
+    {
+        var q = _questions.FirstOrDefault(q => q.QuestionNumber == _selectedEQNumber);
+        if (q != null) q.RelatedIndicatorNames = _eqEditIndicators.ToList();
+        _ = PersistWorkingStateAsync();
+    }
+
+    // ── Export ────────────────────────────────────────────────────────────
+
+    string ExportText => _exportTab switch { 0 => GenerateElements(), 1 => GenerateIndicators(), 2 => GenerateEssentialQuestions(), _ => GenerateDisaggregates() };
+
+    async Task CopyExport()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ExportText);
+        _copyFeedback = true; StateHasChanged();
+        await Task.Delay(2000);
+        _copyFeedback = false; StateHasChanged();
+    }
+
+    string GenerateElements()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("using EwFrameworkAnalysis.Common.Models.Framework;");
+        sb.AppendLine(); sb.AppendLine("namespace EwFrameworkAnalysis.Common.FrameworkReferenceData;");
+        sb.AppendLine(); sb.AppendLine("public static class EwFrameworkDataElements");
+        sb.AppendLine("{");
+        sb.AppendLine("    public static readonly Dictionary<string, DataElement> Elements = new()");
+        sb.AppendLine("    {");
+        foreach (var kv in _elements.OrderBy(k => k.Key))
+        {
+            var e = kv.Value;
+            sb.AppendLine($"        [\"{Esc(kv.Key)}\"] =");
+            sb.AppendLine("            new DataElement"); sb.AppendLine("            {");
+            sb.AppendLine($"                Name = \"{Esc(e.Name)}\",");
+            sb.AppendLine($"                ClusterOnlyCategory = \"{Esc(e.ClusterOnlyCategory)}\",");
+            sb.AppendLine($"                DataElementCategory = \"{Esc(e.DataElementCategory)}\",");
+            sb.AppendLine($"                RelatedSectors = [{string.Join(", ", e.RelatedSectors.Select(s => $"Sector.{s}"))}],");
+            sb.AppendLine(e.AdditionalNotes != null ? $"                AdditionalNotes = \"{Esc(e.AdditionalNotes)}\"" : "                AdditionalNotes = null");
+            if (!string.IsNullOrEmpty(e.ScoringRuleName)) { sb.Insert(sb.Length - Environment.NewLine.Length, ","); sb.AppendLine($"                ScoringRuleName = \"{Esc(e.ScoringRuleName)}\""); }
+            sb.AppendLine("            },");
+        }
+        sb.AppendLine("    };"); sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    string GenerateIndicators()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("using System.ComponentModel.DataAnnotations;");
+        sb.AppendLine("using EwFrameworkAnalysis.Common.Models.Framework;");
+        sb.AppendLine(); sb.AppendLine("namespace EwFrameworkAnalysis.Common.FrameworkReferenceData;");
+        sb.AppendLine(); sb.AppendLine("public static class EwFrameworkIndicators");
+        sb.AppendLine("{");
+        sb.AppendLine("    public static readonly Dictionary<string, Indicator> Indicators = new()");
+        sb.AppendLine("    {");
+        foreach (var kv in _indicators.OrderBy(k => k.Key))
+        {
+            var i = kv.Value;
+            sb.AppendLine($"        [\"{Esc(kv.Key)}\"] =");
+            sb.AppendLine("            new()"); sb.AppendLine("            {");
+            sb.AppendLine($"                Name = \"{Esc(i.Name)}\",");
+            sb.AppendLine($"                Type = IndicatorType.{i.Type},");
+            sb.AppendLine($"                Domain = IndicatorDomain.{i.Domain},");
+            sb.AppendLine($"                Definition = \"{Esc(i.Definition)}\",");
+            sb.AppendLine($"                RecommendedMetrics = \"{Esc(i.RecommendedMetrics)}\",");
+            sb.AppendLine($"                DataNeeded = [{string.Join(", ", i.DataNeeded.Select(d => $"DataCategory.{d}"))}],");
+            sb.AppendLine($"                Sectors = [{string.Join(", ", i.Sectors.Select(s => $"Sector.{s}"))}],");
+            sb.AppendLine("                DataElementNames ="); sb.AppendLine("                [");
+            foreach (var el in i.DataElementNames) sb.AppendLine($"                    \"{Esc(el)}\",");
+            sb.AppendLine("                ]"); sb.AppendLine("            },");
+        }
+        sb.AppendLine("    };"); sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    string GenerateEssentialQuestions()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("using EwFrameworkAnalysis.Common.Models.Framework;");
+        sb.AppendLine(); sb.AppendLine("namespace EwFrameworkAnalysis.Common.FrameworkReferenceData;");
+        sb.AppendLine(); sb.AppendLine("public static class EwFrameworkEssentialQuestions");
+        sb.AppendLine("{");
+        sb.AppendLine("    public static readonly List<EssentialQuestion> Questions =");
+        sb.AppendLine("    [");
+        foreach (var q in _questions.OrderBy(q => q.QuestionNumber))
+        {
+            sb.AppendLine("        new()"); sb.AppendLine("        {");
+            sb.AppendLine($"            QuestionNumber = {q.QuestionNumber},");
+            sb.AppendLine($"            Question = \"{Esc(q.Question)}\",");
+            sb.AppendLine($"            QuestionSummary = \"{Esc(q.QuestionSummary)}\",");
+            sb.AppendLine($"            ApplicableSectors = [{string.Join(", ", q.ApplicableSectors.Select(s => $"Sector.{s}"))}],");
+            sb.AppendLine("            RelatedIndicatorNames ="); sb.AppendLine("            [");
+            foreach (var n in q.RelatedIndicatorNames) sb.AppendLine($"                \"{Esc(n)}\",");
+            sb.AppendLine("            ]"); sb.AppendLine("        },");
+        }
+        sb.AppendLine("    ];"); sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    string GenerateDisaggregates()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("using EwFrameworkAnalysis.Common.Models.Framework;");
+        sb.AppendLine(); sb.AppendLine("namespace EwFrameworkAnalysis.Common.FrameworkReferenceData;");
+        sb.AppendLine(); sb.AppendLine("public static class EwFrameworkDisaggregates");
+        sb.AppendLine("{");
+        sb.AppendLine("    public static IReadOnlyList<Disaggregate> Disaggregates { get; } =");
+        sb.AppendLine("    [");
+        foreach (var d in _disaggregates.OrderBy(d => d.Name))
+        {
+            sb.AppendLine("        new Disaggregate"); sb.AppendLine("        {");
+            sb.AppendLine($"            Name = \"{Esc(d.Name)}\",");
+            sb.AppendLine($"            Description = \"{Esc(d.Description)}\",");
+            sb.AppendLine($"            Sectors = [{string.Join(", ", d.Sectors.Select(s => $"Sector.{s}"))}],");
+            sb.AppendLine("            DataElementNames ="); sb.AppendLine("            [");
+            foreach (var el in d.DataElementNames) sb.AppendLine($"                \"{Esc(el)}\",");
+            sb.AppendLine("            ]"); sb.AppendLine("        },");
+        }
+        sb.AppendLine("    ];"); sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    static string Esc(string? s) =>
+        (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"")
+                 .Replace("\r\n", "\\n").Replace("\n", "\\n").Replace("\r", "\\n");
+
+    string GenerateReviewCsv()
+    {
+        using var writer = new StringWriter();
+        using var csv = new CsvHelper.CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture);
+
+        csv.WriteHeader<ReviewCsvRecord>();
+        csv.NextRecord();
+
+        foreach (var kv in _reviews.OrderBy(k => k.Key))
+        {
+            var parts = kv.Key.Split(':', 2);
+            csv.WriteRecord(new ReviewCsvRecord
+            {
+                ItemType = parts.Length == 2 ? parts[0] : kv.Key,
+                ItemName = parts.Length == 2 ? parts[1] : "",
+                ReviewStatus = ReviewLabel(kv.Value.Status),
+                ReviewNotes = kv.Value.Notes
+            });
+            csv.NextRecord();
+        }
+
+        return writer.ToString();
+    }
+
+    record ReviewCsvRecord
+    {
+        public string ItemType { get; init; } = "";
+        public string ItemName { get; init; } = "";
+        public string ReviewStatus { get; init; } = "";
+        public string ReviewNotes { get; init; } = "";
+    }
+
+    async Task DownloadReviewCsv()
+    {
+        var csv = GenerateReviewCsv();
+        var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(csv));
+        await JS.InvokeVoidAsync("eval",
+            $"const a=document.createElement('a');a.href='data:text/csv;base64,{b64}';" +
+            $"a.download='ew-framework-reviews.csv';a.click();");
+    }
+
+    async Task CopyElementContext()
+    {
+        if (!_elements.TryGetValue(_selectedElementKey, out var el)) return;
+        var usedByIndicators = IndicatorsUsingElement(_selectedElementKey);
+        var usedByDisaggregates = DisaggregatesUsingElement(_selectedElementKey);
+        var sb = new StringBuilder();
+        sb.AppendLine($"**Data Element:** {_selectedElementKey}");
+        sb.AppendLine($"**Category:** {el.DataElementCategory}");
+        if (!string.IsNullOrEmpty(el.ClusterOnlyCategory))
+            sb.AppendLine($"**Cluster Category:** {el.ClusterOnlyCategory}");
+        sb.AppendLine($"**Sectors:** {string.Join(", ", el.RelatedSectors)}");
+        if (!string.IsNullOrEmpty(el.AdditionalNotes))
+            sb.AppendLine($"**Notes:** {el.AdditionalNotes}");
+        if (!string.IsNullOrEmpty(el.ScoringRuleName))
+            sb.AppendLine($"**Scoring Rule:** {el.ScoringRuleName}");
+        sb.AppendLine();
+        if (usedByIndicators.Count > 0)
+        {
+            sb.AppendLine($"**Used by {usedByIndicators.Count} indicator(s):**");
+            foreach (var ind in usedByIndicators) sb.AppendLine($"- {ind}");
+        }
+        else
+        {
+            sb.AppendLine("**⚠ Not referenced by any indicator.**");
+        }
+        if (usedByDisaggregates.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"**Used by {usedByDisaggregates.Count} disaggregate(s):**");
+            foreach (var d in usedByDisaggregates) sb.AppendLine($"- {d}");
+        }
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", sb.ToString());
+    }
+
+    async Task CopyIndicatorContext()
+    {
+        if (!_indicators.TryGetValue(_selectedIndicatorKey, out var ind)) return;
+        var sb = new StringBuilder();
+        sb.AppendLine($"**Indicator:** {_selectedIndicatorKey}");
+        sb.AppendLine($"**Type:** {ind.Type} | **Domain:** {ind.Domain}");
+        sb.AppendLine($"**Sectors:** {string.Join(", ", ind.Sectors)}");
+        sb.AppendLine($"**Definition:** {ind.Definition}");
+        sb.AppendLine($"**Recommended Metrics:** {ind.RecommendedMetrics}");
+        sb.AppendLine($"**Data Needed:** {string.Join(", ", ind.DataNeeded)}");
+        sb.AppendLine();
+        sb.AppendLine($"**Data Elements ({_indEditElements.Count}):**");
+        foreach (var el in _indEditElements.OrderBy(e => e))
+        {
+            if (_elements.TryGetValue(el, out var elem))
+            {
+                // sb.AppendLine($"- {el} [{elem.DataElementCategory}] ({string.Join(", ", elem.RelatedSectors)})");
+                sb.AppendLine($"- {el}");
+            }
+            else
+            {
+                sb.AppendLine($"- {el} [⚠ not found in dictionary]");
+            }
+        }
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", sb.ToString());
+    }
+
+    // ── Clone helpers ─────────────────────────────────────────────────────
+
+    static Disaggregate CloneDisaggregate(Disaggregate d) => new() { Name = d.Name, Description = d.Description, Sectors = d.Sectors.ToList(), DataElementNames = d.DataElementNames.ToList() };
+    static DataElement CloneElement(DataElement e) => new() { Name = e.Name, ClusterOnlyCategory = e.ClusterOnlyCategory, DataElementCategory = e.DataElementCategory, RelatedSectors = e.RelatedSectors.ToList(), AdditionalNotes = e.AdditionalNotes, ScoringRuleName = e.ScoringRuleName };
+    static Indicator CloneIndicator(Indicator i) => new() { Name = i.Name, Type = i.Type, Domain = i.Domain, Definition = i.Definition, RecommendedMetrics = i.RecommendedMetrics, DataNeeded = i.DataNeeded.ToList(), Sectors = i.Sectors.ToList(), DataElementNames = i.DataElementNames.ToList() };
+    static EssentialQuestion CloneQuestion(EssentialQuestion q) => new() { QuestionNumber = q.QuestionNumber, Question = q.Question, QuestionSummary = q.QuestionSummary, ApplicableSectors = q.ApplicableSectors.ToList(), RelatedIndicatorNames = q.RelatedIndicatorNames.ToList() };
+}

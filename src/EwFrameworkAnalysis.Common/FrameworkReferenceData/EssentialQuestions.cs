@@ -12,7 +12,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students and families have access to adequate public supports and neighborhood conditions to enable them to succeed academically and in the workforce?",
             QuestionSummary = "Public supports and neighborhood conditions",
             ApplicableSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Childhood experiences",
                 "Health insurance coverage",
                 "Food security",
@@ -22,7 +23,7 @@ public static class EwFrameworkEssentialQuestions
                 "Exposure to neighborhood crime",
                 "Neighborhood economic diversity",
                 "Neighborhood racial diversity",
-                "Neighborhood juvenile arrests"
+                "Neighborhood juvenile arrests",
             ]
         },
         new()
@@ -31,12 +32,13 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are eligible children enrolled in quality, full-day pre-K programs?",
             QuestionSummary = "Quality pre-K enrollment",
             ApplicableSectors = [Sector.PK],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Enrollment in quality public pre-K",
                 "Access to quality public pre-K",
                 "Access to full-day pre-K",
                 "Access to early intervention screening",
-                "Access to child care subsidies"
+                "Access to child care subsidies",
             ]
         },
         new()
@@ -45,7 +47,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are children demonstrating kindergarten readiness across the five learning domains?",
             QuestionSummary = "Kindergarten readiness",
             ApplicableSectors = [Sector.PK, Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Enrollment in quality public pre-K",
                 "Kindergarten readiness: language and literacy",
                 "Kindergarten readiness: cognition",
@@ -60,7 +63,7 @@ public static class EwFrameworkEssentialQuestions
                 "Educator retention",
                 "Classroom observations of instructional practice",
                 "Access to early intervention screening",
-                "Access to child care subsidies"
+                "Access to child care subsidies",
             ]
         },
         new()
@@ -69,9 +72,10 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students have access to quality, full-day kindergarten?",
             QuestionSummary = "Quality kindergarten access",
             ApplicableSectors = [Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Early grades on track",
-                "Access to full-day kindergarten"
+                "Access to full-day kindergarten",
             ]
         },
         new()
@@ -80,7 +84,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track in the early grades?",
             QuestionSummary = "Early grades on track",
             ApplicableSectors = [Sector.PK, Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Kindergarten readiness: approaches to learning",
                 "Kindergarten readiness: cognition",
                 "Kindergarten readiness: language and literacy",
@@ -94,7 +99,7 @@ public static class EwFrameworkEssentialQuestions
                 "Teacher experience",
                 "Classroom observations of instructional practice",
                 "Teachers' contributions to student learning growth",
-                "Access to quality, culturally responsive curricula"
+                "Access to quality, culturally responsive curricula",
             ]
         },
         new()
@@ -103,7 +108,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students have access to quality school environments including quality curricula and instruction, experienced teachers, effective leaders, and adequate funding?",
             QuestionSummary = "Quality school environments",
             ApplicableSectors = [Sector.PK, Sector.K12, Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Early grades on track",
                 "6th grade on track",
                 "9th grade on track",
@@ -117,7 +123,7 @@ public static class EwFrameworkEssentialQuestions
                 "Effective program and school leadership",
                 "Institutions' contributions to student outcomes",
                 "Access to quality, culturally responsive curricula",
-                "Expenditures per student"
+                "Expenditures per student",
             ]
         },
         new()
@@ -126,12 +132,13 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are there populations of students that disproportionately experience exclusionary discipline practices that disrupt their educational experience?",
             QuestionSummary = "Equitable discipline practices",
             ApplicableSectors = [Sector.PK, Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Positive behavior",
                 "Consistent attendance",
                 "Equitable discipline practices",
                 "School safety",
-                "Inclusive environments"
+                "Inclusive environments",
             ]
         },
         new()
@@ -140,7 +147,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students meeting reading and math benchmarks in grades 3 and 8?",
             QuestionSummary = "Reading and math benchmarks",
             ApplicableSectors = [Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Early grades on track",
                 "Math and reading proficiency in grade 3",
                 "6th grade on track",
@@ -161,7 +169,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are teachers and schools making sufficient contributions to academic growth for students?",
             QuestionSummary = "Teacher and school contributions",
             ApplicableSectors = [Sector.K12, Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Early grades on track",
                 "Math and reading proficiency in grade 3",
                 "6th grade on track",
@@ -172,7 +181,7 @@ public static class EwFrameworkEssentialQuestions
                 "Math and reading proficiency in high school",
                 "English learner progress",
                 "Teachers' contributions to student learning growth",
-                "Institutions' contributions to student outcomes"
+                "Institutions' contributions to student outcomes",
             ]
         },
         new()
@@ -181,7 +190,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students attend schools with safe, inclusive, and supportive environments that support their social, emotional, mental, and physical development and well-being?",
             QuestionSummary = "Safe and supportive environments",
             ApplicableSectors = [Sector.PK, Sector.K12, Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Self-management",
                 "Growth mindset",
                 "Self-efficacy",
@@ -206,7 +216,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students demonstrating satisfactory academic progress, consistent attendance, and positive behavior to be considered on track for high school graduation?",
             QuestionSummary = "High school graduation track",
             ApplicableSectors = [Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Positive behavior",
                 "8th grade on track",
                 "Math and reading proficiency in grade 8",
@@ -221,7 +232,7 @@ public static class EwFrameworkEssentialQuestions
                 "Classroom observations of instructional practice",
                 "Teachers' contributions to student learning growth",
                 "Institutions' contributions to student outcomes",
-                "Access to quality, culturally responsive curricula"
+                "Access to quality, culturally responsive curricula",
             ]
         },
         new()
@@ -230,7 +241,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students have access to and complete rigorous and accelerated college preparatory coursework?",
             QuestionSummary = "College preparatory coursework",
             ApplicableSectors = [Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Successful completion of Algebra I by 9th grade",
                 "College preparatory coursework completion",
                 "Early college coursework completion",
@@ -239,7 +251,7 @@ public static class EwFrameworkEssentialQuestions
                 "Access to early college coursework",
                 "Equitable placement in rigorous coursework",
                 "Access to quality, culturally responsive curricula",
-                "Access to college and career advising"
+                "Access to college and career advising",
             ]
         },
         new()
@@ -248,12 +260,13 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students taking the necessary steps to apply to college after high school with sufficient counseling support?",
             QuestionSummary = "College application steps",
             ApplicableSectors = [Sector.K12],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "SAT and ACT participation and performance",
                 "FAFSA completion",
                 "College applications",
                 "Social capital",
-                "Access to college and career advising"
+                "Access to college and career advising",
             ]
         },
         new()
@@ -262,7 +275,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students graduating from high school on time and successfully transitioning into further education, training, or employment?",
             QuestionSummary = "High school graduation and transition",
             ApplicableSectors = [Sector.K12, Sector.PS, Sector.WF],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "High school graduation",
                 "Senior summer on track",
                 "Postsecondary enrollment directly after high school graduation",
@@ -272,7 +286,7 @@ public static class EwFrameworkEssentialQuestions
                 "Access to college and career advising",
                 "Access to in-demand CTE pathways",
                 "Expenditures on workforce development programs",
-                "Access to jobs paying a living wage"
+                "Access to jobs paying a living wage",
             ]
         },
         new()
@@ -281,14 +295,15 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are there quality pathways for students who pursue career training that lead to employment in quality jobs?",
             QuestionSummary = "Career training pathways",
             ApplicableSectors = [Sector.K12, Sector.PS, Sector.WF],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Transfer (if applicable)",
                 "CTE pathway concentration",
                 "Participation in work-based learning",
                 "Employment in a quality job",
                 "Access to in-demand CTE pathways",
                 "Expenditures on workforce development programs",
-                "Access to ongoing career skills development"
+                "Access to ongoing career skills development",
             ]
         },
         new()
@@ -297,7 +312,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students matriculating to well-matched postsecondary institutions that successfully graduate their students with credentials of value?",
             QuestionSummary = "Well-matched postsecondary institutions",
             ApplicableSectors = [Sector.K12, Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Selection of a well-matched postsecondary institution",
                 "Senior summer on track",
                 "Postsecondary enrollment directly after high school graduation",
@@ -307,7 +323,7 @@ public static class EwFrameworkEssentialQuestions
                 "Institutions' contributions to student outcomes",
                 "Access to college and career advising",
                 "Unmet financial need",
-                "Cumulative student debt"
+                "Cumulative student debt",
             ]
         },
         new()
@@ -316,11 +332,12 @@ public static class EwFrameworkEssentialQuestions
             Question = "Do students attend postsecondary institutions that provide adequate financial aid and that are adequately funded to offer a quality educational experience?",
             QuestionSummary = "Postsecondary funding and aid",
             ApplicableSectors = [Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Student loan repayment",
                 "Expenditures per student",
                 "Unmet financial need",
-                "Cumulative student debt"
+                "Cumulative student debt",
             ]
         },
         new()
@@ -329,14 +346,15 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?",
             QuestionSummary = "Postsecondary early momentum",
             ApplicableSectors = [Sector.PS],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "First-year credit accumulation",
                 "First-year program of study concentration",
                 "Gateway course completion",
                 "Postsecondary persistence",
                 "Transfer (if applicable)",
                 "Access to college and career advising",
-                "Unmet financial need"
+                "Unmet financial need",
             ]
         },
         new()
@@ -345,7 +363,8 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students completing credentials of value after high school that set them up for success in the workforce?",
             QuestionSummary = "Credentials of value",
             ApplicableSectors = [Sector.PS, Sector.WF],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Postsecondary certificate or degree completion",
                 "Enrollment in graduate education",
                 "Graduate degree completion",
@@ -369,22 +388,14 @@ public static class EwFrameworkEssentialQuestions
             Question = "Are students gaining access to quality jobs that offer economic mobility and security after high school or postsecondary training and education?",
             QuestionSummary = "Quality job access",
             ApplicableSectors = [Sector.WF],
-            RelatedIndicatorNames = [
+            RelatedIndicatorNames =
+            [
                 "Employment in a quality job",
                 "Economic mobility",
                 "Economic security",
                 "Access to jobs paying a living wage",
-                "Access to ongoing career skills development"
+                "Access to ongoing career skills development",
             ]
-        }
+        },
     ];
-}
-
-public class EssentialQuestion
-{
-    public int QuestionNumber { get; set; }
-    public string Question { get; set; } = string.Empty;
-    public string QuestionSummary { get; set; } = string.Empty;
-    public List<Sector> ApplicableSectors { get; set; } = [];
-    public List<string> RelatedIndicatorNames { get; set; } = [];
 }

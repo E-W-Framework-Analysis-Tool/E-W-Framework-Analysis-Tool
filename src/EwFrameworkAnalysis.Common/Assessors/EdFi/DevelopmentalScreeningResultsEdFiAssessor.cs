@@ -51,7 +51,7 @@ public class DevelopmentalScreeningResultsEdFiAssessor : IEdFiAssessor
         "Bayley"                             // Bayley Scales of Infant and Toddler Development
     ];
 
-    public string DataElementName => "Developmental screening results";
+    public string DataElementName => "Developmental screening results (PK)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to Pre-K developmental screening tools for children under age 5 " +
