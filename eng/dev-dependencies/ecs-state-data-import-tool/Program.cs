@@ -3,8 +3,9 @@ using System.Text.Json;
 
 var excelPath = args[0];
 var outputDir = args[1];
-// Remaining args are state filters (empty = all states)
-var stateFilters = args.Skip(2).ToHashSet(StringComparer.OrdinalIgnoreCase);
+var remainingArgs = args.Skip(2).ToList();
+var includeCollected = remainingArgs.Remove("--include-collected");
+var stateFilters = remainingArgs.ToHashSet(StringComparer.OrdinalIgnoreCase);
 var filterStates = stateFilters.Count > 0;
 
 using var workbook = new XLWorkbook(excelPath);
@@ -90,6 +91,38 @@ string? MapStatus(string status) => status.Trim().ToLowerInvariant() switch
     _ => null
 };
 
+// First pass: build lookup of parent Metric reported status by (state, uniqueOrderKey).
+// ECS did not always fill out Data Reported for Data Elements — blank entries inherit from their parent Metric.
+var metricReportedByStateAndKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+for (var row = 2; row <= lastRow; row++)
+{
+    var state = worksheet.Cell(row, 2).GetString()?.Trim();
+    if (string.IsNullOrWhiteSpace(state))
+        continue;
+
+    if (filterStates && !stateFilters.Contains(state))
+        continue;
+
+    var metricType = worksheet.Cell(row, 9).GetString()?.Trim();
+    if (!string.Equals(metricType, "Metric", StringComparison.OrdinalIgnoreCase))
+        continue;
+
+    var uniqueOrderKey = worksheet.Cell(row, 37).GetString()?.Trim() ?? "";
+    if (string.IsNullOrWhiteSpace(uniqueOrderKey))
+        continue;
+
+    var reported = worksheet.Cell(row, 21).GetString()?.Trim() ?? "";
+    if (string.IsNullOrWhiteSpace(reported))
+        continue;
+
+    var lookupKey = $"{state}|{uniqueOrderKey}";
+    if (metricReportedByStateAndKey.TryGetValue(lookupKey, out var existingStatus))
+        metricReportedByStateAndKey[lookupKey] = BestStatus(existingStatus, reported);
+    else
+        metricReportedByStateAndKey[lookupKey] = reported;
+}
+
 for (var row = 2; row <= lastRow; row++)
 {
     var state = worksheet.Cell(row, 2).GetString()?.Trim();
@@ -118,6 +151,18 @@ for (var row = 2; row <= lastRow; row++)
     var collected = worksheet.Cell(row, 11).GetString()?.Trim() ?? "";
     var reported = worksheet.Cell(row, 21).GetString()?.Trim() ?? "";
 
+    // Inherit reported status from parent Metric when blank
+    if (string.IsNullOrWhiteSpace(reported))
+    {
+        var parentMetricKey = worksheet.Cell(row, 39).GetString()?.Trim() ?? "";
+        if (!string.IsNullOrWhiteSpace(parentMetricKey))
+        {
+            var lookupKey = $"{state}|{parentMetricKey}";
+            if (metricReportedByStateAndKey.TryGetValue(lookupKey, out var parentReported))
+                reported = parentReported;
+        }
+    }
+
     if (!stateRecords.ContainsKey(state))
         stateRecords[state] = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
 
@@ -136,6 +181,7 @@ for (var row = 2; row <= lastRow; row++)
             ["sector"] = sector,
             ["indicator"] = indicator,
             ["elementName"] = elementName,
+            ["rawElementName"] = rawElementName!,
             ["collected"] = collected,
             ["reported"] = reported
         };
@@ -147,13 +193,19 @@ var options = new JsonSerializerOptions { WriteIndented = true };
 
 foreach (var (state, recordMap) in stateRecords.OrderBy(kvp => kvp.Key))
 {
-    var records = recordMap.Values.Select(r => new
+    var records = recordMap.Values.Select(r =>
     {
-        sector = r["sector"],
-        indicator = r["indicator"],
-        elementName = r["elementName"],
-        collected = MapStatus(r["collected"]),
-        reported = MapStatus(r["reported"])
+        var output = new Dictionary<string, string?>
+        {
+            ["sector"] = r["sector"],
+            ["indicator"] = r["indicator"],
+            ["elementName"] = r["elementName"],
+            // ["srcElementName"] = r["rawElementName"],
+            ["reported"] = MapStatus(r["reported"])
+        };
+        if (includeCollected)
+            output["collected"] = MapStatus(r["collected"]);
+        return output;
     }).ToList();
     var fileName = Path.Combine(outputDir, state + ".json");
     var json = JsonSerializer.Serialize(records, options);

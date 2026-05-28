@@ -7,6 +7,8 @@ public static class AppRoutes
     public const string Dashboard = "/dashboard";
     public const string Analysis = "/analysis";
     public const string MappingOverview = "/mapping-overview";
+    public const string Visualizations = "/learn/visualizations";
+    public const string VisualizationsSetup = "/learn/visualizations/setup";
 
     public static class DataSourceDetails
     {

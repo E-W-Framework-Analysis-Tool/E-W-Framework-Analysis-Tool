@@ -4,7 +4,9 @@ param(
 
     [string[]]$States,
 
-    [string]$OutputDir = ""
+    [string]$OutputDir = "",
+
+    [switch]$IncludeCollected
 )
 
 $repoRoot = Resolve-Path "$PSScriptRoot/.."
@@ -33,6 +35,9 @@ if ($LASTEXITCODE -ne 0) { Fail "Failed to restore dependencies." }
 
 # Build arguments for the extraction program
 $runArgs = @("run", "--project", $importerProject, "--", $ExcelPath, $OutputDir)
+if ($IncludeCollected) {
+    $runArgs += "--include-collected"
+}
 if ($States) {
     $runArgs += $States
 }

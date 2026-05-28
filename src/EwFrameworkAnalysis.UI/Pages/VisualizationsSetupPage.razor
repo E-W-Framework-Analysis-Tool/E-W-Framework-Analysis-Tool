@@ -1,0 +1,260 @@
+@page "/learn/visualizations/setup"
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<VisualizationsOptions> VisualizationsOptions
+
+<div class="container mx-auto max-w-7xl p-4 lg:p-8">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="@AppRoutes.Visualizations"
+           class="btn btn-sm btn-ghost text-blue gap-2 pl-0 hover:bg-transparent hover:underline">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Visualizations
+        </a>
+    </div>
+
+    <!-- Header -->
+    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
+        <ChildContent>
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
+                    <p class="text-gray-600 text-base max-w-3xl">
+                        Follow these steps to connect to a data source and begin using the Power BI dashboard
+                        visualizations. You can use the provided sample CEDS Data Warehouse or connect your own.
+                    </p>
+                    <p class="text-sm text-gray-500 mt-3">
+                        A full README with additional technical detail is also available in the
+                        <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                           class="link link-hover text-blue">GitHub repository</a>.
+                    </p>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- Prerequisites -->
+    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
+        <ChildContent>
+            <h2 class="text-xl font-title font-semibold text-blue mb-1">Prerequisites</h2>
+            <p class="text-gray-600 text-sm mb-4">
+                Before following the steps below, ensure the following software is installed and accessible
+                on your machine. Links point to each tool's official download page.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @foreach (var prereq in _prerequisites)
+                {
+                    <div class="flex gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                        <div class="text-blue mt-0.5 shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">
+                                @if (!string.IsNullOrEmpty(prereq.Url))
+                                {
+                                    <a href="@prereq.Url" target="_blank" rel="noopener noreferrer"
+                                       class="link link-hover text-blue">@prereq.Name</a>
+                                }
+                                else
+                                {
+                                    @prereq.Name
+                                }
+                            </p>
+                            <p class="text-sm text-gray-600">@prereq.Note</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </ChildContent>
+    </Card>
+
+    <!-- Step 1: Restore Sample DB -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">1</span>
+                Restore the Sample Database
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-3">
+                Follow these steps to connect the visualizations to the provided sample database.
+            </p>
+            <ol class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                <li>
+                    Download the <code class="bg-gray-100 px-1 rounded">.bak</code> file for the EQ you wish to
+                    explore from the
+                    <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">GitHub repository</a>.
+                </li>
+                <li>In SSMS, right-click <strong>Databases</strong> and select <strong>Restore Database</strong>.</li>
+                <li>Choose <strong>Device</strong>, then browse and select the <code class="bg-gray-100 px-1 rounded">.bak</code> file.</li>
+                <li>Click <strong>OK</strong> and confirm that the <strong>Dashboards</strong> database now appears under Databases.</li>
+            </ol>
+            <div class="mt-4">
+                <img src="/images/visualizations/ssms-restore-database.jpg"
+                     alt="SSMS Restore Database options panel"
+                     class="rounded-lg border border-gray-200 shadow w-full" />
+            </div>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 2: Open the Report in Power BI -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">2</span>
+                Open the Report in Power BI
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-3">
+                Clone the
+                <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                   class="link link-hover text-blue">E-W-Indicator-Analytics repository</a>
+                using GitHub Desktop or your preferred Git client. Once cloned, navigate to
+                <code class="bg-gray-100 px-1 rounded">PowerBI &gt; EQ-12</code> (or whichever EQ you want)
+                and open the <code class="bg-gray-100 px-1 rounded">.pbip</code> file — Power BI will load the
+                dashboard. Pull the latest changes from the <strong>Main</strong> branch periodically to receive
+                report updates.
+            </p>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 3: Connect Power BI to SQL -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">3</span>
+                Connect Power BI to SQL Server
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-600 mb-3">
+                Point Power BI at the <code class="bg-gray-100 px-1 rounded">Dashboards</code> database on your
+                local SQL Server instance.
+            </p>
+            <ul class="list-disc list-inside text-sm text-gray-700 space-y-2 mb-4">
+                <li>Go to <strong>Home → Transform Data → Data source settings</strong> and select <strong>SQL Server</strong>.</li>
+                <li>
+                    Enter your <strong>Server</strong> name —
+                    <code class="bg-gray-100 px-1 rounded">localhost\&lt;INSTANCE_NAME&gt;</code>,
+                    found in SSMS at the top of the object tree — and set <strong>Database</strong> to
+                    <code class="bg-gray-100 px-1 rounded">Dashboards</code>.
+                </li>
+                <li>Set <strong>Data Connectivity mode</strong> to Import (faster) or Direct Query (real-time, no size limit).</li>
+                <li>Click <strong>OK</strong>, choose <strong>Windows Authentication</strong>, and click <strong>Connect</strong>.</li>
+            </ul>
+            <div class="mt-2">
+                <img src="/images/visualizations/powerbi-data-source-settings.jpg"
+                     alt="Power BI data source settings panel"
+                     class="rounded-lg border border-gray-200 shadow w-full" />
+            </div>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Step 4: Next Steps with Your Own Data -->
+    <CollapsibleSection AdditionalClasses="mb-3">
+        <TitleContent>
+            <span class="flex items-center gap-2 text-sm font-medium text-blue">
+                <span class="badge badge-sm bg-blue text-white border-none">4</span>
+                Next Steps: Connecting Your Own Data
+            </span>
+        </TitleContent>
+        <ChildContent>
+            <p class="text-sm text-gray-700 mb-3">
+                At this point you have the target database schema and a fully functional Power BI report. The
+                next step is populating the <code class="bg-gray-100 px-1 rounded">Dashboards</code> database
+                with your organization's data — how you do that is up to you and will depend on your existing
+                infrastructure and data sources.
+            </p>
+            <p class="text-sm text-gray-700 mb-3">
+                As a starting point, the repository includes a reference ETL built on SSIS that pulls from a
+                CEDS Data Warehouse. You're welcome to use it as-is, adapt it, or build your own pipeline
+                entirely — the schema is the contract, not the ETL.
+            </p>
+            <ul class="list-disc list-inside text-sm text-gray-700 space-y-2 mb-3">
+                <li>
+                    <strong>Deploy the schema:</strong> The
+                    <code class="bg-gray-100 px-1 rounded">Dashboards.Database/Dashboards.Database.sqlproj</code>
+                    SQL project creates the required table structures on any SQL Server instance.
+                </li>
+                <li>
+                    <strong>Reference ETL (optional):</strong>
+                    <code class="bg-gray-100 px-1 rounded">Dashboards.Database.ETL/Master.dtsx</code> is an SSIS
+                    package configured to move data from a CEDS Data Warehouse into the Dashboards database.
+                    Update <strong>Project.Params</strong> with your source and destination connection strings
+                    before executing.
+                </li>
+                <li>
+                    <strong>Update the Power BI connection:</strong> Once your database is populated, go to
+                    <strong>Home → Data Source Settings → Change Source</strong> and update the Server and
+                    Database fields to point at your instance. Click <strong>OK</strong> and save.
+                </li>
+            </ul>
+            <p class="text-sm text-gray-500 italic">
+                Questions about data pipeline design or CEDS alignment? Reach out to the support team below.
+            </p>
+        </ChildContent>
+    </CollapsibleSection>
+
+    <!-- Support -->
+    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mt-6" Border="@(new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left))">
+        <ChildContent>
+            <h2 class="text-lg font-title font-semibold text-blue mb-2">Support</h2>
+            <p class="text-sm text-gray-700 mb-3">
+                For help with downloading, installing the report, or resolving technical issues, please reach
+                out to the E-W Framework Analysis Tool support team at Double Line.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <a href="mailto:support@example.com" class="link link-hover text-blue">
+                        support@example.com
+                    </a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
+                    </svg>
+                    <a href="https://educationtoworkforce.org" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">
+                        educationtoworkforce.org
+                    </a>
+                </div>
+            </div>
+        </ChildContent>
+    </Card>
+
+</div>
+
+@code {
+    private record Prerequisite(string Name, string Note, string Url = "");
+
+    private readonly List<Prerequisite> _prerequisites =
+    [
+        new("SQL Server",
+            "Developer Edition or higher. Note your instance name at the end of installation.",
+            "https://www.microsoft.com/en-us/sql-server/sql-server-downloads"),
+        new("SQL Server Management Studio (SSMS)",
+            "Used to connect to your SQL instance and restore the sample database.",
+            "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms"),
+        new("Power BI Desktop",
+            "Latest version. Used to open, connect, and publish the dashboard reports.",
+            "https://powerbi.microsoft.com/en-us/desktop/"),
+        new("GitHub Desktop",
+            "Used to clone the repository and pull report file updates.",
+            "https://desktop.github.com/"),
+    ];
+}
