@@ -128,7 +128,7 @@
     {
         // Generate once when the modal first opens.
         if (IsOpen && _prompt == string.Empty)
-            _prompt = LlmDataProfilingPromptBuilder.Build();
+            _prompt = LlmDataProfilingPromptBuilder.Prompt;
     }
 
     private async Task Close()
