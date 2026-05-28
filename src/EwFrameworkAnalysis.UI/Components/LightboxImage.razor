@@ -1,0 +1,16 @@
+@* LightboxImage.razor
+   Usage:
+     <LightboxImage Src="/images/foo.jpg" Alt="Description" Lightbox="_lightbox" />
+*@
+
+<img src="@Src"
+     alt="@Alt"
+     class="rounded-lg border border-gray-200 shadow max-w-xl mx-auto block cursor-zoom-in hover:opacity-90 transition-opacity @AdditionalClasses"
+     @onclick="() => Lightbox.Open(Src, Alt)" />
+
+@code {
+    [Parameter, EditorRequired] public string Src { get; set; } = default!;
+    [Parameter, EditorRequired] public string Alt { get; set; } = default!;
+    [Parameter, EditorRequired] public Lightbox Lightbox { get; set; } = default!;
+    [Parameter] public string AdditionalClasses { get; set; } = "";
+}

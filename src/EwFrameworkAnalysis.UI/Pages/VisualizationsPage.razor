@@ -170,10 +170,10 @@
                                         {
                                             @if (!string.IsNullOrEmpty(rp.ScreenshotPath))
                                             {
-                                                <img src="@rp.ScreenshotPath"
-                                                     alt="Screenshot — @rp.Name"
-                                                     class="rounded-lg border border-gray-200 shadow max-w-xl mx-auto block cursor-zoom-in hover:opacity-90 transition-opacity"
-                                                     @onclick="@(() => OpenLightbox(rp.ScreenshotPath!, $" Screenshot — {rp.Name}"))" />
+                                                
+                                                <LightboxImage Src="@(rp.ScreenshotPath!)"
+                                                               Alt="@($"Screenshot — {rp.Name}")"
+                                                               Lightbox="_lightbox" />
                                             }
                                             else
                                             {
@@ -256,40 +256,12 @@
 
     </div>
 
-    @if (_lightboxSrc is not null)
-    {
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-             @onclick="CloseLightbox">
-            <div class="relative max-w-6xl w-full" @onclick:stopPropagation>
-                <button class="absolute -top-8 right-0 text-white text-sm hover:text-gray-300"
-                        @onclick="CloseLightbox">
-                    ✕ Close
-                </button>
-                <img src="@_lightboxSrc"
-                     alt="@_lightboxAlt"
-                     class="w-full rounded-lg shadow-2xl" />
-            </div>
-        </div>
-    }
+    <Lightbox @ref="_lightbox" />
 </div>
 
 @code {
     private VisualizationsOptions _opts => VisualizationsOptions.Value;
-
-    private string? _lightboxSrc;
-    private string? _lightboxAlt;
-
-    private void OpenLightbox(string src, string alt)
-    {
-        _lightboxSrc = src;
-        _lightboxAlt = alt;
-    }
-
-    private void CloseLightbox()
-    {
-        _lightboxSrc = null;
-        _lightboxAlt = null;
-    }
+    private Lightbox _lightbox = default!;
 
     // ── Report page type descriptors (shared across EQs) ─────────────────────
 
