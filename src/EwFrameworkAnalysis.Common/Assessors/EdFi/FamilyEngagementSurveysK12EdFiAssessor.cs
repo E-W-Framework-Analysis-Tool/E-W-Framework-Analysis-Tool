@@ -6,6 +6,9 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class FamilyEngagementSurveysK12EdFiAssessor : IEdFiAssessor
 {
+    private const string ParentCategoryDescriptor =
+        "uri://ed-fi.org/SurveyCategoryDescriptor#Parent";
+
     private static readonly string[] _surveyKeywords =
     [
         "family engagement",
@@ -24,35 +27,46 @@ public class FamilyEngagementSurveysK12EdFiAssessor : IEdFiAssessor
     public string DataElementName => "Family engagement surveys (K-12)";
 
     public string AssessmentDescription =>
-        "Identifies surveys linked to K-12 family engagement instruments by matching family " +
-        "engagement, parent involvement, and family-school partnership keywords in the Ed-Fi " +
-        "surveys catalog. Ed-Fi has no standard descriptor for family engagement surveys, " +
-        "so title-based matching is used as a proxy.";
+        "Identifies parent-category surveys linked to K-12 family engagement instruments by " +
+        "filtering on the Parent survey category descriptor and matching family engagement, " +
+        "parent involvement, and family-school partnership keywords in the Ed-Fi surveys catalog.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Searching survey catalog for K-12 family engagement surveys...");
+        context.ReportProgress(0, "Searching parent surveys for K-12 family engagement instruments...");
 
-        var matchingSurveys = new List<(string Identifier, string Namespace)>();
+        var totalAdministered = 0;
+        var surveyDistribution = new Dictionary<string, int>();
+
+        var queryParams = new Dictionary<string, string>
+        {
+            ["surveyCategoryDescriptor"] = ParentCategoryDescriptor
+        };
 
         await EdFiApiPatterns.PageAndProcessAsync<EdFiSurvey>(
             httpClient,
             "ed-fi/surveys",
             survey =>
             {
-                if (IsFamilyEngagementSurvey(survey))
-                    matchingSurveys.Add((survey.SurveyIdentifier, survey.Namespace));
+                if (!IsFamilyEngagementSurvey(survey))
+                    return;
+
+                var administered = survey.NumberAdministered ?? 0;
+                totalAdministered += administered;
+                surveyDistribution[survey.SurveyIdentifier] = administered;
             },
-            context);
+            context,
+            queryParams);
 
-        context.Log($"Found {matchingSurveys.Count} K-12 family engagement survey(s) in catalog");
+        context.Log($"Found {surveyDistribution.Count} K-12 family engagement survey(s) " +
+                     $"with {totalAdministered:N0} total administered");
+        context.ReportProgress(100, "Complete");
 
-        if (matchingSurveys.Count == 0)
+        if (surveyDistribution.Count == 0)
         {
-            context.ReportProgress(100, "Complete — no K-12 family engagement surveys found");
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
@@ -63,59 +77,13 @@ public class FamilyEngagementSurveysK12EdFiAssessor : IEdFiAssessor
             };
         }
 
-        context.ReportProgress(50, "Loading survey responses...");
-
-        var surveyResponses = new List<EdFiSurveyResponse>();
-        var surveyDistribution = new Dictionary<string, int>();
-
-        foreach (var (identifier, ns) in matchingSurveys)
-        {
-            var queryParams = new Dictionary<string, string>
-            {
-                ["surveyIdentifier"] = identifier,
-                ["namespace"] = ns
-            };
-
-            var countBefore = surveyResponses.Count;
-
-            await EdFiApiPatterns.PageAndProcessAsync<EdFiSurveyResponse>(
-                httpClient,
-                "ed-fi/surveyResponses",
-                item => surveyResponses.Add(item),
-                context,
-                queryParams);
-
-            var added = surveyResponses.Count - countBefore;
-            if (added > 0)
-                surveyDistribution[identifier] = added;
-        }
-
-        var totalResponses = surveyResponses.Count;
-        var surveyLevelDistribution = new Dictionary<string, int>();
-
-        foreach (var response in surveyResponses)
-        {
-            if (response.SurveyLevels == null)
-                continue;
-
-            foreach (var level in response.SurveyLevels)
-            {
-                var levelValue = EdFiDescriptorHelper.ParseDescriptorValue(level.SurveyLevelDescriptor);
-                surveyLevelDistribution[levelValue] = surveyLevelDistribution.GetValueOrDefault(levelValue) + 1;
-            }
-        }
-
-        context.Log($"Found {totalResponses:N0} family engagement survey responses");
-        context.ReportProgress(100, "Complete");
-
         return new DataElementAssessment
         {
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalResponses),
-                new Distribution(surveyDistribution, "Survey Instrument"),
-                new Distribution(surveyLevelDistribution, "Survey Level")
+                new RecordCount(totalAdministered),
+                new Distribution(surveyDistribution, "Survey Instrument")
             ],
             Remarks = AssessmentDescription
         };
