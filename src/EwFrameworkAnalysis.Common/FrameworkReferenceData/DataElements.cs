@@ -1149,15 +1149,6 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = "Total number of days a pre-K child was suspended. Used in the Equitable Discipline Practices indicator. Pre-K suspensions are a significant equity concern given federal guidance discouraging their use; this element enables monitoring of disproportionate use in early childhood settings."
             },
-        ["Number of FTE counselors per school (Grades 9-12)"] =
-            new DataElement
-            {
-                Name = "Number of FTE counselors per school (Grades 9-12)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Staff & Educators",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = null
-            },
         ["Number of households with low income in city or county"] =
             new DataElement
             {
@@ -1193,15 +1184,6 @@ public static class EwFrameworkDataElements
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Count of property felonies in a city or county. Used with City or county population to compute the property crime rate per 100,000 residents for the Exposure to Neighborhood Crime indicator."
-            },
-        ["Number of students enrolled per school (Grades 9-12)"] =
-            new DataElement
-            {
-                Name = "Number of students enrolled per school (Grades 9-12)",
-                ClusterOnlyCategory = "",
-                DataElementCategory = "",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = null
             },
         ["Number of violent felonies in city or county"] =
             new DataElement

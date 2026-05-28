@@ -109,10 +109,10 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Number of students enrolled per school (Grades 9-12)",
-                    "Number of FTE counselors per school (Grades 9-12)",
                     "Student utilization of academic advising services (Postsecondary)",
-                    "Student utilization of career counseling services (Postsecondary)",
+                    "Staff position type",
+                    "Staff FTE status",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Access to college preparatory coursework"] =
