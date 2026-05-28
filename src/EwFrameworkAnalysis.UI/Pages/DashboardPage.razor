@@ -26,17 +26,23 @@
         <!-- Data Sources Panel -->
         <DataSourcesList DataSources="@ProjectSvc.DataSources"
                          DataSourceItems="@GetDataSourceItems()"
-                         OnAddDataSource="@(() => _isModalOpen = true)" />
+                         OnAddDataSource="@(() => _isAddModalOpen = true)" />
     </div>
 </div>
 
-<!-- Add Data Source Modal -->
-<AddDataSourceModal IsOpen="@_isModalOpen"
-                    IsOpenChanged="@((value) => _isModalOpen = value)"
-                    OnDataSourceTypeSelected="@HandleDataSourceTypeSelected" />
+<!-- Modals -->
+
+<AddDataSourceModal IsOpen="@_isAddModalOpen"
+                    IsOpenChanged="@((value) => _isAddModalOpen = value)"
+                    OnDataSourceTypeSelected="@HandleDataSourceTypeSelected"
+                    OnLlmAssistedSelected="@HandleLlmAssistedSelected" />
+
+<LlmAssistedEntryModal IsOpen="@_isLlmModalOpen"
+                       IsOpenChanged="@((value) => _isLlmModalOpen = value)" />
 
 @code {
-    private bool _isModalOpen = false;
+    private bool _isAddModalOpen = false;
+    private bool _isLlmModalOpen = false;
     private FrameworkCoverage _coverage = new();
 
     private int ActiveSourceCount => ProjectSvc.Project?.DataSources?.Count(ds => ds.Enabled) ?? 0;
@@ -113,6 +119,11 @@
              : timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} minutes ago"
              : timeSpan.TotalDays < 1 ? $"{(int)timeSpan.TotalHours} hours ago"
              : $"{(int)timeSpan.TotalDays} days ago";
+    }
+
+    private void HandleLlmAssistedSelected()
+    {
+        _isLlmModalOpen = true;
     }
 
     private IReadOnlyList<DataElementStatCard.DataSourceElementCount> GetDataElementCounts()

@@ -1,0 +1,150 @@
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@inject IJSRuntime JS
+
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 ease-out"
+             @onclick="Close"
+             aria-hidden="true">
+        </div>
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
+                        transition-all duration-200 ease-out">
+            <!-- Header -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
+                        <i class="fas fa-robot text-blue text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-title text-lg font-semibold text-blue">LLM-Assisted Entry</h3>
+                        <p class="mt-1 text-sm text-gray">
+                            Use an AI assistant to pre-fill a data source profile from your schema or data dictionary.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 pb-4 space-y-4">
+
+                <!-- How it works -->
+                <div class="rounded-xl bg-blue/5 border border-blue/20 p-4 text-sm text-gray space-y-2">
+                    <p class="font-medium text-blue">How it works</p>
+                    <ol class="list-decimal list-inside space-y-1.5">
+                        <li>Copy the prompt below.</li>
+                        <li>Paste it into your LLM of choice (ChatGPT, Claude, Gemini, etc.).</li>
+                        <li>Append your schema or data dictionary at the bottom where indicated.</li>
+                        <li>Save the response as a <code class="bg-blue/10 px-1 rounded">.json</code> file.</li>
+                        <li>Return here and use <span class="font-medium text-blue">Import</span> to load it as a new data source.</li>
+                    </ol>
+                </div>
+
+                <!-- Expandable tips -->
+                <CollapsibleSection SectionClasses="border border-gray-200 rounded-xl bg-gray-50/60"
+                    TitleClasses="text-sm font-medium text-gray-700">
+                    <TitleContent>
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-lightbulb text-yellow-400 text-xs"></i>
+                            Tips for better results
+                        </span>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="space-y-2 text-xs text-gray">
+                            <p>
+                                <span class="font-medium text-gray-700">Keep it lean.</span>
+                                Column names, data types, and brief descriptions are all that's needed — full table
+                                dumps or sample rows add noise and consume context window space. If your schema is
+                                large, trim tables clearly unrelated to education or workforce data.
+                            </p>
+                            <p>
+                                <span class="font-medium text-gray-700">Annotate opaque fields.</span>
+                                If your schema has cryptic column names (e.g. <code class="bg-gray-200 px-1 rounded">fld_047</code>,
+                                <code class="bg-gray-200 px-1 rounded">exit_cd</code>), add a brief inline note explaining
+                                what they contain. The LLM can only match what it can interpret.
+                            </p>
+                            <p>
+                                <span class="font-medium text-gray-700">Include domain context.</span>
+                                Naming conventions, abbreviations, or system background (e.g. "this is a postsecondary SIS"
+                                or "exit codes follow the CEDS taxonomy") help the LLM make more accurate judgments.
+                            </p>
+                        </div>
+                    </ChildContent>
+                </CollapsibleSection>
+
+                <!-- Prompt textarea with copy button -->
+                <div class="relative">
+                    <div class="absolute top-2 right-2 z-10">
+                        <button @onclick="CopyPrompt"
+                                type="button"
+                                class="inline-flex items-center gap-1.5 rounded-md bg-white border border-gray-200
+                                           px-2.5 py-1.5 text-xs font-medium text-gray-600 shadow-sm
+                                           hover:bg-gray-50 hover:text-blue transition-colors">
+                            @if (_copied)
+                            {
+                                <i class="fas fa-check text-green-500"></i>
+                                <span class="text-green-600">Copied!</span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-copy"></i>
+                                <span>Copy prompt</span>
+                            }
+                        </button>
+                    </div>
+                    <textarea readonly
+                          class="w-full h-72 resize-none rounded-xl border border-gray-200 bg-gray-50
+                                     p-3 pt-10 text-xs font-mono text-gray-700 leading-relaxed
+                                     focus:outline-none overflow-y-auto">@_prompt</textarea>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl">
+                <div class="flex justify-end">
+                    <button @onclick="Close"
+                            type="button"
+                            class="inline-flex items-center justify-center rounded-md border border-gray-300
+                                       bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    private bool _copied = false;
+    private string _prompt = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        // Generate once when the modal first opens.
+        if (IsOpen && _prompt == string.Empty)
+            _prompt = LlmDataProfilingPromptBuilder.Prompt;
+    }
+
+    private async Task Close()
+    {
+        IsOpen = false;
+        _copied = false;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private async Task CopyPrompt()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _prompt);
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+}

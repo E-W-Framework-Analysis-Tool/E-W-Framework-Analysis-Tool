@@ -9,7 +9,7 @@
              aria-hidden="true">
         </div>
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
-                            transition-all duration-200 ease-out">
+                        transition-all duration-200 ease-out">
             <!-- Header -->
             <div class="px-6 pt-6 pb-2">
                 <div class="flex items-start gap-4">
@@ -25,23 +25,38 @@
             <!-- Body -->
             <div class="px-6 pb-6 space-y-3">
                 <!-- Manual/Custom Option -->
-                <button @onclick="() => HandleSelected(DataSourceType.Custom, null)"
-                        class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <button @onclick="() => HandleSelected(DataSourceType.Custom, null)"
+                            class="w-full text-left p-4 hover:bg-blue/5 hover:border-blue
                                        focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                    <div class="flex items-center gap-3">
-                        <DataSourceIcon Type="DataSourceType.Custom" />
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-blue">Manual Entry</h4>
-                            <p class="mt-1 text-xs text-gray">Add a data source that does not have automated connections and manually enter a profile</p>
-                            <p class="mt-1 text-xs text-blue font-medium">Manual | Flexible</p>
+                        <div class="flex items-center gap-3">
+                            <DataSourceIcon Type="DataSourceType.Custom" />
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-blue">Manual Entry</h4>
+                                <p class="mt-1 text-xs text-gray">Add a data source that does not have automated connections and manually enter a profile</p>
+                                <p class="mt-1 text-xs text-blue font-medium">Manual | Flexible</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray"></i>
                         </div>
-                        <i class="fas fa-chevron-right text-gray"></i>
+                    </button>
+                    <!-- LLM-Assisted sub-action -->
+                    <div class="border-t border-gray-100 bg-gray-50/60 px-4 py-2 flex items-center justify-between">
+                        <p class="text-xs text-gray">Have a schema or data dictionary? Let an AI give you a head start.</p>
+                        <button @onclick="HandleLlmAssisted"
+                                type="button"
+                                class="inline-flex items-center gap-1.5 rounded-md bg-white border border-blue/30
+                                           px-2.5 py-1 text-xs font-medium text-blue shadow-sm
+                                           hover:bg-blue/5 transition-colors whitespace-nowrap ml-3">
+                            <i class="fas fa-robot text-xs"></i>
+                            LLM-Assisted
+                        </button>
                     </div>
-                </button>
+                </div>
+
                 <!-- Ed-Fi API Option -->
                 <button @onclick="() => HandleSelected(DataSourceType.EdFiApi, null)"
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                                       focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
+                                   focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
                         <DataSourceIcon Type="DataSourceType.EdFiApi" />
                         <div class="flex-1">
@@ -52,28 +67,30 @@
                         <i class="fas fa-chevron-right text-gray"></i>
                     </div>
                 </button>
+
                 <!-- CEDS Data Warehouse — one button per known version -->
                 @foreach (var version in CedsDWVersions.All)
                 {
-                    var v = version; // capture for lambda
-                                     <button @onclick="() => HandleSelected(DataSourceType.CedsDw, v)"
-                                             class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                                                                focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
-                                         <div class="flex items-center gap-3">
-                                             <DataSourceIcon Type="DataSourceType.CedsDw" />
-                                             <div class="flex-1">
-                                                 <h4 class="text-sm font-medium text-blue">CEDS Data Warehouse <span class="text-gray-400 font-normal">(@v)</span></h4>
-                                                 <p class="mt-1 text-xs text-gray">Profile your CEDS Data Warehouse locally using SQL scripts and file upload</p>
-                                                 <p class="mt-1 text-xs text-blue font-medium">SQL-based | File load</p>
-                                             </div>
-                                             <i class="fas fa-chevron-right text-gray"></i>
-                                         </div>
-                                     </button>
+                    var v = version;
+                    <button @onclick="() => HandleSelected(DataSourceType.CedsDw, v)"
+                            class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
+                                           focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
+                        <div class="flex items-center gap-3">
+                            <DataSourceIcon Type="DataSourceType.CedsDw" />
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-blue">CEDS Data Warehouse <span class="text-gray-400 font-normal">(@v)</span></h4>
+                                <p class="mt-1 text-xs text-gray">Profile your CEDS Data Warehouse locally using SQL scripts and file upload</p>
+                                <p class="mt-1 text-xs text-blue font-medium">SQL-based | File load</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray"></i>
+                        </div>
+                    </button>
                 }
+
                 <!-- ECS State Data Option -->
                 <button @onclick="() => HandleSelected(DataSourceType.EcsState, null)"
                         class="w-full text-left p-4 border border-gray-200 rounded-xl hover:border-blue hover:bg-blue/5
-                                       focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
+                                   focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 transition-all">
                     <div class="flex items-center gap-3">
                         <DataSourceIcon Type="DataSourceType.EcsState" />
                         <div class="flex-1">
@@ -91,8 +108,8 @@
                     <button @onclick="Close"
                             type="button"
                             class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                           bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                           hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                                       bg-white px-4 py-2 text-sm font-medium text-gray-700
+                                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
                         Cancel
                     </button>
                 </div>
@@ -104,22 +121,24 @@
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
-
-    /// <summary>
-    /// Raised when the user selects a data source type.
-    /// The string component is the selected version, or null for unversioned types.
-    /// </summary>
     [Parameter] public EventCallback<(DataSourceType Type, string? Version)> OnDataSourceTypeSelected { get; set; }
+    [Parameter] public EventCallback OnLlmAssistedSelected { get; set; }
 
     private async Task Close()
     {
         IsOpen = false;
-        await IsOpenChanged.InvokeAsync(IsOpen);
+        await IsOpenChanged.InvokeAsync(false);
     }
 
     private async Task HandleSelected(DataSourceType type, string? version)
     {
         await Close();
         await OnDataSourceTypeSelected.InvokeAsync((type, version));
+    }
+
+    private async Task HandleLlmAssisted()
+    {
+        await Close();
+        await OnLlmAssistedSelected.InvokeAsync();
     }
 }
