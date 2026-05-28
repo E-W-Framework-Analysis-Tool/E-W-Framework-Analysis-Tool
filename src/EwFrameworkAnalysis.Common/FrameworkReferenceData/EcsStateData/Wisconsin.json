@@ -8,24 +8,14 @@
   {
     "sector": "PK",
     "indicator": "Enrollment in quality public pre-K",
-<<<<<<< HEAD
     "elementName": "Pre-K eligibility status",
-    "reported": null
-=======
-    "elementName": "Pre-K eligbility status",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
     "indicator": "Enrollment in quality public pre-K",
-<<<<<<< HEAD
     "elementName": "Pre-K enrollment date",
-    "reported": null
-=======
-    "elementName": "Enrollment in public pre-K",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -60,13 +50,8 @@
   {
     "sector": "K12",
     "indicator": "Early grades on track",
-<<<<<<< HEAD
     "elementName": "Math proficiency (Grades 1 and 2)",
-    "reported": null
-=======
-    "elementName": "State standardized test (Math proficiency)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -89,13 +74,8 @@
   {
     "sector": "PK",
     "indicator": "Consistent attendance",
-<<<<<<< HEAD
     "elementName": "Student attendance rate (K-12)",
-    "reported": null
-=======
-    "elementName": "Student attendance rate (PK)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -106,13 +86,8 @@
   {
     "sector": "PS",
     "indicator": "Consistent attendance",
-<<<<<<< HEAD
     "elementName": "Student attendance rate (K-12)",
-    "reported": null
-=======
-    "elementName": "Student attendance rate (PK)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -123,19 +98,14 @@
   {
     "sector": "PK",
     "indicator": "Positive behavior",
-<<<<<<< HEAD
     "elementName": "Restraint and seclusion for discipline (K-12)",
-    "reported": null
+    "reported": "PartiallyAvailable"
   },
   {
     "sector": "PK",
     "indicator": "Positive behavior",
     "elementName": "Suspensions and expulsions (K-12)",
-    "reported": null
-=======
-    "elementName": "Restraint and seclusion (PK)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -146,13 +116,8 @@
   {
     "sector": "K12",
     "indicator": "Positive behavior",
-<<<<<<< HEAD
     "elementName": "Restraint and seclusion for discipline (K-12)",
-    "reported": null
-=======
-    "elementName": "Restraint and seclusion (K-12)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -253,19 +218,8 @@
   {
     "sector": "K12",
     "indicator": "Successful completion of Algebra I by 9th grade",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "First-time 9th grade student status",
     "reported": "NotAvailable"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Successful completion of Algebra I by 9th grade",
-    "elementName": "Course identifier or title",
-    "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -342,13 +296,8 @@
   {
     "sector": "K12",
     "indicator": "College preparatory coursework completion",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "Course identifier or title",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -425,13 +374,8 @@
   {
     "sector": "PS",
     "indicator": "FAFSA completion",
-<<<<<<< HEAD
     "elementName": "Student grade level (K-12)",
-    "reported": null
-=======
-    "elementName": "Student grade level (PK)",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -454,11 +398,7 @@
   {
     "sector": "K12",
     "indicator": "High school graduation",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment date",
-=======
-    "elementName": "Enrollment date",
->>>>>>> origin/main
     "reported": "Available"
   },
   {
@@ -476,13 +416,8 @@
   {
     "sector": "K12",
     "indicator": "High school graduation",
-<<<<<<< HEAD
     "elementName": "High school graduation date",
-    "reported": null
-=======
-    "elementName": "Diploma or credential award date",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -505,24 +440,14 @@
   {
     "sector": "K12",
     "indicator": "Selection of a well-matched postsecondary institution",
-<<<<<<< HEAD
     "elementName": "Postsecondary admissions decision",
-    "reported": null
-=======
-    "elementName": "Postsecondary Institution ID",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Selection of a well-matched postsecondary institution",
-<<<<<<< HEAD
     "elementName": "Institution graduation rate",
-    "reported": null
-=======
-    "elementName": "PS institution graduation rate; by race/ethnicity and Pell grant receipt",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -539,24 +464,14 @@
   {
     "sector": "PS",
     "indicator": "Selection of a well-matched postsecondary institution",
-<<<<<<< HEAD
     "elementName": "Postsecondary admissions decision",
-    "reported": null
-=======
-    "elementName": "Postsecondary Institution ID",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Selection of a well-matched postsecondary institution",
-<<<<<<< HEAD
     "elementName": "Institution graduation rate",
-    "reported": null
-=======
-    "elementName": "PS institution graduation rate; by race/ethnicity and Pell grant receipt",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -651,13 +566,8 @@
   {
     "sector": "PS",
     "indicator": "First-year program of study concentration",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "Course identifier or title",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -674,13 +584,8 @@
   {
     "sector": "PS",
     "indicator": "Gateway course completion",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "Course identifier or title",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -697,24 +602,14 @@
   {
     "sector": "PS",
     "indicator": "Postsecondary persistence",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment date",
-    "reported": null
-=======
-    "elementName": "Enrollment status (current and prior years)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Postsecondary persistence",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary credential attainment date",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -725,25 +620,8 @@
   {
     "sector": "PS",
     "indicator": "Transfer (if applicable)",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment date",
-    "reported": null
-=======
-    "elementName": "Transfer indicator or transfer student status",
     "reported": "PartiallyAvailable"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Transfer (if applicable)",
-    "elementName": "Postsecondary institution ID (current and prior years)",
-    "reported": "PartiallyAvailable"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Transfer (if applicable)",
-    "elementName": "Enrollment status (current and prior years)",
-    "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -760,53 +638,20 @@
   {
     "sector": "PS",
     "indicator": "Postsecondary certificate or degree completion",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary credential attainment date",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Enrollment in graduate education",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Bachelor\u0027s degree completion date",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Enrollment in graduate education",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment date",
-    "reported": null
-=======
-    "elementName": "Post-baccalaureate program enrollment date",
     "reported": "NotAvailable"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Enrollment in graduate education",
-    "elementName": "Graduate program enrollment date",
-    "reported": "NotAvailable"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Postsecondary certificate or degree completion",
-    "elementName": "Graduate program enrollment date",
-    "reported": "NotAvailable"
-  },
-  {
-    "sector": "PS",
-    "indicator": "Postsecondary certificate or degree completion",
-    "elementName": "Graduate credential attainment date",
-    "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -919,57 +764,32 @@
   {
     "sector": "PS",
     "indicator": "Social awareness",
-<<<<<<< HEAD
     "elementName": "Social proficiency performance assessments (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Social proficiency performance assessment results (Postsecondary)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Social awareness",
-<<<<<<< HEAD
     "elementName": "Social proficiency performance assessments (Workforce)",
-    "reported": null
-=======
-    "elementName": "Social proficiency performance assessment results (Workforce)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Cultural competency",
-<<<<<<< HEAD
     "elementName": "Cultural competency assessments (K-12)",
-    "reported": null
-=======
-    "elementName": "Cultural competency assessment results (K-12)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Cultural competency",
-<<<<<<< HEAD
     "elementName": "Cultural competency assessments (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Cultural competency assessment results (Postsecondary)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Cultural competency",
-<<<<<<< HEAD
     "elementName": "Cultural competency assessments (Workforce)",
-    "reported": null
-=======
-    "elementName": "Cultural competency assessment results (Workforce)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1016,13 +836,8 @@
   {
     "sector": "PK",
     "indicator": "Mental and emotional well-being",
-<<<<<<< HEAD
     "elementName": "Developmental screening results (PK)",
-    "reported": null
-=======
-    "elementName": "Developmental screening results",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1033,13 +848,8 @@
   {
     "sector": "K12",
     "indicator": "Mental and emotional well-being",
-<<<<<<< HEAD
     "elementName": "Universal mental health screening results (K-12)",
-    "reported": null
-=======
-    "elementName": "Universal screening results",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1116,13 +926,8 @@
   {
     "sector": "K12",
     "indicator": "CTE pathway concentration",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "Course identifier or title",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1133,13 +938,8 @@
   {
     "sector": "K12",
     "indicator": "CTE pathway concentration",
-<<<<<<< HEAD
     "elementName": "Course outcome",
-    "reported": null
-=======
-    "elementName": "CTE course completion",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1150,24 +950,14 @@
   {
     "sector": "PS",
     "indicator": "CTE pathway concentration",
-<<<<<<< HEAD
     "elementName": "CTE pathway or career cluster associated with CTE course",
-    "reported": null
-=======
-    "elementName": "CTE course ID or course title",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "CTE pathway concentration",
-<<<<<<< HEAD
     "elementName": "Course outcome",
-    "reported": null
-=======
-    "elementName": "CTE course completion",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1184,24 +974,14 @@
   {
     "sector": "K12",
     "indicator": "Industry-recognized credential",
-<<<<<<< HEAD
     "elementName": "Industry-recognized credential indicator",
-    "reported": null
-=======
-    "elementName": "Industry-recognized credential attainment",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Industry-recognized credential",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment date",
-    "reported": null
-=======
-    "elementName": "Indicator of current enrollment in postsecondary",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1212,13 +992,8 @@
   {
     "sector": "PS",
     "indicator": "Industry-recognized credential",
-<<<<<<< HEAD
     "elementName": "Industry-recognized credential indicator",
-    "reported": null
-=======
-    "elementName": "Industry-recognized credential attainment",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -1229,13 +1004,8 @@
   {
     "sector": "WF",
     "indicator": "Industry-recognized credential",
-<<<<<<< HEAD
     "elementName": "Industry-recognized credential indicator",
-    "reported": null
-=======
-    "elementName": "Industry-recognized credential attainment",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1264,13 +1034,8 @@
   {
     "sector": "WF",
     "indicator": "Participation in work-based learning",
-<<<<<<< HEAD
     "elementName": "Workforce development program participation",
-    "reported": null
-=======
-    "elementName": "Enrollment in workforce training program",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -1281,101 +1046,56 @@
   {
     "sector": "K12",
     "indicator": "Digital skills",
-<<<<<<< HEAD
     "elementName": "Digital skills assessments (K-12)",
-    "reported": null
-=======
-    "elementName": "Digital skills assessment results (K-12)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Digital skills",
-<<<<<<< HEAD
     "elementName": "Digital skills assessments (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Digital skills assessment results (Postsecondary)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Digital skills",
-<<<<<<< HEAD
     "elementName": "Digital skills assessments (Workforce)",
-    "reported": null
-=======
-    "elementName": "Digital skills assessment results (Workforce)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Communication skills",
-<<<<<<< HEAD
     "elementName": "Communication skills performance assessments (K-12)",
-    "reported": null
-=======
-    "elementName": "Communication skills performance assessment results (K-12)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Communication skills",
-<<<<<<< HEAD
     "elementName": "Communication skills performance assessments (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Communication skills performance assessment results (Postsecondary)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Communication skills",
-<<<<<<< HEAD
     "elementName": "Communication skills performance assessments (Workforce)",
-    "reported": null
-=======
-    "elementName": "Communication skills performance assessment results (Workforce)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Higher-order thinking skills",
-<<<<<<< HEAD
     "elementName": "Higher-order thinking skills performance assessments (K-12)",
-    "reported": null
-=======
-    "elementName": "Higher-order thinking skills performance assessment results (K-12)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Higher-order thinking skills",
-<<<<<<< HEAD
     "elementName": "Higher-order thinking skills performance assessments (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Higher-order thinking skills performance assessment results (Postsecondary)",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Higher-order thinking skills",
-<<<<<<< HEAD
     "elementName": "Higher-order thinking skills performance assessments (Workforce)",
-    "reported": null
-=======
-    "elementName": "Higher-order thinking skills performance assessment results (Workforce)",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1386,13 +1106,8 @@
   {
     "sector": "PS",
     "indicator": "Minimum economic return",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary degree attainment date",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1415,13 +1130,8 @@
   {
     "sector": "WF",
     "indicator": "Minimum economic return",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary degree attainment date",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -1438,46 +1148,26 @@
   {
     "sector": "PS",
     "indicator": "Student loan repayment",
-<<<<<<< HEAD
     "elementName": "Student loan repayment status",
-    "reported": null
-=======
-    "elementName": "Repayment status",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Student loan repayment",
-<<<<<<< HEAD
     "elementName": "Student loan repayment phase start date",
-    "reported": null
-=======
-    "elementName": "Repayment phase start date",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Student loan repayment",
-<<<<<<< HEAD
     "elementName": "Student loan repayment status",
-    "reported": null
-=======
-    "elementName": "Repayment status",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Student loan repayment",
-<<<<<<< HEAD
     "elementName": "Student loan repayment phase start date",
-    "reported": null
-=======
-    "elementName": "Repayment phase start date",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -1506,13 +1196,8 @@
   {
     "sector": "WF",
     "indicator": "Economic mobility",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary degree attainment date",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -1529,13 +1214,8 @@
   {
     "sector": "WF",
     "indicator": "Economic security",
-<<<<<<< HEAD
     "elementName": "Postsecondary credential award date",
-    "reported": null
-=======
-    "elementName": "Postsecondary degree attainment date",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -1546,24 +1226,14 @@
   {
     "sector": "PK",
     "indicator": "Access to full-day pre-K",
-<<<<<<< HEAD
     "elementName": "Pre-K program schedule",
-    "reported": null
-=======
-    "elementName": "Pre-K program hours per day",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
     "indicator": "Access to full-day pre-K",
-<<<<<<< HEAD
     "elementName": "Pre-K program funding source",
-    "reported": null
-=======
-    "elementName": "Pre-K program days per week",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -1676,19 +1346,8 @@
   {
     "sector": "K12",
     "indicator": "Access to full-day kindergarten",
-<<<<<<< HEAD
     "elementName": "Kindergarten program schedule",
-    "reported": null
-=======
-    "elementName": "Kindergarten program hours per day",
     "reported": "PartiallyAvailable"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to full-day kindergarten",
-    "elementName": "Kindergarten program days per week",
-    "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1801,35 +1460,20 @@
   {
     "sector": "K12",
     "indicator": "Classroom observations of instructional practice",
-<<<<<<< HEAD
     "elementName": "Teacher observation scores (K-12)",
-    "reported": null
-=======
-    "elementName": "Overall teacher observation score",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Classroom observations of instructional practice",
-<<<<<<< HEAD
     "elementName": "Teacher observation subscale scores (K-12)",
-    "reported": null
-=======
-    "elementName": "Subscale observation scores",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "Classroom observations of instructional practice",
-<<<<<<< HEAD
     "elementName": "Teacher observation scores (K-12)",
-    "reported": null
-=======
-    "elementName": "Instructor observations",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1852,13 +1496,8 @@
   {
     "sector": "K12",
     "indicator": "Teachers\u0027 contributions to student learning growth",
-<<<<<<< HEAD
     "elementName": "Teacher value-added",
-    "reported": null
-=======
-    "elementName": "VAM for subject specific assessment",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -1869,35 +1508,20 @@
   {
     "sector": "PS",
     "indicator": "Teachers\u0027 contributions to student learning growth",
-<<<<<<< HEAD
     "elementName": "Teacher value-added",
-    "reported": null
-=======
-    "elementName": "VAM for subject specific assessment",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
     "indicator": "Effective program and school leadership",
-<<<<<<< HEAD
     "elementName": "School leader evaluation rating",
-    "reported": null
-=======
-    "elementName": "Leader effectiveness assessments",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "Effective program and school leadership",
-<<<<<<< HEAD
     "elementName": "School leader evaluation rating",
-    "reported": null
-=======
-    "elementName": "Leader effectiveness assessments",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -1914,19 +1538,8 @@
   {
     "sector": "K12",
     "indicator": "Access to college preparatory coursework",
-<<<<<<< HEAD
     "elementName": "Course subject area",
-    "reported": null
-=======
-    "elementName": "Course identifier or title",
     "reported": "NotAvailable"
-  },
-  {
-    "sector": "K12",
-    "indicator": "Access to college preparatory coursework",
-    "elementName": "Course department",
-    "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -2009,13 +1622,8 @@
   {
     "sector": "PS",
     "indicator": "Expenditures per student",
-<<<<<<< HEAD
     "elementName": "Postsecondary enrollment status (Full time/part time)",
-    "reported": null
-=======
-    "elementName": "Student FTE status",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -2086,13 +1694,8 @@
   {
     "sector": "WF",
     "indicator": "Inclusive environments",
-<<<<<<< HEAD
     "elementName": "Sense of belonging surveys (Workforce)",
-    "reported": null
-=======
-    "elementName": "Sense of belonging surveys",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -2133,90 +1736,50 @@
   {
     "sector": "PK",
     "indicator": "School and workplace racial and ethnic diversity",
-<<<<<<< HEAD
     "elementName": "Race and ethnicity (individual)",
-    "reported": null
-=======
-    "elementName": "Student race/ethnicity",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "School and workplace racial and ethnic diversity",
-<<<<<<< HEAD
     "elementName": "Race and ethnicity (individual)",
-    "reported": null
-=======
-    "elementName": "Student race/ethnicity",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "School and workplace racial and ethnic diversity",
-<<<<<<< HEAD
     "elementName": "Race and ethnicity (individual)",
-    "reported": null
-=======
-    "elementName": "Student race/ethnicity",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "School and workplace racial and ethnic diversity",
-<<<<<<< HEAD
     "elementName": "Race and ethnicity (individual)",
-    "reported": null
-=======
-    "elementName": "Employee race/ethnicity",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
     "indicator": "School and workplace socioeconomic diversity",
-<<<<<<< HEAD
     "elementName": "Income level (individual/family)",
-    "reported": null
-=======
-    "elementName": "Student or family socioeconomic status",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
     "indicator": "School and workplace socioeconomic diversity",
-<<<<<<< HEAD
     "elementName": "Income level (individual/family)",
-    "reported": null
-=======
-    "elementName": "Student or family socioeconomic status",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
     "indicator": "School and workplace socioeconomic diversity",
-<<<<<<< HEAD
     "elementName": "Income level (individual/family)",
-    "reported": null
-=======
-    "elementName": "Student socioeconomic status",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "School and workplace socioeconomic diversity",
-<<<<<<< HEAD
     "elementName": "Income level (individual/family)",
-    "reported": null
-=======
-    "elementName": "Employee income level",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PK",
@@ -2245,13 +1808,8 @@
   {
     "sector": "K12",
     "indicator": "Access to health, mental health, and social supports",
-<<<<<<< HEAD
     "elementName": "Staff position type",
-    "reported": null
-=======
-    "elementName": "Job title or position type",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -2262,13 +1820,8 @@
   {
     "sector": "PS",
     "indicator": "Access to health, mental health, and social supports",
-<<<<<<< HEAD
     "elementName": "Staff position type",
-    "reported": null
-=======
-    "elementName": "Job title or position type",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -2285,13 +1838,8 @@
   {
     "sector": "K12",
     "indicator": "Access to college and career advising",
-<<<<<<< HEAD
     "elementName": "Staff position type",
-    "reported": null
-=======
-    "elementName": "Job title or position type",
     "reported": "Available"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -2302,13 +1850,8 @@
   {
     "sector": "PS",
     "indicator": "Access to college and career advising",
-<<<<<<< HEAD
     "elementName": "Student utilization of academic advising services (Postsecondary)",
-    "reported": null
-=======
-    "elementName": "Advising and counseling service utilization",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "K12",
@@ -2319,13 +1862,8 @@
   {
     "sector": "K12",
     "indicator": "Access to in-demand CTE pathways",
-<<<<<<< HEAD
     "elementName": "Occupational demand by region",
-    "reported": null
-=======
-    "elementName": "In-demand status",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -2336,13 +1874,8 @@
   {
     "sector": "PS",
     "indicator": "Access to in-demand CTE pathways",
-<<<<<<< HEAD
     "elementName": "Occupational demand by region",
-    "reported": null
-=======
-    "elementName": "In-demand status",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "PS",
@@ -2365,24 +1898,14 @@
   {
     "sector": "PS",
     "indicator": "Cumulative student debt",
-<<<<<<< HEAD
     "elementName": "Student loan debt balance",
-    "reported": null
-=======
-    "elementName": "Median student debt",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
     "indicator": "Cumulative student debt",
-<<<<<<< HEAD
     "elementName": "Student loan debt balance",
-    "reported": null
-=======
-    "elementName": "Median student debt",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -2393,13 +1916,8 @@
   {
     "sector": "WF",
     "indicator": "Expenditures on workforce development programs",
-<<<<<<< HEAD
     "elementName": "Total state educational funding",
-    "reported": null
-=======
-    "elementName": "Total educational funding",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "WF",
@@ -2422,24 +1940,14 @@
   {
     "sector": "WF",
     "indicator": "Access to ongoing career skills development",
-<<<<<<< HEAD
     "elementName": "Employee learning and development plan offered",
-    "reported": null
-=======
-    "elementName": "Learning and development plan offered",
     "reported": "NotAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "All",
     "indicator": "Childhood experiences",
-<<<<<<< HEAD
     "elementName": "Number of Adverse Childhood Experiences (ACEs)",
-    "reported": null
-=======
-    "elementName": "Number of ACEs",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "All",
@@ -2576,24 +2084,14 @@
   {
     "sector": "All",
     "indicator": "Neighborhood racial diversity",
-<<<<<<< HEAD
     "elementName": "Race and ethnicity (individual)",
-    "reported": null
-=======
-    "elementName": "Student race/ethnicity",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "All",
     "indicator": "Neighborhood racial diversity",
-<<<<<<< HEAD
     "elementName": "Census tract or neighborhood identifier",
-    "reported": null
-=======
-    "elementName": "Geographical indicator",
     "reported": "PartiallyAvailable"
->>>>>>> origin/main
   },
   {
     "sector": "All",
