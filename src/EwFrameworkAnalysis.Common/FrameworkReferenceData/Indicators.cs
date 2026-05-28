@@ -291,7 +291,7 @@ public static class EwFrameworkIndicators
                 Type = IndicatorType.EWSystemConditions,
                 Domain = IndicatorDomain.AcademicProgressCompletion,
                 Definition = "Schools and instructors use a standards-aligned core course curriculum that meets quality standards (as defined by EdReports) and is culturally relevant, centering the lived experiences and heritage of students' ethnic or racial backgrounds.",
-                RecommendedMetrics = "No specific measures or tools identified",
+                RecommendedMetrics = "Percentage of teachers regularly using standards-aligned, culturally responsive curricula",
                 DataNeeded = [DataCategory.CurriculumMaterials],
                 Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
@@ -668,10 +668,10 @@ public static class EwFrameworkIndicators
                     "Postsecondary credential award date",
                 ]
             },
-        ["Enrollment in quality public pre-K"] =
+        ["Enrollment in public pre-K"] =
             new()
             {
-                Name = "Enrollment in quality public pre-K",
+                Name = "Enrollment in public pre-K",
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.AcademicProgressCompletion,
                 Definition = "Eligible children are enrolled in a publicly funded pre-K program, which can be administered through mixed delivery systems that include Head Start, pre-K classrooms in public schools, and licensed family-based child care programs and community-based organizations.",
@@ -1248,7 +1248,7 @@ public static class EwFrameworkIndicators
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
                 Definition = "Credential seekers participate in an internship, work study, cooperative education, apprenticeship program, or other work-based learning opportunities.",
-                RecommendedMetrics = "Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of workforce training program participants who participate in a work-based learning opportunity before program completion",
+                RecommendedMetrics = "K–12 and postsecondary: Percentage of students who participate in a work-based learning opportunity before graduation.  Workforce: Percentage of workforce training program participants who participate in a work-based learning opportunity before program completion",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts, DataCategory.Surveys],
                 Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =

@@ -34,7 +34,7 @@ public static class EwFrameworkEssentialQuestions
             ApplicableSectors = [Sector.PK],
             RelatedIndicatorNames =
             [
-                "Enrollment in quality public pre-K",
+                "Enrollment in public pre-K",
                 "Access to quality public pre-K",
                 "Access to full-day pre-K",
                 "Access to early intervention screening",
@@ -49,7 +49,7 @@ public static class EwFrameworkEssentialQuestions
             ApplicableSectors = [Sector.PK, Sector.K12],
             RelatedIndicatorNames =
             [
-                "Enrollment in quality public pre-K",
+                "Enrollment in public pre-K",
                 "Kindergarten readiness: language and literacy",
                 "Kindergarten readiness: cognition",
                 "Kindergarten readiness: social-emotional development",
