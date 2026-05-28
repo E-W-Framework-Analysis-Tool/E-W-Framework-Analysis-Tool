@@ -1,10 +1,3 @@
-@* Changes from previous version:
-   - Dashboard Features: replaced dashed placeholder with <video> for filter demo
-   - ReportPage record: added optional ScreenshotPath property
-   - Report Pages loop: renders <img> when ScreenshotPath is set, placeholder otherwise
-   - ShowScreenshot bool retained to suppress the placeholder entirely when not yet needed
-*@
-
 @page "/learn/visualizations"
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
@@ -179,7 +172,8 @@
                                             {
                                                 <img src="@rp.ScreenshotPath"
                                                      alt="Screenshot — @rp.Name"
-                                                     class="rounded-lg border border-gray-200 shadow max-w-xl mx-auto block" />
+                                                     class="rounded-lg border border-gray-200 shadow max-w-xl mx-auto block cursor-zoom-in hover:opacity-90 transition-opacity"
+                                                     @onclick="@(() => OpenLightbox(rp.ScreenshotPath!, $" Screenshot — {rp.Name}"))" />
                                             }
                                             else
                                             {
@@ -261,10 +255,41 @@
         }
 
     </div>
+
+    @if (_lightboxSrc is not null)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+             @onclick="CloseLightbox">
+            <div class="relative max-w-6xl w-full" @onclick:stopPropagation>
+                <button class="absolute -top-8 right-0 text-white text-sm hover:text-gray-300"
+                        @onclick="CloseLightbox">
+                    ✕ Close
+                </button>
+                <img src="@_lightboxSrc"
+                     alt="@_lightboxAlt"
+                     class="w-full rounded-lg shadow-2xl" />
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private VisualizationsOptions _opts => VisualizationsOptions.Value;
+
+    private string? _lightboxSrc;
+    private string? _lightboxAlt;
+
+    private void OpenLightbox(string src, string alt)
+    {
+        _lightboxSrc = src;
+        _lightboxAlt = alt;
+    }
+
+    private void CloseLightbox()
+    {
+        _lightboxSrc = null;
+        _lightboxAlt = null;
+    }
 
     // ── Report page type descriptors (shared across EQs) ─────────────────────
 
@@ -420,24 +445,153 @@
                 Id: "EQ18",
                 TabLabel: "EQ 18",
                 Title: "Essential Question 18",
-                Subtitle: "Placeholder — update with EQ 18 subtitle",
-                About: "Placeholder — update with EQ 18 description.",
-                ExternalUrl: "",
-                IndicatorGroups: [],
-                ReportPages: [],
+                Subtitle: "Are students experiencing sufficient early momentum in postsecondary education to be on track for on-time completion?",
+                About: "This question looks at early indicators of whether postsecondary students are on track for later success. " +
+                        "Credit accumulation, gateway course completion, and selection of an area of concentration during the first " +
+                        "year can signal whether students are on track to complete a degree. Various factors influence early momentum " +
+                        "in postsecondary education, such as the quality and comprehensiveness of advising services, students' growth " +
+                        "mindset and self-regulation, and access to intentionally designed career pathways. Institution leaders, " +
+                        "academic advisors, and student success teams can use this question to assess whether current supports are " +
+                        "helping students stay on track for graduation, identify students that may need targeted support, and develop " +
+                        "strategies to help all postsecondary students build early momentum toward earning a credential.",
+                ExternalUrl: "https://educationtoworkforce.org/essential-questions/are-students-experiencing-sufficient-early-momentum-postsecondary-education-be",
+                IndicatorGroups:
+                [
+                    new("Outcomes & Milestones",
+                    [
+                        "First-year credit accumulation",
+                        "First-year program of study concentration",
+                        "Gateway course completion",
+                        "Postsecondary persistence",
+                        "Transfer (if applicable)",
+                    ]),
+                    new("E-W System Conditions",
+                    [
+                        "Access to college and career advising",
+                        "Unmet financial need",
+                    ]),
+                ],
+                ReportPages:
+                [
+                    new("Summary Page",
+                        "A landing page incorporating graphs of several of the Indicators, including First-year credit accumulation, " +
+                        "First-year program of study concentration, Gateway course completion, and Access to college and career advising.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg01.jpg"),
+                    new("Reference Page",
+                        "A visual and textual representation of each Indicator and its corresponding report page — " +
+                        "acts as a map of the report pages.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg02.jpg"),
+                    new("First-year Credit Accumulation",
+                        "Insights into the percentage of students attempting and completing sufficient credits toward on-time " +
+                        "completion in their first year: 30 credits for full-time and 15 credits for part-time students. The " +
+                        "selected Cohort year appears in the top-left tile; a historical trend line is in the upper-right tile; " +
+                        "Disaggregate results are shown in the bottom tile. Filters in the bottom right can narrow down to the " +
+                        "Credential Type and Field of Study.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg03.jpg"),
+                    new("First-year program of study concentration",
+                        "Insights into the percentage of students completing at least nine credits (or three courses) within a " +
+                        "meta-major during their first year in postsecondary education.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg04.jpg"),
+                    new("Gateway Course Completion",
+                        "Insights into the percentage of first-year college students who complete college-level introductory math " +
+                        "and English courses within their first year.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg05.jpg"),
+                    new("Access to college and career advising",
+                        "Offers insights into two metrics. K–12: Ratio of number of students to number of full-time equivalent " +
+                        "(FTE) counselors. Postsecondary: Percentage of students using academic advising and career counseling services.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg06.jpg"),
+                    new("Resource Page",
+                        "A high-level overview of the Essential Question with context on what to know about the measurement, " +
+                        "plus links that pertain directly to this report.",
+                        ScreenshotPath: "/images/visualizations/eq18-pg07.jpg"),
+                ],
                 Embed: GetEmbed("EQ18")
             ),
             new(
                 Id: "EQ19",
                 TabLabel: "EQ 19",
                 Title: "Essential Question 19",
-                Subtitle: "Placeholder — update with EQ 19 subtitle",
-                About: "Placeholder — update with EQ 19 description.",
-                ExternalUrl: "",
-                IndicatorGroups: [],
-                ReportPages: [],
+                Subtitle: "Are students completing credentials of value after high school that set them up for success in the workforce?",
+                About: "This question examines whether students are earning credentials (including degrees, certificates, badges, " +
+                        "and more) that have value in the labor market and lead to economic opportunity. Credential value can vary " +
+                        "significantly based on field of study, institutional quality, and labor market demand. There are known " +
+                        "challenges in measuring credential quality and value — more than 4,000 credentialing bodies offer thousands " +
+                        "of different credentials across sectors, and there is wide variation in how states track credentials and " +
+                        "whether those credentials are valued by employers. Nonetheless, the relationship between credentials and " +
+                        "employment outcomes is crucial: some certificates and degrees lead to higher-paying jobs and career " +
+                        "advancement opportunities while others have limited economic return. Education leaders, workforce development " +
+                        "partners, and policymakers can use this question to evaluate credential programs, assess labor market " +
+                        "alignment, and ensure educational pathways lead to meaningful economic outcomes.",
+                ExternalUrl: "https://educationtoworkforce.org/essential-questions/are-students-completing-credentials-value-after-high-school-set-them-success",
+                IndicatorGroups:
+                [
+                    new("Outcomes & Milestones",
+                    [
+                        "Postsecondary certificate or degree completion",
+                        "Enrollment in graduate education",
+                        "Graduate degree completion",
+                        "Social awareness",
+                        "Cultural competency",
+                        "Civic engagement",
+                        "Industry-recognized credential",
+                        "Social capital",
+                        "Digital skills",
+                        "Communication skills",
+                        "Higher-order thinking skills",
+                        "Minimum economic return",
+                        "Student loan repayment",
+                    ]),
+                    new("E-W System Conditions",
+                    [
+                        "Institutions' contributions to student outcomes",
+                        "Cumulative student debt",
+                    ]),
+                ],
+                ReportPages:
+                [
+                    new("Summary Page",
+                        "A landing page incorporating graphs of several of the Indicators, including Postsecondary certificate or " +
+                        "degree completion, Enrollment in graduate education, Skills, and Minimum economic return.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg01.jpg"),
+                    new("Reference Page",
+                        "A visual and textual representation of each Indicator and its corresponding report page — " +
+                        "acts as a map of the report pages.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg02.jpg"),
+                    new("Postsecondary certificate/degree completion",
+                        "Insights into the percentage of students completing a certificate, associate's, or bachelor's degree " +
+                        "within 150 percent of the program's intended length. The selected Cohort year appears in the top-left " +
+                        "tile; a historical trend line is in the upper-right tile; Disaggregate results are shown in the bottom " +
+                        "tile. Filters in the bottom right can narrow down to the Credential Type and Field of Study.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg03.jpg"),
+                    new("First-year program of study concentration",
+                        "Insights into the percentage of students completing at least nine credits (or three courses) within a " +
+                        "meta-major during their first year in postsecondary education.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg04.jpg"),
+                    new("Enrollment in Graduate Education",
+                        "Insights into the percentage of bachelor's degree recipients enrolling in post-baccalaureate or graduate " +
+                        "programs within one to five years of completion.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg05.jpg"),
+                    new("Social Capital",
+                        "Offers insights into K–12 and postsecondary: percentage of students or individuals reporting a high level " +
+                        "of social capital on surveys. Adjust the filters on the left-hand tile to drill down to various category " +
+                        "domains and measures.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg06.jpg"),
+                    new("Skills",
+                        "Insights into the percentage of individuals demonstrating proficiency on digital skills assessments, " +
+                        "communication skills assessments, and higher-order thinking skills assessments.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg07.jpg"),
+                    new("Minimum Economic Return",
+                        "Insights into the percentage of individuals that earn at least as much as the median high school graduate " +
+                        "in their state plus enough to recoup their total net price plus interest within 10 years of completing " +
+                        "their highest degree or leaving education (high school, postsecondary education, or workforce training).",
+                        ScreenshotPath: "/images/visualizations/eq19-pg08.jpg"),
+                    new("Resource Page",
+                        "A high-level overview of the Essential Question with context on what to know about the measurement, " +
+                        "plus links that pertain directly to this report.",
+                        ScreenshotPath: "/images/visualizations/eq19-pg09.jpg"),
+                ],
                 Embed: GetEmbed("EQ19")
-            ),
+            )
         ];
     }
 
