@@ -144,4 +144,8 @@ eng/dev-dependencies/database/backups/
 eng/dev-dependencies/ecs-state-data-import-tool/bin/
 eng/dev-dependencies/ecs-state-data-import-tool/obj/
 src/EwFrameworkAnalysis.UI/wwwroot/css/app.css
+src/EwFrameworkAnalysis.UI/wwwroot/css/app.css
+src/EwFrameworkAnalysis.UI/wwwroot/css/all.min.css
+src/EwFrameworkAnalysis.UI/wwwroot/webfonts/
+src/EwFrameworkAnalysis.UI/wwwroot/js/vendor/
 /eng/EwFrameworkAnalysis.Utilities.UI/wwwroot/css/app.css

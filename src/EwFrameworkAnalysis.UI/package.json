@@ -3,11 +3,14 @@
     "version": "1.0.0",
     "description": "Tailwind CSS + DaisyUI build for Blazor application",
     "private": true,
-    "scripts": {
-    },
+    "scripts": {},
     "devDependencies": {
-      "@tailwindcss/cli": "^4.1.0",
-      "daisyui": "^5.0.54"
+        "@tailwindcss/cli": "^4.1.0",
+        "daisyui": "^5.0.54"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.2.0",
+        "jspdf": "^4.2.1",
+        "jspdf-autotable": "^5.0.8"
     }
-  }
-  
+}
