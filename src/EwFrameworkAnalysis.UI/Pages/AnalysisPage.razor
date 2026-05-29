@@ -9,45 +9,45 @@
 @inject AnalysisProjectService ProjectSvc
 @inject FrameworkCoverageService CoverageSvc
 @inject PdfReportService PdfReportSvc
+@inject BusyService BusySvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Header -->
-    <AnalysisHeader OnGenerateReport="GenerateReportAsync"/>
-
+    <AnalysisHeader OnGenerateReport="GenerateReportAsync" />
     <!-- EQ Coverage Summary -->
     <EqReadinessSummary QuestionScores="_coverage.QuestionScores"
-                        SectorCoverageScores="_coverage.BySector"/>
-
+                        SectorCoverageScores="_coverage.BySector" />
     <!-- Overall Coverage Assessment -->
     <OverallReadinessAssessment CoverageScores="_coverage.BySourceType"
                                 IndicatorScores="_coverage.IndicatorScores" />
-
     <!-- Tabs -->
     <div class="tabs tabs-border !rounded-none">
-
         <!-- Essential Questions Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked" data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector"/>
-        <EssentialQuestionGrid QuestionScores="_coverage.QuestionScores"/>
-
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked" data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector" />
+        <EssentialQuestionGrid QuestionScores="_coverage.QuestionScores" />
         <!-- Indicators Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators"/>
-        <IndicatorGrid IndicatorScores="_coverage.IndicatorScores"/>
-
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators" />
+        <IndicatorGrid IndicatorScores="_coverage.IndicatorScores" />
         <!-- Disaggregates Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates"/>
-        <DisaggregateGrid DisaggregateScores="_coverage.DisaggregateScores"/>
-
+        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates" />
+        <DisaggregateGrid DisaggregateScores="_coverage.DisaggregateScores" />
     </div>
 </div>
 
 @code {
     private FrameworkCoverage _coverage = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         ProjectSvc.Changed += OnProjectChanged;
-        await ProjectSvc.InitializeAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        using var _ = await BusySvc.BeginAsync("Loading…");
         RecalculateCoverage();
+        StateHasChanged();
     }
 
     public void Dispose()
@@ -68,21 +68,23 @@
 
     private async Task GenerateReportAsync()
     {
-        var dataSourceScores = ProjectSvc.DataSources
-            .Where(ds => ds.Enabled)
-            .Select(ds =>
-            {
-                var sourceAssessments = ProjectSvc.GetActiveAssessmentsWithSource()
-                    .Where(a => a.DataSourceId == ds.Id)
-                    .ToList();
-                var sourceCoverage = CoverageSvc.CalculateFrameworkCoverage(sourceAssessments);
-                return new DataSourceScore(ds.Name, (double)sourceCoverage.OverallCoverage);
-            })
-            .ToList();
+        await BusySvc.WhileBusyAsync(async () =>
+        {
+            var dataSourceScores = ProjectSvc.DataSources
+                .Where(ds => ds.Enabled)
+                .Select(ds =>
+                {
+                    var sourceAssessments = ProjectSvc.GetActiveAssessmentsWithSource()
+                        .Where(a => a.DataSourceId == ds.Id)
+                        .ToList();
+                    var sourceCoverage = CoverageSvc.CalculateFrameworkCoverage(sourceAssessments);
+                    return new DataSourceScore(ds.Name, (double)sourceCoverage.OverallCoverage);
+                })
+                .ToList();
 
-        await PdfReportSvc.GenerateReportAsync(_coverage,
-            ProjectSvc.Project.Title,
-            dataSourceScores
-        );
+            await PdfReportSvc.GenerateReportAsync(_coverage,
+                ProjectSvc.Project.Title,
+                dataSourceScores);
+        }, "Generating report…");
     }
 }

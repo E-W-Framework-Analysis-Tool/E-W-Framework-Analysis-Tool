@@ -1,0 +1,235 @@
+/* ─────────────────────────────────────────────
+   E-W Framework loading indicator
+   Used by EwLoadingIndicator.razor and EwLoadingOverlay.razor
+───────────────────────────────────────────── */
+
+/*
+   ── Animation timing knobs ──────────────────
+   --ew-duration   : total cycle length for one element's press animation
+   --ew-step       : delay between each successive element pressing
+                     lower  = more overlap, busier feel
+                     higher = more sequential, calmer feel
+   
+   There are 5 elements (top + 4 blocks).
+   Delays are: 0, 1×step, 2×step, 3×step, 4×step
+   For a smooth loop, keep (4 × step) < duration so the
+   last element finishes before the first one loops.
+*/
+:root {
+    --ew-duration: 1.0s;
+    --ew-step: 0.15s;
+}
+
+
+/* ── Splash screen (index.html) ── */
+#blazor-loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background-color: #ffffff;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+}
+
+    #blazor-loading.fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+.loading-wordmark {
+    font-family: 'Zilla Slab', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0b2949;
+    letter-spacing: 0.01em;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+    .loading-wordmark span {
+        color: #f1b51c;
+    }
+
+
+/* ── Indicator layout ── */
+.ew-loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(10px * var(--ew-scale, 1));
+}
+
+.ew-top {
+    width: calc(174px * var(--ew-scale, 1));
+    height: calc(28px * var(--ew-scale, 1));
+    background: #e0d4b5;
+    border-radius: calc(5px * var(--ew-scale, 1));
+    position: relative;
+}
+
+.ew-row {
+    display: flex;
+    gap: calc(6px * var(--ew-scale, 1));
+}
+
+.ew-block {
+    width: calc(39px * var(--ew-scale, 1));
+    height: calc(52px * var(--ew-scale, 1));
+    border-radius: calc(5px * var(--ew-scale, 1));
+    position: relative;
+    will-change: transform;
+}
+
+.ew-b1 {
+    background: #5b6771;
+}
+
+.ew-b2 {
+    background: #12885e;
+}
+
+.ew-b3 {
+    background: #0b2949;
+}
+
+.ew-b4 {
+    background: #f1b51c;
+}
+
+/* Static shadows on pseudo-elements so they are never caught
+   in a style recalc during Blazor's init */
+.ew-top::after,
+.ew-block::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.ew-top::after {
+    box-shadow: 0 4px 0 #b8ad8e, 0 5px 8px rgba(0,0,0,0.12);
+}
+
+.ew-b1::after {
+    box-shadow: 0 4px 0 #3a4248, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b2::after {
+    box-shadow: 0 4px 0 #0a5c3f, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b3::after {
+    box-shadow: 0 4px 0 #071829, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+.ew-b4::after {
+    box-shadow: 0 4px 0 #c0900e, 0 5px 8px rgba(0,0,0,0.18);
+}
+
+
+/* ── Press animation ── */
+@keyframes ew-press {
+    0% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(calc(4px * var(--ew-scale, 1)));
+    }
+
+    55% {
+        transform: translateY(calc(-1px * var(--ew-scale, 1)));
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.ew-dur {
+    animation-name: ew-press;
+    animation-duration: var(--ew-duration);
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    will-change: transform;
+}
+
+/* Delays: 0, 1×step, 2×step, 3×step, 4×step
+   CSS can't multiply custom properties directly in animation-delay,
+   so these are expressed as calc() chains for clarity.
+   To retune: change --ew-step above — the comments show the resolved value. */
+.ew-top {
+    animation-delay: 0s;
+}
+.ew-b1 {
+    animation-delay: calc(1 * var(--ew-step));
+}
+.ew-b2 {
+    animation-delay: calc(2 * var(--ew-step));
+}
+.ew-b3 {
+    animation-delay: calc(3 * var(--ew-step));
+}
+.ew-b4 {
+    animation-delay: calc(4 * var(--ew-step));
+}
+
+
+/* ── Overlay ── */
+.ew-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 50;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: ew-overlay-in 0.35s ease-out both;
+}
+
+    .ew-overlay > * {
+        position: sticky;
+        top: 50vh;
+        transform: translateY(-50%);
+    }
+
+.ew-overlay--out {
+    animation: ew-overlay-out 0.35s ease-in both; /* If changing this, ensure the EwLoadingOverlay component's delay is updated to match */
+}
+
+@keyframes ew-overlay-in {
+    from {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+    }
+}
+
+@keyframes ew-overlay-out {
+    from {
+        background: rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+}

@@ -46,6 +46,7 @@ builder.Services.AddScoped<PdfReportService>();
 builder.Services.AddSingleton<AssessorMappingService>();
 builder.Services.AddSingleton<WalkthroughService>();
 builder.Services.AddScoped<ScrollService>();
+builder.Services.AddSingleton<BusyService>();
 
 // Use HttpClient in scoped situations, use IHttpClientFactory pattern for Singletons
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

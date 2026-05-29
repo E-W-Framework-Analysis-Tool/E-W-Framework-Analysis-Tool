@@ -1,0 +1,52 @@
+@*
+    Full-screen (or parent-relative) loading overlay.
+    Usage:
+        <EwLoadingOverlay IsLoading="@_isLoading" />
+
+    Wrap a relative-positioned container to scope it to a section
+    rather than the full viewport, e.g.:
+        <div class="relative">
+            @Body
+            <EwLoadingOverlay IsLoading="@_isLoading" />
+        </div>
+*@
+
+@if (_isVisible)
+{
+    <div class="ew-overlay @(_isAnimatingOut ? "ew-overlay--out" : "")"
+         role="status" aria-label="Loading">
+        <EwLoadingIndicator Scale="1.2" />
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsLoading { get; set; }
+
+    private bool _isVisible;
+    private bool _isAnimatingOut;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsLoading)
+        {
+            _cts?.Cancel();
+            _isAnimatingOut = false;
+            _isVisible = true;
+        }
+        else if (_isVisible)
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            _isAnimatingOut = true;
+            try
+            {
+                await Task.Delay(350, _cts.Token); // match animation duration
+                _isVisible = false;
+                _isAnimatingOut = false;
+                StateHasChanged();
+            }
+            catch (TaskCanceledException) { }
+        }
+    }
+}

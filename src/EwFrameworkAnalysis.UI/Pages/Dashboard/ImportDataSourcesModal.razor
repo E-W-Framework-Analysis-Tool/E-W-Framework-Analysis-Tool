@@ -10,6 +10,7 @@
              @onclick="Close" aria-hidden="true" />
 
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10">
+            <EwLoadingOverlay IsLoading="@(_isReading || _isImporting)" />
             <!-- Header -->
             <div class="px-6 pt-6 pb-2">
                 <div class="flex items-start gap-4">
@@ -46,14 +47,26 @@
                     }
 
                     <button @onclick="TriggerFilePicker"
+                            disabled="@_isReading"
                             class="w-full flex items-center justify-center gap-3 p-6 border-2 border-dashed
                                            border-gray-300 rounded-xl hover:border-blue hover:bg-blue/5
-                                           transition-all text-gray cursor-pointer">
-                        <i class="fas fa-folder-open text-2xl"></i>
-                        <div class="text-left">
-                            <p class="font-medium text-blue">Choose a project file</p>
-                            <p class="text-xs">Accepts .json project files</p>
-                        </div>
+                                           transition-all text-gray cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        @if (_isReading)
+                        {
+                            <i class="fas fa-folder-open text-2xl"></i>
+                            <div class="text-left">
+                                <p class="font-medium text-blue">Reading file…</p>
+                                <p class="text-xs">Please wait</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <i class="fas fa-folder-open text-2xl"></i>
+                            <div class="text-left">
+                                <p class="font-medium text-blue">Choose a project file</p>
+                                <p class="text-xs">Accepts .json project files</p>
+                            </div>
+                        }
                     </button>
                 }
                 else
@@ -131,7 +144,7 @@
                                            focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
                         @if (_isImporting)
                         {
-                            <span class="loading loading-spinner loading-sm mr-2"></span>
+                            <i class="fas fa-file-import mr-2"></i>
                             <span>Importing...</span>
                         }
                         else
@@ -162,6 +175,7 @@
 
     private Step _step = Step.Pick;
     private string? _error;
+    private bool _isReading;
     private bool _isImporting;
 
     private List<SelectableSource> _items = [];
@@ -179,6 +193,7 @@
     private async Task OnFileSelected(ChangeEventArgs _)
     {
         _error = null;
+        _isReading = true;
         try
         {
             var json = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
@@ -208,6 +223,10 @@
         {
             _error = $"Could not read the file: {ex.Message}";
         }
+        finally
+        {
+            _isReading = false;
+        }
     }
 
     private void ToggleAll()
@@ -223,8 +242,14 @@
         if (toImport.Count == 0) return;
 
         _isImporting = true;
-        await ProjectSvc.ImportDataSourcesAsync(toImport);
-        _isImporting = false;
+        try
+        {
+            await ProjectSvc.ImportDataSourcesAsync(toImport);
+        }
+        finally
+        {
+            _isImporting = false;
+        }
 
         await OnImportComplete.InvokeAsync(toImport.Count);
         await Close();
@@ -238,6 +263,7 @@
         _items = [];
         _conflictIds = [];
         _error = null;
+        _isReading = false;
         _isImporting = false;
     }
 

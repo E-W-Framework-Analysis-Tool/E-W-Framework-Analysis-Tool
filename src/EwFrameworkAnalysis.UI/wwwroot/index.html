@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="ewframework">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +8,20 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
-
 <body>
-    <!-- Target div for initializing Blazor WASM app -->
+    <div id="blazor-loading">
+        <div class="ew-loading-indicator">
+            <div class="ew-top ew-dur"></div>
+            <div class="ew-row">
+                <div class="ew-block ew-b1 ew-dur"></div>
+                <div class="ew-block ew-b2 ew-dur"></div>
+                <div class="ew-block ew-b3 ew-dur"></div>
+                <div class="ew-block ew-b4 ew-dur"></div>
+            </div>
+        </div>
+        <div class="loading-wordmark">E-W Framework <span>Analysis Tool</span></div>
+    </div>
+
     <div id="app"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -19,7 +29,17 @@
     <script src="js/pdf-report.js"></script>
     <script src="js/walkthrough.js"></script>
     <script src="js/scroll.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            Blazor.start().then(() => {
+                const loader = document.getElementById('blazor-loading');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                    loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+                }
+            });
+        }));
+    </script>
 </body>
-
 </html>

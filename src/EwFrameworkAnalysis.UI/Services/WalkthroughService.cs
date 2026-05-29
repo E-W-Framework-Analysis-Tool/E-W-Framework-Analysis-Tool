@@ -11,17 +11,23 @@ public class WalkthroughService
     private readonly List<WalkthroughStepDefinition> _steps = [.. WalkthroughSteps.All];
     private readonly AnalysisProjectService _projectSvc;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly BusyService _busySvc;
 
     public event Action? Changed;
 
-    public WalkthroughService(AnalysisProjectService projectSvc, IHttpClientFactory httpClientFactory)
+    public WalkthroughService(
+        AnalysisProjectService projectSvc,
+        IHttpClientFactory httpClientFactory,
+        BusyService busySvc)
     {
         _projectSvc = projectSvc;
         _httpClientFactory = httpClientFactory;
+        _busySvc = busySvc;
     }
 
     public async Task StartAsync()
     {
+        using var _ = await _busySvc.BeginAsync("Loading tour…");
         using var http = _httpClientFactory.CreateClient();
         var raw = await http.GetStringAsync("Walkthrough_Demo.json");
         await _projectSvc.ActivateDemoProjectAsync(raw);
@@ -32,10 +38,12 @@ public class WalkthroughService
 
     public async Task StopAsync()
     {
+        using var _ = await _busySvc.BeginAsync("Finishing tour…");
         IsActive = false;
         await _projectSvc.DeactivateDemoProjectAsync();
         Changed?.Invoke();
     }
+
     public async Task NextAsync()
     {
         if (CurrentStepIndex < _steps.Count - 1)
@@ -50,7 +58,6 @@ public class WalkthroughService
         if (CurrentStepIndex > 0)
             CurrentStepIndex--;
         Changed?.Invoke();
-
         return Task.CompletedTask;
     }
 }

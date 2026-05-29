@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
+@import "./loading-indicator.css";
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
@@ -128,3 +129,15 @@
             cursor: not-allowed;
         }
 }
+
+.ew-navbar-wordmark {
+    font-family: 'Zilla Slab', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: white;
+}
+
+    .ew-navbar-wordmark span {
+        color: #f1b51c;
+    }
