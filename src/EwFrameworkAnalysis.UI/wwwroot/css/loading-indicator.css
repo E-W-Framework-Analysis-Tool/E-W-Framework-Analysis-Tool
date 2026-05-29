@@ -3,6 +3,24 @@
    Used by EwLoadingIndicator.razor and EwLoadingOverlay.razor
 ───────────────────────────────────────────── */
 
+/*
+   ── Animation timing knobs ──────────────────
+   --ew-duration   : total cycle length for one element's press animation
+   --ew-step       : delay between each successive element pressing
+                     lower  = more overlap, busier feel
+                     higher = more sequential, calmer feel
+   
+   There are 5 elements (top + 4 blocks).
+   Delays are: 0, 1×step, 2×step, 3×step, 4×step
+   For a smooth loop, keep (4 × step) < duration so the
+   last element finishes before the first one loops.
+*/
+:root {
+    --ew-duration: 1.0s;
+    --ew-step: 0.15s;
+}
+
+
 /* ── Splash screen (index.html) ── */
 #blazor-loading {
     position: fixed;
@@ -36,12 +54,13 @@
         color: #f1b51c;
     }
 
+
 /* ── Indicator layout ── */
 .ew-loading-indicator {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(6px * var(--ew-scale, 1));
+    gap: calc(10px * var(--ew-scale, 1));
 }
 
 .ew-top {
@@ -112,7 +131,8 @@
     box-shadow: 0 4px 0 #c0900e, 0 5px 8px rgba(0,0,0,0.18);
 }
 
-/* ── Animation ── */
+
+/* ── Press animation ── */
 @keyframes ew-press {
     0% {
         transform: translateY(0);
@@ -133,43 +153,83 @@
 
 .ew-dur {
     animation-name: ew-press;
-    animation-duration: 1.8s;
+    animation-duration: var(--ew-duration);
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
     animation-fill-mode: both;
     will-change: transform;
 }
 
+/* Delays: 0, 1×step, 2×step, 3×step, 4×step
+   CSS can't multiply custom properties directly in animation-delay,
+   so these are expressed as calc() chains for clarity.
+   To retune: change --ew-step above — the comments show the resolved value. */
 .ew-top {
     animation-delay: 0s;
 }
-
 .ew-b1 {
-    animation-delay: 0.36s;
+    animation-delay: calc(1 * var(--ew-step));
 }
-
 .ew-b2 {
-    animation-delay: 0.72s;
+    animation-delay: calc(2 * var(--ew-step));
 }
-
 .ew-b3 {
-    animation-delay: 1.08s;
+    animation-delay: calc(3 * var(--ew-step));
+}
+.ew-b4 {
+    animation-delay: calc(4 * var(--ew-step));
 }
 
-.ew-b4 {
-    animation-delay: 1.44s;
-}
 
 /* ── Overlay ── */
 .ew-overlay {
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
     z-index: 50;
     border-radius: inherit;
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: ew-overlay-in 0.35s ease-out both;
+}
+
+    .ew-overlay > * {
+        position: sticky;
+        top: 50vh;
+        transform: translateY(-50%);
+    }
+
+.ew-overlay--out {
+    animation: ew-overlay-out 0.35s ease-in both; /* If changing this, ensure the EwLoadingOverlay component's delay is updated to match */
+}
+
+@keyframes ew-overlay-in {
+    from {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+    }
+}
+
+@keyframes ew-overlay-out {
+    from {
+        background: rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
 }

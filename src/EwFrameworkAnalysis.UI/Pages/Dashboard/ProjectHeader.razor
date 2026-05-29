@@ -2,6 +2,7 @@
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
+@inject BusyService BusySvc
 @inject IJSRuntime JSRuntime
 
 <Card Shadow="Card.ShadowSize.XLarge" Overflow AdditionalClasses="mb-6" NoPadding>
@@ -150,6 +151,7 @@
     private async Task OnFileSelected(ChangeEventArgs e)
     {
         _importError = null;
+        using var _ = await BusySvc.BeginAsync("Loading project…");
         var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
         if (!string.IsNullOrWhiteSpace(file))
         {
@@ -179,6 +181,7 @@
 
     private async Task HandleSaveProject()
     {
+        using var _ = await BusySvc.BeginAsync("Saving…");
         var json = await ProjectSvc.ExportProjectAsync();
         var fileName = $"{ProjectSvc.Project?.Title?.Replace(" ", "_") ?? "project"}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.json";
 

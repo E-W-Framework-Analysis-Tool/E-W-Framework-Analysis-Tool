@@ -4,9 +4,11 @@
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Pages.Dashboard
+@using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
 @inject FrameworkCoverageService FrameworkCoverageSvc
 @inject NavigationManager Nav
+@inject BusyService BusySvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
     <!-- Project Header -->
@@ -49,7 +51,14 @@
     protected override void OnInitialized()
     {
         ProjectSvc.Changed += OnProjectChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        using var _ = await BusySvc.BeginAsync("Loading…");
         RecalculateCoverage();
+        StateHasChanged();
     }
 
     public void Dispose()

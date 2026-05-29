@@ -3,10 +3,13 @@
 @using EwFrameworkAnalysis.UI.Services
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
+@implements IDisposable
 @inherits LayoutComponentBase
+@inject BusyService BusySvc
 @inject WalkthroughService Walkthrough
 @inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
 @inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <div class="min-h-screen flex flex-col">
 
@@ -43,8 +46,9 @@
     </div>
 
     <!-- Main Content -->
-    <main class="flex-1 bg-tan">
+    <main class="flex-1 bg-tan relative">
         @Body
+        <EwLoadingOverlay IsLoading="@BusySvc.IsBusy" />
     </main>
 
     <!-- Footer -->
@@ -99,6 +103,36 @@
 <WalkthroughOverlay />
 
 @code {
+    // private IDisposable? _navToken;
+
+    protected override void OnInitialized()
+    {
+        BusySvc.Changed += OnBusyChanged;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnBusyChanged()
+    {
+        Console.WriteLine($"Layout sees IsBusy: {BusySvc.IsBusy}");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // _navToken?.Dispose();
+        // _navToken = await BusySvc.BeginAsync("Navigating…");
+        // The overlay will clear once the new page finishes rendering
+        // and calls StateHasChanged — or set a short timeout:
+        // _ = ClearNavTokenAfterRenderAsync();
+    }
+
+    public void Dispose()
+    {
+        BusySvc.Changed -= OnBusyChanged;
+        Nav.LocationChanged -= OnLocationChanged;
+        // _navToken?.Dispose();
+    }
+
     private async Task HandleTakeATour()
     {
         await JS.InvokeVoidAsync("eval", "document.activeElement.blur()");
