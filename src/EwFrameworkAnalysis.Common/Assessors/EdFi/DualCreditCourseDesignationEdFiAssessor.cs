@@ -5,6 +5,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class DualCreditCourseDesignationEdFiAssessor : IEdFiAssessor
 {
+    private const string DUAL_CREDIT_DESCRIPTOR_URI = "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Dual Credit";
+
     private readonly EdFiCourseProvider _courseProvider;
 
     public DualCreditCourseDesignationEdFiAssessor(EdFiCourseProvider courseProvider)
@@ -15,7 +17,7 @@ public class DualCreditCourseDesignationEdFiAssessor : IEdFiAssessor
     public string DataElementName => "Dual credit course designation";
 
     public string AssessmentDescription =>
-        "Analyzes courses for Dual Credit designation via CourseLevelCharacteristic";
+        "Counts courses designated Dual Credit via their CourseLevelCharacteristic descriptor.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
@@ -24,19 +26,11 @@ public class DualCreditCourseDesignationEdFiAssessor : IEdFiAssessor
 
         var data = await _courseProvider.GetDataAsync(httpClient, context);
 
-        var totalCourses = data.Count;
-        var dualCreditCourses = 0;
+        var dualCreditCourses = data.Count(course =>
+            course.LevelCharacteristics?.Any(lc =>
+                string.Equals(lc.CourseLevelCharacteristicDescriptor, DUAL_CREDIT_DESCRIPTOR_URI, StringComparison.OrdinalIgnoreCase)) == true);
 
-        foreach (var course in data)
-        {
-            if (course.LevelCharacteristics?.Any(lc =>
-                    lc.CourseLevelCharacteristicDescriptor?.Contains("Dual Credit", StringComparison.OrdinalIgnoreCase) ?? false) == true)
-            {
-                dualCreditCourses++;
-            }
-        }
-
-        context.Log($"Found {dualCreditCourses:N0} of {totalCourses:N0} courses with Dual Credit designation");
+        context.Log($"Found {dualCreditCourses:N0} courses with Dual Credit designation");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -44,8 +38,7 @@ public class DualCreditCourseDesignationEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalCourses),
-                new Completeness(totalCourses, dualCreditCourses, "Dual Credit designation")
+                new RecordCount(dualCreditCourses)
             ],
             Remarks = AssessmentDescription
         };

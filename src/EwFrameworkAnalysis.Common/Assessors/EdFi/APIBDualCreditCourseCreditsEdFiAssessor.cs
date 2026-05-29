@@ -1,4 +1,3 @@
-using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -6,6 +5,14 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
 {
+    // Course level characteristic descriptors that mark a course as advanced/college-level.
+    private static readonly string[] _targetDescriptors =
+    [
+        "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Advanced Placement",
+        "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#International Baccalaureate",
+        "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Dual Credit"
+    ];
+
     private readonly EdFiCourseProvider _courseProvider;
 
     public APIBDualCreditCourseCreditsEdFiAssessor(EdFiCourseProvider courseProvider)
@@ -13,21 +20,10 @@ public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
         _courseProvider = courseProvider;
     }
 
-    public string DataElementName => "AP, IB, or Dual Credit course credits";
+    public string DataElementName => "AP, IB, or Dual Credit course designation";
 
     public string AssessmentDescription =>
         "Analyzes AP, IB, and Dual Credit courses for available credit information";
-
-    private static bool IsAPOrIBOrDualCredit(EdFiCourse course)
-    {
-        return course.LevelCharacteristics?.Any(lc =>
-        {
-            var desc = lc.CourseLevelCharacteristicDescriptor ?? "";
-            return desc.Contains("Advanced Placement", StringComparison.OrdinalIgnoreCase)
-                || desc.Contains("International Baccalaureate", StringComparison.OrdinalIgnoreCase)
-                || desc.Contains("Dual Credit", StringComparison.OrdinalIgnoreCase);
-        }) == true;
-    }
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
@@ -36,21 +32,32 @@ public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
 
         var data = await _courseProvider.GetDataAsync(httpClient, context);
 
-        var totalCourses = data.Count;
+        // Seed all designations so the distribution always reports each bucket.
+        var distribution = _targetDescriptors.ToDictionary(
+            EdFiDescriptorHelper.ParseDescriptorValue, _ => 0);
         var matchingCourses = 0;
-        var withCredits = 0;
 
         foreach (var course in data)
         {
-            if (IsAPOrIBOrDualCredit(course))
+            var matchedAny = false;
+
+            foreach (var descriptor in _targetDescriptors)
             {
-                matchingCourses++;
-                if (course.MaximumAvailableCredits.HasValue)
-                    withCredits++;
+                var hasDescriptor = course.LevelCharacteristics?.Any(lc =>
+                    string.Equals(lc.CourseLevelCharacteristicDescriptor, descriptor, StringComparison.OrdinalIgnoreCase)) == true;
+
+                if (hasDescriptor)
+                {
+                    distribution[EdFiDescriptorHelper.ParseDescriptorValue(descriptor)]++;
+                    matchedAny = true;
+                }
             }
+
+            if (matchedAny)
+                matchingCourses++;
         }
 
-        context.Log($"Found {matchingCourses:N0} AP/IB/Dual Credit courses, {withCredits:N0} with credit information");
+        context.Log($"Found {matchingCourses:N0} AP/IB/Dual Credit courses");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -58,9 +65,8 @@ public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalCourses),
-                new Completeness(totalCourses, matchingCourses, "AP/IB/Dual Credit designation"),
-                new Completeness(matchingCourses, withCredits, "MaximumAvailableCredits")
+                new RecordCount(matchingCourses),
+                new Distribution(distribution, "AP/IB/Dual Credit designation")
             ],
             Remarks = AssessmentDescription
         };

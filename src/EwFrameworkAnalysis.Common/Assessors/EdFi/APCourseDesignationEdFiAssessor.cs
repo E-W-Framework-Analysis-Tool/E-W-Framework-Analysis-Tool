@@ -5,6 +5,8 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class APCourseDesignationEdFiAssessor : IEdFiAssessor
 {
+    private const string AP_DESCRIPTOR_URI = "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Advanced Placement";
+
     private readonly EdFiCourseProvider _courseProvider;
 
     public APCourseDesignationEdFiAssessor(EdFiCourseProvider courseProvider)
@@ -15,7 +17,7 @@ public class APCourseDesignationEdFiAssessor : IEdFiAssessor
     public string DataElementName => "AP course designation";
 
     public string AssessmentDescription =>
-        "Analyzes courses for Advanced Placement designation via CourseLevelCharacteristic";
+        "Counts courses designated Advanced Placement via their CourseLevelCharacteristic descriptor.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
@@ -24,19 +26,11 @@ public class APCourseDesignationEdFiAssessor : IEdFiAssessor
 
         var data = await _courseProvider.GetDataAsync(httpClient, context);
 
-        var totalCourses = data.Count;
-        var apCourses = 0;
+        var apCourses = data.Count(course =>
+            course.LevelCharacteristics?.Any(lc =>
+                string.Equals(lc.CourseLevelCharacteristicDescriptor, AP_DESCRIPTOR_URI, StringComparison.OrdinalIgnoreCase)) == true);
 
-        foreach (var course in data)
-        {
-            if (course.LevelCharacteristics?.Any(lc =>
-                    lc.CourseLevelCharacteristicDescriptor?.Contains("Advanced Placement", StringComparison.OrdinalIgnoreCase) ?? false) == true)
-            {
-                apCourses++;
-            }
-        }
-
-        context.Log($"Found {apCourses:N0} of {totalCourses:N0} courses with Advanced Placement designation");
+        context.Log($"Found {apCourses:N0} courses with Advanced Placement designation");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -44,8 +38,7 @@ public class APCourseDesignationEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(totalCourses),
-                new Completeness(totalCourses, apCourses, "Advanced Placement designation")
+                new RecordCount(apCourses)
             ],
             Remarks = AssessmentDescription
         };
