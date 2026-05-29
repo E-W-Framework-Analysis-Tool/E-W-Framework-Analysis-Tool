@@ -129,3 +129,15 @@
             cursor: not-allowed;
         }
 }
+
+.ew-navbar-wordmark {
+    font-family: 'Zilla Slab', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: white;
+}
+
+    .ew-navbar-wordmark span {
+        color: #f1b51c;
+    }

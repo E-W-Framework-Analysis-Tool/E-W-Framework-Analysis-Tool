@@ -14,10 +14,10 @@
 <div class="min-h-screen flex flex-col">
 
     <div class="navbar bg-secondary text-secondary-content justify-center p-0">
-        <div class="w-full max-w-7xl flex justify-center">
-            <div class="flex-1 align-middle">
-                <a href="@AppRoutes.Home" class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none font-semibold ">
-                    E-W Framework Analysis Tool
+        <div class="w-full max-w-7xl flex items-center justify-center">
+            <div class="flex-1">
+                <a href="@AppRoutes.Home" class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none">
+                    <span class="ew-navbar-wordmark">E-W Framework <span>Analysis Tool</span></span>
                 </a>
             </div>
 
@@ -31,8 +31,7 @@
                         </div>
                         <ul tabindex="0" class="dropdown-content menu bg-white text-gray-700 rounded-none z-50 w-48 p-2 shadow-xl border border-gray-100">
                             <li>
-                                <button class="link link-hover cursor-pointer"
-                                        @onclick="HandleTakeATour">
+                                <button class="link link-hover cursor-pointer" @onclick="HandleTakeATour">
                                     Take a Tour
                                 </button>
                             </li>
