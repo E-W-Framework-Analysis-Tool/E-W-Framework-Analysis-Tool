@@ -29,23 +29,72 @@ flowchart LR
     subgraph Browser["User's Browser (WebAssembly Sandbox)"]
         UI["Blazor UI"]
         Logic["Scoring & Analysis Logic"]
-        Storage["localStorage\n(project cache)"]
+        Storage["localStorage<br/>(project cache)"]
         UI <--> Logic
         Logic <--> Storage
     end
 
-    StaticHost["Static File Host\n(Azure SWA / internal server)"]
-    StaticHost -->|"Delivers app files\n(one-time load)"| Browser
+    StaticHost["Static File Host<br/>(Azure SWA / internal server)"]
+    StaticHost -->|"Delivers app files<br/>(one-time load)"| Browser
 
-    EdFiAPI["Ed-Fi ODS API\n(optional, user-configured)"]
-    Browser -->|"Direct REST calls\nfrom browser\n(credentials in memory only)"| EdFiAPI
+    EdFiAPI["Ed-Fi ODS API<br/>(optional, user-configured)"]
+    Browser -->|"Direct REST calls<br/>from browser<br/>(credentials in memory only)"| EdFiAPI
 
     LocalFile["Local File System"]
-    Browser -->|"Save / Load\nproject JSON"| LocalFile
+    Browser -->|"Save / Load<br/>project JSON"| LocalFile
 
-    SSMS["SQL Server\n(CEDS Data Warehouse)"]
-    SSMS -->|"User imports\nCSV results"| Browser
+    SSMS["SQL Server<br/>(CEDS Data Warehouse)"]
+    SSMS -->|"User imports<br/>CSV results"| Browser
 ```
+
+### Codebase Structure
+
+The solution is organized into two main projects — `Common` and `UI` — plus test projects and a separate maintenance
+utility. The key architectural constraint is that `Common` has no UI dependencies; all browser-specific concerns live in
+`UI`.
+
+```mermaid
+graph LR
+    subgraph UI["EwFrameworkAnalysis.UI — Blazor WebAssembly"]
+        HOST["App Host<br/>─────────────────────<br/>Program.cs DI wiring<br/>AppRoutes (type-safe)<br/>appsettings (deploy-time)"]
+        PGS["Pages & Components<br/>─────────────────────<br/>Routable pages<br/>Page-scoped components<br/>Shared components"]
+        UISVC["UI Services<br/>─────────────────────<br/>AnalysisProjectService<br/>WalkthroughService<br/>PdfReportService<br/>ScrollService"]
+        SCR["Scoring<br/>─────────────────────<br/>FrameworkCoverageService<br/>ScoringRule registry<br/>AssessorMappingService"]
+        HOST --> PGS
+        HOST --> UISVC
+        HOST --> SCR
+        PGS --> UISVC
+    end
+
+    subgraph Common["EwFrameworkAnalysis.Common — core domain, no UI dependencies"]
+        SVC["Services<br/>─────────────────────<br/>EdFiAssessmentOrchestrator<br/>CedsDWAssessmentOrchestrator<br/>DataElementScoringService<br/>LlmDataProfilingPromptBuilder<br/>AnalysisProjectMigrator"]
+        MDL["Models<br/>─────────────────────<br/>AnalysisProject · DataSource<br/>Assessment · Scoring results"]
+        ASR["Assessors<br/>─────────────────────<br/>IEdFiAssessor implementations<br/>ICedsDWAssessor implementations<br/>Auto-discovered via reflection"]
+        FRD["FrameworkReferenceData<br/>─────────────────────<br/>Compiled C# statics<br/>EssentialQuestions · Indicators<br/>DataElements · Disaggregates<br/>ECS state JSON profiles"]
+        SVC --> MDL
+        SVC --> ASR
+        ASR -.->|"names must match"| FRD
+    end
+
+    subgraph Utils["Utilities.UI — separate Blazor app"]
+        FM["Framework Manager<br/>─────────────────────<br/>Edit elements & mappings<br/>Exports C# source<br/>→ checked in to Common"]
+    end
+
+    subgraph Tests["Test projects"]
+        UT["Common.UnitTests<br/>xUnit · FluentAssertions · FakeItEasy"]
+        IT["IntegrationTests<br/>Live API / DW scenarios"]
+        E2E["E2ETests<br/>Playwright · accessibility checks"]
+        UUT["UI.UnitTests<br/>xUnit · FluentAssertions"]
+    end
+
+    UI -->|"depends on"| Common
+    FM -.->|"build-time export"| FRD
+```
+
+> **Note on FrameworkReferenceData:** The data element dictionary, indicator mappings, essential question definitions,
+> and disaggregates are compiled directly into the application as C# static classes. The Framework Manager utility
+> (`Utilities.UI`) is used by maintainers to edit these mappings and export them as ready-to-compile C# source, which is
+> then checked in and compiled into `Common`. This is a build-time workflow, not a runtime dependency.
 
 ---
 
@@ -90,7 +139,7 @@ sequenceDiagram
         EdFi-->>Browser: Aggregate JSON responses
     end
     Browser->>Browser: Score results, update project
-    Note over Browser: API responses not persisted;\nonly computed scores stored
+    Note over Browser: API responses not persisted<br/>only computed scores stored
     User->>Browser: Save project to local file (optional)
 ```
 
@@ -118,11 +167,11 @@ sequenceDiagram
     Browser->>User: Generated SQL script (downloadable)
     User->>User: Inspect script
     User->>SSMS: Execute script against CEDS DW
-    Note over SSMS: Script runs entirely within the\nagency's SQL environment.\nNo external connections made.
-    SSMS-->>User: Aggregate result set\n(counts, ranges, distributions)
+    Note over SSMS: Script runs entirely within the<br/>agency's SQL environment.<br/>No external connections made.
+    SSMS-->>User: Aggregate result set<br/>(counts, ranges, distributions)
     User->>User: Export to CSV, inspect if desired
     User->>Browser: Import CSV file
-    Note over Browser: Parsed in browser via CsvHelper.\nNot transmitted anywhere.
+    Note over Browser: Parsed in browser via CsvHelper.<br/>Not transmitted anywhere.
     Browser->>Browser: Score results, update project
 ```
 
@@ -158,11 +207,11 @@ sequenceDiagram
 
     Browser->>User: Generated prompt (copy to clipboard)
     User->>LLM: Paste prompt + schema/data dictionary
-    Note over LLM: Runs in user-chosen environment.\nTool has no connection to LLM.
+    Note over LLM: Runs in user-chosen environment.<br/>Tool has no connection to LLM.
     LLM-->>User: Structured JSON project file
     User->>Browser: Import JSON file
-    Note over Browser: Parsed in browser.\nNot transmitted anywhere.
-    Browser->>Browser: Data source added to project;\nresults available for review and editing
+    Note over Browser: Parsed in browser.<br/>Not transmitted anywhere.
+    Browser->>Browser: Data source added to project,<br/>results available for review and editing
 ```
 
 ---
