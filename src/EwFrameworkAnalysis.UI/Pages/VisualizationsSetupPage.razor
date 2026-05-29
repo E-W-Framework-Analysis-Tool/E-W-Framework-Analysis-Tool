@@ -3,6 +3,7 @@
 @using EwFrameworkAnalysis.UI.Options
 @using Microsoft.Extensions.Options
 @inject IOptions<VisualizationsOptions> VisualizationsOptions
+@inject IOptions<ContactInfoOptions> ContactInfoOptions
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
 
@@ -221,8 +222,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <a href="mailto:support@EWFAnalysisTool.com" class="link link-hover text-blue">
-                        support@EWFAnalysisTool.com
+                    <a href="mailto:@ContactInfoOptions.Value.SupportEmail" class="link link-hover text-blue">
+                        @ContactInfoOptions.Value.SupportEmail
                     </a>
                 </div>
                 <div class="flex items-center gap-2">

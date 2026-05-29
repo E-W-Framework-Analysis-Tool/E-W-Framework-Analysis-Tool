@@ -33,6 +33,10 @@ var visualizationsOptions = new VisualizationsOptions();
 builder.Configuration.GetSection(VisualizationsOptions.SectionName).Bind(visualizationsOptions);
 builder.Services.AddSingleton(Options.Create(visualizationsOptions));
 
+var contactInfoOptions = new ContactInfoOptions();
+builder.Configuration.GetSection(ContactInfoOptions.SectionName).Bind(contactInfoOptions);
+builder.Services.AddSingleton(Options.Create(contactInfoOptions));
+
 builder.Services.AddScoped<EdFiAssessmentOrchestrator>();
 builder.Services.AddScoped<EdFiStudentDemographicsProvider>();
 builder.Services.AddScoped<EdFiCTEProgramProvider>();
