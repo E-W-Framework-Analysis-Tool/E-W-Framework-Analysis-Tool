@@ -46,6 +46,62 @@ We use Microsoft's built-in .NET analyzers rather than legacy tools like StyleCo
 
 ## Blazor-Specific Standards
 
+### UI Project Structure
+
+The UI project distinguishes between three kinds of Razor files, organized by their scope and reusability:
+
+**Pages** (`Pages/`) are top-level routable components. Each page has a corresponding `@page` directive and is
+registered in the application's routing. Pages are responsible for orchestrating their layout and composing
+page-specific components.
+
+```text
+Pages/
+  DashboardPage.razor
+  DataSourceDetailsPage.razor
+  AnalysisPage.razor
+  MappingOverview.razor
+  VisualizationsPage.razor
+  ...
+```
+
+**Page-specific components** live in a subdirectory named after their parent page. These components are tightly coupled
+to a single page's concerns and are not intended for reuse elsewhere. Co-locating them with their page makes the
+relationship explicit and keeps page-level complexity manageable.
+
+```text
+Pages/
+  DataSourceDetails/
+    AssessmentDetailsView.razor
+    AssessmentHistoryCard.razor
+    AssessmentRunnerModal.razor
+    DataElementCard.razor
+    DataElementList.razor
+    DataSourceHeader.razor
+    ...
+  Dashboard/
+    ...
+  Analysis/
+    ...
+```
+
+**Shared components** (`Components/`) are page-agnostic and reusable across the application. A component belongs here
+when it has no dependency on a specific page's data model or workflow — it receives everything it needs through
+parameters.
+
+```text
+Components/
+  Card.razor
+  CollapsibleSection.razor
+  EditableField.razor
+  Modal.razor
+  StatCard.razor
+  WalkthroughOverlay.razor
+  ...
+```
+
+When building a new feature, prefer page-specific components until a clear reuse need emerges. Promote to `Components/`
+only when the component is genuinely page-agnostic, not simply because it might be used again someday.
+
 ### Component File Structure
 
 Organize Blazor components with this consistent structure:

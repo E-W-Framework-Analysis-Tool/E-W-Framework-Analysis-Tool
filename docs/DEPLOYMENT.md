@@ -1,101 +1,96 @@
-# Deployment and CI/CD
+# Deployment
 
-This document outlines the continuous integration and deployment pipeline for the solution.
+The E-W Framework Analysis Tool is a Blazor WebAssembly application that compiles to a set of static files — HTML, CSS,
+JavaScript, and WebAssembly binaries. There is no server-side runtime component. Any host capable of serving static
+files can run it.
 
-## Pipeline Overview
+The project maintainers publish a hosted instance as a convenience, but agencies and developers are encouraged to build
+and host the application themselves, including on internal networks.
 
-The CI/CD pipeline uses GitHub Actions to automatically build, test, and deploy the application across multiple
-environments. The pipeline is triggered on pull requests and pushes to main, as well as version tags.
+## Self-Hosting
 
-## Deployment Strategy
+### Building from Source
 
-### Environment Promotion
+Prerequisites: [.NET 10 SDK](https://dotnet.microsoft.com/download)
 
-- **Development**: Automatically deploys from `main` branch pushes or from version tags
-- **Test**: Deploys only from version tags (format: `vX.X.X`) - _Currently disabled_
-- **Production**: Deploys only from version tags after successful test deployment - _Currently disabled_
-
-### Version Management
-
-The pipeline automatically determines the deployment version:
-
-- **Tagged releases**: Uses the tag version (e.g., `v1.2.3` → `1.2.3`)
-- **Main branch**: Uses commit SHA (e.g., `main-abc1234`)
-
-## Build Process
-
-### Automated Steps
-
-1. **Code Quality**: Runs formatting, linting, and static analysis
-2. **Build**: Compiles the solution using `./eng/build-solution.ps1`
-3. **Test**: Executes unit tests with the `-Check` flag
-4. **Publish**: Creates deployment artifacts for the Blazor app
-
-### Configuration
-
-- Uses .NET 9.0.x runtime
-- Enforces strict quality checks (`TreatWarningsAsErrors: true`)
-- Runs on Ubuntu latest for consistency
-
-## Deployment Configuration
-
-### Environment Variables
-
-Each environment receives specific configuration through environment variable transformation:
-
-```yaml
-EWFTOOLSETTING__DeploymentInfo__Version: # Build version
-EWFTOOLSETTING__DeploymentInfo__DeployDateTime: # Deployment timestamp
-EWFTOOLSETTING__DeploymentInfo__EnvironmentLabel: # "DEV", "TEST", "PROD"
-EWFTOOLSETTING__DeploymentInfo__ShowDetails: # "true" for dev/test, "false" for prod
-EWFTOOLSETTING__DeploymentInfo__GitCommit: # Full commit SHA
-EWFTOOLSETTING__DeploymentInfo__BuildNumber: # GitHub run number
+```bash
+# Build and publish the Blazor app
+./eng/build-solution.ps1 -Publish
 ```
 
-### Azure Static Web Apps
+The published output will be in `publish/wwwroot`. Deploy its contents to any static file host.
 
-The application deploys to Azure Static Web Apps using:
+### Hosting Requirements
 
-- **Deploy Token**: Stored as `AZURE_SWA_DEPLOY_TOKEN` in GitHub Secrets
-- **App Location**: `publish/wwwroot` (the built Blazor output)
-- **Deployment Script**: `./eng/deploy-to-azure-swa.ps1`
+The only hosting requirement beyond serving static files is that your host must return `index.html` for any path that
+does not correspond to a static file. This is required for Blazor's client-side routing — without it, deep links and
+page refreshes will return 404. The published output includes a `web.config` with the necessary IIS rewrite rules; for
+other hosts, consult your server's documentation for configuring a single-page application fallback.
 
-## Release Process
+---
 
-### Creating a Release
+## CI/CD Pipeline
 
-1. **Tag the release**: Create a tag following semantic versioning (`vX.X.X`)
+The project uses GitHub Actions for continuous integration and deployment. The workflow file is at
+`.github/workflows/dotnet-cicd.yml`.
 
-   ```bash
-   git tag v1.2.3
-   git push origin v1.2.3
-   ```
+### Pipeline Steps
 
-2. **Automatic deployment**: The pipeline will automatically deploy to dev environment immediately
+Every push and pull request runs the full quality gate:
 
-3. **Manual promotion**: Test and production deployments are currently disabled and require manual intervention
+1. **Format & lint** — enforces code style via `.editorconfig`
+2. **Build** — compiles the solution (`./eng/build-solution.ps1`)
+3. **Test** — runs unit tests with the `-Check` flag
+4. **Publish** — produces the static Blazor output as a build artifact
 
-### Rollback Strategy
+Build artifacts are retained for 30 days and named `blazor-app-{version}` (e.g., `blazor-app-1.2.3` or
+`blazor-app-main-abc1234`). These artifacts can be downloaded and deployed to any static host without rebuilding from
+source.
 
-- **Development**: Redeploy from main branch or previous tag
-- **Test/Production**: Deploy previous version tag when environments are re-enabled
+### Deployment Targets
 
-## Monitoring and Artifacts
+The pipeline supports three environments, each gated by trigger type:
 
-### Build Artifacts
+| Environment | Trigger                           | Status             |
+| ----------- | --------------------------------- | ------------------ |
+| Development | Push to `main` or any version tag | Active             |
+| Test        | Version tags (`vX.X.X`) only      | Currently disabled |
+| Production  | Version tags, after test succeeds | Currently disabled |
 
-- **Retention**: 30 days
-- **Naming**: `blazor-app-{version}` (e.g., `blazor-app-1.2.3` or `blazor-app-main-abc1234`)
-- **Contents**: Complete published Blazor application
+Test and production deployments will be re-enabled with required reviewer gates once the repository is public.
 
-## Security Considerations
+### Versioning
 
-- Deploy tokens are stored as GitHub repository secrets
-- Environment-specific configurations are applied during deployment
-- Production environment hides deployment details (`ShowDetails: false`)
+| Trigger                     | Version format                           |
+| --------------------------- | ---------------------------------------- |
+| Version tag (e.g. `v1.2.3`) | `1.2.3`                                  |
+| Push to `main`              | `main-{short SHA}` (e.g. `main-abc1234`) |
 
-## Future Enhancements
+### Deploying to Azure Static Web Apps
 
-- Re-enable test and production environments with required reviewer gates (available when repository becomes public)
-- Add automated testing for deployed environments
-- Implement blue-green deployment strategy for zero-downtime releases
+The project maintainers use Azure Static Web Apps for their hosted instance. If you want to use the same pipeline for
+your own Azure deployment:
+
+1. Create an Azure Static Web App and copy the deployment token
+2. Add the token as a repository secret named `AZURE_SWA_DEPLOY_TOKEN`
+3. The deployment script (`./eng/deploy-to-azure-swa.ps1`) will be invoked automatically by the workflow
+
+The following environment-specific values are injected into `appsettings.json` at deploy time via environment variable
+substitution:
+
+| Variable                           | Description                         |
+| ---------------------------------- | ----------------------------------- |
+| `DeploymentInfo__Version`          | Build version string                |
+| `DeploymentInfo__DeployDateTime`   | Deployment timestamp                |
+| `DeploymentInfo__EnvironmentLabel` | `DEV`, `TEST`, or `PROD`            |
+| `DeploymentInfo__ShowDetails`      | `true` in dev/test; `false` in prod |
+| `DeploymentInfo__GitCommit`        | Full commit SHA                     |
+| `DeploymentInfo__BuildNumber`      | GitHub Actions run number           |
+
+These values are informational and displayed in the application's about/version panel. They are not required for
+self-hosted deployments.
+
+### Rollback
+
+Redeploy any previous build artifact or re-run the pipeline against a prior tag. Because the application is stateless on
+the server side, rollback has no database or migration concerns.
