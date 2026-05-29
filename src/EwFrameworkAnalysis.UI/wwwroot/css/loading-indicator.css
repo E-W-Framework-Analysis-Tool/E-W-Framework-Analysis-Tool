@@ -158,6 +158,11 @@
     animation-iteration-count: infinite;
     animation-fill-mode: both;
     will-change: transform;
+    animation-play-state: paused;
+}
+
+.ew-animate .ew-dur {
+    animation-play-state: running;
 }
 
 /* Delays: 0, 1×step, 2×step, 3×step, 4×step

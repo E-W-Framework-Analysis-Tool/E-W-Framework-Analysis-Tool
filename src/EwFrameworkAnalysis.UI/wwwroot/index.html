@@ -3,14 +3,52 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary meta -->
     <title>E-W Framework Analysis Tool</title>
+    <meta name="description" content="Open-source tool for education agencies to assess data readiness against the Education-to-Workforce Indicator Framework. Score coverage, identify gaps, and plan data infrastructure improvements. Supports SLDS planning and Ed-Fi/CEDS integration." />
+    <meta name="keywords" content="Education-to-Workforce, E-W Framework, education data, SLDS, Ed-Fi, CEDS, P20W, data readiness, indicator framework, state education agency" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.ewfanalysistool.com/" />
+
+    <!-- Open Graph (link previews in Slack, LinkedIn, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.ewfanalysistool.com/" />
+    <meta property="og:title" content="E-W Framework Analysis Tool" />
+    <meta property="og:description" content="Open-source tool for education agencies to assess data readiness against the Education-to-Workforce Indicator Framework. Score coverage, identify gaps, and plan data infrastructure improvements." />
+     <meta property="og:image" content="https://www.ewfanalysistool.com/images/og-preview.jpg" /> 
+    <!-- Twitter/X card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://www.ewfanalysistool.com/" />
+    <meta name="twitter:title" content="E-W Framework Analysis Tool" />
+    <meta name="twitter:description" content="Open-source tool for education agencies to assess data readiness against the Education-to-Workforce Indicator Framework. Score coverage, identify gaps, and plan data infrastructure improvements." />
+     <meta name="twitter:image" content="https://www.ewfanalysistool.com/images/og-preview.jpg" /> 
+    <!-- Structured data (Google rich results) -->
+     <script type="application/ld+json">
+         {
+           "@context": "https://schema.org",
+           "@type": "SoftwareApplication",
+           "name": "E-W Framework Analysis Tool",
+           "url": "https://www.ewfanalysistool.com/",
+           "description": "Open-source tool for education agencies to assess data readiness against the Education-to-Workforce Indicator Framework.",
+           "applicationCategory": "EducationalApplication",
+           "operatingSystem": "Web",
+           "offers": {
+             "@type": "Offer",
+             "price": "0",
+             "priceCurrency": "USD"
+           },
+           "codeRepository": "https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool"
+         }
+     </script>
+
     <base href="/" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 <body>
     <div id="blazor-loading">
-        <div class="ew-loading-indicator">
+        <div class="ew-loading-indicator ew-animate">
             <div class="ew-top ew-dur"></div>
             <div class="ew-row">
                 <div class="ew-block ew-b1 ew-dur"></div>
@@ -33,11 +71,11 @@
     <script>
         requestAnimationFrame(() => requestAnimationFrame(() => {
             Blazor.start().then(() => {
-                const loader = document.getElementById('blazor-loading');
-                if (loader) {
-                    loader.classList.add('fade-out');
-                    loader.addEventListener('transitionend', () => loader.remove(), { once: true });
-                }
+                 const loader = document.getElementById('blazor-loading');
+                 if (loader) {
+                     loader.classList.add('fade-out');
+                     loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+                 }
             });
         }));
     </script>
