@@ -1,4 +1,3 @@
-using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -6,65 +5,50 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class HealthServicesOfferedEdFiAssessor : IEdFiAssessor
 {
-    private static readonly string[] _matchKeywords =
+    private static readonly string[] _targetDescriptors =
     [
-        "Health",
-        "Medical",
-        "Nursing",
-        "Physical Health",
-        "Wellness"
+        "uri://ed-fi.org/InterventionClassDescriptor#Health",
+        "uri://ed-fi.org/InterventionClassDescriptor#Medical",
+        "uri://ed-fi.org/InterventionClassDescriptor#Nursing",
+        "uri://ed-fi.org/InterventionClassDescriptor#Physical Health",
+        "uri://ed-fi.org/InterventionClassDescriptor#Wellness"
     ];
-
-    private static readonly string[] _excludeKeywords =
-    [
-        "Mental Health",
-        "Behavioral Health"
-    ];
-
-    private readonly EdFiStudentInterventionProvider _interventionProvider;
-
-    public HealthServicesOfferedEdFiAssessor(EdFiStudentInterventionProvider interventionProvider)
-    {
-        _interventionProvider = interventionProvider;
-    }
 
     public string DataElementName => "Health services offered";
 
     public string AssessmentDescription =>
-        "Count and distribution of student intervention associations linked to physical " +
-        "health services by matching intervention class descriptors and identification codes " +
-        "against health/medical keywords (excluding mental health services).";
+        "Count and distribution of interventions classified under physical health service " +
+        "descriptors (Health, Medical, Nursing, Physical Health, Wellness).";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Loading student intervention associations...");
+        context.ReportProgress(0, "Counting interventions by health service class...");
 
-        var associations = await _interventionProvider.GetAssociationsAsync(httpClient, context);
-        var interventionLookup = await _interventionProvider.GetInterventionLookupAsync(httpClient, context);
-
-        context.ReportProgress(50, "Filtering for health services interventions...");
-
-        var matchCount = 0;
+        var totalMatching = 0;
         var distribution = new Dictionary<string, int>();
 
-        foreach (var association in associations)
+        for (var i = 0; i < _targetDescriptors.Length; i++)
         {
-            var reference = association.InterventionReference;
-            var key = EdFiStudentInterventionProvider.BuildKey(
-                reference?.EducationOrganizationId, reference?.InterventionIdentificationCode);
-            if (!interventionLookup.TryGetValue(key, out var intervention))
-                continue;
+            var descriptor = _targetDescriptors[i];
+            var label = EdFiDescriptorHelper.ParseDescriptorValue(descriptor);
 
-            if (!IsHealthServicesIntervention(intervention))
-                continue;
+            var count = await EdFiApiPatterns.CountFromHeaderAsync(
+                httpClient,
+                "ed-fi/interventions",
+                new Dictionary<string, string>
+                {
+                    ["interventionClassDescriptor"] = descriptor
+                });
 
-            matchCount++;
-            var label = intervention.InterventionIdentificationCode ?? "Unknown";
-            distribution[label] = distribution.GetValueOrDefault(label) + 1;
+            distribution[label] = count;
+            totalMatching += count;
+
+            var progress = (int)(((i + 1) * 100.0) / _targetDescriptors.Length);
+            context.ReportProgress(progress, $"Counted {label}: {count:N0}");
         }
 
-        context.Log($"Found {matchCount:N0} health services records out of {associations.Count:N0} total");
+        context.Log($"Found {totalMatching:N0} interventions across {_targetDescriptors.Length} health service classes");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -72,31 +56,9 @@ public class HealthServicesOfferedEdFiAssessor : IEdFiAssessor
             DataElementName = DataElementName,
             Characteristics =
             [
-                new RecordCount(matchCount),
-                new Distribution(distribution, "Intervention")
+                new RecordCount(totalMatching),
+                new Distribution(distribution, "Intervention Class")
             ]
         };
-    }
-
-    private static bool IsHealthServicesIntervention(EdFiIntervention intervention)
-    {
-        var classDescriptor = EdFiDescriptorHelper.ParseDescriptorValue(intervention.InterventionClassDescriptor);
-        var identificationCode = intervention.InterventionIdentificationCode ?? string.Empty;
-        var combined = $"{classDescriptor} {identificationCode}";
-
-        foreach (var exclude in _excludeKeywords)
-        {
-            if (combined.Contains(exclude, StringComparison.OrdinalIgnoreCase))
-                return false;
-        }
-
-        foreach (var keyword in _matchKeywords)
-        {
-            if (classDescriptor.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                identificationCode.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
-
-        return false;
     }
 }
