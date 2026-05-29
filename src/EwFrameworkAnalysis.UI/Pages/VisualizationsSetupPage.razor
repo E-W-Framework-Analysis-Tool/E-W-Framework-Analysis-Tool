@@ -99,9 +99,10 @@
                 <li>Click <strong>OK</strong> and confirm that the <strong>Dashboards</strong> database now appears under Databases.</li>
             </ol>
             <div class="mt-4">
-                <img src="/images/visualizations/ssms-restore-database.jpg"
-                     alt="SSMS Restore Database options panel"
-                     class="rounded-lg border border-gray-200 shadow w-full" />
+                <LightboxImage Src="/images/visualizations/ssms-restore-database.jpg"
+                               Alt="SSMS Restore Database options panel"
+                               Lightbox="_lightbox"
+                               AdditionalClasses="w-full" />
             </div>
         </ChildContent>
     </CollapsibleSection>
@@ -153,9 +154,10 @@
                 <li>Click <strong>OK</strong>, choose <strong>Windows Authentication</strong>, and click <strong>Connect</strong>.</li>
             </ul>
             <div class="mt-2">
-                <img src="/images/visualizations/powerbi-data-source-settings.jpg"
-                     alt="Power BI data source settings panel"
-                     class="rounded-lg border border-gray-200 shadow w-full" />
+                <LightboxImage Src="/images/visualizations/powerbi-data-source-settings.jpg"
+                               Alt="Power BI data source settings panel"
+                               Lightbox="_lightbox"
+                               AdditionalClasses="w-full" />
             </div>
         </ChildContent>
     </CollapsibleSection>
@@ -237,9 +239,12 @@
         </ChildContent>
     </Card>
 
+    <Lightbox @ref="_lightbox" />
 </div>
 
 @code {
+    private Lightbox _lightbox = default!;
+
     private record Prerequisite(string Name, string Note, string Url = "");
 
     private readonly List<Prerequisite> _prerequisites =

@@ -1,0 +1,57 @@
+@* Lightbox.razor
+   Usage:
+     <Lightbox @ref="_lightbox" />
+     ...
+     <LightboxImage Src="/images/foo.jpg" Alt="Description" Lightbox="_lightbox" />
+*@
+
+@if (_src is not null)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+         @onclick="Close"
+         @onkeydown="OnKeyDown"
+         tabindex="-1"
+         @ref="_backdrop">
+        <div class="flex flex-col" style="max-width: min(90vw, 90vh * 16/9)" @onclick:stopPropagation>
+            <div class="flex justify-end mb-2 shrink-0">
+                <button class="text-white text-sm hover:text-gray-300 flex items-center gap-1"
+                        @onclick="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Close
+                </button>
+            </div>
+            <img src="@_src"
+                 alt="@_alt"
+                 class="rounded-lg shadow-2xl"
+                 style="max-width: 90vw; max-height: 85vh; width: auto; height: auto;" />
+        </div>
+    </div>
+}
+
+@code {
+    private string? _src;
+    private string? _alt;
+    private ElementReference _backdrop;
+
+    public async Task Open(string src, string alt)
+    {
+        _src = src;
+        _alt = alt;
+        StateHasChanged();
+        await Task.Yield(); // let the element render before focusing
+        await _backdrop.FocusAsync();
+    }
+
+    public void Close()
+    {
+        _src = null;
+        _alt = null;
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape") Close();
+    }
+}
