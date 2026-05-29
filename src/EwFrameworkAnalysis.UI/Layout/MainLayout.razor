@@ -107,29 +107,16 @@
     protected override void OnInitialized()
     {
         BusySvc.Changed += OnBusyChanged;
-        Nav.LocationChanged += OnLocationChanged;
     }
 
     private void OnBusyChanged()
     {
-        Console.WriteLine($"Layout sees IsBusy: {BusySvc.IsBusy}");
         InvokeAsync(StateHasChanged);
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        // _navToken?.Dispose();
-        // _navToken = await BusySvc.BeginAsync("Navigating…");
-        // The overlay will clear once the new page finishes rendering
-        // and calls StateHasChanged — or set a short timeout:
-        // _ = ClearNavTokenAfterRenderAsync();
     }
 
     public void Dispose()
     {
         BusySvc.Changed -= OnBusyChanged;
-        Nav.LocationChanged -= OnLocationChanged;
-        // _navToken?.Dispose();
     }
 
     private async Task HandleTakeATour()
