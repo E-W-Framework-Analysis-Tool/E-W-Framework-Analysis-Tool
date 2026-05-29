@@ -5,12 +5,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class IBCourseDesignationEdFiAssessor : IEdFiAssessor
 {
-    private readonly EdFiCourseProvider _courseProvider;
-
-    public IBCourseDesignationEdFiAssessor(EdFiCourseProvider courseProvider)
-    {
-        _courseProvider = courseProvider;
-    }
+    private const string IB_DESCRIPTOR_URI = "uri://ed-fi.org/ProgramTypeDescriptor#International Baccalaureate";
 
     public string DataElementName => "IB course designation";
 
@@ -20,21 +15,21 @@ public class IBCourseDesignationEdFiAssessor : IEdFiAssessor
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient, DataSource dataSource, AssessorContext context)
     {
-        context.ReportProgress(0, "Loading courses...");
+        context.ReportProgress(0, "Counting courses...");
 
-        var data = await _courseProvider.GetDataAsync(httpClient, context);
+        var totalCourses = await EdFiApiPatterns.CountFromHeaderAsync(
+            httpClient,
+            "ed-fi/courses");
 
-        var totalCourses = data.Count;
-        var ibCourses = 0;
+        context.ReportProgress(50, "Counting International Baccalaureate courses...");
 
-        foreach (var course in data)
-        {
-            if (course.LevelCharacteristics?.Any(lc =>
-                    lc.CourseLevelCharacteristicDescriptor?.Contains("International Baccalaureate", StringComparison.OrdinalIgnoreCase) ?? false) == true)
+        var ibCourses = await EdFiApiPatterns.CountFromHeaderAsync(
+            httpClient,
+            "ed-fi/courses",
+            new Dictionary<string, string>
             {
-                ibCourses++;
-            }
-        }
+                ["courseLevelCharacteristicDescriptor"] = IB_DESCRIPTOR_URI
+            });
 
         context.Log($"Found {ibCourses:N0} of {totalCourses:N0} courses with International Baccalaureate designation");
         context.ReportProgress(100, "Complete");
