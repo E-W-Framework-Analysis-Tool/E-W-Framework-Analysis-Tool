@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TailwindMinifyFlag>--minify</TailwindMinifyFlag>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
+    <TailwindMinifyFlag></TailwindMinifyFlag>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
@@ -18,10 +25,6 @@
     <ProjectReference Include="..\EwFrameworkAnalysis.Common\EwFrameworkAnalysis.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.300" />
-  </ItemGroup>
-
   <Target Name="EnsureNodeModules" BeforeTargets="Build">
     <Message Text="Checking npm setup..." Importance="high" />
 
@@ -29,7 +32,9 @@
     <Error Condition="!Exists('wwwroot/css/input.css')" Text="Missing wwwroot/css/input.css." />
 
     <!-- Tailwind -->
-    <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/app.css" WorkingDirectory="$(MSBuildProjectDirectory)" ContinueOnError="false" />
+    <Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/input.css -o ./wwwroot/css/app.css $(TailwindMinifyFlag)"
+          WorkingDirectory="$(MSBuildProjectDirectory)"
+          ContinueOnError="false" />
 
     <!-- Font Awesome: copy webfonts + CSS -->
     <ItemGroup>
@@ -38,7 +43,6 @@
     </ItemGroup>
 
     <Copy SourceFiles="@(FA_CSS)" DestinationFolder="wwwroot/css" SkipUnchangedFiles="true" />
-
     <Copy SourceFiles="@(FA_Webfonts)" DestinationFiles="@(FA_Webfonts->'wwwroot/webfonts/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 
     <!-- jsPDF + autotable -->
@@ -48,7 +52,6 @@
     </ItemGroup>
 
     <Copy SourceFiles="@(JsPDF)" DestinationFolder="wwwroot/js/vendor" SkipUnchangedFiles="true" />
-
     <Copy SourceFiles="@(JsPDFTable)" DestinationFolder="wwwroot/js/vendor" SkipUnchangedFiles="true" />
   </Target>
 
