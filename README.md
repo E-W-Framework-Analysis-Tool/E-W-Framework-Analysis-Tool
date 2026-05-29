@@ -125,7 +125,7 @@ Prerequisites:
 # Install root-level dev dependencies (Prettier, markdownlint)
 npm install
 
-# Install UI CSS build dependencies (Tailwind CSS, DaisyUI)
+# Install UI CSS and JS build dependencies (Tailwind CSS, DaisyUI, Font Awesome, jsPDF)
 cd EwFrameworkAnalysis.UI
 npm install
 cd ..
