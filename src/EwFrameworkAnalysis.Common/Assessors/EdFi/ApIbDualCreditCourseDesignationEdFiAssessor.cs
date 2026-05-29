@@ -3,7 +3,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
+public class ApIbDualCreditCourseDesignationEdFiAssessor : IEdFiAssessor
 {
     // Course level characteristic descriptors that mark a course as advanced/college-level.
     private static readonly string[] _targetDescriptors =
@@ -15,7 +15,7 @@ public class APIBDualCreditCourseCreditsEdFiAssessor : IEdFiAssessor
 
     private readonly EdFiCourseProvider _courseProvider;
 
-    public APIBDualCreditCourseCreditsEdFiAssessor(EdFiCourseProvider courseProvider)
+    public ApIbDualCreditCourseDesignationEdFiAssessor(EdFiCourseProvider courseProvider)
     {
         _courseProvider = courseProvider;
     }
