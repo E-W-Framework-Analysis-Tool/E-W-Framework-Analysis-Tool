@@ -1,7 +1,6 @@
-<Card Shadow="Shadow"
+<Card Raise="Raise"
       Overflow="Overflow"
-      Background="Background"
-      Border="Border"
+      Accent="Accent"
       Rounded="Rounded"
       AdditionalClasses="@AdditionalClasses"
       NoPadding>
@@ -38,9 +37,8 @@
     [Parameter] public string AdditionalClasses { get; set; } = "";
 
     // Granular visual parameters
-    [Parameter] public Card.ShadowSize Shadow { get; set; } = Card.ShadowSize.XLarge;
+    [Parameter] public Card.RaiseLevel Raise { get; set; } = Card.RaiseLevel.Default;
     [Parameter] public bool Overflow { get; set; } = true;
-    [Parameter] public Card.BackgroundColor Background { get; set; } = Card.BackgroundColor.White;
-    [Parameter] public Card.BorderStyle? Border { get; set; } = null;
+    [Parameter] public Card.AccentColor? Accent { get; set; } = null;
     [Parameter] public bool Rounded { get; set; } = true;
 }

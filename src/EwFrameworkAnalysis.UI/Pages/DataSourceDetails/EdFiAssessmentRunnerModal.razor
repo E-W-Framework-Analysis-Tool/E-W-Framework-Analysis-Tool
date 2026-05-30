@@ -54,20 +54,19 @@
                 </div>
             }
 
-
             @if (_currentProgress != null)
             {
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 ">
-                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <Card AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
                         <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
                     </Card>
-                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
+                    <Card AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Profilers Complete</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
                     </Card>
-                    <Card Shadow="Card.ShadowSize.Default" AdditionalClasses="p-4">
+                    <Card AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Status</h3>
                         <div class="space-y-1 text-sm">
                             <div class="flex justify-between">
@@ -86,16 +85,14 @@
                     </Card>
                 </div>
 
-                <Card Shadow="Card.ShadowSize.Default" NoPadding AdditionalClasses="mb-4">
+                <Card NoPadding AdditionalClasses="mb-4">
                     <div class="px-4 py-3 border-b border-gray-200">
                         <h3 class="font-semibold text-blue">Profiler Progress</h3>
                     </div>
                     <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                         @foreach (var assessor in _currentProgress.AssessorProgresses)
                         {
-                            <Card Background="@GetAssessorBackground(assessor.Status)"
-                                  Border="new Card.BorderStyle(GetAssessorBorderColor(assessor.Status), Card.BorderPosition.Left)"
-                                  Shadow="Card.ShadowSize.None">
+                            <Card Accent="@GetAssessorAccent(assessor.Status)" Raise="Card.RaiseLevel.Subtle" >
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
@@ -194,12 +191,10 @@
                 </Card>
             }
 
-
             @if (_error != null)
             {
                 <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><span>@_error</span></div>
             }
-
 
             @if (_assessmentResult != null)
             {
@@ -211,7 +206,6 @@
                     </div>
                 </div>
             }
-
 
             <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
                 @if (_isRunning)
@@ -239,7 +233,7 @@
             </div>
         </div>
     </div>
-    <!-- Discard Confirmation Modal -->
+
     @if (_showDiscardConfirmation)
     {
         <div class="modal modal-open">
@@ -287,11 +281,9 @@
     private void UseDemoCredentials()
     {
         var demoApi = DemoApiOptions.Value;
-
         _rootUrl = demoApi.BaseUrl ?? "";
         _clientId = demoApi.ClientId ?? "";
         _clientSecret = demoApi.ClientSecret ?? "";
-
         StateHasChanged();
     }
 
@@ -312,7 +304,6 @@
             _cancellationTokenSource = new CancellationTokenSource();
 
             var httpClient = new HttpClient { BaseAddress = baseUri };
-
             var token = await GetAccessTokenAsync(AuthUrl, _clientId, _clientSecret);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -346,7 +337,6 @@
         }
     }
 
-
     private async Task<string> GetAccessTokenAsync(string authUrl, string clientId, string clientSecret)
     {
         using var authClient = new HttpClient();
@@ -372,9 +362,7 @@
         var token = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
         if (token?.TryGetValue("access_token", out var accessToken) == true)
-        {
             return accessToken.GetString() ?? throw new InvalidOperationException("Access token was null");
-        }
 
         throw new InvalidOperationException("No access_token in response");
     }
@@ -402,8 +390,7 @@
 
     private static string EnsureTrailingSlash(string url)
     {
-        if (string.IsNullOrWhiteSpace(url))
-            return url;
+        if (string.IsNullOrWhiteSpace(url)) return url;
         return url.EndsWith("/") ? url : url + "/";
     }
 
@@ -413,15 +400,8 @@
         await Close();
     }
 
-    private void ShowDiscardConfirmation()
-    {
-        _showDiscardConfirmation = true;
-    }
-
-    private void CancelDiscard()
-    {
-        _showDiscardConfirmation = false;
-    }
+    private void ShowDiscardConfirmation() => _showDiscardConfirmation = true;
+    private void CancelDiscard() => _showDiscardConfirmation = false;
 
     private async Task ConfirmDiscard()
     {
@@ -433,9 +413,7 @@
     private async Task SaveResults()
     {
         if (_assessmentResult != null)
-        {
             await OnAssessmentComplete.InvokeAsync(_assessmentResult);
-        }
         await Close();
     }
 
@@ -465,19 +443,11 @@
         _ => "badge-ghost"
     };
 
-    private Card.BackgroundColor GetAssessorBackground(AssessorStatus status) => status switch
+    private Card.AccentColor? GetAssessorAccent(AssessorStatus status) => status switch
     {
-        AssessorStatus.Running => Card.BackgroundColor.Yellow,
-        AssessorStatus.Completed => Card.BackgroundColor.Green,
-        AssessorStatus.Failed => Card.BackgroundColor.Red,
-        _ => Card.BackgroundColor.Gray
-    };
-
-    private Card.BorderColor GetAssessorBorderColor(AssessorStatus status) => status switch
-    {
-        AssessorStatus.Running => Card.BorderColor.Yellow,
-        AssessorStatus.Completed => Card.BorderColor.Green,
-        AssessorStatus.Failed => Card.BorderColor.Red,
-        _ => Card.BorderColor.Gray
+        AssessorStatus.Running => Card.AccentColor.Yellow,
+        AssessorStatus.Completed => Card.AccentColor.Green,
+        AssessorStatus.Failed => Card.AccentColor.Red,
+        _ => Card.AccentColor.Gray
     };
 }

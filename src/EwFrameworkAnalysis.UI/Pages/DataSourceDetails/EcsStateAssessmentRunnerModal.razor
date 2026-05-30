@@ -50,21 +50,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        <Card AdditionalClasses="p-4">
                             <h3 class="text-sm text-gray mb-2">Data Elements Mapped</h3>
                             <div class="text-3xl font-bold text-blue">@_assessmentResult!.DataElementAssessments.Count</div>
-                        </div>
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        </Card>
+                        <Card AdditionalClasses="p-4">
                             <h3 class="text-sm text-gray mb-2">Rows Processed</h3>
                             <div class="text-3xl font-bold text-blue">@_parsingStats!.DataElementsProcessed</div>
-                        </div>
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow">
+                        </Card>
+                        <Card AdditionalClasses="p-4">
                             <h3 class="text-sm text-gray mb-2">Rows Skipped</h3>
                             <div class="text-3xl font-bold @(_parsingStats!.DataElementsSkipped > 0 ? "text-warning" : "text-blue")">@_parsingStats.DataElementsSkipped</div>
-                        </div>
+                        </Card>
                     </div>
 
-                    @if (_parsingStats.HasWarnings)
+                    @if (_parsingStats != null && _parsingStats.HasWarnings)
                     {
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -117,7 +117,7 @@
                         }
                     }
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow">
+                    <Card NoPadding>
                         <div class="px-4 py-3 border-b border-gray-200">
                             <h3 class="font-semibold text-blue">Reference Profile Results Preview</h3>
                         </div>
@@ -129,24 +129,9 @@
                                 {
                                     AvailabilityJudgment.Available => "badge-success",
                                     AvailabilityJudgment.PartiallyAvailable => "badge-warning",
-                                    AvailabilityJudgment.NotAvailable => "badge-error",
-                                    _ => "badge-ghost"
+                                    _ => "badge-error"
                                 };
-                                var borderColor = availability?.Value switch
-                                {
-                                    AvailabilityJudgment.Available => Card.BorderColor.Green,
-                                    AvailabilityJudgment.PartiallyAvailable => Card.BorderColor.Yellow,
-                                    _ => Card.BorderColor.Red
-                                };
-                                var bgColor = availability?.Value switch
-                                {
-                                    AvailabilityJudgment.Available => Card.BackgroundColor.Green,
-                                    AvailabilityJudgment.PartiallyAvailable => Card.BackgroundColor.Yellow,
-                                    _ => Card.BackgroundColor.Red
-                                };
-                                <Card Background="@bgColor"
-                                      Border="new Card.BorderStyle(borderColor, Card.BorderPosition.Left)"
-                                      Shadow="Card.ShadowSize.None">
+                                <Card Accent="@GetAvailabilityAccent(availability?.Value)" Raise="Card.RaiseLevel.Flat">
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold text-sm text-blue">@element.DataElementName</span>
                                         <span class="badge badge-sm @badgeClass">@availability?.Value</span>
@@ -154,7 +139,7 @@
                                 </Card>
                             }
                         </div>
-                    </div>
+                    </Card>
 
                     <div class="alert alert-success">
                         <i class="fas fa-check-circle"></i>
@@ -252,7 +237,6 @@
         try
         {
             var records = StateDataProvider.GetStateData(_selectedState);
-
             var (assessment, stats) = Parser.ProcessStateData(records);
             assessment.Name = $"{_selectedState} - Reported";
             assessment.ConductedAt = DateTimeOffset.Now;
@@ -276,21 +260,12 @@
     private async Task SaveResults()
     {
         if (_assessmentResult == null) return;
-
         await OnAssessmentComplete.InvokeAsync(_assessmentResult);
-
         await Close();
     }
 
-    private void ShowDiscardConfirmation()
-    {
-        _showDiscardModal = true;
-    }
-
-    private void CancelDiscard()
-    {
-        _showDiscardModal = false;
-    }
+    private void ShowDiscardConfirmation() => _showDiscardModal = true;
+    private void CancelDiscard() => _showDiscardModal = false;
 
     private async Task ConfirmDiscard()
     {
@@ -312,4 +287,12 @@
         _selectedState = "";
         _showDetails = false;
     }
+
+    private static Card.AccentColor? GetAvailabilityAccent(AvailabilityJudgment? judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => Card.AccentColor.Green,
+        AvailabilityJudgment.PartiallyAvailable => Card.AccentColor.Yellow,
+        AvailabilityJudgment.NotAvailable => Card.AccentColor.Red,
+        _ => Card.AccentColor.Gray
+    };
 }

@@ -19,61 +19,57 @@
     </div>
 
     <!-- Header -->
-    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
-        <ChildContent>
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                    <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
-                    <p class="text-gray-600 text-base">
-                        Follow these steps to connect to a data source and begin using the Power BI dashboard
-                        visualizations. You can use the provided sample CEDS Data Warehouse or connect your own.
-                    </p>
-                    <p class="text-sm text-gray-500 mt-3">
-                        A full README with additional technical detail is also available in the
-                        <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
-                           class="link link-hover text-blue">GitHub repository</a>.
-                    </p>
-                </div>
+    <Card AdditionalClasses="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-title font-bold text-blue mb-2">Setup Guide</h1>
+                <p class="text-gray-600 text-base">
+                    Follow these steps to connect to a data source and begin using the Power BI dashboard
+                    visualizations. You can use the provided sample CEDS Data Warehouse or connect your own.
+                </p>
+                <p class="text-sm text-gray-500 mt-3">
+                    A full README with additional technical detail is also available in the
+                    <a href="@VisualizationsOptions.Value.GitHubRepoUrl" target="_blank" rel="noopener noreferrer"
+                       class="link link-hover text-blue">GitHub repository</a>.
+                </p>
             </div>
-        </ChildContent>
+        </div>
     </Card>
 
     <!-- Prerequisites -->
-    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
-        <ChildContent>
-            <h2 class="text-xl font-title font-semibold text-blue mb-1">Prerequisites</h2>
-            <p class="text-gray-600 text-sm mb-4">
-                Before following the steps below, ensure the following software is installed and accessible
-                on your machine. Links point to each tool's official download page.
-            </p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                @foreach (var prereq in _prerequisites)
-                {
-                    <div class="flex gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
-                        <div class="text-blue mt-0.5 shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">
-                                @if (!string.IsNullOrEmpty(prereq.Url))
-                                {
-                                    <a href="@prereq.Url" target="_blank" rel="noopener noreferrer"
-                                       class="link link-hover text-blue">@prereq.Name</a>
-                                }
-                                else
-                                {
-                                    @prereq.Name
-                                }
-                            </p>
-                            <p class="text-sm text-gray-600">@prereq.Note</p>
-                        </div>
+    <Card AdditionalClasses="mb-6">
+        <h2 class="text-xl font-title font-semibold text-blue mb-1">Prerequisites</h2>
+        <p class="text-gray-600 text-sm mb-4">
+            Before following the steps below, ensure the following software is installed and accessible
+            on your machine. Links point to each tool's official download page.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @foreach (var prereq in _prerequisites)
+            {
+                <div class="flex gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                    <div class="text-blue mt-0.5 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                }
-            </div>
-        </ChildContent>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">
+                            @if (!string.IsNullOrEmpty(prereq.Url))
+                            {
+                                <a href="@prereq.Url" target="_blank" rel="noopener noreferrer"
+                                   class="link link-hover text-blue">@prereq.Name</a>
+                            }
+                            else
+                            {
+                                @prereq.Name
+                            }
+                        </p>
+                        <p class="text-sm text-gray-600">@prereq.Note</p>
+                    </div>
+                </div>
+            }
+        </div>
     </Card>
 
     <!-- Step 1: Restore Sample DB -->
@@ -209,35 +205,33 @@
     </CollapsibleSection>
 
     <!-- Support -->
-    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mt-6" Border="@(new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left))">
-        <ChildContent>
-            <h2 class="text-lg font-title font-semibold text-blue mb-2">Support</h2>
-            <p class="text-sm text-gray-700 mb-3">
-                For help with downloading, installing the report, or resolving technical issues, please reach
-                out to the E-W Framework Analysis Tool support team at Double Line.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 text-sm">
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <a href="mailto:@ContactInfoOptions.Value.SupportEmail" class="link link-hover text-blue">
-                        @ContactInfoOptions.Value.SupportEmail
-                    </a>
-                </div>
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
-                    </svg>
-                    <a href="https://educationtoworkforce.org" target="_blank" rel="noopener noreferrer"
-                       class="link link-hover text-blue">
-                        educationtoworkforce.org
-                    </a>
-                </div>
+    <Card Accent="Card.AccentColor.Blue" AdditionalClasses="mt-6">
+        <h2 class="text-lg font-title font-semibold text-blue mb-2">Support</h2>
+        <p class="text-sm text-gray-700 mb-3">
+            For help with downloading, installing the report, or resolving technical issues, please reach
+            out to the E-W Framework Analysis Tool support team at Double Line.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 text-sm">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <a href="mailto:@ContactInfoOptions.Value.SupportEmail" class="link link-hover text-blue">
+                    @ContactInfoOptions.Value.SupportEmail
+                </a>
             </div>
-        </ChildContent>
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
+                </svg>
+                <a href="https://educationtoworkforce.org" target="_blank" rel="noopener noreferrer"
+                   class="link link-hover text-blue">
+                    educationtoworkforce.org
+                </a>
+            </div>
+        </div>
     </Card>
 
     <Lightbox @ref="_lightbox" />

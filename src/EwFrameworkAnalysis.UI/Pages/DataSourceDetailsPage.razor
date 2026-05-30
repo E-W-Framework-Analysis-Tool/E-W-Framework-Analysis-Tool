@@ -71,9 +71,9 @@ else
         else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsState)
         {
             <EcsStateAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
-                                            IsOpenChanged="@((value) => _showAssessmentRunner = value)"
-                                            DataSource="@_dataSource"
-                                            OnAssessmentComplete="@HandleAssessmentComplete" />
+                                           IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                           DataSource="@_dataSource"
+                                           OnAssessmentComplete="@HandleAssessmentComplete" />
         }
         else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.Custom)
         {
@@ -269,7 +269,7 @@ else
     private async Task HandleSetActiveAssessment()
     {
         if (_selectedAssessment is null) return;
-        
+
         await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment.Id);
         LoadDataSource();
         ShowNotification("Profile set as active successfully");

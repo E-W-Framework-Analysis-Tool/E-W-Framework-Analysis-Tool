@@ -1,4 +1,4 @@
-<div class="@GetCardClasses()" @attributes="AdditionalAttributes">
+<div class="@GetCardClasses()" style="@GetCardStyle()" @attributes="AdditionalAttributes">
     @if (!string.IsNullOrWhiteSpace(Title))
     {
         <div class="@GetHeaderClasses()">
@@ -23,78 +23,36 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Granular visual parameters
-    [Parameter] public ShadowSize Shadow { get; set; } = ShadowSize.Default;
     [Parameter] public bool Overflow { get; set; }
-    [Parameter] public BackgroundColor Background { get; set; } = BackgroundColor.White;
-    [Parameter] public BorderStyle? Border { get; set; }
     [Parameter] public bool Rounded { get; set; } = true;
+    [Parameter] public AccentColor? Accent { get; set; }
+
+    // Raised shadow depth — matches the loading indicator's "ledge" feel
+    // Default gives the standard raised look; Flat removes it entirely
+    [Parameter] public RaiseLevel Raise { get; set; } = RaiseLevel.Default;
 
     private string GetCardClasses()
     {
-        var classes = new List<string>();
+        var classes = new List<string> { "bg-white" };
 
-        // Background
-        classes.Add(Background switch
-        {
-            BackgroundColor.White => "bg-white",
-            BackgroundColor.Blue => "bg-blue-50",
-            BackgroundColor.Green => "bg-green-50",
-            BackgroundColor.Yellow => "bg-yellow-50",
-            BackgroundColor.Gray => "bg-gray-50",
-            BackgroundColor.Tan => "bg-tan-50",
-            BackgroundColor.Red => "bg-red-50",
-            _ => "bg-white"
-        });
-
-        // Shadow
-        classes.Add(Shadow switch
-        {
-            ShadowSize.None => "",
-            ShadowSize.Small => "shadow-sm",
-            ShadowSize.Default => "shadow",
-            ShadowSize.Large => "shadow-lg",
-            ShadowSize.XLarge => "shadow-xl",
-            _ => "shadow"
-        });
-
-        // Overflow
         if (Overflow)
-        {
             classes.Add("overflow-hidden");
-        }
 
-        // Rounded
         if (Rounded)
-        {
             classes.Add("rounded-lg");
-        }
 
-        // Border
-        if (Border.HasValue)
+        if (Accent.HasValue)
         {
-            var borderColor = Border.Value.Color switch
+            classes.Add("border-l-4");
+            classes.Add(Accent.Value switch
             {
-                BorderColor.Blue => "border-blue",
-                BorderColor.Green => "border-green",
-                BorderColor.Yellow => "border-yellow",
-                BorderColor.Gray => "border-gray",
-                BorderColor.Tan => "border-tan",
-                BorderColor.Red => "border-red",
-                _ => "border-gray-200"
-            };
-
-            var borderPosition = Border.Value.Position switch
-            {
-                BorderPosition.All => "border",
-                BorderPosition.Left => "border-l-4",
-                BorderPosition.Top => "border-t-4",
-                BorderPosition.Right => "border-r-4",
-                BorderPosition.Bottom => "border-b-4",
-                _ => "border"
-            };
-
-            classes.Add(borderPosition);
-            classes.Add(borderColor);
+                AccentColor.Blue => "border-blue",
+                AccentColor.Green => "border-green",
+                AccentColor.Yellow => "border-yellow",
+                AccentColor.Red => "border-red",
+                AccentColor.Tan => "border-tan",
+                _ => "border-gray-400"
+            });
         }
 
         classes.Add(AdditionalClasses);
@@ -102,58 +60,43 @@
         return string.Join(" ", classes.Where(c => !string.IsNullOrWhiteSpace(c)));
     }
 
-    private string GetHeaderClasses()
+    // Hard-offset shadow to mimic the loading indicator's raised/pressed blocks.
+    // Layered: solid bottom ledge (gives the 3D lift) + diffuse drop shadow beneath.
+    private string GetCardStyle()
     {
-        return NoPadding ? "px-4 py-5 sm:p-6" : "px-4 py-5 sm:p-6 pb-0";
+        var ledge = Raise switch
+        {
+            RaiseLevel.Flat => "none",
+            RaiseLevel.Subtle => "0 2px 0 #d1d5db, 0 3px 6px rgba(0,0,0,0.10)",
+            RaiseLevel.Default => "0 4px 0 #9ca3af, 0 5px 10px rgba(0,0,0,0.12)",
+            RaiseLevel.High => "0 6px 0 #9ca3af, 0 8px 14px rgba(0,0,0,0.14)",
+            _ => "0 4px 0 #9ca3af, 0 5px 10px rgba(0,0,0,0.12)"
+        };
+
+        return $"box-shadow: {ledge};";
     }
+
+    private string GetHeaderClasses()
+        => NoPadding ? "px-4 py-5 sm:p-6" : "px-4 py-5 sm:p-6 pb-0";
 
     private string GetBodyClasses()
-    {
-        return NoPadding ? "" : "p-5";
-    }
+        => NoPadding ? "" : "p-5";
 
-    public enum ShadowSize
+    public enum RaiseLevel
     {
-        None,
-        Small,
+        Flat,
+        Subtle,
         Default,
-        Large,
-        XLarge
+        High
     }
 
-    public enum BackgroundColor
+    public enum AccentColor
     {
-        White,
+        Gray,
         Blue,
         Green,
         Yellow,
-        Gray,
-        Tan,
-        Red
-    }
-
-    public enum BorderColor
-    {
-        Blue,
-        Green,
-        Yellow,
-        Gray,
-        Tan,
-        Red
-    }
-
-    public enum BorderPosition
-    {
-        All,
-        Left,
-        Top,
-        Right,
-        Bottom
-    }
-
-    public readonly struct BorderStyle(BorderColor color, BorderPosition position = BorderPosition.All)
-    {
-        public BorderColor Color { get; } = color;
-        public BorderPosition Position { get; } = position;
+        Red,
+        Tan
     }
 }

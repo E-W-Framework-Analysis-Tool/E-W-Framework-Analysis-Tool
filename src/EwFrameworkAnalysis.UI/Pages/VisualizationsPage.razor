@@ -7,7 +7,7 @@
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
 
     <!-- Page Header -->
-    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
+    <Card AdditionalClasses="mb-6">
         <ChildContent>
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
@@ -43,7 +43,7 @@
     </Card>
 
     <!-- What You Will Find -->
-    <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="mb-6">
+    <Card AdditionalClasses="mb-6">
         <ChildContent>
             <h2 class="text-xl font-title font-semibold text-blue mb-4">What You Will Find on Each Visualization</h2>
             <p class="text-gray-600 mb-4">Each Power BI visualization includes several report pages to help you make your data come to life.</p>
@@ -83,7 +83,7 @@
                    aria-label="@eq.TabLabel"
                    checked="@(eq.Id == "EQ12")" />
 
-            <Card Shadow="Card.ShadowSize.XLarge" AdditionalClasses="tab-content rounded-tl-none">
+            <Card AdditionalClasses="tab-content rounded-tl-none">
                 <ChildContent>
 
                     @if (eq.Embed.IsConfigured)
