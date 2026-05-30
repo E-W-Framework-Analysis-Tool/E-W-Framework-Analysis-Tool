@@ -1,12 +1,9 @@
 @page "/data-sources/{Id:guid}"
-@using System.Net.Http.Headers
-@using System.Text.Json
 @using EwFrameworkAnalysis.Common.Models.Project
-@using EwFrameworkAnalysis.Common.Models.Scoring
-@using EwFrameworkAnalysis.Common.Assessors.EdFi
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Pages.DataSourceDetails
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
 @inject AnalysisProjectService ProjectSvc
 @inject NavigationManager Nav
 @inject EdFiAssessmentOrchestrator EdFiOrchestrator
@@ -48,43 +45,32 @@ else
     }
 
     <div class="container mx-auto max-w-7xl p-4 lg:p-8">
-        <!-- Header -->
         <DataSourceHeader DataSource="@_dataSource"
                           OnSave="@HandleSaveDataSource"
                           OnRunAssessment="@ShowAssessmentRunner" />
 
-        <!-- Assessment Runner Modals -->
-        @if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EdFiApi)
-        {
-            <EdFiAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
-                                       IsOpenChanged="@((value) => _showAssessmentRunner = value)"
-                                       DataSource="@_dataSource"
-                                       OnAssessmentComplete="@HandleAssessmentComplete" />
-        }
-        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.CedsDw)
-        {
-            <CedsDWAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
-                                         IsOpenChanged="@((value) => _showAssessmentRunner = value)"
-                                         DataSource="@_dataSource"
-                                         OnAssessmentComplete="@HandleAssessmentComplete" />
-        }
-        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsState)
-        {
-            <EcsStateAssessmentRunnerModal IsOpen="@_showAssessmentRunner"
-                                           IsOpenChanged="@((value) => _showAssessmentRunner = value)"
-                                           DataSource="@_dataSource"
-                                           OnAssessmentComplete="@HandleAssessmentComplete" />
-        }
-        else if (_showAssessmentRunner && _dataSource.Type == DataSourceType.Custom)
-        {
-            <ManualInventoryAssessmentModal IsOpen="@_showAssessmentRunner"
-                                            IsOpenChanged="@((value) => _showAssessmentRunner = value)"
-                                            DataSource="@_dataSource"
-                                            OnAssessmentComplete="@HandleAssessmentComplete" />
-        }
+        <!-- Profiler Modals — always mounted, IsOpen controls visibility -->
+        <EdFiProfilerModal IsOpen="@(_showAssessmentRunner && _dataSource.Type == DataSourceType.EdFiApi)"
+                           IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                           DataSource="@_dataSource"
+                           OnAssessmentComplete="@HandleAssessmentComplete" />
+
+        <CedsDWProfilerModal IsOpen="@(_showAssessmentRunner && _dataSource.Type == DataSourceType.CedsDw)"
+                             IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                             DataSource="@_dataSource"
+                             OnAssessmentComplete="@HandleAssessmentComplete" />
+
+        <EcsStateProfilerModal IsOpen="@(_showAssessmentRunner && _dataSource.Type == DataSourceType.EcsState)"
+                               IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                               DataSource="@_dataSource"
+                               OnAssessmentComplete="@HandleAssessmentComplete" />
+
+        <ManualProfilerModal IsOpen="@(_showAssessmentRunner && _dataSource.Type == DataSourceType.Custom)"
+                                      IsOpenChanged="@((value) => _showAssessmentRunner = value)"
+                                      DataSource="@_dataSource"
+                                      OnAssessmentComplete="@HandleAssessmentComplete" />
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Sidebar -->
             <div class="lg:col-span-1 space-y-6">
                 <AssessmentHistoryCard Assessments="@_dataSourceAssessments"
                                        SelectedAssessment="@_selectedAssessment"
@@ -96,7 +82,6 @@ else
                                           OnDelete="@ShowDeleteConfirmation" />
             </div>
 
-            <!-- Right: Assessment Details -->
             <div class="lg:col-span-2">
                 <AssessmentDetailsView Assessment="@_selectedAssessment"
                                        DataSource="@_dataSource"
@@ -110,25 +95,28 @@ else
 }
 
 <!-- Delete Confirmation Modal -->
-@if (_showDeleteModal)
-{
-    <div class="modal modal-open">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg text-blue font-title">Delete Data Source</h3>
-            <p class="py-4 text-gray">
-                Are you sure you want to delete "<span class="font-semibold text-blue">@_dataSource?.Name</span>"?
-                This action cannot be undone. Note that profiles will remain in the project history.
-            </p>
-            <div class="modal-action">
-                <button class="btn btn-ghost" @onclick="CancelDelete">Cancel</button>
-                <button class="btn btn-error" @onclick="ConfirmDelete">
-                    <i class="fas fa-trash mr-2"></i>
-                    Delete Data Source
-                </button>
-            </div>
+<Modal IsOpen="@_showDeleteModal"
+       IsOpenChanged="v => _showDeleteModal = v"
+       Title="Delete Data Source"
+       Icon="fa-trash"
+       CloseOnBackdrop="false"
+       ShowCloseButton="false">
+    <Body>
+        <p class="text-gray">
+            Are you sure you want to delete
+            "<span class="font-semibold text-blue">@_dataSource?.Name</span>"?
+            This action cannot be undone. Note that profiles will remain in the project history.
+        </p>
+    </Body>
+    <Footer>
+        <div class="flex justify-end gap-2">
+            <button class="btn btn-ghost" @onclick="CancelDelete">Cancel</button>
+            <button class="btn btn-error" @onclick="ConfirmDelete">
+                <i class="fas fa-trash mr-2"></i>Delete Data Source
+            </button>
         </div>
-    </div>
-}
+    </Footer>
+</Modal>
 
 @code {
     [Parameter] public Guid Id { get; set; }
@@ -136,12 +124,10 @@ else
     private DataSource? _dataSource;
     private List<DataSourceAssessment>? _dataSourceAssessments;
     private DataSourceAssessment? _selectedAssessment;
-    private bool _showDeleteModal = false;
-
+    private bool _showDeleteModal;
     private string? _notificationMessage;
-    private bool _showNotification = false;
-
-    private bool _showAssessmentRunner = false;
+    private bool _showNotification;
+    private bool _showAssessmentRunner;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,26 +156,19 @@ else
             _dataSourceAssessments = ProjectSvc.GetAssessmentsForDataSource(_dataSource.Id).ToList();
 
             if (_dataSourceAssessments?.Any() == true && _selectedAssessment == null)
-            {
                 _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
-            }
         }
     }
 
-    private void SelectAssessment(DataSourceAssessment assessment)
-    {
+    private void SelectAssessment(DataSourceAssessment assessment) =>
         _selectedAssessment = assessment;
-    }
 
-    private void ShowAssessmentRunner()
-    {
+    private void ShowAssessmentRunner() =>
         _showAssessmentRunner = true;
-    }
 
     private async Task HandleAssessmentComplete(DataSourceAssessment assessment)
     {
         await ProjectSvc.AddAssessmentAsync(assessment, _dataSource!.Id);
-
         _selectedAssessment = assessment;
         LoadDataSource();
         ShowNotification("Profile completed and saved");
@@ -217,23 +196,14 @@ else
         });
     }
 
-    private void ShowDeleteConfirmation()
-    {
-        _showDeleteModal = true;
-    }
-
-    private void CancelDelete()
-    {
-        _showDeleteModal = false;
-    }
+    private void ShowDeleteConfirmation() => _showDeleteModal = true;
+    private void CancelDelete() => _showDeleteModal = false;
 
     private async Task ConfirmDelete()
     {
         if (_dataSource is null) return;
-
         await ProjectSvc.DeleteDataSourceAsync(_dataSource.Id);
         _showDeleteModal = false;
-
         Nav.NavigateTo(AppRoutes.Dashboard);
     }
 
@@ -259,17 +229,12 @@ else
     private int GetAssessmentVersion(DataSourceAssessment? assessment)
     {
         if (assessment == null || _dataSourceAssessments == null) return 0;
-
-        var orderedAssessments = _dataSourceAssessments
-            .OrderBy(a => a.ConductedAt)
-            .ToList();
-
-        return orderedAssessments.IndexOf(assessment) + 1;
+        return _dataSourceAssessments.OrderBy(a => a.ConductedAt).ToList().IndexOf(assessment) + 1;
     }
+
     private async Task HandleSetActiveAssessment()
     {
         if (_selectedAssessment is null) return;
-
         await ProjectSvc.SetActiveAssessmentAsync(_selectedAssessment.Id);
         LoadDataSource();
         ShowNotification("Profile set as active successfully");
@@ -278,7 +243,6 @@ else
     private async Task HandleRenameAssessment(string newName)
     {
         if (_selectedAssessment is null) return;
-
         _selectedAssessment.Name = newName;
         await ProjectSvc.UpdateAssessmentAsync(_selectedAssessment);
         LoadDataSource();
@@ -289,19 +253,11 @@ else
     {
         if (_selectedAssessment is null) return;
 
-        var assessmentId = _selectedAssessment.Id;
-        await ProjectSvc.DeleteAssessmentAsync(assessmentId);
-
-        // Select a different assessment or clear selection
+        await ProjectSvc.DeleteAssessmentAsync(_selectedAssessment.Id);
         LoadDataSource();
-        if (_dataSourceAssessments?.Any() == true)
-        {
-            _selectedAssessment = _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First();
-        }
-        else
-        {
-            _selectedAssessment = null;
-        }
+        _selectedAssessment = _dataSourceAssessments?.Any() == true
+            ? _dataSourceAssessments.OrderByDescending(a => a.ConductedAt).First()
+            : null;
 
         ShowNotification("Profile deleted successfully");
     }

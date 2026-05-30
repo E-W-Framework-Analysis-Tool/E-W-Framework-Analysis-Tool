@@ -84,28 +84,31 @@
     </ChildContent>
 </Card>
 
-@if (_selectedItem != null)
-{
-    <div class="modal modal-open">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">@_selectedItem.Name</h3>
-            <p class="text-sm text-gray-500 mt-1 mb-4">Improving this data element's availability would affect the following @_selectedItem.Indicators.Count indicator@(_selectedItem.Indicators.Count != 1 ? "s" : ""):</p>
-            <ul class="flex flex-col gap-2">
-                @foreach (var indicator in _selectedItem.Indicators)
-                {
-                    <li class="flex items-start gap-2 text-sm">
-                        <span class="text-gray-400 mt-0.5">•</span>
-                        <span>@indicator</span>
-                    </li>
-                }
-            </ul>
-            <div class="modal-action">
-                <button class="btn btn-sm" @onclick="() => _selectedItem = null">Close</button>
-            </div>
+<Modal IsOpen="@(_selectedItem != null)"
+       IsOpenChanged="@(v => { if (!v) _selectedItem = null; })"
+       Title="@(_selectedItem?.Name ?? "")"
+       ShowCloseButton="true">
+    <Body>
+        <p class="text-sm text-gray-500 mb-4">
+            Improving this data element's availability would affect the following
+            @_selectedItem?.Indicators.Count indicator@(_selectedItem?.Indicators.Count != 1 ? "s" : ""):
+        </p>
+        <ul class="flex flex-col gap-2">
+            @foreach (var indicator in _selectedItem?.Indicators ?? [])
+            {
+                <li class="flex items-start gap-2 text-sm">
+                    <span class="text-gray-400 mt-0.5">•</span>
+                    <span>@indicator</span>
+                </li>
+            }
+        </ul>
+    </Body>
+    <Footer>
+        <div class="flex justify-end">
+            <button class="btn btn-ghost" @onclick="() => _selectedItem = null">Close</button>
         </div>
-        <div class="modal-backdrop" @onclick="() => _selectedItem = null"></div>
-    </div>
-}
+    </Footer>
+</Modal>
 
 @code {
     [Parameter, EditorRequired]

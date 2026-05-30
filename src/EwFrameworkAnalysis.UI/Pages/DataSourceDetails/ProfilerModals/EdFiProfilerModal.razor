@@ -1,29 +1,32 @@
-@using System.Text.Json
 @using System.Net.Http.Headers
-@using EwFrameworkAnalysis.UI.Components
-@using EwFrameworkAnalysis.UI.Options
-@using Microsoft.Extensions.Options
+@using System.Text.Json
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
+@using Microsoft.Extensions.Options
 @inject EdFiAssessmentOrchestrator Orchestrator
 @inject IOptions<DemoEdFiApiOptions> DemoApiOptions
 
-@if (IsOpen)
-{
-    <div class="modal modal-open">
-        <div class="modal-box max-h-5/6 @(_currentProgress != null ? "min-w-3/4" : "") pb-0">
-            <h3 class="font-bold text-lg mb-4">Run Automated Scan</h3>
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-satellite-dish"
+       Title="Ed-Fi ODS API Profiler"
+       Subtitle="Automated discovery &amp; profiling via API connection."
+       ExtraWide="true"
+       ShowCloseButton="@(!_isRunning)"
+       CloseOnBackdrop="false"
+       CloseRequested="ResetState">
+    <Body>
+        <div class="space-y-4">
 
-            @if (_showAssessmentRunner && DataSource.Type == DataSourceType.EdFiApi)
-            {
-                @if (_isRunning && _validationError == "") { }
-            }
-
-            @if (_currentProgress == null)
+            @* ── Setup ── *@
+            @if (_currentProgress == null && _assessmentResult == null)
             {
                 @if (DemoApiOptions.Value.IsConfigured)
                 {
-                    <div class="alert bg-base-200 border-2 border-blue mb-4">
+                    <div class="alert bg-base-200 border-2 border-blue">
                         <i class="fas fa-info-circle"></i>
                         <span>A read-only demo Ed-Fi API is available for testing</span>
                         <button class="btn btn-sm btn-primary" @onclick="UseDemoCredentials">
@@ -32,35 +35,32 @@
                     </div>
                 }
 
-                <div class="form-control mb-3">
-                    <label class="label">
-                        <span class="label-text">Client ID</span>
-                    </label>
-                    <input @bind="_clientId" type="text" placeholder="Enter client ID" class="input input-bordered w-full" />
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Client ID</span></label>
+                    <input @bind="_clientId" type="text" placeholder="Enter client ID"
+                           class="input input-bordered w-full" />
                 </div>
-
-                <div class="form-control mb-3">
-                    <label class="label">
-                        <span class="label-text">Client Secret</span>
-                    </label>
-                    <input @bind="_clientSecret" type="password" placeholder="Enter client secret" class="input input-bordered w-full" />
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Client Secret</span></label>
+                    <input @bind="_clientSecret" type="password" placeholder="Enter client secret"
+                           class="input input-bordered w-full" />
                 </div>
-
-                <div class="form-control mb-6">
-                    <label class="label">
-                        <span class="label-text">API URL</span>
-                    </label>
-                    <input @bind="_rootUrl" type="text" placeholder="https://api.example.com" class="input input-bordered w-full" />
+                <div class="form-control">
+                    <label class="label"><span class="label-text">API URL</span></label>
+                    <input @bind="_rootUrl" type="text" placeholder="https://api.example.com"
+                           class="input input-bordered w-full" />
                 </div>
             }
 
+            @* ── Progress ── *@
             @if (_currentProgress != null)
             {
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
                         <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
-                        <progress class="progress progress-primary w-full h-2 mt-2" value="@_currentProgress.PercentComplete" max="100"></progress>
+                        <progress class="progress progress-primary w-full h-2 mt-3"
+                                  value="@_currentProgress.PercentComplete" max="100"></progress>
                     </Card>
                     <Card AdditionalClasses="p-4">
                         <h3 class="text-sm text-gray mb-2">Profilers Complete</h3>
@@ -70,29 +70,35 @@
                         <h3 class="text-sm text-gray mb-2">Status</h3>
                         <div class="space-y-1 text-sm">
                             <div class="flex justify-between">
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running</span>
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running
+                                </span>
                                 <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-success"></span>Completed</span>
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-success"></span>Completed
+                                </span>
                                 <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>Failed</span>
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>Failed
+                                </span>
                                 <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
                             </div>
                         </div>
                     </Card>
                 </div>
 
-                <Card NoPadding AdditionalClasses="mb-4">
+                <Card NoPadding>
                     <div class="px-4 py-3 border-b border-gray-200">
                         <h3 class="font-semibold text-blue">Profiler Progress</h3>
                     </div>
                     <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                         @foreach (var assessor in _currentProgress.AssessorProgresses)
                         {
-                            <Card Accent="@GetAssessorAccent(assessor.Status)" Raise="Card.RaiseLevel.Subtle" >
+                            <Card Accent="@GetAssessorAccent(assessor.Status)" Raise="Card.RaiseLevel.Subtle">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
@@ -114,6 +120,7 @@
                                             }
                                             <span class="font-semibold text-sm text-blue truncate">@assessor.DataElementName</span>
                                         </div>
+
                                         @if (assessor.Status == AssessorStatus.Completed && assessor.Result != null)
                                         {
                                             <div class="ml-6 mt-2 space-y-2">
@@ -123,37 +130,7 @@
                                                     <div class="space-y-1 pl-2 border-l-2 border-success">
                                                         @foreach (var characteristic in assessor.Result.Characteristics)
                                                         {
-                                                            @if (characteristic is RecordCount rc)
-                                                            {
-                                                                <div class="text-xs text-gray-700">
-                                                                    <span class="font-medium">Records:</span> @rc.Value.ToString("N0")
-                                                                </div>
-                                                            }
-                                                            else if (characteristic is ReportedAvailability ra)
-                                                            {
-                                                                <div class="text-xs text-gray-700">
-                                                                    <span class="font-medium">Availability:</span>
-                                                                    <span class="badge badge-xs @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
-                                                                </div>
-                                                            }
-                                                            else if (characteristic is Completeness c)
-                                                            {
-                                                                <div class="text-xs text-gray-700">
-                                                                    <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
-                                                                </div>
-                                                            }
-                                                            else if (characteristic is NumericalRange ir)
-                                                            {
-                                                                <div class="text-xs text-gray-700">
-                                                                    <span class="font-medium">@ir.Label:</span> @ir.Minimum - @ir.Maximum
-                                                                </div>
-                                                            }
-                                                            else if (characteristic is Distribution dist)
-                                                            {
-                                                                <div class="text-xs text-gray-700">
-                                                                    <span class="font-medium">@dist.Label:</span> @dist.TotalCount.ToString("N0") items
-                                                                </div>
-                                                            }
+                                                            <CharacteristicDetail Characteristic="characteristic" />
                                                         }
                                                     </div>
                                                 }
@@ -183,7 +160,7 @@
                                             </CollapsibleSection>
                                         }
                                     </div>
-                                    <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status.ToString()</div>
+                                    <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status</div>
                                 </div>
                             </Card>
                         }
@@ -191,9 +168,13 @@
                 </Card>
             }
 
+            @* ── Error / Results summary ── *@
             @if (_error != null)
             {
-                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><span>@_error</span></div>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>@_error</span>
+                </div>
             }
 
             @if (_assessmentResult != null)
@@ -201,67 +182,42 @@
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <div>
-                        <h3 class="font-bold">Automated Scan Complete!</h3>
-                        <div class="text-sm">Scanned @_assessmentResult.DataElementAssessments.Count data elements producing @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics</div>
+                        <h3 class="font-bold">Profiling Complete!</h3>
+                        <div class="text-sm">
+                            Profiled @_assessmentResult.DataElementAssessments.Count data elements
+                            producing @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics
+                        </div>
                     </div>
                 </div>
             }
-
-            <div class="modal-action sticky bottom-0 bg-base-100 py-6 px-2">
-                @if (_isRunning)
-                {
-                    <button class="btn btn-error" @onclick="CancelAssessment">
-                        <i class="fas fa-stop mr-2"></i>Cancel Scan
-                    </button>
-                }
-                else if (_assessmentResult != null)
-                {
-                    <button class="btn btn-ghost" @onclick="ShowDiscardConfirmation">
-                        <i class="fas fa-times mr-2"></i>Discard
-                    </button>
-                    <button class="btn btn-primary" @onclick="SaveResults">
-                        <i class="fas fa-save mr-2"></i>Save
-                    </button>
-                }
-                else
-                {
-                    <button class="btn btn-ghost" @onclick="Close">Cancel</button>
-                    <button class="btn btn-secondary" @onclick="StartAssessment">
-                        <i class="fas fa-play mr-2"></i>Start Scan
-                    </button>
-                }
-            </div>
         </div>
-    </div>
+    </Body>
 
-    @if (_showDiscardConfirmation)
-    {
-        <div class="modal modal-open">
-            <div class="modal-box">
-                <h3 class="font-bold text-lg text-blue">Discard Scan Results?</h3>
-                <p class="py-4 text-gray">
-                    Are you sure you want to discard these scan results? All collected metadata will be lost.
-                </p>
-                <div class="modal-action">
-                    <button class="btn btn-ghost" @onclick="CancelDiscard">Cancel</button>
-                    <button class="btn btn-error" @onclick="ConfirmDiscard">
-                        <i class="fas fa-trash mr-2"></i>Discard
-                    </button>
-                </div>
-            </div>
-        </div>
-    }
-}
+    <Footer>
+        <ProfilerFooter IsRunning="@_isRunning"
+                        HasResults="@(_assessmentResult != null)"
+                        CanStart="@CanStart"
+                        StartLabel="Start Scan"
+                        OnCancel="Close"
+                        OnCancelRun="CancelProfiling"
+                        OnStart="StartProfiling"
+                        OnDiscard="() => _showDiscard = true"
+                        OnSave="SaveResults" />
+    </Footer>
+</Modal>
+
+<ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                             OnConfirm="ConfirmDiscard"
+                             OnCancel="() => _showDiscard = false" />
 
 @code {
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
-    [Parameter] public required DataSource DataSource { get; set; }
+    [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
-    private bool _showAssessmentRunner = false;
-    private bool _isRunning = false;
-    private bool _showDiscardConfirmation = false;
+    private bool _isRunning;
+    private bool _showDiscard;
 
     private string _clientId = "";
     private string _clientSecret = "";
@@ -273,36 +229,37 @@
     private AssessmentProgress? _currentProgress;
     private DataSourceAssessment? _assessmentResult;
     private string? _error;
-    private string? _validationError;
-    private CancellationTokenSource? _cancellationTokenSource;
+    private CancellationTokenSource? _cts;
     private Timer? _renderTimer;
     private volatile bool _pendingRender;
 
+    private bool CanStart => !string.IsNullOrWhiteSpace(_clientId)
+                          && !string.IsNullOrWhiteSpace(_clientSecret)
+                          && !string.IsNullOrWhiteSpace(_rootUrl);
+
     private void UseDemoCredentials()
     {
-        var demoApi = DemoApiOptions.Value;
-        _rootUrl = demoApi.BaseUrl ?? "";
-        _clientId = demoApi.ClientId ?? "";
-        _clientSecret = demoApi.ClientSecret ?? "";
-        StateHasChanged();
+        var demo = DemoApiOptions.Value;
+        _rootUrl = demo.BaseUrl ?? "";
+        _clientId = demo.ClientId ?? "";
+        _clientSecret = demo.ClientSecret ?? "";
     }
 
-    private async Task StartAssessment()
+    private async Task StartProfiling()
     {
-        _validationError = null;
         _error = null;
 
         if (!Uri.TryCreate(DataApiUrl, UriKind.Absolute, out var baseUri))
         {
-            _validationError = "Invalid Root URL";
+            _error = "Invalid API URL.";
             return;
         }
 
+        _isRunning = true;
+        _cts = new CancellationTokenSource();
+
         try
         {
-            _isRunning = true;
-            _cancellationTokenSource = new CancellationTokenSource();
-
             var httpClient = new HttpClient { BaseAddress = baseUri };
             var token = await GetAccessTokenAsync(AuthUrl, _clientId, _clientSecret);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -311,18 +268,18 @@
 
             _assessmentResult = await Orchestrator.RunAssessmentsAsync(
                 httpClient,
-                DataSource!,
+                DataSource,
                 $"Automated Scan {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
                 progress,
                 true,
-                _cancellationTokenSource.Token
+                _cts.Token
             );
 
             httpClient.Dispose();
         }
         catch (OperationCanceledException)
         {
-            _error = "Scan was cancelled by user.";
+            _error = "Scan was cancelled.";
         }
         catch (Exception ex)
         {
@@ -331,8 +288,8 @@
         finally
         {
             _isRunning = false;
-            _cancellationTokenSource?.Dispose();
-            _cancellationTokenSource = null;
+            _cts?.Dispose();
+            _cts = null;
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -340,31 +297,28 @@
     private async Task<string> GetAccessTokenAsync(string authUrl, string clientId, string clientSecret)
     {
         using var authClient = new HttpClient();
-
         var tokenRequest = new HttpRequestMessage(HttpMethod.Post, authUrl);
-        var formData = new Dictionary<string, string>
+        tokenRequest.Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["grant_type"] = "client_credentials",
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret
-        };
-        tokenRequest.Content = new FormUrlEncodedContent(formData);
+        });
 
         var response = await authClient.SendAsync(tokenRequest);
-
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new InvalidOperationException($"OAuth failed ({response.StatusCode}): {error}");
+            var err = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"OAuth failed ({response.StatusCode}): {err}");
         }
 
         var json = await response.Content.ReadAsStringAsync();
         var token = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
         if (token?.TryGetValue("access_token", out var accessToken) == true)
-            return accessToken.GetString() ?? throw new InvalidOperationException("Access token was null");
+            return accessToken.GetString() ?? throw new InvalidOperationException("Access token was null.");
 
-        throw new InvalidOperationException("No access_token in response");
+        throw new InvalidOperationException("No access_token in response.");
     }
 
     private void OnProgressUpdate(AssessmentProgress p)
@@ -382,31 +336,9 @@
         }, null, 0, 500);
     }
 
-    private async Task Close()
+    private async Task CancelProfiling()
     {
-        IsOpen = false;
-        await IsOpenChanged.InvokeAsync(IsOpen);
-    }
-
-    private static string EnsureTrailingSlash(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url)) return url;
-        return url.EndsWith("/") ? url : url + "/";
-    }
-
-    private async Task CancelAssessment()
-    {
-        _cancellationTokenSource?.Cancel();
-        await Close();
-    }
-
-    private void ShowDiscardConfirmation() => _showDiscardConfirmation = true;
-    private void CancelDiscard() => _showDiscardConfirmation = false;
-
-    private async Task ConfirmDiscard()
-    {
-        _showDiscardConfirmation = false;
-        ResetAssessmentRunner();
+        _cts?.Cancel();
         await Close();
     }
 
@@ -417,37 +349,45 @@
         await Close();
     }
 
-    private void ResetAssessmentRunner()
+    private async Task ConfirmDiscard()
+    {
+        _showDiscard = false;
+        ResetState();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void ResetState()
     {
         _currentProgress = null;
         _assessmentResult = null;
         _error = null;
-        _validationError = null;
+        _isRunning = false;
+        _renderTimer?.Dispose();
+        _renderTimer = null;
     }
+
+    private static string EnsureTrailingSlash(string url) =>
+        string.IsNullOrWhiteSpace(url) ? url : url.EndsWith("/") ? url : url + "/";
 
     private string GetStatusBadgeClass(AssessorStatus status) => status switch
     {
-        AssessorStatus.Pending => "badge-ghost",
-        AssessorStatus.Running => "badge-warning",
+        AssessorStatus.Pending   => "badge-ghost",
+        AssessorStatus.Running   => "badge-warning",
         AssessorStatus.Completed => "badge-success",
-        AssessorStatus.Failed => "badge-error",
-        _ => "badge-ghost"
-    };
-
-    private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
-    {
-        AvailabilityJudgment.Available => "badge-success",
-        AvailabilityJudgment.PartiallyAvailable => "badge-warning",
-        AvailabilityJudgment.NotAvailable => "badge-error",
-        AvailabilityJudgment.InsufficientData => "badge-ghost",
-        _ => "badge-ghost"
+        AssessorStatus.Failed    => "badge-error",
+        _                        => "badge-ghost"
     };
 
     private Card.AccentColor? GetAssessorAccent(AssessorStatus status) => status switch
     {
-        AssessorStatus.Running => Card.AccentColor.Yellow,
+        AssessorStatus.Running   => Card.AccentColor.Yellow,
         AssessorStatus.Completed => Card.AccentColor.Green,
-        AssessorStatus.Failed => Card.AccentColor.Red,
-        _ => Card.AccentColor.Gray
+        AssessorStatus.Failed    => Card.AccentColor.Red,
+        _                        => Card.AccentColor.Gray
     };
 }

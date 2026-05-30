@@ -88,7 +88,7 @@
                                         <div class="grid grid-cols-12 w-full gap-4 items-stretch">
                                             @foreach (var indicatorScore in indicatorContext.List)
                                             {
-                                                <div class="col-span-12 md:col-span-6 xl:col-span-4" @onclick="() => ShowIndicatorDetails(indicatorScore)">
+                                                <div class="col-span-12 md:col-span-6 xl:col-span-4 cursor-pointer" @onclick="() => ShowIndicatorDetails(indicatorScore)">
                                                     <div class="card border border-gray-300 rounded-md w-full h-full p-4 gap-4 hover:translate-0.5 hover:shadow transition duration-200">
                                                         <p class="font-semibold">@(indicatorScore.IndicatorCode) (@indicatorScore.CoverageScore.ToString("0.##%"))</p>
                                                         <progress class="progress @GetProgressBarColor(indicatorScore.CoverageScore)" value="@(indicatorScore.CoverageScore * 100)" max="100"></progress>
@@ -109,7 +109,7 @@
     </ChildContent>
 </Card>
 
-<IndicatorDetailsModal _indicatorScore="@_selectedIndicatorScore"
+<IndicatorDetailsModal IndicatorScore="@_selectedIndicatorScore"
                        IsOpen="@_showIndicatorDetails"
                        OnClose="HandleModalClosed"
                        IsOpenChanged="@(x => _showIndicatorDetails = x)" />
