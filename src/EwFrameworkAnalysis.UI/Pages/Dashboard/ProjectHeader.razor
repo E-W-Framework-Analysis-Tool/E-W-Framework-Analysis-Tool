@@ -66,10 +66,10 @@
 
 <Modal Title="New Project" IsOpen="@NewProjectModalIsOpen" CloseRequested="HandleNewProjectCanceled">
     <Body>
-    <div>
-        <p>By creating a new project, any work you currently have in this session will be lost.</p>
-        <p>Do you want to proceed?</p>
-    </div>
+        <div class="space-y-2 text-sm text-gray-600">
+            <p>By creating a new project, any work you currently have in this session will be lost.</p>
+            <p>Do you want to proceed?</p>
+        </div>
     </Body>
     <Footer>
         <div class="modal-action">
@@ -81,11 +81,11 @@
 
 <Modal Title="Load Project" IsOpen="@LoadProjectModalIsOpen" CloseRequested="HandleLoadProjectCanceled">
     <Body>
-    <div>
-        <p>By uploading a previously saved file, any work you currently have in this session will be lost.</p>
-        <p>The results from the file will overwrite any and all information you have currently input.</p>
-        <p>Do you want to proceed?</p>
-    </div>
+        <div class="space-y-2 text-sm text-gray-600">
+            <p>By uploading a previously saved file, any work you currently have in this session will be lost.</p>
+            <p>The results from the file will overwrite any and all information you have currently input.</p>
+            <p>Do you want to proceed?</p>
+        </div>
     </Body>
     <Footer>
         <div class="modal-action">
