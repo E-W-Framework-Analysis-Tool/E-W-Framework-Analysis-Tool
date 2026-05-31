@@ -2,10 +2,9 @@
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-@using EwFrameworkAnalysis.UI.Options
 @using EwFrameworkAnalysis.UI.Services
 
-<Card AdditionalClasses="tab-content rounded-tl-none" data-walkthrough="@WalkthroughSteps.StepIds.EssentialQuestionsScoreGrid">
+<Card AdditionalClasses="rounded-tl-none" data-walkthrough="@WalkthroughSteps.StepIds.EssentialQuestionsScoreGrid">
     <ChildContent>
         <div class="flex gap-4 pb-4">
             @* Search *@
@@ -28,8 +27,8 @@
         <div class="join join-vertical border-1 border-gray-300 rounded-lg">
             <SortableList List="@FilteredQuestions" Columns="@EssentialQuestionColumnOptions()" DefaultSortColumn="@SortColumnNames.Score" Context="eqContext">
 
-                @* Headers *@
-                <div class="collapse-title font-semibold">
+                @* Headers — hidden on mobile *@
+                <div class="hidden sm:block collapse-title font-semibold">
                     <div class="grid grid-cols-24 font-semibold text-lg">
                         <div class="flex col-span-1 justify-start items-center" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">#</div>
                         <div class="flex col-span-17 justify-start items-center cursor-pointer" @onclick="() => eqContext.Toggle(SortColumnNames.Question)">
@@ -39,9 +38,8 @@
                                 <i class="fas fa-stack-1x fa-sort-down @(eqContext.IsActive(SortColumnNames.Question, false) ? "" : "opacity-50")"></i>
                             </span>
                         </div>
-                        <div class="flex col-span-4 justify-center items-center text-center" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">Indicators Aligned</div>
-                        <div class="flex col-span-2 justify-center items-center text-center px-4 gap-4 cursor-pointer" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">
-                            Coverage Score
+                        <div class="flex col-span-6 justify-end items-center text-center cursor-pointer gap-1" @onclick="() => eqContext.Toggle(SortColumnNames.Score)">
+                            Coverage
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(eqContext.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(eqContext.IsActive(SortColumnNames.Score, false) ? "" : "opacity-50")"></i>
@@ -60,7 +58,9 @@
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
                         <input type="checkbox" name="question-check-@q.QuestionNumber" />
-                        <div class="collapse-title font-semibold">
+
+                        <!-- Desktop row -->
+                        <div class="collapse-title font-semibold hidden sm:block">
                             <div class="grid grid-cols-24">
                                 <div class="flex col-span-1 justify-start items-center">@q.QuestionNumber</div>
                                 <div class="flex col-span-17 justify-start items-center">@q.Question</div>
@@ -73,9 +73,31 @@
                                 <div class="flex col-span-2 justify-center items-center text-center">@qs.CoverageScore.ToString("0.##%")</div>
                             </div>
                         </div>
+
+                        <!-- Mobile row -->
+                        <div class="collapse-title font-semibold sm:hidden">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-start gap-2 min-w-0">
+                                    <span class="text-xs text-gray shrink-0 mt-0.5">#@q.QuestionNumber</span>
+                                    <span class="text-sm">@q.Question</span>
+                                </div>
+                                <span class="text-sm font-semibold shrink-0">@qs.CoverageScore.ToString("0.##%")</span>
+                            </div>
+                            <!-- Dots on second row -->
+                            @if (qs.IndicatorScores.Any())
+                            {
+                                <div class="flex flex-wrap gap-0.5 mt-2">
+                                    @foreach (var indicatorScore in qs.IndicatorScores.OrderByDescending(x => x.CoverageScore))
+                                    {
+                                        <div class="w-2 h-2 rounded-full @GetIndicatorColor(indicatorScore.CoverageScore)"></div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
                         <div class="collapse-content text-sm">
                             <div class="grid grid-cols-24">
-                                <div class="flex col-span-1 justify-start items-center"><!-- EMPTY / PLACEHOLDER --></div>
+                                <div class="flex col-span-1 justify-start items-center"><!-- EMPTY --></div>
                                 <div class="flex flex-col col-span-21 justify-start items-center space-y-2">
                                     <SortableList List="@qs.IndicatorScores" Columns="@IndicatorColumnOptions()" Context="indicatorContext">
                                         <h3 class="flex w-full font-semibold text-lg" @onclick="() => indicatorContext.Toggle(SortColumnNames.Indicators)">
@@ -98,7 +120,7 @@
                                         </div>
                                     </SortableList>
                                 </div>
-                                <div class="flex col-span-2 justify-center items-center"><!-- EMPTY / PLACEHOLDER --></div>
+                                <div class="flex col-span-2 justify-center items-center"><!-- EMPTY --></div>
                             </div>
                         </div>
                     </div>

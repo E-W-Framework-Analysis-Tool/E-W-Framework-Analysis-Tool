@@ -6,12 +6,10 @@
 
 <div class="flex flex-col h-full">
     <!-- Fixed Filter / Control Area -->
-    <div class="sticky bg-white top-0 flex-shrink-0 space-y-2 pb-0 @(ShowFilterPadding ? "p-4" : "p-0")">
+    <div class="sticky bg-white top-0 flex-shrink-0 pb-2 @(ShowFilterPadding ? "p-4" : "p-0 pt-0")">
 
-        <!-- Main Toolbar Row -->
+        <!-- Row 1: Search + Options toggle + Expand -->
         <div class="flex items-center gap-2">
-
-            <!-- Search Input -->
             <label class="input input-bordered input-sm flex items-center gap-2 flex-1">
                 <i class="fas fa-search opacity-50"></i>
                 <input type="search"
@@ -21,62 +19,45 @@
                        @bind:event="oninput" />
             </label>
 
-            <!-- Vertical Divider -->
-            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
+            <button class="btn btn-sm btn-ghost gap-1 @(_showOptions ? "btn-active" : "") @(HasAnyFilters() ? "text-primary" : "")"
+                    @onclick="() => _showOptions = !_showOptions"
+                    aria-expanded="@_showOptions"
+                    aria-label="Toggle options">
+                <i class="fas fa-sliders-h"></i>
+                <span>Options</span>
+                @if (HasAnyFilters())
+                {
+                    <span class="badge badge-primary badge-xs">@GetActiveFilterCount()</span>
+                }
+            </button>
 
-            <!-- Filter Button -->
-            <div class="flex flex-col items-center gap-0.5">
-                <span class="text-[10px] font-semibold text-gray-500 leading-none">Filters</span>
-                <button class="btn btn-sm btn-ghost gap-1 @(HasAnyFilters() ? "text-primary" : "")"
-                        @onclick="() => _showFilters = !_showFilters"
-                        title="Toggle filters"
-                        aria-expanded="@_showFilters"
-                        aria-label="Toggle filters panel">
-                    <i class="fas fa-sliders-h"></i>
-                    @if (HasAnyFilters())
-                    {
-                        <span class="badge badge-primary badge-xs">@GetActiveFilterCount()</span>
-                    }
-                </button>
-            </div>
-
-            <!-- Vertical Divider -->
-            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
-
-            <!-- Group By Toggle -->
-            <div class="flex flex-col items-center gap-0.5">
-                <span class="text-[10px] font-semibold text-gray-500 leading-none">Group By</span>
-                <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
-                    <i class="fas fa-layer-group text-xs text-gray-400"></i>
-                    <input type="radio"
-                           name="category-view"
-                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-50")"
-                           aria-label="E-W Clusters"
-                           checked="@(_categoryMode == CategoryMode.EWFramework)"
-                           @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
-                    <input type="radio"
-                           name="category-view"
-                           class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-50")"
-                           aria-label="Data Categories"
-                           checked="@(_categoryMode == CategoryMode.DataElement)"
-                           @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
-                </div>
-            </div>
-
-            <!-- Vertical Divider -->
-            <div class="w-px h-8 bg-gray-300 flex-shrink-0"></div>
-
-            <!-- Expand / Collapse -->
-            <div class="flex flex-col items-center gap-0.5">
-                <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
-                                         IsExpandedChanged="OnAllExpandedChanged" />
-            </div>
+            <ExpandCollapseAllToggle IsExpanded="@_allExpanded"
+                                     IsExpandedChanged="OnAllExpandedChanged" />
         </div>
 
-        <!-- Collapsible Filters Panel -->
-        @if (_showFilters)
-        {
-            <div class="flex flex-wrap gap-4 items-start pt-2 pb-1 px-1 border-t border-gray-200">
+        <!-- Row 2: Sliding options panel -->
+        <div class="overflow-hidden transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2" : "max-h-0 opacity-0")">
+            <div class="flex flex-wrap gap-x-6 gap-y-3 pt-2 pb-1 border-t border-gray-200">
+
+                <!-- Group By -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Group By</span>
+                    <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
+                        <i class="fas fa-layer-group text-xs text-gray-400"></i>
+                        <input type="radio"
+                               name="category-view"
+                               class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.EWFramework ? "font-bold underline" : "opacity-50")"
+                               aria-label="E-W Clusters"
+                               checked="@(_categoryMode == CategoryMode.EWFramework)"
+                               @onchange="async () => await SetCategoryMode(CategoryMode.EWFramework)" />
+                        <input type="radio"
+                               name="category-view"
+                               class="btn btn-xs btn-ghost hover:bg-transparent @(_categoryMode == CategoryMode.DataElement ? "font-bold underline" : "opacity-50")"
+                               aria-label="Data Categories"
+                               checked="@(_categoryMode == CategoryMode.DataElement)"
+                               @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
+                    </div>
+                </div>
 
                 <!-- Sector Filter -->
                 <div class="flex flex-col gap-1">
@@ -95,16 +76,13 @@
                             <button class="btn btn-xs btn-square btn-ghost"
                                     type="button"
                                     @onclick="ClearSectorFilter"
-                                    title="Clear sector filter"
+                                    title="Clear"
                                     aria-label="Clear sector filter">
                                 <i class="fas fa-times"></i>
                             </button>
                         }
                     </div>
                 </div>
-
-                <!-- Vertical Divider -->
-                <div class="w-px self-stretch bg-gray-200"></div>
 
                 <!-- Status Filter -->
                 <div class="flex flex-col gap-1">
@@ -113,7 +91,7 @@
                         @foreach (var judgment in _availabilityOptions)
                         {
                             var isSelected = _selectedAvailabilities.Contains(judgment);
-                            <input class="btn btn-xs @(isSelected? GetAvailabilityActiveClass(judgment) : "")"
+                            <input class="btn btn-xs @(isSelected ? GetAvailabilityActiveClass(judgment) : "")"
                                    type="checkbox"
                                    checked="@isSelected"
                                    @onchange="() => ToggleAvailability(judgment)"
@@ -132,7 +110,7 @@
                             <button class="btn btn-xs btn-square btn-ghost"
                                     type="button"
                                     @onclick="ClearAvailabilityFilter"
-                                    title="Clear status filter"
+                                    title="Clear"
                                     aria-label="Clear status filter">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -140,7 +118,7 @@
                     </div>
                 </div>
             </div>
-        }
+        </div>
     </div>
 
     <!-- Scrollable Data Element Categories -->
@@ -251,7 +229,7 @@
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
-    private bool _showFilters = false;
+    private bool _showOptions = false;
     private CategoryMode _categoryMode = CategoryMode.EWFramework;
     private const string CATEGORY_MODE_STORAGE_KEY = "ewframework_analysis_category_preference";
 

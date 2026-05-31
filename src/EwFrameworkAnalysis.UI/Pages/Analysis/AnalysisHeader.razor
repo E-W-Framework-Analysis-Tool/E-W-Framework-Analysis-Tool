@@ -6,19 +6,15 @@
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-start justify-between gap-4">
                 <!-- Left: Title and Description -->
-                <div class="flex-1 min-w-0 space-y-3">
-                    <div class="flex items-start gap-2 items-center">
-                        <h2 class="text-2xl font-title font-bold text-blue truncate">E-W Framework Coverage Analysis</h2>
-                    </div>
-
-                    <div class="flex items-start gap-2 items-center">
-                        <h3 class="text-lg font-title font-semibold text-blue">Indicator and essential question coverage derived from your enabled data sources and their active data profiles</h3>
-                    </div>
+                <div class="flex-1 min-w-0 space-y-1">
+                    <h2 class="text-xl sm:text-2xl font-title font-bold text-blue break-words min-w-0">E-W Framework Coverage Analysis</h2>
+                    <h3 class="text-sm sm:text-lg font-title font-semibold text-blue">Indicator and essential question coverage derived from your enabled data sources and their active data profiles</h3>
                 </div>
 
-                <!-- Right: Actions -->
-                <div class="flex items-center space-x-3 flex-shrink-0">
-                    <button class="btn btn-primary gap-2" @onclick="DownloadReportAsync" disabled="@_isGenerating" data-walkthrough="@WalkthroughSteps.StepIds.DownloadReportButton">
+                <!-- Right: Actions — desktop only -->
+                <div class="hidden sm:flex items-center flex-shrink-0">
+                    <button class="btn btn-primary gap-2" @onclick="DownloadReportAsync" disabled="@_isGenerating"
+                            data-walkthrough="@WalkthroughSteps.StepIds.DownloadReportButton">
                         @if (_isGenerating)
                         {
                             <span class="loading loading-spinner loading-sm"></span>
@@ -30,6 +26,22 @@
                         Download PDF Report
                     </button>
                 </div>
+            </div>
+
+            <!-- Mobile: button full-width below -->
+            <div class="sm:hidden mt-4">
+                <button class="btn btn-primary gap-2 w-full" @onclick="DownloadReportAsync" disabled="@_isGenerating"
+                        data-walkthrough="@WalkthroughSteps.StepIds.DownloadReportButton">
+                    @if (_isGenerating)
+                    {
+                        <span class="loading loading-spinner loading-sm"></span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-file-pdf"></i>
+                    }
+                    Download PDF Report
+                </button>
             </div>
         </div>
     </ChildContent>

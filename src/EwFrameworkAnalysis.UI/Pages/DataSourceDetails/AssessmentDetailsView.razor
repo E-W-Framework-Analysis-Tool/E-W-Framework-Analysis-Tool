@@ -5,29 +5,29 @@
 
 <Card data-walkthrough="@WalkthroughSteps.StepIds.DataSourceAssessmentDetails">
     <ChildContent>
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
-                <h3 class="text-lg font-title font-semibold text-blue">Data Profile Details</h3>
+        <!-- Header row -->
+        <div class="flex items-center justify-between mb-4 gap-2">
+            <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                <h3 class="text-lg font-title font-semibold text-blue shrink-0">Data Profile Details</h3>
                 @if (Version > 0)
                 {
-                    <span class="badge badge-secondary">Version @Version</span>
+                    <span class="badge badge-secondary whitespace-nowrap">Version @Version</span>
                 }
-
                 @if (Assessment?.Active ?? false)
                 {
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success whitespace-nowrap">Active</span>
                 }
             </div>
 
             @if (Assessment is not null)
             {
-                <div class="dropdown dropdown-end">
+                <div class="dropdown dropdown-end flex-shrink-0">
                     <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-lg w-52 border border-gray-200">
                         <li>
-                            <button @onclick="HandleSetActive" class="text-error*">
+                            <button @onclick="HandleSetActive">
                                 <i class="fas fa-circle-check"></i>
                                 Set as Active
                             </button>
@@ -43,20 +43,21 @@
 
         @if (Assessment is not null)
         {
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white rounded-lg p-4">
+            <!-- Stat boxes: always 3-col -->
+            <div class="grid grid-cols-3 gap-2 mb-6">
+                <div class="bg-white rounded-lg px-3 py-2">
                     <div class="text-xs text-gray uppercase tracking-wide mb-1">Name</div>
                     <EditableField Value="@Assessment.Name"
                                    Placeholder="Enter data profile name"
                                    Variant="EditableField.FieldVariant.Text"
                                    OnSave="@HandleNameSave" />
                 </div>
-                <div class="bg-white rounded-lg p-4">
-                    <div class="text-xs text-gray uppercase tracking-wide">Profiled at</div>
+                <div class="bg-white rounded-lg px-3 py-2">
+                    <div class="text-xs text-gray uppercase tracking-wide mb-1">Profiled at</div>
                     <div class="text-sm font-semibold text-blue">@Assessment.ConductedAt.ToLocalTime().ToString("g")</div>
                 </div>
-                <div class="bg-white rounded-lg p-4">
-                    <div class="text-xs text-gray uppercase tracking-wide">Data Elements</div>
+                <div class="bg-white rounded-lg px-3 py-2">
+                    <div class="text-xs text-gray uppercase tracking-wide mb-1">Data Elements</div>
                     <div class="text-sm font-semibold text-blue">@(Assessment.DataElementAssessments?.Count ?? 0)</div>
                 </div>
             </div>
@@ -66,7 +67,6 @@
                 <div class="border-t border-tan pt-4">
                     @if (DataSource?.Type == DataSourceType.Custom || DataSource?.Type == DataSourceType.EcsState)
                     {
-                        <!-- Custom Data Source: Use DataElementList Component -->
                         <h4 class="text-sm font-semibold text-blue mb-3">Data Inventory</h4>
                         <DataElementList ElementAvailability="_elementAvailability"
                                          IsEditable="false"
@@ -75,12 +75,10 @@
                     }
                     else
                     {
-                        <!-- Other Data Sources: Use existing DataElementCard display -->
                         <h4 class="text-sm font-semibold text-blue mb-3">Data Elements</h4>
 
-                        <!-- Search and Filters -->
-                        <div class="mb-4 space-y-3">
-                            <!-- Search Box -->
+                        <!-- Controls: stacked on mobile, inline on sm+ -->
+                        <div class="mb-4 space-y-2">
                             <div class="relative">
                                 <input type="text"
                                        placeholder="Search data elements..."
@@ -90,7 +88,6 @@
                                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray opacity-50"></i>
                             </div>
 
-                            <!-- Results Count and Expand/Collapse -->
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-gray">
                                     @if (FilteredElements.Count() != Assessment.DataElementAssessments.Count)
@@ -106,7 +103,6 @@
                             </div>
                         </div>
 
-                        <!-- Data Elements List -->
                         @if (FilteredElements.Any())
                         {
                             <div class="space-y-4">
@@ -154,8 +150,7 @@
              aria-hidden="true">
         </div>
         <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10
-                                        transition-all duration-200 ease-out">
-            <!-- Header -->
+            transition-all duration-200 ease-out">
             <div class="px-6 pt-6 pb-2">
                 <div class="flex items-start gap-4">
                     <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20">
@@ -167,28 +162,23 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Body -->
             <div class="px-6 pb-6">
                 <p class="text-sm text-gray">
                     Are you sure you want to delete data profile "<span class="font-semibold text-blue">@Assessment.Name</span>"?
                 </p>
             </div>
-
-            <!-- Footer -->
             <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl">
                 <div class="flex justify-end gap-3">
-                    <button @onclick="CancelDelete"
-                            type="button"
+                    <button @onclick="CancelDelete" type="button"
                             class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                                       bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                                       hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                        bg-white px-4 py-2 text-sm font-medium text-gray-700
+                        hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
                         Cancel
                     </button>
                     <button @onclick="ConfirmDelete"
                             class="inline-flex items-center justify-center rounded-md
-                                                       bg-red-500 px-4 py-2 text-sm font-medium text-white
-                                                       hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        bg-red-500 px-4 py-2 text-sm font-medium text-white
+                        hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <i class="fas fa-trash mr-2"></i>
                         Delete Data Profile
                     </button>
@@ -219,7 +209,6 @@
     private void LoadElementAvailability()
     {
         _elementAvailability.Clear();
-
         if (Assessment?.DataElementAssessments != null)
         {
             foreach (var elementAssessment in Assessment.DataElementAssessments)
@@ -227,11 +216,8 @@
                 var availability = elementAssessment.Characteristics
                     .OfType<ReportedAvailability>()
                     .FirstOrDefault();
-
                 if (availability != null)
-                {
                     _elementAvailability[elementAssessment.DataElementName] = availability.Value;
-                }
             }
         }
     }
@@ -241,52 +227,26 @@
         get
         {
             if (Assessment?.DataElementAssessments == null) return Enumerable.Empty<DataElementAssessment>();
-
             var elements = Assessment.DataElementAssessments.AsEnumerable();
-
-            // Apply search filter
             if (!string.IsNullOrWhiteSpace(_searchQuery))
-            {
-                elements = elements.Where(e =>
-                    e.DataElementName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
-            }
-
+                elements = elements.Where(e => e.DataElementName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
             return elements;
         }
     }
 
-    private void OnAllExpandedChanged(bool expanded)
-    {
-        _allExpanded = expanded;
-    }
+    private void OnAllExpandedChanged(bool expanded) => _allExpanded = expanded;
+    private void ResetFilters() => _searchQuery = string.Empty;
 
-    private void ResetFilters()
-    {
-        _searchQuery = string.Empty;
-    }
-
-    private async Task HandleSetActive()
-    {
-        await OnSetActive.InvokeAsync();
-    }
+    private async Task HandleSetActive() => await OnSetActive.InvokeAsync();
 
     private async Task HandleNameSave(string? name)
     {
         if (!string.IsNullOrWhiteSpace(name))
-        {
             await OnRename.InvokeAsync(name);
-        }
     }
 
-    private void ShowDeleteConfirmation()
-    {
-        _showDeleteModal = true;
-    }
-
-    private void CancelDelete()
-    {
-        _showDeleteModal = false;
-    }
+    private void ShowDeleteConfirmation() => _showDeleteModal = true;
+    private void CancelDelete() => _showDeleteModal = false;
 
     private async Task ConfirmDelete()
     {

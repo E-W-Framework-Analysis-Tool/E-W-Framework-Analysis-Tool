@@ -3,9 +3,8 @@
 @using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.UI.Components
-@using EwFrameworkAnalysis.UI.Options
 
-<Card AdditionalClasses="tab-content rounded-tl-none">
+<Card AdditionalClasses="rounded-tl-none">
     <ChildContent>
 
         @* Search *@
@@ -29,8 +28,8 @@
         <div class="join join-vertical border-1 border-gray-300 rounded-lg">
             <SortableList List="@FilteredIndicators" Columns="@IndicatorColumnOptions()" DefaultSortColumn="@SortColumnNames.Score" Context="sortedIndicators">
 
-                @* Headers *@
-                <div class="collapse-title items-center font-semibold text-lg border-b border-gray-300">
+                @* Headers — hidden on mobile *@
+                <div class="hidden sm:block collapse-title items-center font-semibold text-lg border-b border-gray-300">
                     <div class="grid grid-cols-24">
                         <div class="col-span-18 cursor-pointer" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Name)">
                             Indicator
@@ -39,8 +38,8 @@
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Name, false) ? "" : "opacity-50")"></i>
                             </span>
                         </div>
-                        <div class="col-span-6 justify-self-center cursor-pointer" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
-                            Coverage Score
+                        <div class="flex col-span-6 justify-end items-center cursor-pointer gap-1" @onclick="() => sortedIndicators.Toggle(SortColumnNames.Score)">
+                            Coverage
                             <span class="fa-stack fa-xs">
                                 <i class="fas fa-stack-1x fa-sort-up @(sortedIndicators.IsActive(SortColumnNames.Score, true) ? "" : "opacity-50")"></i>
                                 <i class="fas fa-stack-1x fa-sort-down @(sortedIndicators.IsActive(SortColumnNames.Score, false) ? "" : "opacity-50")"></i>
@@ -61,17 +60,43 @@
                         <input type="checkbox" name="indicator-check-@index" />
 
                         @* Name, Definition, & Score *@
-                        <div class="collapse-title font-semibold">
+                        <!-- Desktop -->
+                        <div class="collapse-title font-semibold hidden sm:block">
                             <div class="grid grid-cols-24">
                                 <div class="flex-col col-span-18 justify-start items-center">
                                     @indicator.Name
                                     <div class="justify-start items-center font-normal text-gray-500">@indicator.Definition</div>
                                 </div>
-                                <div class="flex col-span-6 justify-center content-center flex-wrap gap-0.5 mx-4">
-                                    <progress class="progress @GetProgressBarColor(indicatorScore.CoverageScore)" value="@(indicatorScore.CoverageScore * 100)" max="100"> </progress>
+                                <div class="flex col-span-4 justify-center items-center flex-wrap gap-0.5 mx-4">
+                                    @foreach (var de in indicatorScore.DataElementScores.OrderByDescending(x => x.QualityScore))
+                                    {
+                                        <div class="w-2 h-2 rounded-full @GetProgressBarColorDot(de.QualityScore)"></div>
+                                    }
+                                </div>
+                                <div class="flex col-span-2 justify-center items-center text-center">
                                     @indicatorScore.CoverageScore.ToString("0.##%")
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Mobile -->
+                        <div class="collapse-title font-semibold sm:hidden">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="text-sm">@indicator.Name</span>
+                                    <span class="text-xs font-normal text-gray-500">@indicator.Definition</span>
+                                </div>
+                                <span class="text-sm font-semibold shrink-0">@indicatorScore.CoverageScore.ToString("0.##%")</span>
+                            </div>
+                            @if (indicatorScore.DataElementScores.Any())
+                            {
+                                <div class="flex flex-wrap gap-0.5 mt-2">
+                                    @foreach (var de in indicatorScore.DataElementScores.OrderByDescending(x => x.QualityScore))
+                                    {
+                                        <div class="w-2 h-2 rounded-full @GetProgressBarColorDot(de.QualityScore)"></div>
+                                    }
+                                </div>
+                            }
                         </div>
 
                         @* Collapsed Content *@
@@ -194,14 +219,14 @@
     private IndicatorCoverageScore? GetIndicatorScoreByCode(string indicatorCode) =>
         IndicatorScores.FirstOrDefault(x => x.IndicatorCode == indicatorCode);
 
-    private string GetProgressBarColor(decimal score) =>
-        score switch
-        {
-            >= 0.70m => "progress-success",
-            >= 0.50m => "progress-warning",
-            > 0m => "progress-error",
-            _ => "bg-gray-200"
-        };
+    private static string GetProgressBarColorDot(decimal score) =>
+    score switch
+    {
+        >= 0.70m => "bg-success/80",
+        >= 0.50m => "bg-warning/80",
+        > 0m => "bg-error/80",
+        _ => "bg-gray-200"
+    };
 
     private string GetDataElementIsAvailableIcon(IndicatorCoverageScore indicatorScore, string dataElementName)
     {

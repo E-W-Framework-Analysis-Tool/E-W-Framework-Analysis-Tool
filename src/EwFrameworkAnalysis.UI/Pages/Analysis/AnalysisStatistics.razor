@@ -1,0 +1,332 @@
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.UI.Components
+
+<Card Overflow AdditionalClasses="mb-6" NoPadding>
+    <ChildContent>
+        <div class="px-4 py-4 sm:px-6 sm:py-5">
+
+            <!-- Toggle row -->
+            <div class="flex items-center gap-1 mb-5 pb-4 border-b border-gray-200">
+                <span class="text-xs text-gray mr-2">View:</span>
+                @foreach (var view in _views)
+                {
+                    <button class="px-3 py-1 rounded text-xs font-medium transition-colors border
+                        @(_activeView == view.Key
+                                ? "bg-gray-100 border-gray-300 text-blue"
+                                : "border-transparent text-gray hover:bg-gray-50 hover:text-blue")"
+                            @onclick="() => _activeView = view.Key">
+                        @view.Label
+                    </button>
+                }
+            </div>
+
+            <!-- Three columns -->
+            <div class="grid grid-cols-1 sm:grid-cols-[160px_1px_1fr_1px_1fr] gap-5 sm:gap-6 items-start">
+
+                <!-- Gauge — always visible -->
+                <div class="flex flex-col items-center gap-2">
+                    <p class="text-[11px] uppercase tracking-wide text-gray">Overall coverage</p>
+                    <div class="relative w-32 h-32">
+                        <svg viewBox="0 0 120 120" class="w-full h-full rotate-[135deg]">
+                            <!-- Track -->
+                            <circle cx="60" cy="60" r="46"
+                                    fill="none"
+                                    stroke="#e5e7eb"
+                                    stroke-width="10"
+                                    stroke-dasharray="@_gaugeTotalDash"
+                                    stroke-dashoffset="0"
+                                    stroke-linecap="round" />
+                            <!-- Fill -->
+                            <circle cx="60" cy="60" r="46"
+                                    fill="none"
+                                    stroke="@_gaugeColor"
+                                    stroke-width="10"
+                                    stroke-dasharray="@_gaugeTotalDash"
+                                    stroke-dashoffset="@_gaugeDashOffset"
+                                    stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-2xl font-semibold text-blue">@_overallPct%</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-gray text-center">of @QuestionScores.Count essential questions</p>
+                </div>
+
+                <!-- Vertical divider -->
+                <div class="hidden sm:block bg-gray-200 self-stretch"></div>
+
+                <!-- Middle panel -->
+                <div>
+                    <div class="@(_activeView == "overview" ? "" : "hidden")">
+                        <p class="text-[11px] uppercase tracking-wide text-gray mb-2">EQ coverage breakdown</p>
+                        <!-- Counts above segments -->
+                        <div class="flex w-full mb-1">
+                            @foreach (var b in _bands)
+                            {
+                                @if (b.Pct > 0)
+                                {
+                                    <div class="text-center text-[11px] font-medium text-gray-600 overflow-hidden"
+                                         style="width:@b.Pct.ToString("0.##")%">
+                                        @if (b.Pct >= 10)
+                                        {
+                                            <span>@b.Count</span>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <!-- Bar -->
+                        <div class="flex h-3 rounded-full overflow-hidden w-full mb-3">
+                            @foreach (var b in _bands)
+                            {
+                                @if (b.Pct > 0)
+                                {
+                                    <div class="h-full" style="width:@b.Pct.ToString("0.##")%; background:@b.Color"></div>
+                                }
+                            }
+                        </div>
+                        <!-- Legend — threshold only -->
+                        <div class="flex flex-wrap gap-x-4 gap-y-1">
+                            @foreach (var b in _bands)
+                            {
+                                <span class="flex items-center gap-1 text-[11px] text-gray">
+                                    <span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:@b.Color"></span>
+                                    @b.Label
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="@(_activeView == "sector" ? "" : "hidden")">
+                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Coverage by sector</p>
+                        <div class="space-y-2.5">
+                            @foreach (var s in SectorCoverageScores.OrderByDescending(x => x.CoverageScore))
+                            {
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-gray">@s.Sector.GetDisplayName()</span>
+                                        <span class="font-medium text-blue">@s.CoverageScore.ToString("0%")</span>
+                                    </div>
+                                    <div class="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                                        <div class="h-full rounded-full @GetBarColor(s.CoverageScore)"
+                                             style="width:@((s.CoverageScore * 100).ToString("0"))%"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="@(_activeView == "source" ? "" : "hidden")">
+                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Coverage by source type</p>
+                        <div class="space-y-2.5">
+                            @foreach (var s in _sourceRows)
+                            {
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-gray">@s.Label</span>
+                                        <span class="font-medium text-blue">@s.Score.ToString("0%")</span>
+                                    </div>
+                                    <div class="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                                        <div class="h-full rounded-full @GetBarColor(s.Score)"
+                                             style="width:@((s.Score * 100).ToString("0"))%"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="@(_activeView == "matrix" ? "" : "hidden")">
+                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Indicators per essential question</p>
+                        <div class="overflow-x-auto justify-center flex">
+                            <div class="flex gap-1 items-end pb-1" style="min-width:max-content">
+                                @foreach (var q in QuestionScores.OrderBy(x => x.QuestionNumber))
+                                {
+                                    <div class="flex flex-col items-center gap-[2px] justify-end">
+                                        @foreach (var ind in q.IndicatorScores.OrderBy(x => x.CoverageScore))
+                                        {
+                                            <div class="w-2 h-2 rounded-full flex-shrink-0 @GetIndicatorDotColor(ind.CoverageScore)"
+                                                 title="@ind.IndicatorCode — @ind.CoverageScore.ToString("0%")"></div>
+                                        }
+                                        <span class="text-[9px] text-gray mt-0.5">@q.QuestionNumber</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+                            <span class="flex items-center gap-1 text-[11px] text-gray"><span class="w-2 h-2 rounded-full flex-shrink-0 bg-green-400"></span>Strong (≥70%)</span>
+                            <span class="flex items-center gap-1 text-[11px] text-gray"><span class="w-2 h-2 rounded-full flex-shrink-0 bg-amber-400"></span>Partial (50–70%)</span>
+                            <span class="flex items-center gap-1 text-[11px] text-gray"><span class="w-2 h-2 rounded-full flex-shrink-0 bg-red-400"></span>Weak (&lt;50%)</span>
+                            <span class="flex items-center gap-1 text-[11px] text-gray"><span class="w-2 h-2 rounded-full flex-shrink-0 bg-gray-300"></span>No data</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vertical divider -->
+                <div class="hidden sm:block bg-gray-200 self-stretch"></div>
+
+                <!-- Right panel — ROI always -->
+                <div>
+                    <p class="text-[11px] uppercase tracking-wide text-gray mb-1">Highest ROI data elements</p>
+                    <p class="text-[11px] text-gray mb-3">Adding these would unlock the most indicators</p>
+                    @if (_roiItems.Any())
+                    {
+                        <div class="divide-y divide-gray-100">
+                            @foreach (var item in _roiItems)
+                            {
+                                <div class="flex items-center justify-between py-1.5 gap-2 text-xs">
+                                    <span class="text-gray min-w-0 truncate">@item.Name</span>
+                                    <button class="shrink-0 px-1.5 py-0.5 rounded bg-gray-100 text-gray text-[11px] hover:bg-blue hover:text-white transition-colors cursor-pointer"
+                                            @onclick="() => _selectedRoi = item">
+                                        @item.Count indicator@(item.Count != 1 ? "s" : "")
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-[11px] text-gray">No unscored data elements found. Run a profiler to see recommendations.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</Card>
+
+<Modal IsOpen="@(_selectedRoi != null)"
+       IsOpenChanged="@(v => { if (!v) _selectedRoi = null; })"
+       Title="@(_selectedRoi?.Name ?? "")"
+       ShowCloseButton="true">
+    <Body>
+        <p class="text-sm text-gray-500 mb-4">
+            Improving availability of this data element would affect the following
+            @_selectedRoi?.Count indicator@(_selectedRoi?.Count != 1 ? "s" : ""):
+        </p>
+        <ul class="flex flex-col gap-2">
+            @foreach (var ind in _selectedRoi?.Indicators ?? [])
+            {
+                <li class="flex items-start gap-2 text-sm">
+                    <span class="text-gray-400 mt-0.5">•</span>
+                    <span>@ind</span>
+                </li>
+            }
+        </ul>
+    </Body>
+    <Footer>
+        <div class="flex justify-end">
+            <button class="btn btn-ghost" @onclick="() => _selectedRoi = null">Close</button>
+        </div>
+    </Footer>
+</Modal>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<QuestionCoverageScore> QuestionScores { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<SectorCoverageScore> SectorCoverageScores { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
+    [Parameter, EditorRequired] public SourceTypeCoverageBreakdown CoverageScores { get; set; } = new();
+
+    private string _activeView = "overview";
+    private RoiItem? _selectedRoi = null;
+
+    private record ViewTab(string Key, string Label);
+    private readonly ViewTab[] _views =
+    [
+        new("overview", "Overview"),
+        new("sector",   "By sector"),
+        new("source",   "By source type"),
+        new("matrix",   "Indicator matrix"),
+    ];
+
+    // Gauge
+    private int _overallPct;
+    private string _gaugeColor = "#22c55e";
+    private double _gaugeTotalDash;
+    private double _gaugeDashOffset;
+
+    // Breakdown
+    private record BandInfo(string Label, int Count, double Pct, string Color);
+    private List<BandInfo> _bands = [];
+
+    // Other
+    private record SourceRow(string Label, decimal Score);
+    private List<SourceRow> _sourceRows = [];
+
+    private record RoiItem(string Name, int Count, List<string> Indicators);
+    private List<RoiItem> _roiItems = [];
+
+    protected override void OnParametersSet()
+    {
+        BuildGauge();
+        BuildBreakdown();
+        BuildSourceRows();
+        BuildRoiItems();
+    }
+
+    private void BuildGauge()
+    {
+        var overall = QuestionScores.Any() ? QuestionScores.Average(q => q.CoverageScore) : 0m;
+        _overallPct = (int)Math.Round(overall * 100);
+        _gaugeColor = overall >= 0.70m ? "#22c55e" : overall >= 0.50m ? "#f59e0b" : "#ef4444";
+
+        // Arc spans 270 degrees of the circle (r=46, circumference ≈ 289)
+        const double r = 46;
+        const double arcDeg = 270.0;
+        var circumference = 2 * Math.PI * r;
+        _gaugeTotalDash = circumference * arcDeg / 360.0;
+        var filled = _gaugeTotalDash * (double)overall;
+        _gaugeDashOffset = _gaugeTotalDash - filled;
+    }
+
+    private void BuildBreakdown()
+    {
+        var sorted = QuestionScores.ToList();
+        var total = sorted.Count > 0 ? sorted.Count : 1;
+
+        int Strong = sorted.Count(q => q.CoverageScore >= 0.70m);
+        int Partial = sorted.Count(q => q.CoverageScore is >= 0.50m and < 0.70m);
+        int Weak = sorted.Count(q => q.CoverageScore is > 0m and < 0.50m);
+        int None = sorted.Count(q => q.CoverageScore == 0m);
+
+        _bands =
+        [
+            new("Strong (≥70%)",    Strong,  (double)Strong  / total * 100, "#22c55e"),
+            new("Partial (50–70%)", Partial, (double)Partial / total * 100, "#f59e0b"),
+            new("Weak (<50%)",      Weak,    (double)Weak    / total * 100, "#ef4444"),
+            new("None",             None,    (double)None    / total * 100, "#d1d5db"),
+        ];
+    }
+
+    private void BuildSourceRows()
+    {
+        _sourceRows =
+        [
+            new("Combined",      CoverageScores.Combined),
+            new("Manual entry",  CoverageScores.Manual),
+            new("Ed-Fi / CEDS",  CoverageScores.Automated),
+            new("ECS reference", CoverageScores.Ecs),
+        ];
+    }
+
+    private void BuildRoiItems()
+    {
+        _roiItems = IndicatorScores
+            .DistinctBy(i => i.IndicatorCode)
+            .SelectMany(i => i.DataElementScores
+                .Where(de => de.QualityScore < 1.0m)
+                .Select(de => new { i.IndicatorCode, de.DataElementName }))
+            .GroupBy(x => x.DataElementName)
+            .Select(g => new RoiItem(
+                g.Key,
+                g.Select(x => x.IndicatorCode).Distinct().Count(),
+                g.Select(x => x.IndicatorCode).Distinct().OrderBy(x => x).ToList()))
+            .OrderByDescending(x => x.Count)
+            .Take(5)
+            .ToList();
+    }
+
+    private string GetBarColor(decimal score) =>
+        score >= 0.70m ? "bg-green-400" : score >= 0.50m ? "bg-amber-400" : "bg-red-400";
+
+    private string GetIndicatorDotColor(decimal score) =>
+        score >= 0.70m ? "bg-green-400" : score >= 0.50m ? "bg-amber-400" : score > 0m ? "bg-red-400" : "bg-gray-300";
+}
