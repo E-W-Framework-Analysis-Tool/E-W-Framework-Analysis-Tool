@@ -1,0 +1,453 @@
+@page "/learn/docs"
+@using EwFrameworkAnalysis.UI.Pages.Docs
+@inject IJSRuntime JS
+
+<PageTitle>Documentation | E-W Framework Analysis Tool</PageTitle>
+
+<CascadingValue Value="_docsContext">
+    <div class="min-h-screen bg-base-100">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 py-10">
+            <div class="flex gap-10 items-start">
+
+                <!-- ── Sidebar ──────────────────────────────────────────── -->
+                <aside class="hidden lg:block w-56 xl:w-64 flex-shrink-0 sticky top-6 self-start">
+                    <nav>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+                            Documentation
+                        </p>
+                        <ul class="space-y-0.5 text-sm">
+                            @foreach (var info in _docsContext.GetOrderedSections())
+                            {
+                                <li>
+                                    <a href="javascript:void(0)"
+                                       @onclick="() => ScrollTo(info.Slug)"
+                                       class="block rounded-lg transition-colors cursor-pointer
+                                        @(_docsContext.GetDepth(info.Slug) == 0 ? "px-3 py-1.5" : "px-3 py-1 ml-3 text-xs")
+                                        @(_activeSlug == info.Slug
+                                           ? "bg-blue/10 text-blue font-semibold"
+                                           : _docsContext.GetDepth(info.Slug) == 0
+                                               ? "text-gray-500 hover:text-blue hover:bg-gray-100"
+                                               : "text-gray-400 hover:text-blue hover:bg-gray-100")">
+                                        @info.Title
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </aside>
+
+                <!-- ── Mobile picker ────────────────────────────────────── -->
+                <div class="lg:hidden w-full mb-6">
+                    <select class="select select-bordered w-full text-sm"
+                            @onchange="OnMobileNavChange">
+                        @foreach (var info in _docsContext.GetOrderedSections())
+                        {
+                            <option value="@info.Slug">
+                                @(_docsContext.GetDepth(info.Slug) > 0 ? "  " : "")@info.Title
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- ── Content ──────────────────────────────────────────── -->
+                <article class="flex-1 min-w-0">
+
+                    <DocSection Slug="overview" Title="Overview">
+                        <p>
+                            The E-W Framework Analysis Tool helps education agencies understand how well their
+                            data systems support the <a href="https://educationtoworkforce.org" class="link link-primary">Education-to-Workforce Indicator Framework</a>.
+                            It profiles your data sources, calculates coverage scores for each Essential Question
+                            and Indicator, and surfaces specific gaps — giving you a concrete starting point for
+                            data roadmapping.
+                        </p>
+                        <p>
+                            The tool runs entirely in your browser. There is no account, no server, and no data
+                            transmitted anywhere. Your project is a portable file you control.
+                        </p>
+                        <p>
+                            This page is a reference for understanding how the tool works — the concepts behind
+                            the scoring, what each data source type means, how the key workflows operate, and how
+                            your data is handled. Step-by-step UI guidance is built into the tool itself; this is
+                            the "why" behind what you see.
+                        </p>
+                    </DocSection>
+
+                    <DocSection Slug="core-concepts" Title="Core Concepts">
+                        <p>
+                            Understanding a few key terms makes the tool's output much easier to interpret.
+                            These concepts come from the E-W Framework itself; the tool adds a data mapping
+                            and profiling layer on top.
+                        </p>
+
+                        <DocSection Slug="essential-questions" Title="Essential Questions">
+                            <p>
+                                The Framework defines <strong>20 Essential Questions</strong> — the high-level
+                                questions an education-to-workforce data system should be able to answer. Examples
+                                include questions about early childhood readiness, K–12 progression, postsecondary
+                                enrollment and completion, and workforce entry and retention. Each question is a
+                                destination; the tool helps you understand how close your current data gets you.
+                            </p>
+                            <p>
+                                You do not need to pursue all 20. The Framework is a menu, not a mandate.
+                                Organizations typically start with the questions most relevant to their current
+                                priorities and expand over time.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="indicators" Title="Indicators">
+                            <p>
+                                Each Essential Question is supported by one or more Indicators — specific,
+                                measurable outcomes or system conditions that together answer the question.
+                                An Indicator like "Chronic Absenteeism" or "Postsecondary Enrollment Rate"
+                                represents a concrete thing your data should be able to measure. The Framework
+                                includes <strong>99 Indicators</strong>, and a single Indicator may be associated
+                                with more than one Essential Question. Coverage of an Essential Question is driven
+                                by how well your data covers its associated Indicators.
+                            </p>
+                            <p>
+                                Each Indicator in the Framework comes with <strong>Recommended Metrics</strong> —
+                                textual descriptions of how the Indicator should ideally be measured. These are
+                                written in plain language and do not prescribe specific data fields or standards.
+                                The tool uses these Recommended Metrics as the basis for its data element mapping.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="data-elements" Title="Data Elements">
+                            <p>
+                                Data elements are this tool's mapping layer between the Framework's Recommended
+                                Metrics and real data systems. The tool interprets each Indicator's Recommended
+                                Metrics and breaks them down into discrete, named pieces of information — such as
+                                "Age," "Race/Ethnicity," or "Suspensions and Expulsions (K-12)" — that a system
+                                would concretely need to contain in order to support that Indicator.
+                            </p>
+                            <p>
+                                The tool maps over <strong>200 data elements</strong> across the Framework's
+                                Indicators. A single element may be shared across multiple Indicators, which is
+                                why closing a single gap can sometimes unlock coverage for several Indicators at
+                                once. These element names are specific to this tool's mapping; they are not CEDS
+                                element names, though many correspond closely.
+                            </p>
+                            <p>
+                                When you profile a data source, the tool checks for the presence and quality of
+                                these elements. A gap in a single element can be traced directly to which
+                                Indicators and Essential Questions it affects — this is what makes the gap
+                                analysis actionable rather than just descriptive.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="coverage-scoring" Title="Coverage Scoring">
+                            <p>
+                                Coverage scores express how well your enabled data sources support each Indicator
+                                and Essential Question, on a 0–100% scale. The formula is:
+                            </p>
+                            <pre class="bg-gray-100 rounded-lg px-4 py-3 text-sm font-mono text-gray-700">
+( Available + Partially Available × 50% ) / Total Data Elements</pre>
+                            <p>
+                                Scores roll up from data elements → Indicators → Essential Questions. When
+                                multiple data sources are enabled, the tool takes the most favorable result for
+                                each element across all sources. A score reflects the current state of your data,
+                                not a judgment — most agencies score 40–60% on first run.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="availability" Title="Availability Judgments">
+                            <p>Each data element in a profile receives one of four availability judgments:</p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li><strong class="text-blue">Available</strong> — Present and passing quality checks. Contributes full weight to the coverage score.</li>
+                                <li><strong class="text-blue">Partially Available</strong> — Exists but incomplete, inconsistent, or failing a quality threshold. Contributes 50% weight.</li>
+                                <li><strong class="text-blue">Not Available</strong> — Absent or empty in this source.</li>
+                                <li><strong class="text-blue">Insufficient Data</strong> — The profiler could not make a determination, typically due to too few records.</li>
+                            </ul>
+                        </DocSection>
+                    </DocSection>
+
+                    <DocSection Slug="data-sources" Title="Data Sources">
+                        <p>
+                            A data source represents a system or dataset you want to profile. The tool supports
+                            five types. You can have multiple data sources of any type in a single project and
+                            enable or disable them independently.
+                        </p>
+
+                        <DocSection Slug="edfi-ods" Title="Ed-Fi ODS API">
+                            <p>
+                                Connects directly to an Ed-Fi ODS REST API from your browser to run an automated
+                                profile. The tool authenticates with your credentials, queries each data element's
+                                corresponding endpoint, and collects aggregate metadata — record counts, value
+                                ranges, completeness rates, and distributions. No individual records are retrieved
+                                or stored.
+                            </p>
+                            <p>
+                                The connection is on-demand and temporary — it exists only for the duration of
+                                a profiling run and is initiated manually each time. There is no persistent
+                                connection, no background sync, and no scheduled access to your ODS.
+                                Credentials exist only in browser memory for the duration of the session.
+                                The tool targets Ed-Fi ODS API v7.2 but works across versions. A read-only
+                                demo API is available for evaluation.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="ceds-dw" Title="CEDS Data Warehouse">
+                            <p>
+                                Uses an air-gapped workflow — the tool never connects to your database directly,
+                                not even on-demand. Instead it generates a SQL script you run in your own SQL
+                                Server environment, export the results as CSV, and import back into the tool.
+                                The script produces only aggregate statistics; no individual records are included.
+                                Currently targets CEDS DW v13.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="ecs-state" Title="ECS State Reference">
+                            <p>
+                                The Education Commission of the States maintains a state-by-state inventory of
+                                data elements states have reported as available. The tool includes this as a
+                                built-in data source — select your state and the profile loads instantly, no
+                                connection required. Useful as a baseline; reflects what your state has publicly
+                                reported, which may differ from what is actually in your systems.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="manual-entry" Title="Manual Entry">
+                            <p>
+                                For any system that cannot be profiled automatically. You review the full list
+                                of Framework data elements and mark each as Available, Partially Available, or
+                                Not Available based on your knowledge. Categories can be marked in bulk.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="llm-assisted" Title="LLM-Assisted Entry">
+                            <p>
+                                A guided workflow for profiling systems where you have a schema or data dictionary
+                                but a full manual inventory would be time-consuming. The tool generates a
+                                ready-made prompt pre-loaded with all Framework data elements; you paste it into
+                                any LLM along with your reference material, and the LLM produces a structured
+                                profile you import directly. The tool itself never connects to any LLM service.
+                            </p>
+                        </DocSection>
+                    </DocSection>
+
+                    <DocSection Slug="projects" Title="Projects">
+                        <p>
+                            Everything you do in the tool lives in a <strong>project</strong> — a single portable
+                            file that contains your data sources, their profiles, and all computed coverage results.
+                            There is no account, no cloud sync, and no server. You own the file.
+                        </p>
+
+                        <DocSection Slug="projects-structure" Title="What a project contains">
+                            <p>
+                                A project is saved as a <code class="bg-gray-100 px-1 rounded text-sm">.json</code> file.
+                                It contains:
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li>Your project title and metadata</li>
+                                <li>The list of data sources you have added</li>
+                                <li>All profile results for each data source — availability judgments, record counts, and other characteristics collected during profiling</li>
+                                <li>Any action items or notes you have added</li>
+                            </ul>
+                            <p>
+                                It does not contain source data records, student information, or API credentials.
+                                Coverage scores are recomputed from the profile results each time the project loads,
+                                so the file stays small and the scoring logic can be updated independently.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="projects-autosave" Title="Auto-save and browser cache">
+                            <p>
+                                The tool automatically saves your project to browser <code class="bg-gray-100 px-1 rounded text-sm">localStorage</code>
+                                as you work. This means your progress is preserved if you navigate away or close
+                                the tab — as long as you return on the same browser and device and haven't cleared
+                                your browser storage.
+                            </p>
+                            <p>
+                                Browser storage is not a reliable long-term backup. Use <strong>Save</strong> on the
+                                Dashboard to download a <code class="bg-gray-100 px-1 rounded text-sm">.json</code> file
+                                whenever you want to preserve a snapshot or share your work.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="projects-sharing" Title="Sharing and collaboration">
+                            <p>
+                                Because a project is just a file, you can share and collaborate using any file
+                                sharing method your organization already uses:
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li><strong>Email or chat</strong> — attach the file directly</li>
+                                <li><strong>SharePoint or Google Drive</strong> — store it in a shared folder so a team can access the latest version</li>
+                                <li><strong>Version control</strong> — commit it to a Git repository to track changes over time and maintain a history of profiling runs</li>
+                                <li><strong>Internal file systems</strong> — any shared network drive works</li>
+                            </ul>
+                            <p>
+                                There is no real-time collaboration — only one person edits at a time. The workflow
+                                is the same as sharing any other document: one person makes changes, saves, and
+                                shares the updated file. If two people edit independently, the
+                                <strong>Import Data Sources</strong> function on the Dashboard lets you merge data
+                                sources from one project file into another.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="projects-lifecycle" Title="Starting fresh vs. loading">
+                            <p>
+                                The Dashboard toolbar gives you four file operations:
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li><strong>New</strong> — clears the current project and starts from scratch</li>
+                                <li><strong>Save</strong> — downloads the current project as a <code class="bg-gray-100 px-1 rounded text-sm">.json</code> file</li>
+                                <li><strong>Load</strong> — replaces the current project entirely with a previously saved file</li>
+                                <li><strong>Import</strong> — merges data sources from another project file into the current one without replacing it</li>
+                            </ul>
+                            <p>
+                                Import is particularly useful when different team members have profiled different
+                                data sources independently and want to combine results into a single project for analysis.
+                            </p>
+                        </DocSection>
+                    </DocSection>
+
+
+                    <DocSection Slug="workflows" Title="Workflows">
+                        <p>
+                            The three workflows below involve steps outside the tool — connecting to an API,
+                            running SQL, or using an LLM. This section explains what happens at each step and why.
+                        </p>
+
+                        <DocSection Slug="workflow-edfi" Title="Ed-Fi ODS Profiling">
+                            <ol class="list-decimal pl-6 space-y-3">
+                                <li><strong>Authentication</strong> — The tool exchanges your client ID and secret for a bearer token. Credentials are held in browser memory only.</li>
+                                <li><strong>Discovery</strong> — For each mapped data element, a profiler queries the corresponding ODS endpoint and collects aggregate metadata.</li>
+                                <li><strong>Scoring</strong> — Metadata is evaluated against thresholds to assign an availability judgment. Low counts, high null rates, or bad value types may result in Partially Available.</li>
+                                <li><strong>Review and save</strong> — Results appear in real time. Review element detail before saving the profile to your project.</li>
+                            </ol>
+                            <p>
+                                Non-standard ODS implementations may cause some profilers to return no data.
+                                Manual entry can supplement or correct automated results.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="workflow-ceds" Title="CEDS Data Warehouse Profiling">
+                            <ol class="list-decimal pl-6 space-y-3">
+                                <li><strong>Download the script</strong> — The tool generates a T-SQL script containing one query per mapped data element. Inspect it before running — it contains only SELECT and aggregate operations.</li>
+                                <li><strong>Run the script</strong> — Execute in SSMS against your CEDS DW. The script inserts aggregate results into a temp table and returns them as a result set.</li>
+                                <li><strong>Export to CSV</strong> — Export the result set. You may inspect it — it contains only column names and aggregate numbers, no student-level data.</li>
+                                <li><strong>Import</strong> — Upload the CSV. It is parsed entirely in the browser and appears as a new data profile to review, save, or discard.</li>
+                            </ol>
+                        </DocSection>
+
+                        <DocSection Slug="workflow-llm" Title="LLM-Assisted Entry">
+                            <ol class="list-decimal pl-6 space-y-3">
+                                <li><strong>Get the prompt</strong> — From Add Data Source, select LLM-Assisted Entry. Copy the ready-made prompt pre-loaded with all Framework data elements.</li>
+                                <li><strong>Open your LLM</strong> — Paste the prompt into any LLM and append your schema, data dictionary, or API specification.</li>
+                                <li><strong>Get the output</strong> — The LLM produces a structured JSON file in the tool's project format. Save it locally.</li>
+                                <li><strong>Import</strong> — Use the Import function on the Dashboard to load the file. It appears as a manual-entry-style data source — review, correct, and save.</li>
+                            </ol>
+                            <p>
+                                Treat the result as a draft for review, not a final answer. Agencies with strict
+                                data governance can use a private LLM endpoint so schemas never leave the network.
+                            </p>
+                        </DocSection>
+                    </DocSection>
+
+                    <DocSection Slug="privacy-security" Title="Privacy &amp; Security">
+                        <p>
+                            The tool is a client-side Blazor WebAssembly application. All processing occurs in
+                            the user's browser. There is no application server, no database, and no telemetry.
+                        </p>
+
+                        <DocSection Slug="privacy-project" Title="Project data">
+                            <p>
+                                Your project is stored in browser <code class="bg-gray-100 px-1 rounded text-sm">localStorage</code> as
+                                a convenience cache and can be saved to a local JSON file at any time. The file
+                                contains only metadata and aggregate scoring results — not source data records.
+                                Project data is never transmitted to any remote server.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="privacy-edfi" Title="Ed-Fi API credentials">
+                            <p>
+                                Credentials are held only in browser memory for the duration of the session.
+                                Never written to localStorage, never written to disk, never sent anywhere except
+                                your configured Ed-Fi endpoint.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="privacy-outbound" Title="Outbound network calls">
+                            <p>
+                                The tool makes no CDN requests at runtime. Font Awesome, jsPDF, and all other
+                                JS/CSS dependencies are bundled as static assets and served alongside the
+                                application. The only outbound network calls are:
+                            </p>
+                            <table class="w-full text-sm border border-gray-200 rounded-lg overflow-hidden mt-2">
+                                <thead class="bg-gray-50 text-left">
+                                    <tr>
+                                        <th class="px-4 py-2 font-semibold text-gray-600">Destination</th>
+                                        <th class="px-4 py-2 font-semibold text-gray-600">When</th>
+                                        <th class="px-4 py-2 font-semibold text-gray-600">Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td class="px-4 py-2 font-mono text-xs">User-configured Ed-Fi endpoint</td>
+                                        <td class="px-4 py-2">Ed-Fi profiling only</td>
+                                        <td class="px-4 py-2">ODS API calls</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-2 font-mono text-xs">Microsoft Power BI</td>
+                                        <td class="px-4 py-2">Visualizations page only</td>
+                                        <td class="px-4 py-2">Embedded report rendering</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="mt-3">
+                                Neither call transmits user data or project data. The Power BI integration is
+                                optional — the rest of the tool is fully functional without it. Agencies that
+                                need fully air-gapped operation can disable the Visualizations page; no other
+                                page makes external network requests.
+                            </p>
+                        </DocSection>
+                    </DocSection>
+
+                </article>
+            </div>
+        </div>
+    </div>
+</CascadingValue>
+
+@code {
+    private readonly DocsContext _docsContext = new();
+    private string _activeSlug = "overview";
+
+    protected override void OnInitialized()
+    {
+        _docsContext.Changed += () => InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await JS.InvokeVoidAsync("DocsHelpers.initScrollSpy", DotNetObjectReference.Create(this));
+
+        var hash = await JS.InvokeAsync<string?>("DocsHelpers.getInitialHash");
+        if (!string.IsNullOrEmpty(hash))
+        {
+            _activeSlug = hash;
+            await JS.InvokeVoidAsync("DocsHelpers.scrollToSlug", hash);
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void SetActiveSlug(string slug)
+    {
+        _activeSlug = slug;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ScrollTo(string slug)
+    {
+        await JS.InvokeVoidAsync("DocsHelpers.scrollToSlug", slug);
+    }
+
+    private async Task OnMobileNavChange(ChangeEventArgs e)
+    {
+        var slug = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(slug))
+            await JS.InvokeVoidAsync("DocsHelpers.scrollToSlug", slug);
+    }
+}

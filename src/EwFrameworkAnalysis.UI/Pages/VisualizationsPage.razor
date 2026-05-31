@@ -172,8 +172,7 @@
                                             {
                                                 
                                                 <LightboxImage Src="@(rp.ScreenshotPath!)"
-                                                               Alt="@($"Screenshot — {rp.Name}")"
-                                                               Lightbox="_lightbox" />
+                                                               Alt="@($"Screenshot — {rp.Name}")" />
                                             }
                                             else
                                             {
@@ -255,13 +254,10 @@
         }
 
     </div>
-
-    <Lightbox @ref="_lightbox" />
 </div>
 
 @code {
     private VisualizationsOptions _opts => VisualizationsOptions.Value;
-    private Lightbox _lightbox = default!;
 
     // ── Report page type descriptors (shared across EQs) ─────────────────────
 

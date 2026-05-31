@@ -1,0 +1,209 @@
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Services
+@inject WalkthroughService Walkthrough
+@inject NavigationManager Nav
+
+<!-- ─── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="relative bg-secondary text-secondary-content py-16 sm:py-24 overflow-hidden">
+
+    <!-- Background screenshot — absolutely positioned, behind everything, desktop only -->
+    <div class="hidden lg:block absolute inset-y-0 right-0 w-[58%] z-0">
+        <div class="hero-screenshot h-full" style="--hero-fade-color: var(--color-secondary, #1e3a5f);">
+            <img src="/images/dashboard.jpg"
+                 alt=""
+                 aria-hidden="true"
+                 class="w-full h-full object-cover object-left-top" />
+        </div>
+    </div>
+
+    <!-- Content — always on top -->
+    <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-10">
+
+        <!-- Left: copy -->
+        <div class="flex-1 text-center lg:text-left space-y-6 lg:max-w-[620px]">
+            <h1 class="font-title text-4xl sm:text-5xl font-bold leading-tight">
+                Know your <span class="whitespace-nowrap">Education-to-Workforce</span> data coverage.<br />
+                Close the gaps.<br />
+                See your data come alive.
+            </h1>
+            <p class="text-lg text-secondary-content/80 max-w-xl mx-auto lg:mx-0">
+                The E-W Framework Analysis Tool helps education agencies profile their
+                data systems, score coverage against the E-W Framework, and build a
+                data roadmap — all in a free, open-source browser app.
+            </p>
+            <div class="flex flex-wrap justify-center lg:justify-start gap-3">
+                <a href="@AppRoutes.Dashboard"
+                   class="btn btn-primary px-8 text-lg rounded-sm">
+                    Get Started
+                </a>
+                <button @onclick="Walkthrough.StartAsync"
+                        class="btn btn-outline btn-secondary-content px-8 text-lg rounded-sm border-secondary-content/40 hover:bg-secondary-content/10">
+                    Take a Tour
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile-only image (stacks below text) -->
+        <div class="lg:hidden w-full">
+            <img src="/images/dashboard.jpg"
+                 alt="E-W Framework Analysis Tool dashboard"
+                 class="w-full rounded-xl shadow-2xl" />
+        </div>
+    </div>
+
+</section>
+
+<!-- ─── Three-Act Story ──────────────────────────────────────────────────── -->
+
+<!-- Act 1: Profile -->
+<section class="py-16 sm:py-24 bg-base-100">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1 w-full">
+            <div class="relative group cursor-zoom-in">
+                <LightboxImage Src="/images/edfi-profiler.jpg"
+                               Alt="Data source profiling view showing Ed-Fi ODS scan in progress"
+                               AdditionalClasses="w-full rounded-xl shadow-xl ring-1 ring-gray-200" />
+                <div class="absolute inset-0 bg-secondary/70 rounded-xl flex items-end p-6
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <p class="text-secondary-content text-sm font-medium">
+                        Automated Ed-Fi ODS scanning, CEDS SQL profiling, ECS state data,
+                        manual entry, and LLM-assisted inventory — all in one place.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 space-y-4 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-widest">
+                <span class="w-8 h-px bg-primary"></span> Step 1
+            </div>
+            <h2 class="font-title text-3xl sm:text-4xl font-bold text-blue">
+                Profile your data sources
+            </h2>
+            <p class="text-gray-600 text-lg leading-relaxed">
+                Connect to your Ed-Fi ODS or CEDS Data Warehouse for automated scanning,
+                load a state reference profile from ECS, or use manual entry and
+                LLM-assisted workflows for any other system.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-500 text-left">
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Ed-Fi ODS API — automated, real-time</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> CEDS Data Warehouse — secure, air-gapped SQL</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> ECS state reference profiles — built-in</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Manual &amp; LLM-assisted entry — any system</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Act 2: Understand & Plan (flipped on desktop) -->
+<section class="py-16 sm:py-24 bg-gray-50 border-t border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row-reverse items-center gap-10">
+        <div class="flex-1 w-full">
+            <div class="relative group cursor-zoom-in">
+                <LightboxImage Src="/images/analysis.jpg"
+                               Alt="Analysis page showing Essential Question coverage scores and indicator breakdown"
+                               AdditionalClasses="w-full rounded-xl shadow-xl ring-1 ring-gray-200" />
+                <div class="absolute inset-0 bg-secondary/70 rounded-xl flex items-end p-6
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <p class="text-secondary-content text-sm font-medium">
+                        Coverage scores for all 20 Essential Questions and their Indicators,
+                        with element-level gap analysis and ROI-ranked recommendations.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 space-y-4 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-widest">
+                <span class="w-8 h-px bg-primary"></span> Step 2
+            </div>
+            <h2 class="font-title text-3xl sm:text-4xl font-bold text-blue">
+                Understand your coverage &amp; plan your roadmap
+            </h2>
+            <p class="text-gray-600 text-lg leading-relaxed">
+                See exactly which Essential Questions your data supports today, which
+                indicators have gaps, and which single data elements would unlock the
+                most Framework coverage if addressed.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-500 text-left">
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Coverage scores for all 20 Essential Questions</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Indicator &amp; data element drill-down</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Highest-ROI gap recommendations</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Downloadable PDF report for stakeholders</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Act 3: See it in action -->
+<section class="py-16 sm:py-24 bg-base-100">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1 w-full">
+            <div class="relative group cursor-zoom-in">
+                <LightboxImage Src="/images/powerbi.jpg"
+                               Alt="Power BI dashboard showing E-W Framework Essential Question analysis"
+                               AdditionalClasses="w-full rounded-xl shadow-xl ring-1 ring-gray-200" />
+                <div class="absolute inset-0 bg-secondary/70 rounded-xl flex items-end p-6
+                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <p class="text-secondary-content text-sm font-medium">
+                        Ready-made Power BI dashboards for Essential Questions 12, 18, and 19 —
+                        built on the CEDS Data Warehouse schema and available as open source.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 space-y-4 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-widest">
+                <span class="w-8 h-px bg-primary"></span> What's next
+            </div>
+            <h2 class="font-title text-3xl sm:text-4xl font-bold text-blue">
+                See your data come alive
+            </h2>
+            <p class="text-gray-600 text-lg leading-relaxed">
+                Once you know your coverage and have a roadmap, put your data to work.
+                Ready-made Power BI dashboards for key Essential Questions show you exactly
+                what E-W Framework analysis looks like end-to-end — and are yours to
+                connect to your own data.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-500 text-left">
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Dashboards for EQ 12, 18, and 19</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Built on the CEDS Data Warehouse schema</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Open source — connect your own data</li>
+                <li class="flex items-center gap-2"><i class="fas fa-check text-primary text-xs"></i> Setup guide included</li>
+            </ul>
+            <a href="@AppRoutes.Visualizations"
+               class="inline-flex items-center gap-2 text-primary font-medium hover:underline">
+                Browse the dashboards <i class="fas fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ─── Feature Highlights ───────────────────────────────────────────────── -->
+<section class="py-12 bg-secondary/5 border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
+            @foreach (var f in _features)
+            {
+                <div class="flex flex-col items-center gap-2">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue/10">
+                        <i class="fas @f.Icon text-blue"></i>
+                    </div>
+                    <span class="text-xs font-medium text-gray-600 leading-tight">@f.Label</span>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private record Feature(string Icon, string Label);
+
+    private readonly Feature[] _features =
+    [
+        new("fa-satellite-dish",  "Ed-Fi ODS Scanning"),
+        new("fa-database",        "CEDS DW Profiling"),
+        new("fa-map",             "ECS State Data"),
+        new("fa-robot",           "LLM-Assisted Entry"),
+        new("fa-chart-bar",       "Coverage Scoring"),
+        new("fa-file-pdf",        "PDF Reporting"),
+    ];
+}

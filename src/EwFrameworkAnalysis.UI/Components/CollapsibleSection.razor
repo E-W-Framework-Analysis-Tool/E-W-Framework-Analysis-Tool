@@ -1,4 +1,10 @@
-<div class="collapse collapse-arrow @SectionClasses @AdditionalClasses" @attributes="AdditionalAttributes">
+@*
+    Variants:
+      Block   — rounded card with background (existing style, default)
+      Divider — clean horizontal rule only, no card chrome
+*@
+
+<div class="@ContainerClass @AdditionalClasses" @attributes="AdditionalAttributes">
     <input type="checkbox" class="peer"
            checked="@IsExpanded"
            @onchange="OnToggle"
@@ -20,6 +26,8 @@
 </div>
 
 @code {
+    public enum SectionVariant { Block, Divider }
+
     /// <summary>
     /// The content to display inside the collapsible section
     /// </summary>
@@ -53,17 +61,11 @@
     [Parameter]
     public EventCallback<bool> IsExpandedChanged { get; set; }
 
-    /// <summary>
-    /// CSS classes for the section container, primarily for background color, border, and rounded corners
-    /// </summary>
-    [Parameter]
-    public string SectionClasses { get; set; } = "bg-white border border-gray-200 rounded";
+    /// <summary>Overrides container classes entirely when provided.</summary>
+    [Parameter] public string? SectionClasses { get; set; }
 
-    /// <summary>
-    /// CSS classes for the title area (defaults to standard styling)
-    /// </summary>
-    [Parameter]
-    public string TitleClasses { get; set; } = "text-sm font-medium text-blue";
+    /// <summary>Overrides title classes entirely when provided.</summary>
+    [Parameter] public string? TitleClasses { get; set; }
 
     /// <summary>
     /// Additional CSS classes for positioning, spacing, etc.
@@ -71,8 +73,25 @@
     [Parameter]
     public string AdditionalClasses { get; set; } = "";
 
+    /// <summary>
+    /// Style to use.
+    /// </summary>
+    [Parameter] public SectionVariant Variant { get; set; } = SectionVariant.Block;
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ContainerClass => SectionClasses ?? Variant switch
+    {
+        SectionVariant.Divider => "collapse collapse-arrow border-b border-gray-200 rounded-none",
+        _ => "collapse collapse-arrow bg-white border border-gray-200 rounded"
+    };
+
+    private string ResolvedTitleClasses => TitleClasses ?? Variant switch
+    {
+        SectionVariant.Divider => "font-semibold text-blue text-lg py-5 px-0",
+        _ => "text-sm font-medium text-blue"
+    };
 
     private async Task OnToggle(ChangeEventArgs e)
     {
