@@ -1,208 +1,43 @@
-@using ApexCharts
 @using EwFrameworkAnalysis.UI.Pages.Survey
 
 <div class="grid grid-cols-3 gap-3">
-
-    <!-- Interest Chart -->
-    <div class="bg-base-100 border border-gray-200 rounded-xl p-3 flex flex-col gap-1">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">Interest</span>
-        <ApexChart TItem="ChartSlice"
-                   Options="_interestOptions"
-                   @ref="_interestChart"
-                   Height="140">
-            <ApexPointSeries TItem="ChartSlice"
-                             Items="_interestData"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.Label)"
-                             YValue="@(e => e.Value)" />
-        </ApexChart>
-        <div class="flex justify-center gap-3 flex-wrap">
-            @foreach (var s in _interestData.Where(d => d.Color != ColorNoResponse))
-            {
-                <div class="flex items-center gap-1">
-                    <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:@s.Color"></div>
-                    <span class="text-[10px] text-gray-500">@s.Label</span>
-                    <span class="text-[10px] font-semibold text-gray-700">@s.Value</span>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- Availability Chart -->
-    <div class="bg-base-100 border border-gray-200 rounded-xl p-3 flex flex-col gap-1">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">Availability</span>
-        <ApexChart TItem="ChartSlice"
-                   Options="_availabilityOptions"
-                   @ref="_availabilityChart"
-                   Height="140">
-            <ApexPointSeries TItem="ChartSlice"
-                             Items="_availabilityData"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.Label)"
-                             YValue="@(e => e.Value)" />
-        </ApexChart>
-        <div class="flex justify-center gap-3 flex-wrap">
-            @foreach (var s in _availabilityData.Where(d => d.Color != ColorNoResponse))
-            {
-                <div class="flex items-center gap-1">
-                    <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:@s.Color"></div>
-                    <span class="text-[10px] text-gray-500">@s.Label</span>
-                    <span class="text-[10px] font-semibold text-gray-700">@s.Value</span>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- Can Share Chart -->
-    <div class="bg-base-100 border border-gray-200 rounded-xl p-3 flex flex-col gap-1">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">Can Share</span>
-        <ApexChart TItem="ChartSlice"
-                   Options="_canShareOptions"
-                   @ref="_canShareChart"
-                   Height="140">
-            <ApexPointSeries TItem="ChartSlice"
-                             Items="_canShareData"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.Label)"
-                             YValue="@(e => e.Value)" />
-        </ApexChart>
-        <div class="flex justify-center gap-3 flex-wrap">
-            @foreach (var s in _canShareData.Where(d => d.Color != ColorNoResponse))
-            {
-                <div class="flex items-center gap-1">
-                    <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:@s.Color"></div>
-                    <span class="text-[10px] text-gray-500">@s.Label</span>
-                    <span class="text-[10px] font-semibold text-gray-700">@s.Value</span>
-                </div>
-            }
-        </div>
-    </div>
-
+    <SurveyDonutCard Title="Interest"     Slices="_interestSlices"     Total="_total" />
+    <SurveyDonutCard Title="Availability" Slices="_availabilitySlices" Total="_total" />
+    <SurveyDonutCard Title="Can Share"    Slices="_canShareSlices"      Total="_total" />
 </div>
 
 @code {
     [Parameter] public Dictionary<string, SurveyResponse> Responses { get; set; } = new();
     [Parameter] public int TotalElements { get; set; }
 
-    private ApexChart<ChartSlice>? _interestChart;
-    private ApexChart<ChartSlice>? _availabilityChart;
-    private ApexChart<ChartSlice>? _canShareChart;
+    private int _total => TotalElements;
 
-    private List<ChartSlice> _interestData = new();
-    private List<ChartSlice> _availabilityData = new();
-    private List<ChartSlice> _canShareData = new();
+    private List<SurveyDonutCard.DonutSlice> _interestSlices = [];
+    private List<SurveyDonutCard.DonutSlice> _availabilitySlices = [];
+    private List<SurveyDonutCard.DonutSlice> _canShareSlices = [];
 
-    private ApexChartOptions<ChartSlice> _interestOptions = new();
-    private ApexChartOptions<ChartSlice> _availabilityOptions = new();
-    private ApexChartOptions<ChartSlice> _canShareOptions = new();
-
-    private const string ColorSuccess = "#22c55e";
-    private const string ColorWarning = "#f59e0b";
-    private const string ColorError = "#ef4444";
-    private const string ColorNeutral = "#9ca3af";
-    private const string ColorNoResponse = "#e5e7eb";
-
-    protected override void OnInitialized() => BuildData();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        BuildData();
-        await UpdateChartsAsync();
-    }
+    protected override void OnParametersSet() => BuildData();
 
     private void BuildData()
     {
-        var noInterest = TotalElements - Responses.Values.Count(r => r.Interest.HasValue);
-        var noAvail = TotalElements - Responses.Values.Count(r => r.Availability.HasValue);
-        var noShare = TotalElements - Responses.Values.Count(r => r.CanQueryAndShare.HasValue);
+        _interestSlices =
+        [
+            new("High",    Responses.Values.Count(r => r.Interest == InterestLevel.HighPriority), "#22c55e"),
+            new("Low",     Responses.Values.Count(r => r.Interest == InterestLevel.LowPriority),  "#f59e0b"),
+            new("None",    Responses.Values.Count(r => r.Interest == InterestLevel.NoInterest),   "#ef4444"),
+        ];
 
-        _interestData = new List<ChartSlice>
-        {
-            new("High",        Responses.Values.Count(r => r.Interest == InterestLevel.HighPriority), ColorSuccess),
-            new("Low",         Responses.Values.Count(r => r.Interest == InterestLevel.LowPriority),  ColorWarning),
-            new("None",        Responses.Values.Count(r => r.Interest == InterestLevel.NoInterest),   ColorError),
-            new("No Response", noInterest,                                                             ColorNoResponse),
-        };
+        _availabilitySlices =
+        [
+            new("Avail",   Responses.Values.Count(r => r.Availability == SurveyAvailability.Available),          "#22c55e"),
+            new("Partial", Responses.Values.Count(r => r.Availability == SurveyAvailability.PartiallyAvailable), "#f59e0b"),
+            new("No",      Responses.Values.Count(r => r.Availability == SurveyAvailability.NotAvailable),       "#ef4444"),
+        ];
 
-        _availabilityData = new List<ChartSlice>
-        {
-            new("Avail",       Responses.Values.Count(r => r.Availability == SurveyAvailability.Available),          ColorSuccess),
-            new("Partial",     Responses.Values.Count(r => r.Availability == SurveyAvailability.PartiallyAvailable), ColorWarning),
-            new("Not Avail",   Responses.Values.Count(r => r.Availability == SurveyAvailability.NotAvailable),       ColorError),
-            new("No Response", noAvail,                                                                               ColorNoResponse),
-        };
-
-        _canShareData = new List<ChartSlice>
-        {
-            new("Yes",         Responses.Values.Count(r => r.CanQueryAndShare == true),  ColorSuccess),
-            new("No",          Responses.Values.Count(r => r.CanQueryAndShare == false), ColorError),
-            new("No Response", noShare,                                                   ColorNoResponse),
-        };
-
-        _interestOptions = BuildOptions(_interestData);
-        _availabilityOptions = BuildOptions(_availabilityData);
-        _canShareOptions = BuildOptions(_canShareData);
+        _canShareSlices =
+        [
+            new("Yes", Responses.Values.Count(r => r.CanQueryAndShare == true),  "#22c55e"),
+            new("No",  Responses.Values.Count(r => r.CanQueryAndShare == false), "#ef4444"),
+        ];
     }
-
-    private static ApexChartOptions<ChartSlice> BuildOptions(List<ChartSlice> data) => new()
-    {
-        Colors = data.Select(d => d.Color).ToList(),
-        Chart = new Chart
-        {
-            Toolbar = new Toolbar { Show = false },
-            Animations = new Animations
-            {
-                Enabled = true,
-                DynamicAnimation = new DynamicAnimation
-                {
-                    Enabled = true,
-                    Speed = 400
-                }
-            }
-        },
-        Stroke = new Stroke { Width = 2, Colors = new List<string> { "#ffffff" } },
-        Legend = new Legend { Show = false },
-        Tooltip = new Tooltip { Enabled = true },
-        DataLabels = new DataLabels { Enabled = false },
-        PlotOptions = new PlotOptions
-        {
-            Pie = new PlotOptionsPie
-            {
-                Donut = new PlotOptionsDonut
-                {
-                    Size = "65%",
-                    Labels = new DonutLabels
-                    {
-                        Show = true,
-                        Total = new DonutLabelTotal
-                        {
-                            Show = true,
-                            Label = "Responded",
-                            FontSize = "10px",
-                            Color = "#6b7280",
-                            Formatter = "function(w) { return w.globals.seriesTotals.reduce((a,b)=>a+b,0) - w.globals.series[w.globals.series.length-1] }"
-                        },
-                        Value = new DonutLabelValue
-                        {
-                            Show = true,
-                            FontSize = "18px",
-                            FontWeight = "600",
-                            OffsetY = 2
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    private async Task UpdateChartsAsync()
-    {
-        var tasks = new List<Task>();
-        if (_interestChart != null) tasks.Add(_interestChart.UpdateSeriesAsync(true));
-        if (_availabilityChart != null) tasks.Add(_availabilityChart.UpdateSeriesAsync(true));
-        if (_canShareChart != null) tasks.Add(_canShareChart.UpdateSeriesAsync(true));
-        if (tasks.Any()) await Task.WhenAll(tasks);
-    }
-
-    private record ChartSlice(string Label, decimal Value, string Color);
 }
