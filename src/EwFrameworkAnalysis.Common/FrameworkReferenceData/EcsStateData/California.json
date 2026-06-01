@@ -1755,7 +1755,7 @@
     "sector": "WF",
     "indicator": "School and workplace racial and ethnic diversity",
     "elementName": "Race and ethnicity (individual)",
-    "reported": "NotAvailable"
+    "reported": "PartiallyAvailable"
   },
   {
     "sector": "PK",
@@ -1947,7 +1947,7 @@
     "sector": "All",
     "indicator": "Childhood experiences",
     "elementName": "Number of Adverse Childhood Experiences (ACEs)",
-    "reported": "Available"
+    "reported": "PartiallyAvailable"
   },
   {
     "sector": "All",
