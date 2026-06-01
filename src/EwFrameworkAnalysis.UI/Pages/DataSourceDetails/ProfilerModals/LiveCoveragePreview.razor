@@ -1,0 +1,195 @@
+@*
+    LiveCoveragePreview.razor
+
+    Renders a ~280px right-side panel showing a live "what-if" coverage score
+    derived from the current pending availability map in the Manual Entry modal.
+
+    Usage (inside ManualEntryProfilerModal.razor Body, desktop only):
+        <LiveCoveragePreview ElementAvailability="_elementAvailability" />
+
+    The component injects FrameworkCoverageService directly and recalculates
+    whenever ElementAvailability changes via OnParametersSet.
+*@
+
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Models.Scoring
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.UI.Components
+@inject FrameworkCoverageService CoverageSvc
+
+@if (IsVisible)
+{
+    <div class="hidden lg:flex fixed top-1/2 -translate-y-1/2 z-[60] flex-col gap-3
+        w-[280px] bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 p-4 max-h-[80vh]"
+         style="right: 16px">
+
+        <!-- Header -->
+        <div class="flex flex-col gap-1">
+            <span class="text-[11px] uppercase tracking-widest font-semibold text-gray-600">Live Preview</span>
+            <p class="text-[10px] text-gray-500 leading-snug">
+                Coverage from this inventory only — not your full project score. Use this to see how changes here affect each Essential Question.
+            </p>
+        </div>
+
+        <!-- Overall gauge -->
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+            <Gauge Score="(_overallPct / 100m)" Size="Gauge.GaugeSize.Sm" />
+            <div>
+                <p class="text-xs font-semibold text-gray-700">Overall Coverage</p>
+                <p class="text-[11px] text-gray-400">across @_eqScores.Count EQs</p>
+            </div>
+        </div>
+
+        <!-- EQ list -->
+        <div class="flex-1 overflow-y-auto space-y-1 pr-0.5">
+            @foreach (var eq in _eqScores)
+            {
+                var pct = (int)Math.Round(eq.CoverageScore * 100);
+                var color = eq.CoverageScore >= 0.70m ? "bg-green-400"
+                          : eq.CoverageScore >= 0.50m ? "bg-amber-400"
+                          : eq.CoverageScore > 0m ? "bg-red-400"
+                          : "bg-gray-200";
+                var textColor = eq.CoverageScore >= 0.70m ? "text-green-600"
+                              : eq.CoverageScore >= 0.50m ? "text-amber-600"
+                              : eq.CoverageScore > 0m ? "text-red-500"
+                              : "text-gray-400";
+                var isExpanded = _expanded.Contains(eq.QuestionNumber);
+
+                <div class="rounded-lg border border-gray-300 overflow-hidden
+                transition-all duration-300 bg-white">
+
+                    <!-- Row -->
+                    <button class="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                    @onclick="() => ToggleExpand(eq.QuestionNumber)">
+
+                        <!-- Expand chevron -->
+                        <i class="fas fa-chevron-right text-[11px] text-gray-200 transition-transform duration-200
+                    @(isExpanded ? "rotate-90" : "")"></i>
+
+                        <!-- EQ number + label -->
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[11px] font-semibold text-gray-600 truncate">
+                                EQ @eq.QuestionNumber
+                            </p>
+                            <p class="text-[10px] text-gray-600 truncate">
+                                @EwFrameworkEssentialQuestions.Questions.FirstOrDefault(q => q.QuestionNumber == eq.QuestionNumber)?.QuestionSummary
+                            </p>
+                        </div>
+
+                        <!-- Score badge -->
+                        <span class="flex-shrink-0 text-[11px] font-bold @textColor">@pct%</span>
+                    </button>
+
+                    <!-- Progress bar -->
+                    <div class="h-1 bg-gray-100">
+                        <div class="h-full @color transition-all duration-500 ease-out"
+                            style="width:@pct%"></div>
+                    </div>
+
+                    <!-- Expanded indicators -->
+                    @if (isExpanded && eq.IndicatorScores.Any())
+                    {
+                        <div class="bg-gray-50 divide-y divide-gray-100 border-t border-gray-100">
+                            @foreach (var ind in eq.IndicatorScores.OrderByDescending(i => i.CoverageScore))
+                            {
+                                var iPct = (int)Math.Round(ind.CoverageScore * 100);
+                                var iColor = ind.CoverageScore >= 0.70m ? "text-green-600"
+                                           : ind.CoverageScore >= 0.50m ? "text-amber-500"
+                                           : ind.CoverageScore > 0m ? "text-red-400"
+                                           : "text-gray-300";
+                                <div class="px-4 py-1.5">
+                                    <div class="flex justify-between items-baseline gap-1 mb-0.5">
+                                        <span class="text-[10px] text-gray-500 truncate flex-1 min-w-0">@ind.IndicatorCode</span>
+                                        <span class="text-[10px] font-semibold @iColor flex-shrink-0">@iPct%</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="flex-1 h-0.5 rounded-full bg-gray-200 overflow-hidden">
+                                            <div class="h-full rounded-full transition-all duration-500
+                                            @(ind.CoverageScore >= 0.70m ? "bg-green-400"
+                                                  : ind.CoverageScore >= 0.50m ? "bg-amber-400"
+                                                  : ind.CoverageScore > 0m ? "bg-red-400"
+                                                  : "bg-gray-200")"
+                                                 style="width:@iPct%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Dictionary<string, AvailabilityJudgment> ElementAvailability { get; set; } = new();
+    [Parameter] public bool IsVisible { get; set; }
+
+    private List<QuestionCoverageScore> _eqScores = [];
+    private HashSet<int> _expanded = [];
+
+    // Gauge
+    private int _overallPct;
+    private string _gaugeColor = "#d1d5db";
+    private double _totalDash;
+    private double _gaugeFillDash;
+
+    protected override void OnParametersSet() => Recalculate();
+
+    private void Recalculate()
+    {
+        // Build a synthetic single-source assessment from the pending map
+        var assessment = new DataSourceAssessmentWithSource
+        {
+            DataSourceId = Guid.Empty,
+            DataSourceName = "Preview",
+            DataSourceType = DataSourceType.Custom,
+            Name = "Preview",
+            ConductedAt = DateTimeOffset.Now,
+            Active = true,
+            DataElementAssessments = ElementAvailability
+                .Select(kvp => new DataElementAssessment
+                {
+                    DataElementName = kvp.Key,
+                    Characteristics = [new ReportedAvailability(kvp.Value)]
+                })
+                .ToList()
+        };
+
+        var coverage = CoverageSvc.CalculateFrameworkCoverage([assessment]);
+
+        // Sort highest → lowest, stable across re-renders via QuestionNumber tiebreak
+        _eqScores = coverage.QuestionScores
+            .OrderByDescending(q => q.CoverageScore)
+            .ThenBy(q => q.QuestionNumber)
+            .ToList();
+
+        // Gauge
+        var overall = coverage.QuestionScores.Any()
+            ? coverage.QuestionScores.Average(q => q.CoverageScore)
+            : 0m;
+
+        _overallPct = (int)Math.Round(overall * 100);
+        _gaugeColor = overall >= 0.70m ? "#22c55e"
+                    : overall >= 0.50m ? "#f59e0b"
+                    : overall > 0m ? "#ef4444"
+                    : "#d1d5db";
+
+        const double r = 46;
+        const double arcDeg = 270.0;
+        var circ = 2 * Math.PI * r;
+        _totalDash = circ * arcDeg / 360.0;
+        _gaugeFillDash = _totalDash * (double)overall;
+
+        StateHasChanged();
+    }
+
+    private void ToggleExpand(int num)
+    {
+        if (!_expanded.Add(num))
+            _expanded.Remove(num);
+    }
+}

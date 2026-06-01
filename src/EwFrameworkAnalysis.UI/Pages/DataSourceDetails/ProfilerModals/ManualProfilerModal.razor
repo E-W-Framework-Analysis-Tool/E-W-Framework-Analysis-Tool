@@ -28,10 +28,6 @@
                     <span class="text-xs text-gray-600">@AvailabilityJudgment.NotAvailable.GetDisplayName()</span>
                     <span class="text-lg font-bold text-error">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</span>
                 </div>
-                <div class="flex items-center justify-between bg-gray-100 border border-error rounded-xl p-3">
-                    <span class="text-xs text-gray-600">@AvailabilityJudgment.InsufficientData.GetDisplayName()</span>
-                    <span class="text-lg font-bold text-gray">@GetAvailabilityCount(AvailabilityJudgment.InsufficientData)</span>
-                </div>
             </div>
 
             @if (_error != null)
@@ -61,6 +57,8 @@
         </div>
     </Footer>
 </Modal>
+
+<LiveCoveragePreview ElementAvailability="_elementAvailability" IsVisible="IsOpen" />
 
 <ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
                              Message="Are you sure you want to discard this manual entry? All reported availabilities will be lost."

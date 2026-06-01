@@ -26,29 +26,7 @@
                 <!-- Gauge — always visible -->
                 <div class="flex flex-col items-center gap-2">
                     <p class="text-[11px] uppercase tracking-wide text-gray">Overall coverage</p>
-                    <div class="relative w-32 h-32">
-                        <svg viewBox="0 0 120 120" class="w-full h-full rotate-[135deg]">
-                            <!-- Track -->
-                            <circle cx="60" cy="60" r="46"
-                                    fill="none"
-                                    stroke="#e5e7eb"
-                                    stroke-width="10"
-                                    stroke-dasharray="@_gaugeTotalDash"
-                                    stroke-dashoffset="0"
-                                    stroke-linecap="round" />
-                            <!-- Fill -->
-                            <circle cx="60" cy="60" r="46"
-                                    fill="none"
-                                    stroke="@_gaugeColor"
-                                    stroke-width="10"
-                                    stroke-dasharray="@_gaugeTotalDash"
-                                    stroke-dashoffset="@_gaugeDashOffset"
-                                    stroke-linecap="round" />
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-2xl font-semibold text-blue">@_overallPct%</span>
-                        </div>
-                    </div>
+                    <Gauge Score="@(_overallPct / 100m)" Size="Gauge.GaugeSize.Md" />
                     <p class="text-[11px] text-gray text-center">of @QuestionScores.Count essential questions</p>
                 </div>
 
