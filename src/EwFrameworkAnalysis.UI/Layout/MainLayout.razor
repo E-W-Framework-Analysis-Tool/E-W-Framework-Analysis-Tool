@@ -191,12 +191,6 @@
         Nav.LocationChanged += OnLocationChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            StateHasChanged();
-    }
-
     private void OnBusyChanged() => InvokeAsync(StateHasChanged);
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
