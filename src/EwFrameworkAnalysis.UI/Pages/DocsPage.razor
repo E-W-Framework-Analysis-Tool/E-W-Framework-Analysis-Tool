@@ -24,10 +24,10 @@
                                        class="block rounded-lg transition-colors cursor-pointer
                                         @(_docsContext.GetDepth(info.Slug) == 0 ? "px-3 py-1.5" : "px-3 py-1 ml-3 text-xs")
                                         @(_activeSlug == info.Slug
-                                           ? "bg-blue/10 text-blue font-semibold"
-                                           : _docsContext.GetDepth(info.Slug) == 0
-                                               ? "text-gray-500 hover:text-blue hover:bg-gray-100"
-                                               : "text-gray-400 hover:text-blue hover:bg-gray-100")">
+                                          ? "bg-blue/10 text-blue font-semibold"
+                                          : _docsContext.GetDepth(info.Slug) == 0
+                                              ? "text-gray-500 hover:text-blue hover:bg-gray-100"
+                                              : "text-gray-400 hover:text-blue hover:bg-gray-100")">
                                         @info.Title
                                     </a>
                                 </li>
@@ -181,8 +181,9 @@
                                 a profiling run and is initiated manually each time. There is no persistent
                                 connection, no background sync, and no scheduled access to your ODS.
                                 Credentials exist only in browser memory for the duration of the session.
-                                The tool targets Ed-Fi ODS API v7.2 but works across versions. A read-only
-                                demo API is available for evaluation.
+                                The tool requires a minimum of Ed-Fi ODS API v7.3; profilers are built to
+                                work forward across versions unless a breaking API change warrants an update.
+                                A read-only demo API is available for evaluation.
                             </p>
                         </DocSection>
 
@@ -192,7 +193,9 @@
                                 not even on-demand. Instead it generates a SQL script you run in your own SQL
                                 Server environment, export the results as CSV, and import back into the tool.
                                 The script produces only aggregate statistics; no individual records are included.
-                                Currently targets CEDS DW v13.
+                                The tool supports CEDS DW v13 and v14. Profilers have a minimum supported version
+                                and are built to work forward across versions unless a breaking schema change
+                                warrants an update.
                             </p>
                         </DocSection>
 
@@ -271,7 +274,7 @@
                             </p>
                             <ul class="list-disc pl-6 space-y-2">
                                 <li><strong>Email or chat</strong> — attach the file directly</li>
-                                <li><strong>SharePoint or Google Drive</strong> — store it in a shared folder so a team can access the latest version</li>
+                                <li><strong>SharePoint, Google Drive, ...</strong> — store it in a shared folder so a team can access the latest version</li>
                                 <li><strong>Version control</strong> — commit it to a Git repository to track changes over time and maintain a history of profiling runs</li>
                                 <li><strong>Internal file systems</strong> — any shared network drive works</li>
                             </ul>
