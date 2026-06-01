@@ -10,7 +10,7 @@
            @onchange="OnToggle"
            aria-label="@(AriaLabel ?? Title ?? "Toggle section")" />
 
-    <div class="collapse-title @TitleClasses">
+    <div class="collapse-title @ResolvedTitleClasses">
         @if (TitleContent != null)
         {
             @TitleContent

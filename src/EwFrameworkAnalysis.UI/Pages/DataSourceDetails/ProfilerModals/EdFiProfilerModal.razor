@@ -22,7 +22,7 @@
         <div class="space-y-4">
 
             @* ── Setup ── *@
-            @if (_currentProgress == null && _assessmentResult == null)
+            @if (_currentProgress == null && _assessmentResult == null && !_isAuthenticating)
             {
                 @if (DemoApiOptions.Value.IsConfigured)
                 {
@@ -49,6 +49,29 @@
                     <label class="label"><span class="label-text">API URL</span></label>
                     <input @bind="_rootUrl" type="text" placeholder="https://api.example.com"
                            class="input input-bordered w-full" />
+                </div>
+            }
+
+            @* ── Demo API warm-up ── *@
+            @if (_isAuthenticating && _usingDemo)
+            {
+                <div class="flex flex-col items-center gap-4 py-6 text-center">
+                    <EwLoadingIndicator Scale="1.2" />
+                    <div>
+                        <p class="font-semibold text-blue">Connecting to demo API...</p>
+                        <p class="text-sm text-gray-500 mt-1">
+                            The demo API may take a moment to wake up. Hang tight.
+                        </p>
+                        @if (_authAttempt > 1)
+                        {
+                            <p class="text-xs text-gray-400 mt-1">
+                                Retry @(_authAttempt - 1) of @MaxAuthRetries
+                            </p>
+                        }
+                    </div>
+                    <button class="btn btn-sm btn-ghost text-gray-400" @onclick="CancelProfiling">
+                        Cancel
+                    </button>
                 </div>
             }
 
@@ -148,10 +171,10 @@
                                         @if (assessor.LogMessages?.Any() == true)
                                         {
                                             <CollapsibleSection Title="@($"{assessor.LogMessages.Count} log message(s)")"
-                                                                SectionClasses="bg-gray-50 border border-gray-200 rounded"
-                                                                TitleClasses="text-xs text-blue"
+                                                                Variant="CollapsibleSection.SectionVariant.Divider"
+                                                                TitleClasses="text-xs text-blue font-medium py-4 px-0"
                                                                 AdditionalClasses="ml-6 mt-2">
-                                                <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto">
+                                                <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto bg-gray-100 p-4">
                                                     @foreach (var log in assessor.LogMessages)
                                                     {
                                                         <div class="text-gray-700">@log</div>
@@ -216,8 +239,14 @@
     [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
     [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
 
+    private const int MaxAuthRetries = 10;
+    private static readonly TimeSpan AuthRetryDelay = TimeSpan.FromSeconds(3);
+
     private bool _isRunning;
+    private bool _isAuthenticating;
+    private bool _usingDemo;
     private bool _showDiscard;
+    private int _authAttempt;
 
     private string _clientId = "";
     private string _clientSecret = "";
@@ -243,11 +272,13 @@
         _rootUrl = demo.BaseUrl ?? "";
         _clientId = demo.ClientId ?? "";
         _clientSecret = demo.ClientSecret ?? "";
+        _usingDemo = true;
     }
 
     private async Task StartProfiling()
     {
         _error = null;
+        _authAttempt = 0;
 
         if (!Uri.TryCreate(DataApiUrl, UriKind.Absolute, out var baseUri))
         {
@@ -256,12 +287,18 @@
         }
 
         _isRunning = true;
+        _isAuthenticating = true;
         _cts = new CancellationTokenSource();
+        await InvokeAsync(StateHasChanged);
 
         try
         {
             var httpClient = new HttpClient { BaseAddress = baseUri };
-            var token = await GetAccessTokenAsync(AuthUrl, _clientId, _clientSecret);
+            var token = await GetAccessTokenWithRetryAsync(AuthUrl, _clientId, _clientSecret, _cts.Token);
+
+            _isAuthenticating = false;
+            await InvokeAsync(StateHasChanged);
+
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var progress = new Progress<AssessmentProgress>(OnProgressUpdate);
@@ -287,11 +324,35 @@
         }
         finally
         {
+            _isAuthenticating = false;
             _isRunning = false;
             _cts?.Dispose();
             _cts = null;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private async Task<string> GetAccessTokenWithRetryAsync(string authUrl, string clientId, string clientSecret, CancellationToken ct)
+    {
+        var maxAttempts = _usingDemo ? MaxAuthRetries : 1;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            ct.ThrowIfCancellationRequested();
+            _authAttempt = attempt;
+            await InvokeAsync(StateHasChanged);
+
+            try
+            {
+                return await GetAccessTokenAsync(authUrl, clientId, clientSecret);
+            }
+            catch (Exception) when (_usingDemo && attempt < maxAttempts)
+            {
+                await Task.Delay(AuthRetryDelay, ct);
+            }
+        }
+
+        throw new InvalidOperationException("Could not connect to the demo API after several attempts. It may be unavailable — try again in a moment.");
     }
 
     private async Task<string> GetAccessTokenAsync(string authUrl, string clientId, string clientSecret)
@@ -367,6 +428,9 @@
         _assessmentResult = null;
         _error = null;
         _isRunning = false;
+        _isAuthenticating = false;
+        _usingDemo = false;
+        _authAttempt = 0;
         _renderTimer?.Dispose();
         _renderTimer = null;
     }
@@ -376,18 +440,18 @@
 
     private string GetStatusBadgeClass(AssessorStatus status) => status switch
     {
-        AssessorStatus.Pending   => "badge-ghost",
-        AssessorStatus.Running   => "badge-warning",
+        AssessorStatus.Pending => "badge-ghost",
+        AssessorStatus.Running => "badge-warning",
         AssessorStatus.Completed => "badge-success",
-        AssessorStatus.Failed    => "badge-error",
-        _                        => "badge-ghost"
+        AssessorStatus.Failed => "badge-error",
+        _ => "badge-ghost"
     };
 
     private Card.AccentColor? GetAssessorAccent(AssessorStatus status) => status switch
     {
-        AssessorStatus.Running   => Card.AccentColor.Yellow,
+        AssessorStatus.Running => Card.AccentColor.Yellow,
         AssessorStatus.Completed => Card.AccentColor.Green,
-        AssessorStatus.Failed    => Card.AccentColor.Red,
-        _                        => Card.AccentColor.Gray
+        AssessorStatus.Failed => Card.AccentColor.Red,
+        _ => Card.AccentColor.Gray
     };
 }
