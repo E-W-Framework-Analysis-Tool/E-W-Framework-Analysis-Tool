@@ -23,21 +23,21 @@
                         <h1 class="text-2xl font-bold">Mapping Overview</h1>
                         <p class="text-sm text-gray-500 mt-0.5">
                             The tool includes automated profiling for two data standards: the
-                            <span class="font-medium text-gray-600">Ed-Fi ODS API (v7.2)</span> and the
-                            <span class="font-medium text-gray-600">CEDS Data Warehouse (v13)</span>.
+                            <span class="font-medium text-gray-600">Ed-Fi ODS API (v7.3)</span> and the
+                            <span class="font-medium text-gray-600">CEDS Data Warehouse (v13/v14)</span>.
                             Each standard covers different parts of the E-W Framework — this page shows
                             which data elements the automated profiling can reach through each one.
                         </p>
                     </div>
                     <div class="flex gap-4 text-sm text-gray-500">
                         <span>
-                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.2</span>
+                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.3</span>
                             — @_report.EdFiMappedCount / @_report.TotalElements
                             <span class="text-gray-400">(@_report.EdFiCoveragePercent%)</span>
                         </span>
                         <span class="text-gray-300">|</span>
                         <span>
-                            <span class="font-semibold text-purple-600">CEDS DW v13</span>
+                            <span class="font-semibold text-purple-600">CEDS DW v13/v14</span>
                             — @_report.CedsMappedCount / @_report.TotalElements
                             <span class="text-gray-400">(@_report.CedsCoveragePercent%)</span>
                         </span>
@@ -145,8 +145,8 @@
                                     {
                                         <div class="grid grid-cols-[1fr_160px_160px] gap-2 px-3 py-1 pl-10 bg-gray-50 border-t border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
                                             <span>Data Element</span>
-                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.2</span>
-                                            <span class="text-center text-purple-500">CEDS DW v13</span>
+                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.3</span>
+                                            <span class="text-center text-purple-500">CEDS DW v13/v14</span>
                                         </div>
 
                                         @foreach (var row in catRows)
@@ -307,11 +307,11 @@
                 <div>
                     @if (_selectedMapping.DataSource == DataSourceType.EdFiApi)
                     {
-                        <span class="badge badge-info badge-sm">Ed-Fi ODS API v7.2</span>
+                        <span class="badge badge-info badge-sm">Ed-Fi ODS API v7.3</span>
                     }
                     else
                     {
-                        <span class="badge badge-secondary badge-sm">CEDS DW v13</span>
+                        <span class="badge badge-secondary badge-sm">CEDS DW v13/v14</span>
                     }
                 </div>
 
