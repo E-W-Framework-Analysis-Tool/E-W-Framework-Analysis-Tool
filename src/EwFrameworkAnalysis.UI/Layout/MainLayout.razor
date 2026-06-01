@@ -191,6 +191,17 @@
         Nav.LocationChanged += OnLocationChanged;
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        // IMPORTANT - this is used to immediately propagate the Lightbox reference
+        // after rendering -- the Lightbox will not work before navigating without this.
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     private void OnBusyChanged() => InvokeAsync(StateHasChanged);
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
