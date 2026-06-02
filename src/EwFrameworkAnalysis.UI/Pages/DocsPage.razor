@@ -155,10 +155,10 @@
                         <DocSection Slug="availability" Title="Availability Judgments">
                             <p>Each data element in a profile receives one of four availability judgments:</p>
                             <ul class="list-disc pl-6 space-y-2">
-                                <li><strong class="text-blue">Available</strong> — Present and passing quality checks. Contributes full weight to the coverage score.</li>
-                                <li><strong class="text-blue">Partially Available</strong> — Exists but incomplete, inconsistent, or failing a quality threshold. Contributes 50% weight.</li>
-                                <li><strong class="text-blue">Not Available</strong> — Absent or empty in this source.</li>
-                                <li><strong class="text-blue">Insufficient Data</strong> — The profiler could not make a determination, typically due to too few records.</li>
+                                <li><strong>Available</strong> — Present and passing quality checks. Contributes full weight to the coverage score.</li>
+                                <li><strong>Partially Available</strong> — Exists but incomplete, inconsistent, or failing a quality threshold. Contributes 50% weight.</li>
+                                <li><strong>Not Available</strong> — Absent or empty in this source.</li>
+                                <li><strong>Insufficient Data</strong> — The profiler could not make a determination, typically due to too few records.</li>
                             </ul>
                         </DocSection>
                     </DocSection>
@@ -346,6 +346,169 @@
                                 Treat the result as a draft for review, not a final answer. Agencies with strict
                                 data governance can use a private LLM endpoint so schemas never leave the network.
                             </p>
+                        </DocSection>
+                    </DocSection>
+
+                    <DocSection Slug="roadmapping" Title="Roadmapping">
+                        <p>
+                            The coverage scores and gap analysis the tool produces are most valuable as a
+                            starting point for planning — not a report card. Most agencies score 40–60% on
+                            first run, and that range is normal. What matters is knowing <em>where</em> the
+                            gaps are and having a principled way to decide what to work on first.
+                        </p>
+                        <p>
+                            States and LEAs don't start from zero. You have existing systems with real,
+                            if uneven, coverage. The goal of roadmapping is to understand what you already
+                            have, identify what's worth closing first, and build a realistic sequence of
+                            short- and longer-term investments.
+                        </p>
+
+                        <DocSection Slug="roadmapping-priority-questions" Title="Start with a priority question">
+                            <p>
+                                The Framework's 20 Essential Questions are a menu, not a mandate. Pick one or
+                                two that are most relevant to your organization's current goals or identified
+                                areas of inequity and use those to anchor everything downstream. A question
+                                that matters to leadership and connects to an active initiative will generate
+                                the buy-in needed to act on what the tool surfaces.
+                            </p>
+                            <p>
+                                Once you have a priority question, the tool's indicator and data element detail
+                                tells you exactly what's driving its coverage score — so you're not working
+                                from a summary number but from a concrete list of what's present, what's
+                                partial, and what's missing.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-gap-categories" Title="Categorizing your gaps">
+                            <p>
+                                Not all gaps are the same kind of problem. Before deciding what to work on,
+                                it helps to understand <em>why</em> a data element is unavailable. The tool
+                                shows whether data is absent, partial, or indeterminate — but the next
+                                question is yours to answer: is this a collection problem, an access problem,
+                                or a quality problem?
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li><strong>Collection</strong> — The data isn't captured anywhere. Closing this gap requires new processes, instrumentation, or data agreements with external partners.</li>
+                                <li><strong>Access</strong> — The data exists somewhere but isn't reachable — due to data governance barriers, siloed systems, or policy constraints. This is often a harder problem than collection because it requires stakeholder alignment, not just technical work.</li>
+                                <li><strong>Quality</strong> — The data is collected and accessible but inconsistent, incomplete, or unreliable enough that analysis built on it would be misleading. Improving quality often requires upstream process changes.</li>
+                            </ul>
+                            <p>
+                                A single indicator may have gaps of more than one type. Knowing the type
+                                helps you route the work to the right people and set realistic timelines.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-tiers" Title="Sequencing the work">
+                            <p>
+                                Coverage results tend to cluster into a few natural tiers that suggest
+                                different strategies:
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li>
+                                    <strong>Easy Wins</strong> — Essential Questions where most
+                                    or all required data elements are already available and of reasonable quality.
+                                    The priority here is building the reporting outputs that make that coverage
+                                    visible and useful. These are also good candidates for early demonstrations
+                                    of the value of a P20W+ system.
+                                </li>
+                                <li>
+                                    <strong>Minor Gaps</strong> — Questions where coverage is
+                                    strong but a handful of elements are missing or partial. Focus on filling
+                                    those specific gaps rather than broad infrastructure work. Prefer elements
+                                    that are cross-cutting — shared across multiple indicators — since closing
+                                    one gap can lift coverage across several indicators at once.
+                                </li>
+                                <li>
+                                    <strong>Building Bridges</strong> — Questions where data
+                                    exists but isn't accessible, typically due to data governance or
+                                    organizational boundaries. Progress here depends on aligning priorities
+                                    with other agencies or stakeholders, and may require policy changes.
+                                    Start by identifying who holds the data, whether there's existing alignment
+                                    on the goal, and what the path to a data sharing agreement looks like.
+                                </li>
+                                <li>
+                                    <strong>Future Investments</strong> — Questions of high
+                                    importance but low current coverage, where meaningful progress will require
+                                    sustained resource alignment. Use these to frame longer-term conversations
+                                    with stakeholders: identify who's already aligned, build a coalition before
+                                    expanding the conversation, and set milestones that let you recognize
+                                    progress along the way.
+                                </li>
+                            </ul>
+                            <p>
+                                These tiers aren't mutually exclusive — most roadmaps run work in parallel
+                                across all four. Easy Wins generate momentum; Future Investments set the direction.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-disaggregates" Title="Don't overlook disaggregates">
+                            <p>
+                                Indicator coverage tells you whether you can answer a question at the aggregate
+                                level — but many of the Framework's most important questions are about equity,
+                                and equity analysis depends on being able to break results down by race/ethnicity,
+                                income, disability status, English learner status, and similar dimensions.
+                            </p>
+                            <p>
+                                It's possible to have strong aggregate coverage but limited ability to draw
+                                equity conclusions if disaggregate data is missing or of poor quality. As you
+                                sequence work, review your disaggregate availability alongside your indicator
+                                scores — an Easy Win that can't be disaggregated may be a higher priority for
+                                data quality investment than it first appears.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-sectors" Title="Sector patterns">
+                            <p>
+                                Coverage tends to follow a predictable pattern across the Framework's four
+                                sectors: K–12 coverage is typically strongest, followed by early childhood
+                                and postsecondary, with workforce coverage generally the weakest. This reflects
+                                both data maturity and the structural challenges of connecting education
+                                systems to labor market data.
+                            </p>
+                            <p>
+                                Understanding where your coverage drops off by sector can help you set realistic
+                                expectations and identify where cross-agency relationships will be essential.
+                                Gaps in the workforce sector in particular often trace back to access problems
+                                rather than collection problems — the data exists in unemployment insurance
+                                systems or employer records, but reaching it requires deliberate partnership work.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-beyond-coverage" Title="What the tool doesn't surface">
+                            <p>
+                                Coverage scoring identifies whether data elements are present and passing
+                                basic quality thresholds — it doesn't evaluate deeper dimensions of data quality
+                                or fitness for purpose. For instance, you may find that you have data on whether
+                                students are on track in early grades, but the underlying assessment may not
+                                reflect culturally responsive practice, or may not be comparable across districts.
+                                These considerations don't show up as gaps in the tool but are worth examining
+                                as part of a serious roadmapping process.
+                            </p>
+                            <p>
+                                Use the tool's output as a starting point for structured conversations, not
+                                a substitute for them.
+                            </p>
+                        </DocSection>
+
+                        <DocSection Slug="roadmapping-powerbi" Title="Visualizing results with Power BI">
+                            <p>
+                                Once you've identified priority questions and are ready to move toward
+                                computation and visualization, Power BI reports are available that show how
+                                several Essential Questions and their related Indicators can be answered by
+                                actual data. The reports can be powered by the sample CEDS Data Warehouse or
+                                connected to your own.
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li>
+                                    <a href="@AppRoutes.Visualizations" class="link link-primary">Sample Power BI Visualizations</a> —
+                                    embedded reports and descriptions of each report page for the available Essential Questions.
+                                </li>
+                                <li>
+                                    <a href="@AppRoutes.VisualizationsSetup" class="link link-primary">Setup Guide</a> —
+                                    step-by-step instructions for restoring the sample database, opening the report in
+                                    Power BI Desktop, and connecting your own data source.
+                                </li>
+                            </ul>
                         </DocSection>
                     </DocSection>
 
