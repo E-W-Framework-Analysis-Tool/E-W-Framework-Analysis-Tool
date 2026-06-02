@@ -135,28 +135,47 @@ function drawEqReadinessSummary(ctx, summary, questions) {
             2: { halign: 'center', cellWidth: 24 },
         },
         tableWidth: halfWidth,
-        didDrawCell: function (data) {
-            if (data.column.index !== 1 || data.row.section !== 'body') return;
-            const eqItems = bandEqLists[data.row.index];
-            if (eqItems.length === 0) return;
+      didDrawCell: function (data) {
+        if (data.column.index !== 1 || data.row.section !== 'body') return;
+        const eqItems = bandEqLists[data.row.index];
+        if (eqItems.length === 0) return;
 
-            // Re-measure each "EQ-X" fragment to record individual link hotspots
-            doc.setFontSize(9);
-            let textX = data.cell.x + 2; // default autoTable left cell padding
-            for (let i = 0; i < eqItems.length; i++) {
-                const eqLabel = 'EQ-' + eqItems[i].number;
-                const eqW = doc.getTextWidth(eqLabel);
-                ctx.eqBandLinkQueue.push({
-                    questionNumber: eqItems[i].number,
-                    page: doc.internal.getCurrentPageInfo().pageNumber,
-                    x: textX,
-                    y: data.cell.y,
-                    w: eqW,
-                    h: data.cell.height,
-                });
-                textX += eqW + (i < eqItems.length - 1 ? doc.getTextWidth(', ') : 0);
-            }
-        },
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+
+        const cellPad = 2;
+        const maxW = data.cell.width - cellPad * 2;
+        const lineH = data.cell.height / Math.ceil(/* estimated */ 1); // see below
+        let textX = data.cell.x + cellPad;
+        let textY = data.cell.y;
+        let lineW = 0;
+
+        for (let i = 0; i < eqItems.length; i++) {
+          const eqLabel = 'EQ-' + eqItems[i].number;
+          const eqW = doc.getTextWidth(eqLabel);
+          const sepW = i < eqItems.length - 1 ? doc.getTextWidth(', ') : 0;
+          const chunkW = eqW + sepW;
+
+          // Wrap to next line if this chunk won't fit
+          if (lineW > 0 && lineW + eqW > maxW) {
+            textX = data.cell.x + cellPad;
+            textY += 4; // match autoTable's line height for fontSize 9
+            lineW = 0;
+          }
+
+          ctx.eqBandLinkQueue.push({
+            questionNumber: eqItems[i].number,
+            page: doc.internal.getCurrentPageInfo().pageNumber,
+            x: textX,
+            y: textY,
+            w: eqW,
+            h: 4,
+          });
+
+          textX += chunkW;
+          lineW += chunkW;
+        }
+      },
     });
 
     // ── Score Distribution bar chart (right half) ────────────────────────────
