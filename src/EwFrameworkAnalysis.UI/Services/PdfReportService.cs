@@ -119,7 +119,7 @@ public class PdfReportService(IJSRuntime jsRuntime)
                 manual = (double)coverage.BySourceType.Manual,
                 automated = (double)coverage.BySourceType.Automated,
                 ecs = (double)coverage.BySourceType.Ecs,
-                combined = (double)coverage.BySourceType.Combined,
+                combined = (double)coverage.OverallCoverage,
                 roiItems,
             },
             questions,

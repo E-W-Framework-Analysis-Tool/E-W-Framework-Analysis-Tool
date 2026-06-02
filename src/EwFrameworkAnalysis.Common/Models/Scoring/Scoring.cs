@@ -106,7 +106,6 @@ public class DataElementSourceScore
 /// </summary>
 public class SourceTypeCoverageBreakdown
 {
-    public decimal Combined { get; init; }   // Total combined
     public decimal Automated { get; init; }  // EdFi + CEDS
     public decimal Manual { get; init; }      // Custom
     public decimal Ecs { get; init; }         // EcsState

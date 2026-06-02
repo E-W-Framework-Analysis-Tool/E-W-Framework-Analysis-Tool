@@ -3,7 +3,7 @@
 
 <Card Overflow AdditionalClasses="mb-6" NoPadding>
     <ChildContent>
-        <div class="px-4 py-4 sm:px-6 sm:py-5">
+        <div class="px-4 py-4 sm:px-6 sm:py-5 text-xs">
 
             <!-- Toggle row -->
             <div class="flex items-center gap-1 mb-5 pb-4 border-b border-gray-200">
@@ -25,9 +25,9 @@
 
                 <!-- Gauge — always visible -->
                 <div class="flex flex-col items-center gap-2">
-                    <p class="text-[11px] uppercase tracking-wide text-gray">Overall coverage</p>
+                    <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">Overall coverage</p>
                     <Gauge Score="@(_overallPct / 100m)" Size="Gauge.GaugeSize.Md" />
-                    <p class="text-[11px] text-gray text-center">of @QuestionScores.Count essential questions</p>
+                    <p class="text-gray text-center">of @Coverage.QuestionScores.Count essential questions</p>
                 </div>
 
                 <!-- Vertical divider -->
@@ -36,14 +36,14 @@
                 <!-- Middle panel -->
                 <div>
                     <div class="@(_activeView == "overview" ? "" : "hidden")">
-                        <p class="text-[11px] uppercase tracking-wide text-gray mb-2">EQ coverage breakdown</p>
+                        <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">EQ coverage breakdown</p>
                         <!-- Counts above segments -->
                         <div class="flex w-full mb-1">
                             @foreach (var b in _bands)
                             {
                                 @if (b.Pct > 0)
                                 {
-                                    <div class="text-center text-[11px] font-medium text-gray-600 overflow-hidden"
+                                    <div class="text-center font-medium text-gray-600 overflow-hidden"
                                          style="width:@b.Pct.ToString("0.##")%">
                                         @if (b.Pct >= 10)
                                         {
@@ -67,7 +67,7 @@
                         <div class="flex flex-wrap gap-x-4 gap-y-1">
                             @foreach (var b in _bands)
                             {
-                                <span class="flex items-center gap-1 text-[11px] text-gray">
+                                <span class="flex items-center gap-1 text-gray">
                                     <span class="w-2 h-2 rounded-sm flex-shrink-0" style="background:@b.Color"></span>
                                     @b.Label
                                 </span>
@@ -76,9 +76,9 @@
                     </div>
 
                     <div class="@(_activeView == "sector" ? "" : "hidden")">
-                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Coverage by sector</p>
+                        <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">Coverage by sector</p>
                         <div class="space-y-2.5">
-                            @foreach (var s in SectorCoverageScores.OrderByDescending(x => x.CoverageScore))
+                            @foreach (var s in Coverage.BySector.OrderByDescending(x => x.CoverageScore))
                             {
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="@(_activeView == "source" ? "" : "hidden")">
-                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Coverage by source type</p>
+                        <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">Coverage by source type</p>
                         <div class="space-y-2.5">
                             @foreach (var s in _sourceRows)
                             {
@@ -114,10 +114,10 @@
                     </div>
 
                     <div class="@(_activeView == "matrix" ? "" : "hidden")">
-                        <p class="text-[11px] uppercase tracking-wide text-gray mb-3">Indicators per essential question</p>
+                        <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">Indicators per essential question</p>
                         <div class="overflow-x-auto justify-center flex">
                             <div class="flex gap-1 items-end pb-1" style="min-width:max-content">
-                                @foreach (var q in QuestionScores.OrderBy(x => x.QuestionNumber))
+                                @foreach (var q in Coverage.QuestionScores.OrderBy(x => x.QuestionNumber))
                                 {
                                     <div class="flex flex-col items-center gap-[2px] justify-end">
                                         @foreach (var ind in q.IndicatorScores.OrderBy(x => x.CoverageScore))
@@ -144,7 +144,7 @@
 
                 <!-- Right panel — ROI always -->
                 <div>
-                    <p class="text-[11px] uppercase tracking-wide text-gray mb-1">Highest ROI data elements</p>
+                    <p class="text-xs uppercase tracking-wide font-semibold text-gray-600 mb-2">Highest ROI data elements</p>
                     <p class="text-[11px] text-gray mb-3">Adding these would unlock the most indicators</p>
                     @if (_roiItems.Any())
                     {
@@ -198,10 +198,7 @@
 </Modal>
 
 @code {
-    [Parameter, EditorRequired] public IReadOnlyList<QuestionCoverageScore> QuestionScores { get; set; } = [];
-    [Parameter, EditorRequired] public IReadOnlyList<SectorCoverageScore> SectorCoverageScores { get; set; } = [];
-    [Parameter, EditorRequired] public IReadOnlyList<IndicatorCoverageScore> IndicatorScores { get; set; } = [];
-    [Parameter, EditorRequired] public SourceTypeCoverageBreakdown CoverageScores { get; set; } = new();
+    [Parameter, EditorRequired] public FrameworkCoverage Coverage { get; set; } = new();
 
     private string _activeView = "overview";
     private RoiItem? _selectedRoi = null;
@@ -242,11 +239,10 @@
 
     private void BuildGauge()
     {
-        var overall = QuestionScores.Any() ? QuestionScores.Average(q => q.CoverageScore) : 0m;
+        var overall = Coverage.OverallCoverage;
         _overallPct = (int)Math.Round(overall * 100);
         _gaugeColor = overall >= 0.70m ? "#22c55e" : overall >= 0.50m ? "#f59e0b" : "#ef4444";
 
-        // Arc spans 270 degrees of the circle (r=46, circumference ≈ 289)
         const double r = 46;
         const double arcDeg = 270.0;
         var circumference = 2 * Math.PI * r;
@@ -257,7 +253,7 @@
 
     private void BuildBreakdown()
     {
-        var sorted = QuestionScores.ToList();
+        var sorted = Coverage.QuestionScores.ToList();
         var total = sorted.Count > 0 ? sorted.Count : 1;
 
         int Strong = sorted.Count(q => q.CoverageScore >= 0.70m);
@@ -278,16 +274,16 @@
     {
         _sourceRows =
         [
-            new("Combined",      CoverageScores.Combined),
-            new("Manual entry",  CoverageScores.Manual),
-            new("Ed-Fi / CEDS",  CoverageScores.Automated),
-            new("ECS reference", CoverageScores.Ecs),
+            new("Combined",      Coverage.OverallCoverage),
+            new("Manual entry",  Coverage.BySourceType.Manual),
+            new("Ed-Fi / CEDS",  Coverage.BySourceType.Automated),
+            new("ECS reference", Coverage.BySourceType.Ecs),
         ];
     }
 
     private void BuildRoiItems()
     {
-        _roiItems = IndicatorScores
+        _roiItems = Coverage.IndicatorScores
             .DistinctBy(i => i.IndicatorCode)
             .SelectMany(i => i.DataElementScores
                 .Where(de => de.QualityScore < 1.0m)
