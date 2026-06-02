@@ -1,10 +1,11 @@
 @page "/survey"
-@using EwFrameworkAnalysis.Common.FrameworkReferenceData
-@using EwFrameworkAnalysis.Common.Models.Framework
-@using EwFrameworkAnalysis.UI.Pages.Survey
 @using CsvHelper
 @using CsvHelper.Configuration.Attributes
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.UI.Pages.Survey
 @inject IJSRuntime JSRuntime
+@inject SurveyBreakdownService BreakdownSvc
+@inject NavigationManager Nav
 
 <PageTitle>Data Survey</PageTitle>
 
@@ -16,12 +17,15 @@
             <div>
                 <h1 class="text-xl font-bold">Data Survey</h1>
                 <p class="text-sm text-gray-500 mt-0.5">
-                    For each data element, indicate your interest level, data availability, and whether you can query and share the data.
+                    For each data element, indicate your availability, interest level, and whether you can query and share the data.
                 </p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 <button class="btn btn-sm btn-ghost gap-1" @onclick="ResetSurvey" title="Clear all responses">
                     <i class="fas fa-undo text-xs"></i> Reset
+                </button>
+                <button class="btn btn-sm btn-outline gap-1" @onclick="@(() => Nav.NavigateTo("/survey/breakdown"))">
+                    <i class="fas fa-chart-bar text-xs"></i> Load Results
                 </button>
                 <button class="btn btn-sm btn-primary gap-1" @onclick="DownloadCsv">
                     <i class="fas fa-download text-xs"></i> Download CSV
@@ -108,15 +112,6 @@
         StateHasChanged();
     }
 
-    private int CountInterest(InterestLevel level) =>
-        _responses.Values.Count(r => r.Interest == level);
-
-    private int CountAvailability(SurveyAvailability avail) =>
-        _responses.Values.Count(r => r.Availability == avail);
-
-    private int CountCanShare(bool value) =>
-        _responses.Values.Count(r => r.CanQueryAndShare == value);
-
     private void ResetSurvey() => _showResetConfirmation = true;
 
     private async Task ConfirmReset()
@@ -139,8 +134,8 @@
                     DataElement = e.Name,
                     Category = e.DataElementCategory,
                     EwCluster = e.ClusterOnlyCategory,
-                    InterestLevel = r?.Interest.HasValue == true ? r.Interest.Value.GetDisplayName() : "",
                     Availability = r?.Availability.HasValue == true ? r.Availability.Value.GetDisplayName() : "",
+                    InterestLevel = r?.Interest.HasValue == true ? r.Interest.Value.GetDisplayName() : "",
                     CanQueryAndShare = r?.CanQueryAndShare.HasValue == true ? (r.CanQueryAndShare.Value ? "Yes" : "No") : ""
                 };
             })
@@ -173,17 +168,11 @@
 
     private class SurveyCsvRow
     {
-        [Name("Data Element")]
-        public string DataElement { get; set; } = "";
-        [Name("Category")]
-        public string Category { get; set; } = "";
-        [Name("EW Cluster")]
-        public string EwCluster { get; set; } = "";
-        [Name("Interest Level")]
-        public string InterestLevel { get; set; } = "";
-        [Name("Availability")]
-        public string Availability { get; set; } = "";
-        [Name("Can Query and Share")]
-        public string CanQueryAndShare { get; set; } = "";
+        [Name("Data Element")] public string DataElement { get; set; } = "";
+        [Name("Category")] public string Category { get; set; } = "";
+        [Name("EW Cluster")] public string EwCluster { get; set; } = "";
+        [Name("Availability")] public string Availability { get; set; } = "";
+        [Name("Interest Level")] public string InterestLevel { get; set; } = "";
+        [Name("Can Query and Share")] public string CanQueryAndShare { get; set; } = "";
     }
 }

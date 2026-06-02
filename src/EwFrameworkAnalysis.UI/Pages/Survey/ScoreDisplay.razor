@@ -1,0 +1,42 @@
+@namespace EwFrameworkAnalysis.UI.Pages.Survey
+
+<div class="flex flex-col items-center gap-0.5 min-w-[64px]">
+    @if (!Compact)
+    {
+        <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">@Label</span>
+    }
+    <div class="flex items-center gap-1.5">
+        <div class="w-16 bg-gray-100 rounded-full h-1.5">
+            <div class="@BarColor h-1.5 rounded-full transition-all duration-300"
+                 style="width:@WidthPct%"></div>
+        </div>
+        <span class="text-xs font-bold @TextColor">@WidthPct%</span>
+    </div>
+    @if (Compact)
+    {
+        <span class="text-[9px] text-gray-400">@Label</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public double Score { get; set; }       // 0.0 – 1.0
+    [Parameter] public int RespondentCount { get; set; }
+    [Parameter] public bool Compact { get; set; } = false;
+
+    private int WidthPct => (int)Math.Round(Score * 100);
+
+    private string BarColor => WidthPct switch
+    {
+        >= 70 => "bg-success",
+        >= 40 => "bg-warning",
+        _ => "bg-error"
+    };
+
+    private string TextColor => WidthPct switch
+    {
+        >= 70 => "text-success",
+        >= 40 => "text-warning",
+        _ => "text-error"
+    };
+}
