@@ -1,9 +1,6 @@
 @page "/analysis"
-@using EwFrameworkAnalysis.Common.FrameworkReferenceData
-@using EwFrameworkAnalysis.Common.Models.Project
 @using EwFrameworkAnalysis.Common.Models.Scoring
 @using EwFrameworkAnalysis.Common.Services
-@using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Pages.Analysis
 @using EwFrameworkAnalysis.UI.Services
 @inject AnalysisProjectService ProjectSvc
@@ -12,30 +9,61 @@
 @inject BusyService BusySvc
 
 <div class="container mx-auto max-w-7xl p-4 lg:p-8">
-    <!-- Header -->
     <AnalysisHeader OnGenerateReport="GenerateReportAsync" />
-    <!-- EQ Coverage Summary -->
-    <EqReadinessSummary QuestionScores="_coverage.QuestionScores"
-                        SectorCoverageScores="_coverage.BySector" />
-    <!-- Overall Coverage Assessment -->
-    <OverallReadinessAssessment CoverageScores="_coverage.BySourceType"
-                                IndicatorScores="_coverage.IndicatorScores" />
+
+    <AnalysisStatistics QuestionScores="_coverage.QuestionScores"
+                        SectorCoverageScores="_coverage.BySector"
+                        IndicatorScores="_coverage.IndicatorScores"
+                        CoverageScores="_coverage.BySourceType" />
+
     <!-- Tabs -->
-    <div class="tabs tabs-border !rounded-none">
-        <!-- Essential Questions Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tr-none !border-l-0 font-title font-semibold text-blue" aria-label="Essential Questions" checked="checked" data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector" />
-        <EssentialQuestionGrid QuestionScores="_coverage.QuestionScores" />
-        <!-- Indicators Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-none font-title font-semibold text-blue" aria-label="Indicators" />
-        <IndicatorGrid IndicatorScores="_coverage.IndicatorScores" />
-        <!-- Disaggregates Grid -->
-        <input type="radio" name="my_tabs_3" class="tab text-lg bg-white !rounded-b-none !rounded-tl-none font-title font-semibold text-blue" aria-label="Disaggregates" />
-        <DisaggregateGrid DisaggregateScores="_coverage.DisaggregateScores" />
+    <div>
+        <div class="flex border-b border-gray-300">
+            <button class="px-4 py-2 font-title font-semibold text-sm sm:text-lg transition-colors rounded-t-lg
+                @(_activeTab == 0
+                        ? "border border-b-white border-gray-300 bg-white text-blue -mb-px"
+                        : "text-gray hover:text-blue")"
+                    @onclick="() => _activeTab = 0"
+                    data-walkthrough="@WalkthroughSteps.StepIds.ScoreGridSelector">
+                <span class="@(_activeTab == 0 ? "hidden" : "sm:hidden")">EQ</span>
+                <span class="@(_activeTab == 0 ? "" : "hidden sm:inline")">Essential Questions</span>
+            </button>
+            <button class="px-4 py-2 font-title font-semibold text-sm sm:text-lg transition-colors rounded-t-lg
+                @(_activeTab == 1
+                        ? "border border-b-white border-gray-300 bg-white text-blue -mb-px"
+                        : "text-gray hover:text-blue")"
+                    @onclick="() => _activeTab = 1">
+                <span class="@(_activeTab == 1 ? "hidden" : "sm:hidden")">Ind</span>
+                <span class="@(_activeTab == 1 ? "" : "hidden sm:inline")">Indicators</span>
+            </button>
+            <button class="px-4 py-2 font-title font-semibold text-sm sm:text-lg transition-colors rounded-t-lg
+                @(_activeTab == 2
+                        ? "border border-b-white border-gray-300 bg-white text-blue -mb-px"
+                        : "text-gray hover:text-blue")"
+                    @onclick="() => _activeTab = 2">
+                <span class="@(_activeTab == 2 ? "hidden" : "sm:hidden")">Disagg</span>
+                <span class="@(_activeTab == 2 ? "" : "hidden sm:inline")">Disaggregates</span>
+            </button>
+        </div>
+
+        @if (_activeTab == 0)
+        {
+            <EssentialQuestionGrid QuestionScores="_coverage.QuestionScores" />
+        }
+        else if (_activeTab == 1)
+        {
+            <IndicatorGrid IndicatorScores="_coverage.IndicatorScores" />
+        }
+        else
+        {
+            <DisaggregateGrid DisaggregateScores="_coverage.DisaggregateScores" />
+        }
     </div>
 </div>
 
 @code {
     private FrameworkCoverage _coverage = new();
+    private int _activeTab = 0;
 
     protected override void OnInitialized()
     {

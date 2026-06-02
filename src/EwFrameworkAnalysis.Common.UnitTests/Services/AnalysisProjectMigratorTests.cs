@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 using FluentAssertions;
-using Xunit.Abstractions;
 
 namespace EwFrameworkAnalysis.Common.UnitTests.Services;
 

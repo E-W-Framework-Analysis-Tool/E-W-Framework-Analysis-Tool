@@ -1,0 +1,156 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
+@inject AnalysisProjectService ProjectSvc
+
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-pencil"
+       Title="Manual Entry"
+       Subtitle="Review your data inventory and mark the availability of each data element."
+       Wide
+       CloseOnBackdrop="false"
+       CloseRequested="ResetState">
+    <Body>
+        <div class="space-y-4">
+
+            <!-- Availability summary bar -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="flex items-center justify-between bg-success/10 border border-success rounded-xl p-3">
+                    <span class="text-xs text-gray-600">@AvailabilityJudgment.Available.GetDisplayName()</span>
+                    <span class="text-lg font-bold text-success">@GetAvailabilityCount(AvailabilityJudgment.Available)</span>
+                </div>
+                <div class="flex items-center justify-between bg-warning/10 border border-warning rounded-xl p-3">
+                    <span class="text-xs text-gray-600">@AvailabilityJudgment.PartiallyAvailable.GetDisplayName()</span>
+                    <span class="text-lg font-bold text-warning">@GetAvailabilityCount(AvailabilityJudgment.PartiallyAvailable)</span>
+                </div>
+                <div class="flex items-center justify-between bg-error/10 border border-error rounded-xl p-3">
+                    <span class="text-xs text-gray-600">@AvailabilityJudgment.NotAvailable.GetDisplayName()</span>
+                    <span class="text-lg font-bold text-error">@GetAvailabilityCount(AvailabilityJudgment.NotAvailable)</span>
+                </div>
+            </div>
+
+            @if (_error != null)
+            {
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>@_error</span>
+                </div>
+            }
+
+            <DataElementList ElementAvailability="_elementAvailability"
+                             ElementAvailabilityChanged="OnElementAvailabilityChanged"
+                             IsEditable="true"
+                             HideUnreported="false"
+                             ContainerClass="max-h-[500px]" />
+        </div>
+    </Body>
+
+    <Footer>
+        <div class="flex justify-end gap-2">
+            <button class="btn btn-ghost" @onclick="() => _showDiscard = true">
+                <i class="fas fa-times mr-2"></i>Discard
+            </button>
+            <button class="btn btn-primary" @onclick="SaveResults">
+                <i class="fas fa-save mr-2"></i>Save
+            </button>
+        </div>
+    </Footer>
+</Modal>
+
+<LiveCoveragePreview ElementAvailability="_elementAvailability" IsVisible="IsOpen" />
+
+<ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                             Message="Are you sure you want to discard this manual entry? All reported availabilities will be lost."
+                             OnConfirm="ConfirmDiscard"
+                             OnCancel="() => _showDiscard = false" />
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private string? _error;
+    private bool _showDiscard;
+    private Dictionary<string, AvailabilityJudgment> _elementAvailability = new();
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+            LoadPreviousAssessment();
+    }
+
+    private void LoadPreviousAssessment()
+    {
+        var previous = ProjectSvc.GetAssessmentsForDataSource(DataSource.Id).MaxBy(a => a.ConductedAt);
+        _elementAvailability.Clear();
+
+        if (previous == null) return;
+
+        foreach (var el in previous.DataElementAssessments)
+        {
+            var availability = el.Characteristics.OfType<ReportedAvailability>().FirstOrDefault();
+            if (availability != null)
+                _elementAvailability[el.DataElementName] = availability.Value;
+        }
+    }
+
+    private void OnElementAvailabilityChanged(Dictionary<string, AvailabilityJudgment> updated)
+    {
+        _elementAvailability = updated;
+        StateHasChanged();
+    }
+
+    private int GetAvailabilityCount(AvailabilityJudgment judgment) =>
+        _elementAvailability.Values.Count(v => v == judgment);
+
+    private async Task SaveResults()
+    {
+        try
+        {
+            var assessment = new DataSourceAssessment
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Manual Entry - {DateTimeOffset.Now:MMM d, yyyy h:mm tt}",
+                ConductedAt = DateTimeOffset.Now,
+                DataElementAssessments = _elementAvailability
+                    .Select(kvp => new DataElementAssessment
+                    {
+                        DataElementName = kvp.Key,
+                        Characteristics = new List<DataCharacteristicBase>
+                        {
+                            new ReportedAvailability(kvp.Value)
+                        }
+                    })
+                    .ToList()
+            };
+
+            await OnAssessmentComplete.InvokeAsync(assessment);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to create data profile: {ex.Message}";
+        }
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscard = false;
+        ResetState();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void ResetState()
+    {
+        _error = null;
+        _showDiscard = false;
+        _elementAvailability.Clear();
+    }
+}

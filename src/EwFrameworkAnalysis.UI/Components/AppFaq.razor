@@ -1,0 +1,120 @@
+@using EwFrameworkAnalysis.UI.Components
+
+<section class="py-16 sm:py-24 @(Slim ? "bg-gray-50" : "bg-base-100") border-t border-gray-200">
+    <div class="@(Slim ? "max-w-4xl" : "max-w-5xl") mx-auto px-6">
+
+        <div class="@(Slim ? "text-center" : "") mb-12">
+            <h2 class="font-title text-4xl font-bold text-blue mb-3">
+                @(Slim ? "Common questions" : "Frequently Asked Questions")
+            </h2>
+            @if (!Slim)
+            {
+                <p class="text-gray-500 text-lg max-w-2xl">
+                    Everything you need to know about the E-W Framework Analysis Tool.
+                </p>
+            }
+        </div>
+
+        <div>
+            @foreach (var item in _slimItems)
+            {
+                <CollapsibleSection Variant="CollapsibleSection.SectionVariant.Divider"
+                                    Title="@item.Question">
+                    @((MarkupString)item.Answer)
+                </CollapsibleSection>
+            }
+            @if (!Slim)
+            {
+                @foreach (var item in _extendedItems)
+                {
+                    <CollapsibleSection Variant="CollapsibleSection.SectionVariant.Divider"
+                                        Title="@item.Question">
+                        @((MarkupString)item.Answer)
+                    </CollapsibleSection>
+                }
+            }
+        </div>
+
+        @if (Slim)
+        {
+            <div class="mt-10 text-center">
+                <a href="@AppRoutes.Faq" class="link link-primary text-sm">
+                    View all frequently asked questions
+                    <i class="fas fa-arrow-right text-xs ml-1"></i>
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
+
+@code {
+    [Parameter] public bool Slim { get; set; } = false;
+
+    private record FaqItem(string Question, string Answer);
+
+    // Always shown — visitor-oriented questions
+    private readonly FaqItem[] _slimItems =
+    [
+        new("What is the E-W Framework?",
+            "The Education-to-Workforce Indicator Framework defines 20 Essential Questions and their associated Indicators for understanding how students progress from early education into the workforce. It was developed with input from over 20 national and community organizations and is maintained by <a href='https://educationtoworkforce.org' class='link link-primary'>educationtoworkforce.org</a>."),
+
+        new("Why was this tool created?",
+            "Most organizations that want to use the E-W Framework face the same challenge: understanding which of the Framework's indicators their current data systems can actually support. This tool was built by Double Line to make that analysis fast, concrete, and actionable — turning a from-scratch mapping exercise into a structured, repeatable workflow."),
+
+        new("Who is this tool for?",
+            "State education agencies (SEAs), local education agencies (LEAs), Statewide Longitudinal Data System (SLDS) teams working on cross-agency integration, and education-focused vendors and researchers. A common use case is data roadmapping for multi-agency P20W+ projects."),
+
+        new("Do I need an Ed-Fi ODS or CEDS Data Warehouse to use this?",
+            "No. The tool supports manual entry and LLM-assisted workflows for any data system. You can also load a built-in state reference profile from the Education Commission of the States to see how your state's publicly reported data stacks up against the Framework — no system connection required."),
+
+        new("Is any of my data collected or stored by a third party?",
+            "No. The tool is a browser-only WebAssembly application with no server, no database, and no telemetry. Your project data never leaves your browser unless you explicitly export it as a file. Ed-Fi credentials exist only in browser memory for the duration of your session."),
+
+        new("Is the tool free to use?",
+            "Yes, completely free. It is open source, requires no account, and can be used directly at the hosted URL or deployed internally on your own infrastructure."),
+    ];
+
+    // Shown only on the full FAQ page
+    private readonly FaqItem[] _extendedItems =
+    [
+        new("Does the E-W Framework have to be used all-or-nothing?",
+            "Not at all — and this is an important point. The Framework is a menu, not a mandate. You can focus on just the Essential Questions most relevant to your organization's priorities, and within each question you can address indicators incrementally as your data infrastructure matures. Partial coverage is still meaningful and actionable. Many organizations start with one or two questions where they already have strong data, demonstrate value, and expand from there."),
+
+        new("What version of Ed-Fi and CEDS does the tool currently support?",
+            "The tool requires a minimum of Ed-Fi ODS API v7.3 and supports CEDS Data Warehouse v13 and v14. Profilers are built to work forward across versions unless a breaking change in the API or schema warrants an update. You can run them against other versions, but results outside the supported range may be incomplete where the interface diverges."),
+
+        new("How does the tool handle multiple data sources?",
+            "You can add as many data sources as you like — Ed-Fi, CEDS, ECS reference profiles, manual entries, or LLM-assisted profiles. When calculating coverage, the tool takes the most favorable result for each data element across all enabled sources. So if one source marks an element as Available and another marks it as Not Available, the element scores as Available in the combined view. This reflects the real-world reality that different systems cover different parts of the Framework."),
+
+        new("What is LLM-assisted entry and how does it work?",
+            "LLM-assisted entry is a workflow for profiling data systems that are not one of the supported standardized systems. You copy a ready-made prompt from the tool — pre-loaded with all Framework data elements and their descriptions — into any LLM of your choice (ChatGPT, Claude, Gemini, or a private endpoint), along with your schema, data dictionary, or API spec. The LLM produces a structured project file you import directly into the tool. This turns a manual inventory from a blank-page task into a review-and-correction exercise."),
+
+        new("Can multiple people collaborate on the same project?",
+            "Yes. Your project is a portable JSON file that you control. You can share it with colleagues by email, version control, or any file-sharing method. Anyone with the file can load it into the tool, make changes, and share it back. There is no account, sync service, or real-time collaboration — it is intentionally simple and works in any environment."),
+
+        new("Can I export or print my results?",
+            "Yes. The tool generates a downloadable PDF report from the Reports &amp; Analysis page that summarizes your coverage scores across Essential Questions and Indicators. This report is designed to be shared with stakeholders and used in roadmapping discussions."),
+
+        new("Why does my coverage score seem low even though I have a lot of data?",
+            "Coverage scores are calculated against the full set of data elements the Framework requires for each Indicator — not just the ones your system has. A score of 40% doesn't mean your data is poor; it means you cover 40% of what would be needed to fully answer that Essential Question. Many organizations with mature data systems score in the 40–60% range on first run. The score is a starting point for prioritization, not a grade."),
+
+        new("What does 'Partially Available' mean in the scoring?",
+            "Partially Available means a data element exists in a source but may be incomplete, inconsistent, or not fully reliable — for example, a field that is populated for most but not all records, or one that fails a quality check during automated profiling. It contributes 50% of the score weight that a fully Available element would, reflecting that partial data has real but limited value for answering the Framework's questions."),
+
+        new("Can I use this tool offline or on an internal network?",
+            "Yes. Because the tool is a fully client-side WebAssembly application with no server dependencies, it can be hosted as static files on any internal web server or intranet. Once loaded in the browser it requires no internet connection. This makes it suitable for air-gapped environments and agencies with strict network policies."),
+
+        new("Can I self-host this tool?",
+            "Yes. The tool is open source and can be built and deployed as a static web application on any hosting infrastructure — Azure Static Web Apps, AWS S3, an internal IIS server, or anywhere else that can serve static files. Instructions are included in the repository."),
+
+        new("What browsers are supported?",
+            "Any modern browser that supports WebAssembly — Chrome, Edge, Firefox, and Safari. The tool is tested primarily on Chromium-based browsers. Internet Explorer is not supported."),
+
+        new("Does the tool work on mobile?",
+            "The home page and informational sections are mobile-friendly. The dashboard and analysis pages are designed for desktop use — the data tables and coverage grids benefit from a larger screen. You can load and review a project on mobile but running a full profiling workflow is best done on a desktop or laptop."),
+
+        new("How often is the Framework updated, and will the tool keep up?",
+            "The E-W Framework is maintained by educationtoworkforce.org and is updated periodically. Because the tool is open source, the community can submit updates to the Framework reference data — data elements, indicator mappings, and essential question definitions — as new versions are released. The repository includes a Framework Manager utility for maintainers to update and export these mappings."),
+    ];
+}

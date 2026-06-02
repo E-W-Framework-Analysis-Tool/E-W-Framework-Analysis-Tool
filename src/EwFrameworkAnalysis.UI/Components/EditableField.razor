@@ -1,7 +1,7 @@
 @if (_isEditing)
 {
     <!-- Edit Mode -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-start gap-2">
         @if (Multiline)
         {
             <textarea @bind="_editedValue"
@@ -22,53 +22,53 @@
                    placeholder="@Placeholder"
                    autofocus />
         }
-        <button @onclick="SaveEdit"
-                class="text-green hover:text-green-700 transition-colors flex-shrink-0"
-                title="Save">
-            <i class="fas fa-check @GetIconSize()"></i>
-        </button>
-        <button @onclick="CancelEdit"
-                class="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
-                title="Cancel">
-            <i class="fas fa-times @GetIconSize()"></i>
-        </button>
+        <div class="flex flex-col gap-1 flex-shrink-0 pt-1">
+            <button @onclick="SaveEdit"
+                    class="text-green hover:text-green-700 transition-colors"
+                    title="Save">
+                <i class="fas fa-check @GetIconSize()"></i>
+            </button>
+            <button @onclick="CancelEdit"
+                    class="text-red-500 hover:text-red-700 transition-colors"
+                    title="Cancel">
+                <i class="fas fa-times @GetIconSize()"></i>
+            </button>
+        </div>
     </div>
 }
 else
 {
     <!-- View Mode -->
-    <div class="@GetViewContainerClasses()">
-        @if (string.IsNullOrWhiteSpace(Value))
-        {
-            <!-- Empty State -->
-            <button @onclick="StartEdit" class="text-sm text-blue hover:text-yellow transition-colors">
-                <i class="fas fa-plus mr-1"></i>@EmptyStateText
+    @if (string.IsNullOrWhiteSpace(Value))
+    {
+        <!-- Empty State — tappable -->
+        <button @onclick="StartEdit" class="text-sm text-blue hover:text-yellow transition-colors">
+            <i class="fas fa-plus mr-1"></i>@EmptyStateText
+        </button>
+    }
+    else
+    {
+        <!-- Has Value -->
+        <div class="@GetViewContainerClasses()">
+            @if (Variant == FieldVariant.Title)
+            {
+                <h2 class="text-xl sm:text-2xl font-title font-bold text-blue break-words min-w-0">@Value</h2>
+            }
+            else if (Variant == FieldVariant.Subtitle)
+            {
+                <h3 class="text-lg font-title font-semibold text-blue break-words min-w-0">@Value</h3>
+            }
+            else
+            {
+                <p class="text-sm text-gray break-words min-w-0 @(Multiline ? "whitespace-pre-wrap" : "")">@Value</p>
+            }
+            <button @onclick="StartEdit"
+                    class="text-gray hover:text-blue transition-colors flex-shrink-0"
+                    title="Edit">
+                <i class="fas fa-edit @GetIconSize()"></i>
             </button>
-        }
-        else
-        {
-            <!-- Has Value -->
-            <div class="flex items-start gap-2 @(Multiline ? "" : "items-center")">
-                @if (Variant == FieldVariant.Title)
-                {
-                    <h2 class="text-2xl font-title font-bold text-blue truncate">@Value</h2>
-                }
-                else if (Variant == FieldVariant.Subtitle)
-                {
-                    <h3 class="text-lg font-title font-semibold text-blue">@Value</h3>
-                }
-                else
-                {
-                    <p class="text-sm text-gray @(Multiline ? "whitespace-pre-wrap" : "")">@Value</p>
-                }
-                <button @onclick="StartEdit"
-                        class="text-gray hover:text-blue transition-colors flex-shrink-0"
-                        title="Edit">
-                    <i class="fas fa-edit @GetIconSize()"></i>
-                </button>
-            </div>
-        }
-    </div>
+        </div>
+    }
 }
 
 @code {
@@ -92,8 +92,6 @@ else
     private async Task SaveEdit()
     {
         var trimmedValue = _editedValue?.Trim();
-
-        // Allow saving empty values for optional fields
         if (trimmedValue != Value)
         {
             await OnSave.InvokeAsync(string.IsNullOrWhiteSpace(trimmedValue) ? null : trimmedValue);
@@ -122,12 +120,12 @@ else
     private string GetEditInputClasses()
     {
         var baseClasses = Multiline
-            ? "flex-1 text-sm text-gray bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue transition-colors resize-none"
-            : "flex-1 bg-transparent border-b-2 border-blue focus:outline-none focus:border-yellow transition-colors";
+            ? "flex-1 w-full text-sm text-gray bg-transparent border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue transition-colors resize-none"
+            : "flex-1 w-full bg-transparent border-b-2 border-blue focus:outline-none focus:border-yellow transition-colors";
 
         var sizeClasses = Variant switch
         {
-            FieldVariant.Title => "text-2xl font-title font-bold text-blue",
+            FieldVariant.Title => "text-xl sm:text-2xl font-title font-bold text-blue",
             FieldVariant.Subtitle => "text-lg font-title font-semibold text-blue",
             _ => "text-sm text-gray"
         };
@@ -147,8 +145,8 @@ else
 
     public enum FieldVariant
     {
-        Title,      // Large, bold, inline
-        Subtitle,   // Medium, bold, inline
-        Text        // Small, normal weight
+        Title,
+        Subtitle,
+        Text
     }
 }

@@ -141,3 +141,37 @@
     .ew-navbar-wordmark span {
         color: #f1b51c;
     }
+
+/* Hero screenshot — bleeds right with smooth left-edge fade */
+
+.hero-screenshot {
+    position: relative;
+}
+
+    .hero-screenshot img {
+        display: block;
+    }
+
+@media (min-width: 1024px) {
+    .hero-screenshot {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+
+        .hero-screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: left center;
+            border-radius: 0;
+        }
+
+        .hero-screenshot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient( to right, var(--hero-fade-color, #1e3a5f) 0%, color-mix(in srgb, var(--hero-fade-color, #1e3a5f) 95%, transparent) 15%, color-mix(in srgb, var(--hero-fade-color, #1e3a5f) 80%, transparent) 28%, color-mix(in srgb, var(--hero-fade-color, #1e3a5f) 55%, transparent) 40%, color-mix(in srgb, var(--hero-fade-color, #1e3a5f) 25%, transparent) 52%, color-mix(in srgb, var(--hero-fade-color, #1e3a5f) 8%, transparent) 62%, transparent 72% );
+        }
+}

@@ -1,0 +1,62 @@
+@using EwFrameworkAnalysis.UI.Pages.Survey
+
+<div class="bg-base-100 border border-gray-200 rounded-xl p-3 flex flex-col gap-2">
+    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">@Title</span>
+
+    <div class="flex justify-center">
+        <div class="relative w-24 h-24">
+            <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                <!-- Track -->
+                <circle cx="50" cy="50" r="38"
+                        fill="none"
+                        stroke="#e5e7eb"
+                        stroke-width="12" />
+                <!-- Filled slices -->
+                @{
+                    var responded = Slices.Sum(s => s.Value);
+                    var noResponse = Math.Max(0, Total - responded);
+                    var circumference = 2 * Math.PI * 38;
+                    double offset = 0;
+                    foreach (var slice in Slices.Where(s => s.Value > 0))
+                    {
+                        var slicePct = (double)slice.Value / Total;
+                        var dash = slicePct * circumference;
+                        var gap = circumference - dash;
+                        <circle cx="50" cy="50" r="38"
+                                fill="none"
+                                stroke="@slice.Color"
+                                stroke-width="12"
+                                stroke-dasharray="@dash.ToString("0.##") @gap.ToString("0.##")"
+                                stroke-dashoffset="@((circumference - offset).ToString("0.##"))" />
+                        offset += dash;
+                    }
+                }
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-lg font-semibold text-blue leading-none">@responded</span>
+                <span class="text-[10px] text-gray leading-none">of @Total</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-center gap-x-3 gap-y-1 flex-wrap">
+        @foreach (var s in Slices.Where(s => s.Value > 0))
+        {
+            <div class="flex items-center gap-1">
+                <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:@s.Color"></div>
+                <span class="text-[10px] text-gray-500">@s.Label</span>
+                <span class="text-[10px] font-semibold text-gray-700">@s.Value</span>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public List<DonutSlice> Slices { get; set; } = [];
+    [Parameter, EditorRequired] public int Total { get; set; }
+
+    public record DonutSlice(string Label, int Value, string Color);
+
+    private int responded => Slices.Sum(s => s.Value);
+}

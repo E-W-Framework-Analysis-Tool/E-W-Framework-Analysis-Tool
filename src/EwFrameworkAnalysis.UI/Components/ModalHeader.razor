@@ -1,0 +1,42 @@
+@*
+    ModalHeader.razor
+
+Renders the icon + title + optional subtitle block used by the "nice" modals
+    (ImportDataSources, AddDataSource style).
+
+Use inside a <Modal>'s <Header> fragment:
+
+<Modal IsOpen="@_open" IsOpenChanged="v => _open = v">
+            <Header>
+                <ModalHeader Icon="fa-file-import"
+                             Title="Import Data Sources"
+                             Subtitle="Select the data sources you want to import." />
+            </Header>
+            ...
+        </Modal>
+*@
+
+<div class="flex items-start gap-4">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue/20">
+            <i class="fas @Icon text-blue text-xl"></i>
+        </div>
+    }
+    <div class="flex-1 min-w-0">
+        <h3 class="font-title text-lg font-semibold text-blue">@Title</h3>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p class="mt-1 text-sm text-gray">@Subtitle</p>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>FontAwesome icon class without the "fas" prefix, e.g. "fa-file-import".</summary>
+    [Parameter] public string? Icon { get; set; }
+
+    [Parameter, EditorRequired] public required string Title { get; set; }
+
+    [Parameter] public string? Subtitle { get; set; }
+}

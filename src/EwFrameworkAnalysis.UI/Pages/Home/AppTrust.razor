@@ -1,0 +1,60 @@
+<section class="py-16 sm:py-24 bg-white border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-6">
+
+        <div class="text-center mb-12">
+            <h2 class="font-title text-4xl font-bold text-blue mb-3">
+                Built for real-world constraints
+            </h2>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Education agencies operate in environments with strict IT policies,
+                limited budgets, and complex data governance. This tool was designed
+                with all of that in mind.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach (var card in _cards)
+            {
+                <div class="flex flex-col gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-full bg-blue/10">
+                        <i class="fas @card.Icon text-blue"></i>
+                    </div>
+                    <h3 class="font-title text-lg font-bold text-blue">@card.Title</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">@card.Body</p>
+                </div>
+            }
+        </div>
+
+    </div>
+</section>
+
+@code {
+    private record TrustCard(string Icon, string Title, string Body);
+
+    private readonly TrustCard[] _cards =
+    [
+        new("fa-user-slash",
+            "No account required",
+            "There is no sign-up, login, or user account of any kind. Open the tool and start working immediately."),
+
+        new("fa-laptop",
+            "Everything runs in your browser",
+            "The tool is a client-side WebAssembly application. All processing happens locally — there is no application server, no database, and no telemetry."),
+
+        new("fa-shield-halved",
+            "Your data stays with you",
+            "No source data ever leaves your browser. Ed-Fi API credentials exist only in memory for the duration of your session and are never transmitted to any third party."),
+
+        new("fa-file-export",
+            "Save, share, and collaborate",
+            "Your project is saved as a portable JSON file you control. Share it with colleagues, load it on another machine, or hand it off — no account or sync service needed."),
+
+        new("fa-lock",
+            "Air-gapped SQL profiling",
+            "CEDS Data Warehouse profiling uses downloadable SQL scripts you run and review locally. The tool never touches your database directly."),
+
+        new("fa-code-branch",
+            "Free and open source",
+            "The tool is free to use, free to deploy internally, and open source. Agencies can review the code, host it on a private network, or contribute improvements."),
+    ];
+}

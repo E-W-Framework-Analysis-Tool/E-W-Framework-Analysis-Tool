@@ -7,14 +7,32 @@
      data-walkthrough="@WalkthroughSteps.StepIds.DataSourceItem">
     <div class="card-body p-4">
         <div class="flex items-center justify-between w-full">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 min-w-0">
                 <div class="flex-shrink-0">
                     <DataSourceIcon Type="DataSource.Type" />
                 </div>
-                <div class="text-left">
-                    <h4 class="text-sm font-semibold text-blue">@DataSource.Name</h4>
-                    <p class="text-xs text-gray">@DataSource.Description</p>
-                    <div class="flex items-center gap-2 mt-1">
+                <div class="text-left min-w-0">
+                    <h4 class="text-sm font-semibold text-blue truncate">@DataSource.Name</h4>
+                    <p class="text-xs text-gray truncate">@DataSource.Description</p>
+                    <div class="flex items-center gap-2 mt-1 flex-wrap">
+                        @if (DataSource.Enabled)
+                        {
+                            <div class="badge badge-accent badge-sm gap-1">
+                                <i class="fas fa-toggle-on"></i>Enabled
+                            </div>
+                            @if (!HasRecentAssessment)
+                            {
+                                <span class="text-[10px] font-medium text-red-700 flex items-center gap-1">
+                                    <i class="fas fa-triangle-exclamation text-[9px]"></i>Not yet profiled
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            <div class="badge badge-error badge-sm gap-1">
+                                <i class="fas fa-toggle-off"></i>Disabled
+                            </div>
+                        }
                         @if (DataSource.Version is not null)
                         {
                             <span class="text-[11px] font-medium text-gray-500 bg-gray-100 rounded px-1.5 py-0.5">
@@ -25,34 +43,16 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
+
+            <!-- Right: just New badge + chevron -->
+            <div class="flex items-center gap-2 flex-shrink-0 ml-2">
                 @if (IsNewlyAdded)
                 {
                     <div class="badge badge-primary gap-1 animate-pulse">
                         <i class="fas fa-sparkles"></i>New
                     </div>
                 }
-                @if (DataSource.Enabled)
-                {
-                    <div class="relative">
-                        <div class="badge badge-accent gap-1">
-                            <i class="fas fa-toggle-on"></i>Enabled
-                        </div>
-                        @if (!HasRecentAssessment)
-                        {
-                            <span class="absolute top-full right-0 mt-0.5 whitespace-nowrap text-[10px] font-medium text-red-700 flex items-center gap-1">
-                                <i class="fas fa-triangle-exclamation text-[9px]"></i>Not yet profiled
-                            </span>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="badge badge-error gap-1">
-                        <i class="fas fa-toggle-off"></i>Disabled
-                    </div>
-                }
-                <i class="fas fa-chevron-right text-gray ml-2"></i>
+                <i class="fas fa-chevron-right text-gray"></i>
             </div>
         </div>
     </div>

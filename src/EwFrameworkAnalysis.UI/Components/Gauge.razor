@@ -1,0 +1,47 @@
+@{
+    var pct = (int)Math.Round(Score * 100);
+    var color = Score >= 0.70m ? "#22c55e"
+                : Score >= 0.50m ? "#f59e0b"
+                : Score > 0m ? "#ef4444"
+                : "#d1d5db";
+
+    const double r = 46;
+    const double arcDeg = 270.0;
+    var circ = 2 * Math.PI * r;
+    var totalDash = circ * arcDeg / 360.0;
+    var fillDash = totalDash * (double)Score;
+    var trackGap = circ - totalDash;
+    var fillGap = circ - fillDash;
+
+    var sizeClass = Size == GaugeSize.Sm ? "w-14 h-14" : "w-32 h-32";
+    var textClass = Size == GaugeSize.Sm ? "text-sm" : "text-2xl";
+    var strokeW = Size == GaugeSize.Sm ? "12" : "10";
+}
+
+<div class="relative @sizeClass">
+    <svg viewBox="0 0 120 120" class="w-full h-full rotate-[135deg]">
+        <circle cx="60" cy="60" r="46"
+                fill="none"
+                stroke="#e5e7eb"
+                stroke-width="@strokeW"
+                stroke-dasharray="@totalDash.ToString("0.##") @trackGap.ToString("0.##")"
+                stroke-linecap="round" />
+        <circle cx="60" cy="60" r="46"
+                fill="none"
+                stroke="@color"
+                stroke-width="@strokeW"
+                stroke-dasharray="@fillDash.ToString("0.##") @fillGap.ToString("0.##")"
+                stroke-linecap="round"
+                style="transition: stroke-dasharray 0.4s ease, stroke 0.4s ease" />
+    </svg>
+    <div class="absolute inset-0 flex items-center justify-center">
+        <span class="@textClass font-semibold text-blue leading-none">@pct%</span>
+    </div>
+</div>
+
+@code {
+    public enum GaugeSize { Sm, Md }
+
+    [Parameter, EditorRequired] public decimal Score { get; set; }
+    [Parameter] public GaugeSize Size { get; set; } = GaugeSize.Md;
+}

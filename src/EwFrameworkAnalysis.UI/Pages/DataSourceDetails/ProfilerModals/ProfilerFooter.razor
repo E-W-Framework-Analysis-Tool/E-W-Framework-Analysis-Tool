@@ -1,0 +1,63 @@
+@*
+    ProfilerFooter.razor
+    Three-state footer shared by all run-based profiler modals.
+
+    States:
+      - Setup:   [Cancel] [Start Profiling]
+      - Running: [Cancel Scan]
+      - Results: [Discard] [Save]
+
+    Usage:
+        <ProfilerFooter IsRunning="@_isRunning"
+                        HasResults="@(_result != null)"
+                        CanStart="@CanStart"
+                        StartLabel="Start Scan"
+                        OnCancel="Close"
+                        OnStart="StartProfiling"
+                        OnDiscard="ShowDiscardConfirmation"
+                        OnSave="SaveResults" />
+*@
+
+<div class="flex justify-end gap-2">
+    @if (IsRunning)
+    {
+        <button class="btn btn-error" @onclick="() => OnCancelRun.InvokeAsync()">
+            <i class="fas fa-stop mr-2"></i>Cancel
+        </button>
+    }
+    else if (HasResults)
+    {
+        <button class="btn btn-ghost" @onclick="() => OnDiscard.InvokeAsync()">
+            <i class="fas fa-times mr-2"></i>Discard
+        </button>
+        <button class="btn btn-primary" @onclick="() => OnSave.InvokeAsync()">
+            <i class="fas fa-save mr-2"></i>Save
+        </button>
+    }
+    else
+    {
+        <button class="btn btn-ghost" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
+        <button class="btn btn-primary"
+                disabled="@(!CanStart)"
+                @onclick="() => OnStart.InvokeAsync()">
+            <i class="fas fa-play mr-2"></i>@StartLabel
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public bool IsRunning { get; set; }
+    [Parameter] public bool HasResults { get; set; }
+    [Parameter] public bool CanStart { get; set; } = true;
+    [Parameter] public string StartLabel { get; set; } = "Start Profiling";
+
+    /// <summary>Fired from the setup state — closes the modal.</summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    /// <summary>Fired from the running state — cancels the in-progress run.</summary>
+    [Parameter] public EventCallback OnCancelRun { get; set; }
+
+    [Parameter] public EventCallback OnStart { get; set; }
+    [Parameter] public EventCallback OnDiscard { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+}

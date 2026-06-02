@@ -3,163 +3,135 @@
 @inject AnalysisProjectService ProjectSvc
 @inject IJSRuntime JSRuntime
 
-@if (IsOpen)
-{
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
-             @onclick="Close" aria-hidden="true" />
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-file-import"
+       Title="Import Data Sources"
+       Subtitle="@(_step == Step.Pick
+                  ? "Load a project file to preview and selectively import its data sources."
+                  : "Select the data sources you want to import into your current project.")"
+       CloseOnBackdrop="@(!_isReading && !_isImporting)"
+       CloseRequested="ResetState">
 
-        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl ring-1 ring-black/10">
-            <EwLoadingOverlay IsLoading="@(_isReading || _isImporting)" />
-            <!-- Header -->
-            <div class="px-6 pt-6 pb-2">
-                <div class="flex items-start gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue/20">
-                        <i class="fas fa-file-import text-blue text-xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-title text-lg font-semibold text-blue">Import Data Sources</h3>
-                        <p class="mt-1 text-sm text-gray">
-                            @if (_step == Step.Pick)
-                            {
-                                <span>Load a project file to preview and selectively import its data sources.</span>
-                            }
-                            else
-                            {
-                                <span>Select the data sources you want to import into your current project.</span>
-                            }
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <Body>
+        <EwLoadingOverlay IsLoading="@(_isReading || _isImporting)" />
 
-            <!-- Body -->
-            <div class="px-6 pb-2 space-y-4">
-
-                @if (_step == Step.Pick)
+        @if (_step == Step.Pick)
+        {
+            <div class="space-y-4">
+                @if (_error != null)
                 {
-                    @if (_error != null)
-                    {
-                        <div class="alert alert-error text-sm">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>@_error</span>
-                        </div>
-                    }
+                    <div class="alert alert-error text-sm">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@_error</span>
+                    </div>
+                }
 
-                    <button @onclick="TriggerFilePicker"
-                            disabled="@_isReading"
-                            class="w-full flex items-center justify-center gap-3 p-6 border-2 border-dashed
-                                           border-gray-300 rounded-xl hover:border-blue hover:bg-blue/5
-                                           transition-all text-gray cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <button @onclick="TriggerFilePicker"
+                        disabled="@_isReading"
+                        class="w-full flex items-center justify-center gap-3 p-6 border-2 border-dashed
+                    border-gray-300 rounded-xl hover:border-blue hover:bg-blue/5
+                    transition-all text-gray cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-folder-open text-2xl"></i>
+                    <div class="text-left">
                         @if (_isReading)
                         {
-                            <i class="fas fa-folder-open text-2xl"></i>
-                            <div class="text-left">
-                                <p class="font-medium text-blue">Reading file…</p>
-                                <p class="text-xs">Please wait</p>
-                            </div>
+                            <p class="font-medium text-blue">Reading file…</p>
+                            <p class="text-xs">Please wait</p>
                         }
                         else
                         {
-                            <i class="fas fa-folder-open text-2xl"></i>
-                            <div class="text-left">
-                                <p class="font-medium text-blue">Choose a project file</p>
-                                <p class="text-xs">Accepts .json project files</p>
-                            </div>
-                        }
-                    </button>
-                }
-                else
-                {
-                    <!-- Conflict warning -->
-                    @if (_conflictIds.Count > 0)
-                    {
-                        <div class="alert alert-warning text-sm">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>
-                                @_conflictIds.Count data source@(_conflictIds.Count == 1 ? "" : "s") already exist
-                                in your project and @(_conflictIds.Count == 1 ? "has" : "have") been unchecked.
-                            </span>
-                        </div>
-                    }
-
-                    <!-- Select all toggle -->
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray">
-                            @_items.Count(i => i.Selected) of @_items.Count selected
-                        </span>
-                        <button class="link link-primary text-xs" @onclick="ToggleAll">
-                            @(_items.All(i => i.Selected) ? "Deselect all" : "Select all")
-                        </button>
-                    </div>
-
-                    <!-- Data source list -->
-                    <div class="space-y-2 max-h-80 overflow-y-auto pr-1">
-                        @foreach (var item in _items)
-                        {
-                            <label class="flex items-start gap-3 p-3 border rounded-xl cursor-pointer
-                                                      transition-all @(item.Selected ? "border-blue bg-blue/5" : "border-gray-200 hover:border-gray-300")">
-                                <input type="checkbox"
-                                       class="checkbox checkbox-sm checkbox-primary mt-0.5"
-                                       checked="@item.Selected"
-                                       @onchange="@(() => item.Selected = !item.Selected)" />
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="text-sm font-medium text-blue truncate">@item.Source.Name</span>
-                                        <span class="badge badge-sm badge-ghost">@item.Source.Type.GetDisplayName()</span>
-                                        @if (item.IsConflict)
-                                        {
-                                            <span class="badge badge-sm badge-warning">Already exists</span>
-                                        }
-                                    </div>
-                                    <p class="text-xs text-gray mt-0.5">
-                                        @item.Source.Assessments.Count profile@(item.Source.Assessments.Count == 1 ? "" : "s")
-                                        @if (!string.IsNullOrWhiteSpace(item.Source.Description))
-                                        {
-                                            <span> &mdash; @item.Source.Description</span>
-                                        }
-                                    </p>
-                                </div>
-                            </label>
+                            <p class="font-medium text-blue">Choose a project file</p>
+                            <p class="text-xs">Accepts .json project files</p>
                         }
                     </div>
-                }
-            </div>
-
-            <!-- Footer -->
-            <div class="bg-gray-50/80 px-6 py-4 rounded-b-2xl flex justify-end gap-2">
-                <button @onclick="Close"
-                        class="inline-flex items-center justify-center rounded-md border border-gray-300
-                                   bg-white px-4 py-2 text-sm font-medium text-gray-700
-                                   hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
-                    Cancel
                 </button>
-
-                @if (_step == Step.Preview)
-                {
-                    <button @onclick="ConfirmImport"
-                            disabled="@(!_items.Any(i => i.Selected) || _isImporting)"
-                            class="inline-flex items-center justify-center rounded-md bg-blue px-4 py-2
-                                           text-sm font-medium text-white hover:bg-blue/90 disabled:opacity-50
-                                           focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
-                        @if (_isImporting)
-                        {
-                            <i class="fas fa-file-import mr-2"></i>
-                            <span>Importing...</span>
-                        }
-                        else
-                        {
-                            <i class="fas fa-file-import mr-2"></i>
-                            <span>Import @(_items.Count(i => i.Selected)) Source@(_items.Count(i => i.Selected) == 1 ? "" : "s")</span>
-                        }
-                    </button>
-                }
             </div>
-        </div>
-    </div>
-}
+        }
+        else
+        {
+            <div class="space-y-4">
+                @if (_conflictIds.Count > 0)
+                {
+                    <div class="alert alert-warning text-sm">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>
+                            @_conflictIds.Count data source@(_conflictIds.Count == 1 ? "" : "s") already exist
+                            in your project and @(_conflictIds.Count == 1 ? "has" : "have") been unchecked.
+                        </span>
+                    </div>
+                }
 
-<!-- Hidden file input -->
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray">@_items.Count(i => i.Selected) of @_items.Count selected</span>
+                    <button class="link link-primary text-xs" @onclick="ToggleAll">
+                        @(_items.All(i => i.Selected) ? "Deselect all" : "Select all")
+                    </button>
+                </div>
+
+                <div class="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    @foreach (var item in _items)
+                    {
+                        <label class="flex items-start gap-3 p-3 border rounded-xl cursor-pointer transition-all
+                            @(item.Selected ? "border-blue bg-blue/5" : "border-gray-200 hover:border-gray-300")">
+                            <input type="checkbox"
+                                   class="checkbox checkbox-sm checkbox-primary mt-0.5"
+                                   checked="@item.Selected"
+                                   @onchange="@(() => item.Selected = !item.Selected)" />
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-sm font-medium text-blue truncate">@item.Source.Name</span>
+                                    <span class="badge badge-sm badge-ghost">@item.Source.Type.GetDisplayName()</span>
+                                    @if (item.IsConflict)
+                                    {
+                                        <span class="badge badge-sm badge-warning">Already exists</span>
+                                    }
+                                </div>
+                                <p class="text-xs text-gray mt-0.5">
+                                    @item.Source.Assessments.Count profile@(item.Source.Assessments.Count == 1 ? "" : "s")
+                                    @if (!string.IsNullOrWhiteSpace(item.Source.Description))
+                                    {
+                                        <span> &mdash; @item.Source.Description</span>
+                                    }
+                                </p>
+                            </div>
+                        </label>
+                    }
+                </div>
+            </div>
+        }
+    </Body>
+
+    <Footer>
+        <div class="flex justify-end gap-2">
+            <button @onclick="Close"
+                    class="btn border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700
+                hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                Cancel
+            </button>
+
+            @if (_step == Step.Preview)
+            {
+                <button @onclick="ConfirmImport"
+                        disabled="@(!_items.Any(i => i.Selected) || _isImporting)"
+                        class="btn bg-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue/90
+                    disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2">
+                    <i class="fas fa-file-import mr-2"></i>
+                    @if (_isImporting)
+                    {
+                        <span>Importing...</span>
+                    }
+                    else
+                    {
+                        <span>Import @(_items.Count(i => i.Selected)) Source@(_items.Count(i => i.Selected) == 1 ? "" : "s")</span>
+                    }
+                </button>
+            }
+        </div>
+    </Footer>
+</Modal>
+
+<!-- Hidden file input — lives outside Modal so it isn't unmounted on close -->
 <input type="file"
        accept=".json"
        @ref="_fileInput"
@@ -257,8 +229,11 @@
 
     private async Task Close()
     {
-        IsOpen = false;
         await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void ResetState()
+    {
         _step = Step.Pick;
         _items = [];
         _conflictIds = [];

@@ -36,8 +36,8 @@ public class EdFiStudentDemographicsProviderTests
         var provider = new EdFiStudentDemographicsProvider();
         var context = new AssessorContext((_, _) => { }, _ => { });
 
-        var result1 = await provider.GetDataAsync(httpClient, context);
-        var result2 = await provider.GetDataAsync(httpClient, context);
+        var result1 = await provider.GetDataAsync(httpClient, context, TestContext.Current.CancellationToken);
+        var result2 = await provider.GetDataAsync(httpClient, context, TestContext.Current.CancellationToken);
 
         result1.Should().BeSameAs(result2);
     }
@@ -82,7 +82,7 @@ public class EdFiStudentDemographicsProviderTests
         var provider = new EdFiStudentDemographicsProvider();
         var context = new AssessorContext((_, _) => { }, _ => { });
 
-        var result = await provider.GetDataAsync(httpClient, context);
+        var result = await provider.GetDataAsync(httpClient, context, TestContext.Current.CancellationToken);
 
         result.Should().HaveCount(2);
     }
