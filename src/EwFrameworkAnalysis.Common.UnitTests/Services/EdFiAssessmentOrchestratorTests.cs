@@ -48,7 +48,7 @@ public class EdFiAssessmentOrchestratorTests
         var orchestrator = new EdFiAssessmentOrchestrator(assessors);
 
         // Act
-        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource);
+        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -68,7 +68,7 @@ public class EdFiAssessmentOrchestratorTests
         var orchestrator = new EdFiAssessmentOrchestrator(assessors, maxDegreeOfParallelism: 1);
 
         // Act
-        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource);
+        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -98,7 +98,7 @@ public class EdFiAssessmentOrchestratorTests
         var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
 
         // Act
-        await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress);
+        await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEmpty(progressReports);
@@ -139,7 +139,7 @@ public class EdFiAssessmentOrchestratorTests
         var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
 
         // Act
-        await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress);
+        await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEmpty(progressReports);
@@ -179,11 +179,7 @@ public class EdFiAssessmentOrchestratorTests
         var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
 
         // Act
-        var result = await orchestrator.RunAssessmentsAsync(
-            _httpClient,
-            _testDataSource,
-            progress: progress,
-            continueOnError: true);
+        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, continueOnError: true, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -215,10 +211,7 @@ public class EdFiAssessmentOrchestratorTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            orchestrator.RunAssessmentsAsync(
-                _httpClient,
-                _testDataSource,
-                continueOnError: false));
+            orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, continueOnError: false, ct: TestContext.Current.CancellationToken));
     }
 
     [Fact(Timeout = 5000)]
@@ -270,10 +263,7 @@ public class EdFiAssessmentOrchestratorTests
         const string customName = "Q4 2024 Assessment";
 
         // Act
-        var result = await orchestrator.RunAssessmentsAsync(
-            _httpClient,
-            _testDataSource,
-            assessmentName: customName);
+        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, assessmentName: customName, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(customName, result.Name);
@@ -287,7 +277,7 @@ public class EdFiAssessmentOrchestratorTests
         var orchestrator = new EdFiAssessmentOrchestrator(new[] { fakeAssessor });
 
         // Act
-        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource);
+        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);

@@ -1,7 +1,6 @@
 using System.Text;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
-using Xunit.Abstractions;
 
 namespace EwFrameworkAnalysis.Common.UnitTests.Services;
 

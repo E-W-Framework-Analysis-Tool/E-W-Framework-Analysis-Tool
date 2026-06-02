@@ -218,34 +218,30 @@ sequenceDiagram
 
 ## Third-Party Dependencies
 
-| Dependency                                            | Purpose                                          | Loaded From                            | Data Exposure                                                                 |
-| ----------------------------------------------------- | ------------------------------------------------ | -------------------------------------- | ----------------------------------------------------------------------------- |
-| **Font Awesome 7**                                    | UI icons                                         | cdnjs.cloudflare.com (every page load) | None — static asset delivery only                                             |
-| **jsPDF**                                             | Client-side PDF report generation                | cdnjs.cloudflare.com (PDF export only) | None — operates entirely in browser memory                                    |
-| **jspdf-autotable**                                   | Table layout plugin for jsPDF                    | cdnjs.cloudflare.com (PDF export only) | None — operates entirely in browser memory                                    |
-| **Blazored.LocalStorage**                             | Wrapper for browser `localStorage` API           | Compiled into app                      | None — stores project JSON in the user's own browser                          |
-| **CsvHelper**                                         | CSV parsing (CEDS import)                        | Compiled into app                      | None — runs in browser WASM                                                   |
-| **ApexCharts**                                        | Data visualizations                              | Compiled into app                      | None — runs in browser                                                        |
-| **Power BI Embedded** (optional, Visualizations page) | Sample report visualizations                     | Microsoft Power BI service             | Standard Power BI embed protocol; no user data or project data is transmitted |
-| **Azure Static Web Apps**                             | Application hosting (maintainer-hosted instance) | N/A                                    | Delivers static files only; no user data is processed server-side             |
+| Dependency                       | Purpose                                                                                                  | Loaded From                             | Data Exposure                                                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| **Font Awesome 7** (free tier)   | UI icons                                                                                                 | Bundled via npm, served as static asset | None — static asset, no external requests                                     |
+| **jsPDF**                        | Client-side PDF report generation                                                                        | Bundled via npm, served as static asset | None — operates entirely in browser memory                                    |
+| **jspdf-autotable**              | Table layout plugin for jsPDF                                                                            | Bundled via npm, served as static asset | None — operates entirely in browser memory                                    |
+| **Blazored.LocalStorage**        | Wrapper for browser `localStorage` API                                                                   | Compiled into app                       | None — stores project JSON in the user's own browser                          |
+| **CsvHelper**                    | CSV parsing (CEDS import)                                                                                | Compiled into app                       | None — runs in browser WASM                                                   |
+| **ApexCharts**                   | Data visualizations                                                                                      | Compiled into app                       | None — runs in browser                                                        |
+| **Power BI Embedded** (optional) | Embedded demo report visualizations on the Visualizations page; not required for core tool functionality | Microsoft Power BI service              | Standard Power BI embed protocol; no user data or project data is transmitted |
 
-### CDN Dependencies and Self-Hosting
+### Bundled JS/CSS Dependencies
 
-Three runtime dependencies are loaded from `cdnjs.cloudflare.com`:
-
-- **Font Awesome** is loaded on every page load.
-- **jsPDF** and **jspdf-autotable** are loaded when a user exports a PDF report.
-
-These requests do not transmit user data — they are standard asset delivery calls. However, agencies with strict network
-egress policies may prefer to self-host these libraries. To do so, download the minified files from the CDN, host them
-alongside the application's static files, and update the corresponding `<link>` and `<script>` tags in `index.html`.
+Font Awesome 7 (free tier), jsPDF, and jspdf-autotable are bundled as npm dependencies and served as static assets
+alongside the application. No CDN requests are made for these libraries at runtime. Agencies deploying the application
+in air-gapped or strict egress environments do not need to take any additional steps for these dependencies.
 
 ### Power BI Embedded
 
-The Visualizations page embeds Power BI reports using Microsoft's standard embed SDK. This results in browser requests
-to Microsoft's Power BI service to load and render the embedded reports. No project data, assessment results, or user
-information is transmitted as part of this interaction. Agencies that do not need the sample visualizations may choose
-to restrict or disable this page; the rest of the tool is fully functional without it.
+The Visualizations page embeds sample Power BI reports to demonstrate what end-to-end analysis looks like for select
+Framework questions. This feature is optional — the rest of the tool is fully functional without it, and agencies that
+do not need the sample visualizations may choose to restrict or disable this page.
+
+When the Visualizations page is loaded, the browser makes requests to Microsoft's Power BI service to render the
+embedded reports. No project data, assessment results, or user information is transmitted as part of this interaction.
 
 ---
 
@@ -258,15 +254,14 @@ to restrict or disable this page; the rest of the tool is fully functional witho
 - Does not require user accounts or authentication
 - Does not connect to any LLM service — the LLM-assisted entry workflow is carried out entirely by the user in a
   separate environment of their choosing
+- Does not load any runtime dependencies from external CDNs
 
 **Outbound network calls made by the application:**
 
-| Destination                        | When                     | Purpose                             |
-| ---------------------------------- | ------------------------ | ----------------------------------- |
-| `cdnjs.cloudflare.com`             | Every page load          | Font Awesome icons                  |
-| `cdnjs.cloudflare.com`             | PDF export only          | jsPDF and jspdf-autotable libraries |
-| User-configured Ed-Fi ODS endpoint | Ed-Fi assessment only    | Data profiling API calls            |
-| Microsoft Power BI service         | Visualizations page only | Embedded report rendering           |
+| Destination                        | When                     | Purpose                   |
+| ---------------------------------- | ------------------------ | ------------------------- |
+| User-configured Ed-Fi ODS endpoint | Ed-Fi assessment only    | Data profiling API calls  |
+| Microsoft Power BI service         | Visualizations page only | Embedded report rendering |
 
 All other processing is local to the browser.
 
