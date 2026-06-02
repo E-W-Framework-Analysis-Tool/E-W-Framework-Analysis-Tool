@@ -27,6 +27,7 @@ public class FrameworkCoverageService
         return new FrameworkCoverage
         {
             QuestionScores = questionScores,
+            DisaggregateScores = ScoreDisaggregates(assessmentList),
             BySourceType = new SourceTypeCoverageBreakdown
             {
                 Automated = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType is DataSourceType.EdFiApi or DataSourceType.CedsDw)])),
@@ -109,6 +110,14 @@ public class FrameworkCoverageService
 
         return _ruleRegistry.Resolve(request.ScoringRuleName).Score(request);
     }
+
+    private List<DisaggregateCoverageScore> ScoreDisaggregates(List<DataSourceAssessmentWithSource> assessments) =>
+    [.. EwFrameworkDisaggregates.Disaggregates
+        .Select(d => new DisaggregateCoverageScore
+        {
+            Name = d.Name,
+            DataElementScores = [.. d.DataElementNames.Select(name => ScoreDataElement(name, d.Name, assessments))]
+        })];
 
     private static decimal AverageCoverage(List<QuestionCoverageScore> questionScores)
     {
