@@ -23,21 +23,21 @@
                         <h1 class="text-2xl font-bold">Mapping Overview</h1>
                         <p class="text-sm text-gray-500 mt-0.5">
                             The tool includes automated profiling for two data standards: the
-                            <span class="font-medium text-gray-600">Ed-Fi ODS API (v7.2)</span> and the
-                            <span class="font-medium text-gray-600">CEDS Data Warehouse (v13)</span>.
+                            <span class="font-medium text-gray-600">Ed-Fi ODS API (v7.3)</span> and the
+                            <span class="font-medium text-gray-600">CEDS Data Warehouse (v13/v14)</span>.
                             Each standard covers different parts of the E-W Framework — this page shows
                             which data elements the automated profiling can reach through each one.
                         </p>
                     </div>
                     <div class="flex gap-4 text-sm text-gray-500">
                         <span>
-                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.2</span>
+                            <span class="font-semibold text-blue-600">Ed-Fi ODS API v7.3</span>
                             — @_report.EdFiMappedCount / @_report.TotalElements
                             <span class="text-gray-400">(@_report.EdFiCoveragePercent%)</span>
                         </span>
                         <span class="text-gray-300">|</span>
                         <span>
-                            <span class="font-semibold text-purple-600">CEDS DW v13</span>
+                            <span class="font-semibold text-purple-600">CEDS DW v13/v14</span>
                             — @_report.CedsMappedCount / @_report.TotalElements
                             <span class="text-gray-400">(@_report.CedsCoveragePercent%)</span>
                         </span>
@@ -47,7 +47,7 @@
         </Card>
 
         <!-- Coverage by Data Element -->
-        <Card Shadow="Card.ShadowSize.XLarge">
+        <Card>
             <ChildContent>
                 <div class="flex flex-col h-full">
 
@@ -145,8 +145,8 @@
                                     {
                                         <div class="grid grid-cols-[1fr_160px_160px] gap-2 px-3 py-1 pl-10 bg-gray-50 border-t border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
                                             <span>Data Element</span>
-                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.2</span>
-                                            <span class="text-center text-purple-500">CEDS DW v13</span>
+                                            <span class="text-center text-blue-500">Ed-Fi ODS API v7.3</span>
+                                            <span class="text-center text-purple-500">CEDS DW v13/v14</span>
                                         </div>
 
                                         @foreach (var row in catRows)
@@ -201,7 +201,7 @@
         </Card>
 
         <!-- Coverage By Question -->
-        <Card Shadow="Card.ShadowSize.Large">
+        <Card>
             <ChildContent>
                 <div class="flex items-start justify-between flex-wrap gap-2 mb-3">
                     <div>
@@ -296,58 +296,60 @@
     </div>
 </div>
 
-<!-- Detail Modal -->
-@if (_selectedElement is not null && _selectedMapping is not null)
-{
-    <div class="modal modal-open" @onclick="CloseModal">
-        <div class="modal-box max-w-2xl" @onclick:stopPropagation>
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3"
-                    @onclick="CloseModal">
-                ✕
-            </button>
-
-            <h3 class="font-bold text-lg mb-1">@_selectedElement.DataElementName</h3>
-
-            <div class="mb-3">
-                @if (_selectedMapping.DataSource == DataSourceType.EdFiApi)
-                {
-                    <span class="badge badge-info badge-sm">Ed-Fi ODS API v7.2</span>
-                }
-                else
-                {
-                    <span class="badge badge-secondary badge-sm">CEDS DW v13</span>
-                }
-            </div>
-
-            <p class="text-sm text-gray-600">@_selectedMapping.AssessmentDescription</p>
-
-            @if (_selectedMapping.MappedEndpoints.Any())
-            {
-                <div class="mt-2 flex flex-wrap gap-1">
-                    @foreach (var ep in _selectedMapping.MappedEndpoints)
+<Modal IsOpen="@(_selectedElement is not null)"
+       IsOpenChanged="@(v => { if (!v) CloseModal(); })"
+       Title="@(_selectedElement?.DataElementName ?? "")"
+       Wide>
+    <Body>
+        @if (_selectedElement is not null && _selectedMapping is not null)
+        {
+            <div class="space-y-3">
+                <div>
+                    @if (_selectedMapping.DataSource == DataSourceType.EdFiApi)
                     {
-                        <span class="badge badge-outline badge-xs font-mono">@ep</span>
+                        <span class="badge badge-info badge-sm">Ed-Fi ODS API v7.3</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary badge-sm">CEDS DW v13/v14</span>
                     }
                 </div>
-            }
 
-            @if (_selectedMapping.DataSource == DataSourceType.CedsDw
-                    && !string.IsNullOrWhiteSpace(_selectedMapping.Query))
-            {
-                <div class="mt-3">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">SQL Query</span>
-                        <button class="btn btn-xs btn-ghost gap-1"
-                                @onclick="() => CopyQuery(_selectedMapping.Query!)">
-                            <i class="fas fa-copy text-[10px]"></i> Copy
-                        </button>
+                <p class="text-sm text-gray-600">@_selectedMapping.AssessmentDescription</p>
+
+                @if (_selectedMapping.MappedEndpoints.Any())
+                {
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var ep in _selectedMapping.MappedEndpoints)
+                        {
+                            <span class="badge badge-outline badge-xs font-mono">@ep</span>
+                        }
                     </div>
-                    <pre class="bg-gray-900 text-green-300 text-xs rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words max-h-72 overflow-y-auto">@_selectedMapping.Query</pre>
-                </div>
-            }
+                }
+
+                @if (_selectedMapping.DataSource == DataSourceType.CedsDw
+                     && !string.IsNullOrWhiteSpace(_selectedMapping.Query))
+                {
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">SQL Query</span>
+                            <button class="btn btn-xs btn-ghost gap-1"
+                                    @onclick="() => CopyQuery(_selectedMapping.Query!)">
+                                <i class="fas fa-copy text-[10px]"></i> Copy
+                            </button>
+                        </div>
+                        <pre class="bg-gray-900 text-green-300 text-xs rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words max-h-72 overflow-y-auto">@_selectedMapping.Query</pre>
+                    </div>
+                }
+            </div>
+        }
+    </Body>
+    <Footer>
+        <div class="flex justify-end">
+            <button class="btn btn-ghost" @onclick="CloseModal">Close</button>
         </div>
-    </div>
-}
+    </Footer>
+</Modal>
 
 @code {
     private enum ShowFilter { All, Mapped, Unmapped }

@@ -1,0 +1,250 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
+@inject EcsStateDataParser Parser
+@inject EcsStateDataProvider StateDataProvider
+
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-map-location-dot"
+       Title="ECS State Reference Profile"
+       Subtitle="Load a state-level reference profile compiled by the Education Commission of the States."
+       Wide
+       CloseOnBackdrop="false"
+       CloseRequested="ResetState">
+    <Body>
+        <div class="space-y-4">
+
+            @* ── Setup ── *@
+            @if (_assessmentResult == null)
+            {
+                @if (_error != null)
+                {
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@_error</span>
+                    </div>
+                }
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Select State</span></label>
+                    <select class="select select-bordered w-full" @bind="_selectedState">
+                        <option value="">-- Select a state --</option>
+                        @foreach (var state in _availableStates)
+                        {
+                            <option value="@state">@state</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            @* ── Results ── *@
+            else
+            {
+                <ProfilerResultsSummary Stats="@(new[] {
+                                            new ProfilerResultsSummary.Stat("Data Elements Mapped", _assessmentResult.DataElementAssessments.Count.ToString()),
+                                            new ProfilerResultsSummary.Stat("Rows Processed", _parsingStats!.DataElementsProcessed.ToString()),
+                                            new ProfilerResultsSummary.Stat("Rows Skipped", _parsingStats.DataElementsSkipped.ToString()),
+                                        })" />
+
+                @if (_parsingStats.HasWarnings)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="flex-1">
+                            <h3 class="font-bold">Some Data Could Not Be Mapped</h3>
+                            <div class="text-sm">
+                                @if (_parsingStats.DataElementsSkipped > 0)
+                                {
+                                    <p>@_parsingStats.DataElementsSkipped row(s) were skipped due to missing data.</p>
+                                }
+                                <button class="link link-primary text-xs mt-1"
+                                        @onclick="() => _showDetails = !_showDetails">
+                                    @(_showDetails ? "Hide" : "Show") details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (_showDetails)
+                    {
+                        <div class="bg-base-200 rounded-lg p-4 space-y-2">
+                            <h4 class="font-semibold text-sm">Parsing Details</h4>
+                            <div class="text-xs space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Total data element rows:</span>
+                                    <span class="font-mono">@_parsingStats.TotalRowsRead</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Processed:</span>
+                                    <span class="font-mono">@_parsingStats.DataElementsProcessed</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Skipped:</span>
+                                    <span class="font-mono">@_parsingStats.DataElementsSkipped</span>
+                                </div>
+                            </div>
+                            @if (_parsingStats.SkippedReasons.Count > 0)
+                            {
+                                <div class="mt-3">
+                                    <h5 class="font-semibold text-xs mb-1">Skip Reasons:</h5>
+                                    <ul class="text-xs space-y-1 list-disc list-inside max-h-48 overflow-y-auto">
+                                        @foreach (var reason in _parsingStats.SkippedReasons)
+                                        {
+                                            <li>@reason</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+
+                <Card NoPadding>
+                    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="font-semibold text-blue">
+                            <span class="text-blue">@_selectedState</span>
+                            <span class="text-gray font-normal"> &mdash; Reported</span>
+                        </h3>
+                        <span class="badge badge-sm badge-ghost">@_assessmentResult.DataElementAssessments.Count elements</span>
+                    </div>
+                    <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
+                        @foreach (var element in _assessmentResult.DataElementAssessments.OrderBy(e => e.DataElementName))
+                        {
+                            var availability = element.Characteristics.OfType<ReportedAvailability>().FirstOrDefault();
+                            var badgeClass = availability?.Value switch
+                            {
+                                AvailabilityJudgment.Available => "badge-success",
+                                AvailabilityJudgment.PartiallyAvailable => "badge-warning",
+                                _ => "badge-error"
+                            };
+                            <Card Accent="@GetAvailabilityAccent(availability?.Value)" Raise="Card.RaiseLevel.Subtle">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-sm text-blue">@element.DataElementName</span>
+                                    <span class="badge badge-sm @badgeClass">@availability?.Value.GetDisplayName()</span>
+                                </div>
+                            </Card>
+                        }
+                    </div>
+                </Card>
+
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 class="font-bold">Reference Profile Loaded</h3>
+                        <div class="text-sm">Review the results above and save to add to your project</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </Body>
+
+    <Footer>
+        <ProfilerFooter IsRunning="@_isProcessing"
+                        HasResults="@(_assessmentResult != null)"
+                        CanStart="@(!string.IsNullOrEmpty(_selectedState))"
+                        StartLabel="Load Reference Profile"
+                        OnCancel="Close"
+                        OnCancelRun="() => { /* near-instant, no-op */ }"
+                        OnStart="RunAssessment"
+                        OnDiscard="() => _showDiscard = true"
+                        OnSave="SaveResults" />
+    </Footer>
+</Modal>
+
+<ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                             Message="Are you sure you want to discard this reference profile?"
+                             OnConfirm="ConfirmDiscard"
+                             OnCancel="() => _showDiscard = false" />
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private DataSourceAssessment? _assessmentResult;
+    private EcsParsingStats? _parsingStats;
+    private string? _error;
+    private bool _isProcessing;
+    private bool _showDiscard;
+    private bool _showDetails;
+
+    private List<string> _availableStates = [];
+    private string _selectedState = "";
+
+    protected override void OnInitialized()
+    {
+        _availableStates = StateDataProvider.GetAvailableStates();
+    }
+
+    private async Task RunAssessment()
+    {
+        if (string.IsNullOrEmpty(_selectedState)) return;
+
+        _error = null;
+        _isProcessing = true;
+        StateHasChanged();
+        await Task.Delay(1);
+
+        try
+        {
+            var records = StateDataProvider.GetStateData(_selectedState);
+            var (assessment, stats) = Parser.ProcessStateData(records);
+            assessment.Name = $"{_selectedState} - Reported";
+            assessment.ConductedAt = DateTimeOffset.Now;
+
+            _assessmentResult = assessment;
+            _parsingStats = stats;
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to process data: {ex.Message}";
+            _assessmentResult = null;
+            _parsingStats = null;
+        }
+        finally
+        {
+            _isProcessing = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SaveResults()
+    {
+        if (_assessmentResult == null) return;
+        await OnAssessmentComplete.InvokeAsync(_assessmentResult);
+        await Close();
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscard = false;
+        ResetState();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void ResetState()
+    {
+        _assessmentResult = null;
+        _parsingStats = null;
+        _error = null;
+        _isProcessing = false;
+        _selectedState = "";
+        _showDetails = false;
+    }
+
+    private static Card.AccentColor? GetAvailabilityAccent(AvailabilityJudgment? judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available => Card.AccentColor.Green,
+        AvailabilityJudgment.PartiallyAvailable => Card.AccentColor.Yellow,
+        AvailabilityJudgment.NotAvailable => Card.AccentColor.Red,
+        _ => Card.AccentColor.Gray
+    };
+}

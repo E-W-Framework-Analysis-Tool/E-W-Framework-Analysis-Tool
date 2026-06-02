@@ -1,0 +1,51 @@
+@using EwFrameworkAnalysis.UI.Pages.Docs
+@implements IDisposable
+
+<CascadingValue Name="ParentSlug" Value="Slug" IsFixed="true">
+    <div id="@Slug" class="@SectionClass">
+
+        @if (_depth == 0)
+        {
+            <h1 class="font-title text-3xl font-bold text-blue mb-4 pb-3 border-b border-gray-200">@Title</h1>
+        }
+        else if (_depth == 1)
+        {
+            <h2 class="font-title text-2xl font-bold text-blue mt-10 mb-4">@Title</h2>
+        }
+        else
+        {
+            <h3 class="font-title text-lg font-semibold text-blue mt-6 mb-3">@Title</h3>
+        }
+
+        <div class="@ContentClass">
+            @ChildContent
+        </div>
+    </div>
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private DocsContext? Context { get; set; }
+    [CascadingParameter(Name = "ParentSlug")] private string? ParentSlug { get; set; }
+
+    [Parameter, EditorRequired] public required string Slug { get; set; }
+    [Parameter, EditorRequired] public required string Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private int _depth;
+
+    private string SectionClass => _depth == 0 ? "mb-14" : "mb-8";
+    private string ContentClass => _depth == 0
+        ? "space-y-4 text-gray-600 leading-relaxed"
+        : "space-y-3 text-gray-600 leading-relaxed text-sm";
+
+    protected override void OnInitialized()
+    {
+        Context?.Register(new DocSectionInfo(Slug, Title, ParentSlug));
+        _depth = Context?.GetDepth(Slug) ?? 0;
+    }
+
+    public void Dispose()
+    {
+        Context?.Unregister(Slug);
+    }
+}

@@ -1,0 +1,35 @@
+@using EwFrameworkAnalysis.UI.Components
+@*
+    ProfilerDiscardConfirmModal.razor
+    Nested confirmation used by all profiler modals when discarding results.
+
+    Usage:
+        <ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                                     OnConfirm="ConfirmDiscard"
+                                     OnCancel="() => _showDiscard = false" />
+*@
+
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="@(_ => OnCancel.InvokeAsync())"
+       Title="Discard Profile Results?"
+       ShowCloseButton="false"
+       CloseOnBackdrop="false">
+    <Body>
+        <p class="text-gray">@Message</p>
+    </Body>
+    <Footer>
+        <div class="flex justify-end gap-2">
+            <button class="btn btn-ghost" @onclick="() => OnCancel.InvokeAsync()">Keep Results</button>
+            <button class="btn btn-error" @onclick="() => OnConfirm.InvokeAsync()">
+                <i class="fas fa-trash mr-2"></i>Discard
+            </button>
+        </div>
+    </Footer>
+</Modal>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public string Message { get; set; } = "Are you sure you want to discard these profiling results? This action cannot be undone.";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}

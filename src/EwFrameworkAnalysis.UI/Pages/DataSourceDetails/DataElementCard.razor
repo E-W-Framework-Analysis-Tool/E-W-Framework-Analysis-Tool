@@ -28,8 +28,7 @@
                 {
                     @if (characteristic is RecordCount rc)
                     {
-                        <Card Background="Card.BackgroundColor.Blue"
-                              Border="new Card.BorderStyle(Card.BorderColor.Blue, Card.BorderPosition.Left)">
+                        <Card Accent="Card.AccentColor.Blue" Raise="Card.RaiseLevel.Subtle">
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700 font-medium">Record Count</span>
                                 <span class="text-lg font-bold text-gray-900">@rc.Value.ToString("N0")</span>
@@ -38,8 +37,7 @@
                     }
                     else if (characteristic is ReportedAvailability ra)
                     {
-                        <Card Background="Card.BackgroundColor.Green"
-                              Border="new Card.BorderStyle(Card.BorderColor.Green, Card.BorderPosition.Left)">
+                        <Card Accent="Card.AccentColor.Green" Raise="Card.RaiseLevel.Subtle">
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700 font-medium">Availability</span>
                                 <span class="badge @GetAvailabilityBadge(ra.Value)">@ra.Value</span>
@@ -48,8 +46,7 @@
                     }
                     else if (characteristic is Completeness c)
                     {
-                        <Card Background="Card.BackgroundColor.Yellow"
-                              Border="new Card.BorderStyle(Card.BorderColor.Yellow, Card.BorderPosition.Left)">
+                        <Card Accent="Card.AccentColor.Yellow" Raise="Card.RaiseLevel.Subtle">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-sm font-medium text-gray-700">@c.AttributeName Completeness</span>
                                 <span class="text-sm font-bold text-gray-900">@c.Percentage.ToString("F1")%</span>
@@ -62,16 +59,14 @@
                     }
                     else if (characteristic is NumericalRange ir)
                     {
-                        <Card Background="Card.BackgroundColor.Tan"
-                              Border="new Card.BorderStyle(Card.BorderColor.Tan, Card.BorderPosition.Left)">
+                        <Card Accent="Card.AccentColor.Tan" Raise="Card.RaiseLevel.Subtle">
                             <span class="text-sm font-medium text-gray-700">@ir.Label:</span>
                             <span class="text-sm font-bold text-gray-900 ml-2">@ir.Minimum - @ir.Maximum</span>
                         </Card>
                     }
                     else if (characteristic is Distribution dist)
                     {
-                        <Card Background="Card.BackgroundColor.Gray"
-                              Border="new Card.BorderStyle(Card.BorderColor.Gray, Card.BorderPosition.Left)">
+                        <Card Accent="Card.AccentColor.Gray" Raise="Card.RaiseLevel.Subtle">
                             <div class="text-sm font-medium text-gray-700 mb-2">@dist.Label Distribution (@dist.TotalCount.ToString("N0") total)</div>
                             <div class="space-y-2">
                                 @foreach (var kvp in dist.Counts.OrderByDescending(k => k.Value).Take(10))
@@ -109,13 +104,13 @@
     [Parameter, EditorRequired] public DataElementAssessment Element { get; set; } = null!;
     [Parameter] public bool IsExpanded { get; set; }
 
-    private static readonly Dictionary<Type, Card.BorderColor> CharacteristicColorMap = new()
+    private static readonly Dictionary<Type, Card.AccentColor> CharacteristicColorMap = new()
     {
-        [typeof(RecordCount)] = Card.BorderColor.Blue,
-        [typeof(ReportedAvailability)] = Card.BorderColor.Green,
-        [typeof(Completeness)] = Card.BorderColor.Yellow,
-        [typeof(NumericalRange)] = Card.BorderColor.Tan,
-        [typeof(Distribution)] = Card.BorderColor.Gray
+        [typeof(RecordCount)] = Card.AccentColor.Blue,
+        [typeof(ReportedAvailability)] = Card.AccentColor.Green,
+        [typeof(Completeness)] = Card.AccentColor.Yellow,
+        [typeof(NumericalRange)] = Card.AccentColor.Tan,
+        [typeof(Distribution)] = Card.AccentColor.Gray
     };
 
     private string GetAvailabilityBadge(AvailabilityJudgment judgment) => judgment switch
@@ -129,15 +124,15 @@
 
     private string GetCharacteristicDotColor(DataCharacteristicBase characteristic)
     {
-        var borderColor = CharacteristicColorMap.GetValueOrDefault(characteristic.GetType(), Card.BorderColor.Gray);
-        return borderColor switch
+        var accent = CharacteristicColorMap.GetValueOrDefault(characteristic.GetType(), Card.AccentColor.Gray);
+        return accent switch
         {
-            Card.BorderColor.Blue => "bg-blue",
-            Card.BorderColor.Green => "bg-green",
-            Card.BorderColor.Yellow => "bg-yellow",
-            Card.BorderColor.Gray => "bg-gray",
-            Card.BorderColor.Tan => "bg-tan",
-            Card.BorderColor.Red => "bg-red",
+            Card.AccentColor.Blue => "bg-blue",
+            Card.AccentColor.Green => "bg-green",
+            Card.AccentColor.Yellow => "bg-yellow",
+            Card.AccentColor.Gray => "bg-gray",
+            Card.AccentColor.Tan => "bg-tan",
+            Card.AccentColor.Red => "bg-red",
             _ => "bg-gray"
         };
     }

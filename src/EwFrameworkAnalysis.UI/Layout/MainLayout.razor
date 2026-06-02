@@ -1,7 +1,6 @@
 @using EwFrameworkAnalysis.UI.Components
 @using EwFrameworkAnalysis.UI.Options
 @using EwFrameworkAnalysis.UI.Services
-@using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.Options
 @implements IDisposable
 @inherits LayoutComponentBase
@@ -12,70 +11,144 @@
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 
-<div class="min-h-screen flex flex-col">
+<CascadingValue Value="_lightbox">
+    <div class="min-h-screen flex flex-col">
 
-    <div class="navbar bg-secondary text-secondary-content justify-center p-0">
-        <div class="w-full max-w-7xl flex items-center justify-center">
-            <div class="flex-1">
-                <a href="@AppRoutes.Home" class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none">
+        <!-- Navbar -->
+        <div class="navbar bg-secondary text-secondary-content p-0 flex-col items-stretch">
+
+            <!-- Top bar — always visible -->
+            <div class="w-full max-w-7xl mx-auto flex items-center px-2 h-16">
+
+                <!-- Logo / wordmark -->
+                <a href="@AppRoutes.Home"
+                   class="btn btn-ghost bg-secondary hover:text-primary shadow-none border-none px-2 flex-1 justify-start">
                     <span class="ew-navbar-wordmark">E-W Framework <span>Analysis Tool</span></span>
                 </a>
+
+                <!-- Desktop nav (hidden on mobile) -->
+                <div class="hidden md:flex">
+                    <ul class="menu menu-horizontal px-1 gap-1">
+                        <li><a href="@AppRoutes.Dashboard" class="link link-hover">Dashboard</a></li>
+                        <li data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink">
+                            <a href="@AppRoutes.Analysis" class="link link-hover">Reports &amp; Analysis</a>
+                        </li>
+                        <li class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="link link-hover">Learn ▾</div>
+                            <ul tabindex="0"
+                                class="dropdown-content menu bg-white text-gray-700 rounded-none z-50 w-48 p-2 shadow-xl border border-gray-100">
+                                <li>
+                                    <button class="link link-hover cursor-pointer" @onclick="HandleTakeATour">
+                                        Take a Tour
+                                    </button>
+                                </li>
+                                <li>
+                                    <a href="@AppRoutes.Docs" class="link link-hover" @onclick="CloseDropdowns">
+                                        Docs
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@AppRoutes.Faq" class="link link-hover" @onclick="CloseDropdowns">
+                                        FAQ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@AppRoutes.Visualizations" class="link link-hover" @onclick="CloseDropdowns">
+                                        Visualizations
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@AppRoutes.MappingOverview" class="link link-hover" @onclick="CloseDropdowns">
+                                        Mapping Overview
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mobile hamburger -->
+                <button class="md:hidden btn btn-ghost btn-square"
+                        @onclick="() => _mobileMenuOpen = !_mobileMenuOpen"
+                        aria-label="Toggle menu">
+                    <i class="fas @(_mobileMenuOpen ? "fa-times" : "fa-bars") text-lg"></i>
+                </button>
             </div>
 
-            <div class="flex-none">
-                <ul class="menu menu-horizontal px-1">
-                    <li><a href="@AppRoutes.Dashboard" class="link link-hover">Dashboard</a></li>
-                    <li data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink"><a href="@AppRoutes.Analysis" class="link link-hover">Reports & Analysis</a></li>
-                    <li class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="link link-hover" id="learn-dropdown">
-                            Learn ▾
-                        </div>
-                        <ul tabindex="0" class="dropdown-content menu bg-white text-gray-700 rounded-none z-50 w-48 p-2 shadow-xl border border-gray-100">
-                            <li>
-                                <button class="link link-hover cursor-pointer" @onclick="HandleTakeATour">
-                                    Take a Tour
-                                </button>
-                            </li>
-                            <li><a href="@AppRoutes.MappingOverview" class="link link-hover">Mapping Overview</a></li>
-                            <li><a href="@AppRoutes.Visualizations" class="link link-hover">Visualizations</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <!-- Mobile menu — animates open/closed -->
+            <div class="md:hidden w-full border-t @(_mobileMenuOpen ? "border-white/10" : "border-transparent")
+                overflow-hidden transition-all duration-300 ease-in-out
+                @(_mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0")">
+                <div class="px-4 py-3 flex flex-col gap-1">
+                    <a href="@AppRoutes.Dashboard"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu">
+                        Dashboard
+                    </a>
+                    <a href="@AppRoutes.Analysis"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu"
+                       data-walkthrough="@WalkthroughSteps.StepIds.AnalysisNavLink">
+                        Reports &amp; Analysis
+                    </a>
+                    <a href="@AppRoutes.Docs"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu">
+                        Docs
+                    </a>
+                    <a href="@AppRoutes.Faq"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu">
+                        FAQ
+                    </a>
+                    <a href="@AppRoutes.Visualizations"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu">
+                        Visualizations
+                    </a>
+                    <a href="@AppRoutes.MappingOverview"
+                       class="btn btn-ghost justify-start text-secondary-content"
+                       @onclick="CloseMobileMenu">
+                        Mapping Overview
+                    </a>
+                    <button class="btn btn-ghost justify-start text-secondary-content"
+                            @onclick="HandleTakeATour">
+                        Take a Tour
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 bg-tan relative">
-        @Body
-        <EwLoadingOverlay IsLoading="@BusySvc.IsBusy" />
-    </main>
+        <!-- Main Content -->
+        <main class="flex-1 bg-tan relative">
+            @Body
+            <EwLoadingOverlay IsLoading="@BusySvc.IsBusy" />
+        </main>
 
-    <!-- Footer -->
-    <footer class="bg-secondary text-secondary-content border-t border-base-300 mt-auto">
-        <div class="w-full max-w-7xl mx-auto px-6 py-8 flex flex-col items-center gap-4 text-center">
-
-            <!-- Tagline row — flanked by deploy info when ShowDetails is true -->
-            <div class="flex items-center justify-between w-full gap-4 text-sm">
-
-                <!-- Left: Version + Deploy date -->
-                @if (DeploymentInfoOptions.Value.ShowDetails)
+        <!-- Deploy info bar (lower environments only) -->
+        @if (DeploymentInfoOptions.Value.ShowDetails)
+        {
+            <div class="bg-secondary/70 text-secondary-content/70 text-xs flex items-center justify-center gap-4 px-4 py-1.5 flex-wrap">
+                @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.EnvironmentLabel))
                 {
-                    <div class="flex flex-col gap-1 text-left shrink-0">
-                        <span>Version: @DeploymentInfoOptions.Value.Version</span>
-                        @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.DeployDateTime) &&
-                                            !DeploymentInfoOptions.Value.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
-                        {
-                            <span>Deployed: @DeploymentInfoOptions.Value.DeployDateTime</span>
-                        }
-                    </div>
+                    <span class="badge badge-warning badge-xs">@DeploymentInfoOptions.Value.EnvironmentLabel</span>
                 }
-                else
+                @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.Version))
                 {
-                    <div class="shrink-0 w-0" />
+                    <span>Version: @DeploymentInfoOptions.Value.Version</span>
                 }
+                @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.DeployDateTime) &&
+                     !DeploymentInfoOptions.Value.DeployDateTime.Equals("NEVER", StringComparison.OrdinalIgnoreCase))
+                {
+                    <span>Deployed: @DeploymentInfoOptions.Value.DeployDateTime</span>
+                }
+            </div>
+        }
 
-                <!-- Center: Title + description -->
+        <!-- Footer -->
+        <footer class="bg-secondary text-secondary-content border-t border-base-300 mt-auto">
+            <div class="w-full max-w-7xl mx-auto px-6 py-8 flex flex-col items-center gap-4 text-center">
+            
                 <div class="text-center">
                     <p class="font-semibold">E-W Framework Analysis Tool</p>
                     <p class="font-thin text-sm mt-1 max-w-prose">
@@ -83,76 +156,77 @@
                     </p>
                 </div>
 
-                <!-- Right: Environment badge -->
-                @if (DeploymentInfoOptions.Value.ShowDetails)
+                <hr class="w-full border-white/10" />
+
+                @if (!string.IsNullOrWhiteSpace(ContactInfoOptions.Value.SupportEmail))
                 {
-                    <div class="flex flex-col items-end gap-1 shrink-0">
-                        @if (!string.IsNullOrEmpty(DeploymentInfoOptions.Value.EnvironmentLabel))
-                        {
-                            <span>Environment:</span>
-                            <div class="badge badge-accent badge-sm">
-                                @DeploymentInfoOptions.Value.EnvironmentLabel
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="shrink-0 w-0" />
+                    <p class="text-sm">
+                        Need help? Email <a href="mailto:@ContactInfoOptions.Value.SupportEmail"
+                                      class="link link-hover">@ContactInfoOptions.Value.SupportEmail</a>
+                    </p>
                 }
 
-            </div>
-
-            <hr class="w-full border-white/10" />
-
-            <!-- Support -->
-            @if (!string.IsNullOrWhiteSpace(ContactInfoOptions.Value.SupportEmail))
-            {
-                <p class="text-sm">
-                    Need help? <a href="mailto:@ContactInfoOptions.Value.SupportEmail"
-                                  class="link link-hover">@ContactInfoOptions.Value.SupportEmail</a>
-                </p>
-            }
-
-            <!-- Legal -->
-            <p class="text-xs text-secondary-content/70">
-                &copy; 2026 E-W Framework Analysis Tool &mdash;
-                <span class="whitespace-nowrap">
-                    Built by
+                <p class="text-xs text-secondary-content/70">
+                    &copy; 2026 &mdash;
                     <a href="https://wearedoubleline.com"
                        target="_blank"
                        rel="noopener noreferrer"
-                       class="link link-hover">Double Line</a>
-                </span>
-                with support from the Gates Foundation.
-            </p>
+                       class="link link-hover">Double Line, Inc.</a>
+                </p>
+            </div>
+        </footer>
+    </div>
 
-        </div>
-    </footer>
-</div>
-
-<WalkthroughOverlay />
+    <WalkthroughOverlay />
+    <Lightbox @ref="_lightbox" />
+</CascadingValue>
 
 @code {
-    // private IDisposable? _navToken;
+    private bool _mobileMenuOpen = false;
+    private Lightbox _lightbox = default!;
 
     protected override void OnInitialized()
     {
         BusySvc.Changed += OnBusyChanged;
+        Nav.LocationChanged += OnLocationChanged;
     }
 
-    private void OnBusyChanged()
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
+        // IMPORTANT - this is used to immediately propagate the Lightbox reference
+        // after rendering -- the Lightbox will not work before navigating without this.
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnBusyChanged() => InvokeAsync(StateHasChanged);
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        // Close mobile menu on navigation
+        _mobileMenuOpen = false;
         InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         BusySvc.Changed -= OnBusyChanged;
+        Nav.LocationChanged -= OnLocationChanged;
+    }
+
+    private void CloseMobileMenu() => _mobileMenuOpen = false;
+
+    private async Task CloseDropdowns()
+    {
+        await JS.InvokeVoidAsync("eval", "document.activeElement.blur()");
     }
 
     private async Task HandleTakeATour()
     {
+        _mobileMenuOpen = false;
         await JS.InvokeVoidAsync("eval", "document.activeElement.blur()");
         await Walkthrough.StartAsync();
     }

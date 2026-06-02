@@ -1,18 +1,18 @@
+@using Common.Models.Project
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Scoring
-@using Common.Models.Project;
 @using EwFrameworkAnalysis.UI.Components
 
-<Modal IsOpen="@IsOpen" CloseRequested="HandleClose">
-    <Header>@_indicatorScore?.IndicatorCode</Header>
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Title="@(IndicatorScore?.IndicatorCode ?? "")"
+       CloseRequested="OnClose">
     <Body>
-
-        @if (_indicatorScore != null)
+        @if (IndicatorScore != null)
         {
-            var indicator = getIndicator(_indicatorScore.IndicatorCode);
+            var indicator = GetIndicator(IndicatorScore.IndicatorCode);
 
             <div class="space-y-3">
-
                 <h5 class="font-semibold text-blue">@indicator?.Definition</h5>
 
                 <p class="text-sm text-gray">Domain: @indicator?.Domain.GetDisplayName()</p>
@@ -24,7 +24,7 @@
                     <div class="flex flex-col gap-2">
                         @foreach (var dataElementName in indicator.DataElementNames.Order())
                         {
-                            var deScore = _indicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
+                            var deScore = IndicatorScore.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
                             <div class="text-sm text-gray">
                                 <i class="@GetDataElementIsAvailableIcon(dataElementName)"></i>
                                 @if (deScore is { IsAvailable: true } && !string.IsNullOrEmpty(deScore.Source))
@@ -59,9 +59,9 @@
                 }
 
                 <h5 class="font-semibold text-blue pt-2">Framework Coverage Score:</h5>
-
-                <progress class="progress @GetProgressBarColor(_indicatorScore.CoverageScore)" value="@(_indicatorScore.CoverageScore * 100)" max="100"></progress>
-                <p class="font-semibold text-center">@_indicatorScore.CoverageScore.ToString("0.##%")</p>
+                <progress class="progress @GetProgressBarColor(IndicatorScore.CoverageScore)"
+                          value="@(IndicatorScore.CoverageScore * 100)" max="100"></progress>
+                <p class="font-semibold text-center">@IndicatorScore.CoverageScore.ToString("0.##%")</p>
 
                 <div class="collapse border border-gray-300 rounded-lg collapse-arrow">
                     <input type="checkbox" />
@@ -76,7 +76,7 @@
                             <div class="flex gap-2">
                                 @foreach (var sector in indicator.Sectors)
                                 {
-                                    <div class="badge badge-secondary ">@sector.GetDisplayName()</div>
+                                    <div class="badge badge-secondary">@sector.GetDisplayName()</div>
                                 }
                             </div>
 
@@ -84,89 +84,73 @@
                             <div class="flex gap-2">
                                 @foreach (var dataNeeded in indicator.DataNeeded)
                                 {
-                                    <div class="badge badge-secondary ">@dataNeeded.GetDisplayName()</div>
+                                    <div class="badge badge-secondary">@dataNeeded.GetDisplayName()</div>
                                 }
                             </div>
                         }
                     </div>
                 </div>
-
             </div>
         }
-
     </Body>
 
     <Footer>
-        <button class="btn btn-ghost hover:bg-gray-200 hover:border-gray-300" @onclick="HandleClose">Close</button>
+        <div class="flex justify-end">
+            <button class="btn btn-ghost" @onclick="() => IsOpenChanged.InvokeAsync(false)">Close</button>
+        </div>
     </Footer>
 </Modal>
 
 @code {
     [Parameter] public bool IsOpen { get; set; }
-    [Parameter] public IndicatorCoverageScore? _indicatorScore { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public IndicatorCoverageScore? IndicatorScore { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
-    private Indicator? getIndicator(string indicatorName)
-    {
-        if (!EwFrameworkIndicators.Indicators.TryGetValue(indicatorName, out var indicator))
-            return null;
+    private static Indicator? GetIndicator(string indicatorCode) =>
+        EwFrameworkIndicators.Indicators.TryGetValue(indicatorCode, out var indicator) ? indicator : null;
 
-        return indicator;
-    }
-
-    private string GetDataElementIsAvailableIcon(string DataElementName)
+    private string GetDataElementIsAvailableIcon(string dataElementName)
     {
-        var score = _indicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(DataElementName));
-        if (score != null && score.IsAvailable)
+        var score = IndicatorScore?.DataElementScores.FirstOrDefault(x => x.DataElementName.Equals(dataElementName));
+        if (score is { IsAvailable: true })
         {
             return score.AvailabilityScore switch
             {
-                AvailabilityJudgment.Available => "fas fa-check-circle text-success",
+                AvailabilityJudgment.Available          => "fas fa-check-circle text-success",
                 AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
-                _ => ""
+                _                                       => ""
             };
         }
         return "fas fa-times-circle text-error";
     }
 
-    private string GetProgressBarColor(decimal score)
+    private static string GetProgressBarColor(decimal score) => score switch
     {
-        if (score >= 0.70m)
-            return "progress-success";
-        else if (score >= 0.50m)
-            return "progress-warning";
-        else if (score > 0m)
-            return "progress-error";
+        >= 0.70m => "progress-success",
+        >= 0.50m => "progress-warning",
+        > 0m     => "progress-error",
+        _        => "bg-gray-200"
+    };
 
-        return "bg-gray-200";
-    }
-
-    private static string GetSourceAvailabilityIcon(AvailabilityJudgment judgment) =>
-        judgment switch
-        {
-            AvailabilityJudgment.Available => "fas fa-check-circle text-success",
-            AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
-            AvailabilityJudgment.NotAvailable => "fas fa-times-circle text-error",
-            _ => "fas fa-question-circle text-gray-400"
-        };
+    private static string GetSourceAvailabilityIcon(AvailabilityJudgment judgment) => judgment switch
+    {
+        AvailabilityJudgment.Available          => "fas fa-check-circle text-success",
+        AvailabilityJudgment.PartiallyAvailable => "fas fa-triangle-exclamation text-warning",
+        AvailabilityJudgment.NotAvailable       => "fas fa-times-circle text-error",
+        _                                       => "fas fa-question-circle text-gray-400"
+    };
 
     private static string GetDataSourceTypeIcon(DataElementScore score)
     {
         var selectedSource = score.SourceScores.FirstOrDefault(s => s.DataSourceName == score.Source);
         return selectedSource?.SourceType switch
         {
-            nameof(DataSourceType.EdFiApi) => "fas fa-network-wired",
-            nameof(DataSourceType.CedsDw) => "fas fa-warehouse",
-            nameof(DataSourceType.Custom) => "fas fa-list-check",
+            nameof(DataSourceType.EdFiApi)  => "fas fa-network-wired",
+            nameof(DataSourceType.CedsDw)   => "fas fa-warehouse",
+            nameof(DataSourceType.Custom)   => "fas fa-list-check",
             nameof(DataSourceType.EcsState) => "fas fa-map",
-            _ => "fas fa-database"
+            _                               => "fas fa-database"
         };
-    }
-
-    private async Task HandleClose()
-    {
-        await OnClose.InvokeAsync();
-        await IsOpenChanged.InvokeAsync(false);
     }
 }

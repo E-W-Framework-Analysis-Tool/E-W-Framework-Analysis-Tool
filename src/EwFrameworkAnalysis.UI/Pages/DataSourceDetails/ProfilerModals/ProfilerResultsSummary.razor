@@ -1,0 +1,29 @@
+@using EwFrameworkAnalysis.UI.Components
+@*
+    ProfilerResultsSummary.razor
+    Three-stat summary bar shown at the top of profiler results.
+    Used by CedsDW and ECS State profiler modals.
+
+    Usage:
+        <ProfilerResultsSummary Stats="@(new[] {
+            new ProfilerResultsSummary.Stat("Data Elements", _result.DataElementAssessments.Count.ToString()),
+            new ProfilerResultsSummary.Stat("Total Characteristics", _result.DataElementAssessments.Sum(a => a.Characteristics.Count).ToString()),
+            new ProfilerResultsSummary.Stat("Profile Date", _result.ConductedAt.ToString("MMM d, yyyy h:mm tt"))
+        })" />
+*@
+
+<div class="grid grid-cols-1 md:grid-cols-@(Stats.Count) gap-4">
+    @foreach (var stat in Stats)
+    {
+        <Card AdditionalClasses="p-4">
+            <h3 class="text-sm text-gray mb-2">@stat.Label</h3>
+            <div class="@(stat.IsLarge ? "text-3xl font-bold" : "text-sm font-semibold") text-blue">@stat.Value</div>
+        </Card>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required IReadOnlyList<Stat> Stats { get; set; }
+
+    public sealed record Stat(string Label, string Value, bool IsLarge = true);
+}

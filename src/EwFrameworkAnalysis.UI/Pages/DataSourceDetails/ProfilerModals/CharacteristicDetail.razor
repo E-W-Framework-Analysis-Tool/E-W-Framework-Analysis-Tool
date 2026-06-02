@@ -1,0 +1,45 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+
+@if (Characteristic is RecordCount rc)
+{
+    <div class="text-xs text-gray-700">
+        <span class="font-medium">Records:</span> @rc.Value.ToString("N0")
+    </div>
+}
+else if (Characteristic is ReportedAvailability ra)
+{
+    <div class="text-xs text-gray-700">
+        <span class="font-medium">Availability:</span>
+        <span class="badge badge-xs @AvailabilityBadge(ra.Value)">@ra.Value</span>
+    </div>
+}
+else if (Characteristic is Completeness c)
+{
+    <div class="text-xs text-gray-700">
+        <span class="font-medium">@c.AttributeName:</span> @c.Percentage.ToString("F1")% complete
+    </div>
+}
+else if (Characteristic is NumericalRange nr)
+{
+    <div class="text-xs text-gray-700">
+        <span class="font-medium">@nr.Label:</span> @nr.Minimum – @nr.Maximum
+    </div>
+}
+else if (Characteristic is Distribution dist)
+{
+    <div class="text-xs text-gray-700">
+        <span class="font-medium">@dist.Label:</span> @dist.TotalCount.ToString("N0") items
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public required DataCharacteristicBase Characteristic { get; set; }
+
+    private static string AvailabilityBadge(AvailabilityJudgment j) => j switch
+    {
+        AvailabilityJudgment.Available          => "badge-success",
+        AvailabilityJudgment.PartiallyAvailable => "badge-warning",
+        AvailabilityJudgment.NotAvailable       => "badge-error",
+        _                                       => "badge-ghost"
+    };
+}

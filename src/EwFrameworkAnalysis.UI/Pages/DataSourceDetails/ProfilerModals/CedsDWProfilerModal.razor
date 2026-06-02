@@ -1,0 +1,333 @@
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Options
+@inject CedsDWAssessmentOrchestrator Orchestrator
+@inject IOptions<DemoCedsOptions> DemoOptions
+@inject IJSRuntime JSRuntime
+
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-database"
+       Title="CEDS Data Warehouse Profiler"
+       Subtitle="Secure airgapped profiling — your data never leaves your environment."
+       ExtraWide
+       CloseOnBackdrop="false"
+       CloseRequested="ResetState">
+    <Body>
+        <div class="space-y-4">
+
+            @* ── Setup ── *@
+            @if (_assessmentResult == null)
+            {
+                <div class="rounded-xl bg-blue/5 border border-blue/20 p-4 text-sm text-gray space-y-2">
+                    <ol class="space-y-2 list-decimal list-inside">
+                        <li>
+                            <button @onclick="DownloadScript" class="link link-primary">
+                                Download the SQL profiling script
+                            </button>
+                            <span class="text-xs text-gray-500 ml-1">(@_assessorCount profilers included)</span>
+                        </li>
+                        <li>Run the script on your CEDS Data Warehouse database</li>
+                        <li>Export the results as CSV (instructions are in the script)</li>
+                        <li>Upload the CSV file below</li>
+                    </ol>
+                </div>
+
+                @if (DemoOptions.Value.IsConfigured)
+                {
+                    <div class="alert bg-base-200 border-2 border-blue">
+                        <i class="fas fa-flask"></i>
+                        <span>A sample results file is available for testing</span>
+                        <button class="btn btn-sm btn-primary" @onclick="DownloadSampleResults">
+                            <i class="fas fa-download mr-2"></i>Download Sample Results
+                        </button>
+                    </div>
+                }
+
+                @if (_error != null)
+                {
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@_error</span>
+                    </div>
+                }
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Upload Results CSV</span></label>
+                    <InputFile OnChange="HandleFileSelected"
+                               accept=".csv"
+                               @ref="_fileInput"
+                               class="file-input file-input-bordered w-full" />
+                </div>
+            }
+
+            @* ── Results ── *@
+            else
+            {
+                <ProfilerResultsSummary Stats="@(new[] {
+                    new ProfilerResultsSummary.Stat("Data Elements", _assessmentResult.DataElementAssessments.Count.ToString()),
+                    new ProfilerResultsSummary.Stat("Total Characteristics", _assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count).ToString()),
+                    new ProfilerResultsSummary.Stat("Profile Date", _assessmentResult.ConductedAt.ToString("MMM d, yyyy h:mm tt"), IsLarge: false),
+                })" />
+
+
+                <!-- Results list -->
+                <Card NoPadding>
+                    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="font-semibold text-blue">Results</h3>
+                        <span class="badge badge-sm badge-ghost">@_assessmentResult.DataElementAssessments.Count</span>
+                    </div>
+                    <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
+                        @foreach (var element in _assessmentResult.DataElementAssessments.OrderBy(e => e.DataElementName))
+                        {
+                            <Card Background="Card.BackgroundColor.Green"
+                                  Border="new Card.BorderStyle(Card.BorderColor.Green, Card.BorderPosition.Left)"
+                                  Shadow="Card.ShadowSize.None">
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <span class="font-semibold text-sm text-blue">@element.DataElementName</span>
+                                        <span class="badge badge-sm badge-ghost">@element.Characteristics.Count characteristic(s)</span>
+                                    </div>
+                                    <div class="ml-6 space-y-1 pl-2 border-l-2 border-success">
+                                        @foreach (var characteristic in element.Characteristics)
+                                        {
+                                            <CharacteristicDetail Characteristic="characteristic" />
+                                        }
+                                    </div>
+                                </div>
+                            </Card>
+                        }
+                    </div>
+                </Card>
+
+                <!-- Issues (only shown when present) -->
+                @if (_parsingStats != null && SkipCount > 0)
+                {
+                    <Card NoPadding>
+                        <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="font-semibold text-warning">
+                                <i class="fas fa-exclamation-triangle mr-1.5"></i>Issues
+                            </h3>
+                            <span class="badge badge-sm badge-warning">@SkipCount</span>
+                        </div>
+                        <div class="p-4 space-y-2 max-h-48 overflow-y-auto">
+                            @foreach (var err in _parsingStats.ParseErrors)
+                            {
+                                <div class="flex items-start gap-3 p-3 rounded-lg bg-error/5 border border-error/20 text-sm">
+                                    <i class="fas fa-times-circle text-error mt-0.5 shrink-0"></i>
+                                    <div>
+                                        <div>
+                                            <span class="font-medium">@err.DataElementName</span>
+                                            <span class="text-gray-400 mx-1">—</span>
+                                            <span class="text-gray-500">@err.CharacteristicType</span>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-0.5">@err.Message</div>
+                                    </div>
+                                </div>
+                            }
+                            @foreach (var reason in _parsingStats.SkippedReasons)
+                            {
+                                <div class="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/20 text-sm">
+                                    <i class="fas fa-exclamation-circle text-warning mt-0.5 shrink-0"></i>
+                                    <div class="text-gray-600">@reason</div>
+                                </div>
+                            }
+                            @foreach (var element in _parsingStats.SkippedDataElements)
+                            {
+                                <div class="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/20 text-sm">
+                                    <i class="fas fa-exclamation-circle text-warning mt-0.5 shrink-0"></i>
+                                    <div>
+                                        <span class="font-medium">@element</span>
+                                        <span class="text-gray-500 ml-1">— no valid characteristics, element excluded</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </Card>
+                }
+
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 class="font-bold">Profile Processed Successfully</h3>
+                        <div class="text-sm">Review the results above and save to add to your project</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </Body>
+
+    <Footer>
+        <ProfilerFooter IsRunning="@_isProcessing"
+                        HasResults="@(_assessmentResult != null)"
+                        CanStart="@(_selectedFile != null)"
+                        StartLabel="Process CSV"
+                        OnCancel="Close"
+                        OnCancelRun="CancelProcessing"
+                        OnStart="ProcessFile"
+                        OnDiscard="() => _showDiscard = true"
+                        OnSave="SaveResults" />
+    </Footer>
+</Modal>
+
+<ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                             OnConfirm="ConfirmDiscard"
+                             OnCancel="() => _showDiscard = false" />
+
+<script>
+    window.CedsAssessmentHelpers = {
+        downloadFile: function (filename, content, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    };
+</script>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private DataSourceAssessment? _assessmentResult;
+    private AssessmentParsingStats? _parsingStats;
+    private string? _error;
+    private bool _isProcessing;
+    private bool _showDiscard;
+    private int _assessorCount;
+    private IBrowserFile? _selectedFile;
+    private InputFile? _fileInput;
+
+    private int SkipCount => (_parsingStats?.ParseErrors.Count ?? 0)
+                           + (_parsingStats?.SkippedReasons.Count ?? 0)
+                           + (_parsingStats?.SkippedDataElements.Count ?? 0);
+
+    protected override void OnInitialized()
+    {
+        var version = DataSource.Version ?? CedsDWVersions.V13;
+        _assessorCount = Orchestrator.AssessorCountForVersion(version);
+    }
+
+    private async Task DownloadScript()
+    {
+        try
+        {
+            var version = DataSource.Version ?? CedsDWVersions.V13;
+            var script = Orchestrator.GenerateProfilerScript(version);
+            var fileName = $"CEDS_Profiler_{version}_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.sql";
+            await JSRuntime.InvokeVoidAsync("CedsAssessmentHelpers.downloadFile", fileName, script, "text/plain");
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to generate script: {ex.Message}";
+        }
+    }
+
+    private async Task DownloadSampleResults()
+    {
+        var sampleCsv = GenerateSampleResultsCsv();
+        var fileName = $"CEDS_Sample_Results_{DateTimeOffset.Now:yyyyMMdd_HHmmss}.csv";
+        await JSRuntime.InvokeVoidAsync("CedsAssessmentHelpers.downloadFile", fileName, sampleCsv, "text/csv");
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _error = null;
+    }
+
+    private async Task ProcessFile()
+    {
+        if (_selectedFile == null) return;
+
+        _error = null;
+        _isProcessing = true;
+
+        try
+        {
+            if (_selectedFile.Size > 10 * 1024 * 1024)
+            {
+                _error = "File size exceeds 10MB limit.";
+                return;
+            }
+
+            using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            var parser = new DataSourceAssessmentFileParser();
+            var (assessment, stats) = await parser.ParseAssessmentStreamAsync(stream);
+
+            _assessmentResult = assessment;
+            _parsingStats = stats;
+            _assessmentResult.Name = $"Data profile from {_selectedFile.Name}";
+            _assessmentResult.ConductedAt = DateTimeOffset.Now;
+    
+        }
+        catch (Exception ex)
+        {
+            _error = $"Failed to process file: {ex.Message}";
+            _assessmentResult = null;
+            _parsingStats = null;
+        }
+        finally
+        {
+            _isProcessing = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SaveResults()
+    {
+        if (_assessmentResult == null) return;
+        await OnAssessmentComplete.InvokeAsync(_assessmentResult);
+        await Close();
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscard = false;
+        ResetState();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void CancelProcessing() { /* processing is near-instant; cancel is a no-op */ }
+
+    private void ResetState()
+    {
+        _assessmentResult = null;
+        _parsingStats = null;
+        _error = null;
+        _isProcessing = false;
+        _selectedFile = null;
+    }
+
+    private string GenerateSampleResultsCsv()
+    {
+        return @"DataElementName,CharacteristicType,Value,SubItemLabel,Remarks
+Suspensions and Expulsions (Grades 1 and 2),RecordCount,5,,
+Suspensions and Expulsions (K-12),RecordCount,1020,,""No data found for the following grades: 10,11,12""
+Student Age Range,NumericalRange,5,Minimum,Age of enrolled students
+Student Age Range,NumericalRange,21,Maximum,
+Student Contact Information,Completeness,850,PopulatedRecords,ElectronicMailAddress
+Student Contact Information,Completeness,1000,TotalRecords,
+Discipline Action Types,Distribution,450,In-School Suspension,Distribution of disciplinary actions taken
+Discipline Action Types,Distribution,320,Out-of-School Suspension,
+Discipline Action Types,Distribution,125,Expulsion with Services,
+Discipline Action Types,Distribution,95,Expulsion without Services,
+Special Education Services,ReportedAvailability,Available,,Availability based on record count thresholds
+Gifted and Talented Programs,ReportedAvailability,PartiallyAvailable,,Only available for grades 3-8";
+    }
+}

@@ -1,0 +1,457 @@
+@using System.Net.Http.Headers
+@using System.Text.Json
+@using EwFrameworkAnalysis.Common.Models.Project
+@using EwFrameworkAnalysis.Common.Services
+@using EwFrameworkAnalysis.UI.Components
+@using EwFrameworkAnalysis.UI.Options
+@using EwFrameworkAnalysis.UI.Pages.DataSourceDetails.ProfilerModals
+@using Microsoft.Extensions.Options
+@inject EdFiAssessmentOrchestrator Orchestrator
+@inject IOptions<DemoEdFiApiOptions> DemoApiOptions
+
+<Modal IsOpen="@IsOpen"
+       IsOpenChanged="IsOpenChanged"
+       Icon="fa-satellite-dish"
+       Title="Ed-Fi ODS API Profiler"
+       Subtitle="Automated discovery &amp; profiling via API connection."
+       ExtraWide="true"
+       ShowCloseButton="@(!_isRunning)"
+       CloseOnBackdrop="false"
+       CloseRequested="ResetState">
+    <Body>
+        <div class="space-y-4">
+
+            @* ── Setup ── *@
+            @if (_currentProgress == null && _assessmentResult == null && !_isAuthenticating)
+            {
+                @if (DemoApiOptions.Value.IsConfigured)
+                {
+                    <div class="alert bg-base-200 border-2 border-blue">
+                        <i class="fas fa-info-circle"></i>
+                        <span>A read-only demo Ed-Fi API is available for testing</span>
+                        <button class="btn btn-sm btn-primary" @onclick="UseDemoCredentials">
+                            <i class="fas fa-flask mr-2"></i>Use Demo API
+                        </button>
+                    </div>
+                }
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Client ID</span></label>
+                    <input @bind="_clientId" type="text" placeholder="Enter client ID"
+                           class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Client Secret</span></label>
+                    <input @bind="_clientSecret" type="password" placeholder="Enter client secret"
+                           class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">API URL</span></label>
+                    <input @bind="_rootUrl" type="text" placeholder="https://api.example.com"
+                           class="input input-bordered w-full" />
+                </div>
+            }
+
+            @* ── Demo API warm-up ── *@
+            @if (_isAuthenticating && _usingDemo)
+            {
+                <div class="flex flex-col items-center gap-4 py-6 text-center">
+                    <EwLoadingIndicator Scale="1.2" />
+                    <div>
+                        <p class="font-semibold text-blue">Connecting to demo API...</p>
+                        <p class="text-sm text-gray-500 mt-1">
+                            The demo API may take a moment to wake up. Hang tight.
+                        </p>
+                        @if (_authAttempt > 1)
+                        {
+                            <p class="text-xs text-gray-400 mt-1">
+                                Retry @(_authAttempt - 1) of @MaxAuthRetries
+                            </p>
+                        }
+                    </div>
+                    <button class="btn btn-sm btn-ghost text-gray-400" @onclick="CancelProfiling">
+                        Cancel
+                    </button>
+                </div>
+            }
+
+            @* ── Progress ── *@
+            @if (_currentProgress != null)
+            {
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card AdditionalClasses="p-4">
+                        <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
+                        <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
+                        <progress class="progress progress-primary w-full h-2 mt-3"
+                                  value="@_currentProgress.PercentComplete" max="100"></progress>
+                    </Card>
+                    <Card AdditionalClasses="p-4">
+                        <h3 class="text-sm text-gray mb-2">Profilers Complete</h3>
+                        <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
+                    </Card>
+                    <Card AdditionalClasses="p-4">
+                        <h3 class="text-sm text-gray mb-2">Status</h3>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running
+                                </span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-success"></span>Completed
+                                </span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>Failed
+                                </span>
+                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                <Card NoPadding>
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h3 class="font-semibold text-blue">Profiler Progress</h3>
+                    </div>
+                    <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
+                        @foreach (var assessor in _currentProgress.AssessorProgresses)
+                        {
+                            <Card Accent="@GetAssessorAccent(assessor.Status)" Raise="Card.RaiseLevel.Subtle">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            @if (assessor.Status == AssessorStatus.Running)
+                                            {
+                                                <span class="loading loading-spinner loading-sm text-yellow-500"></span>
+                                            }
+                                            else if (assessor.Status == AssessorStatus.Completed)
+                                            {
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            }
+                                            else if (assessor.Status == AssessorStatus.Failed)
+                                            {
+                                                <i class="fas fa-times-circle text-red-500"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-clock text-gray"></i>
+                                            }
+                                            <span class="font-semibold text-sm text-blue truncate">@assessor.DataElementName</span>
+                                        </div>
+
+                                        @if (assessor.Status == AssessorStatus.Completed && assessor.Result != null)
+                                        {
+                                            <div class="ml-6 mt-2 space-y-2">
+                                                <div class="text-xs text-success">@assessor.Result.Characteristics?.Count characteristic(s) collected</div>
+                                                @if (assessor.Result.Characteristics?.Any() == true)
+                                                {
+                                                    <div class="space-y-1 pl-2 border-l-2 border-success">
+                                                        @foreach (var characteristic in assessor.Result.Characteristics)
+                                                        {
+                                                            <CharacteristicDetail Characteristic="characteristic" />
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else if (assessor.Status == AssessorStatus.Running)
+                                        {
+                                            <div class="ml-6 text-xs text-yellow-600">@(assessor.StatusMessage ?? "Processing...")</div>
+                                        }
+                                        else if (assessor.Status == AssessorStatus.Failed)
+                                        {
+                                            <div class="ml-6 text-xs text-red-500">@assessor.ErrorMessage</div>
+                                        }
+
+                                        @if (assessor.LogMessages?.Any() == true)
+                                        {
+                                            <CollapsibleSection Title="@($"{assessor.LogMessages.Count} log message(s)")"
+                                                                Variant="CollapsibleSection.SectionVariant.Divider"
+                                                                TitleClasses="text-xs text-blue font-medium py-4 px-0"
+                                                                AdditionalClasses="ml-6 mt-2">
+                                                <div class="font-mono text-xs space-y-1 max-h-48 overflow-y-auto bg-gray-100 p-4">
+                                                    @foreach (var log in assessor.LogMessages)
+                                                    {
+                                                        <div class="text-gray-700">@log</div>
+                                                    }
+                                                </div>
+                                            </CollapsibleSection>
+                                        }
+                                    </div>
+                                    <div class="badge badge-sm @GetStatusBadgeClass(assessor.Status)">@assessor.Status</div>
+                                </div>
+                            </Card>
+                        }
+                    </div>
+                </Card>
+            }
+
+            @* ── Error / Results summary ── *@
+            @if (_error != null)
+            {
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>@_error</span>
+                </div>
+            }
+
+            @if (_assessmentResult != null)
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 class="font-bold">Profiling Complete!</h3>
+                        <div class="text-sm">
+                            Profiled @_assessmentResult.DataElementAssessments.Count data elements
+                            producing @_assessmentResult.DataElementAssessments.Sum(a => a.Characteristics.Count) total characteristics
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </Body>
+
+    <Footer>
+        <ProfilerFooter IsRunning="@_isRunning"
+                        HasResults="@(_assessmentResult != null)"
+                        CanStart="@CanStart"
+                        StartLabel="Start Scan"
+                        OnCancel="Close"
+                        OnCancelRun="CancelProfiling"
+                        OnStart="StartProfiling"
+                        OnDiscard="() => _showDiscard = true"
+                        OnSave="SaveResults" />
+    </Footer>
+</Modal>
+
+<ProfilerDiscardConfirmModal IsOpen="@_showDiscard"
+                             OnConfirm="ConfirmDiscard"
+                             OnCancel="() => _showDiscard = false" />
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter, EditorRequired] public required DataSource DataSource { get; set; }
+    [Parameter] public EventCallback<DataSourceAssessment> OnAssessmentComplete { get; set; }
+
+    private const int MaxAuthRetries = 10;
+    private static readonly TimeSpan AuthRetryDelay = TimeSpan.FromSeconds(3);
+
+    private bool _isRunning;
+    private bool _isAuthenticating;
+    private bool _usingDemo;
+    private bool _showDiscard;
+    private int _authAttempt;
+
+    private string _clientId = "";
+    private string _clientSecret = "";
+    private string _rootUrl = "";
+
+    private string DataApiUrl => EnsureTrailingSlash(_rootUrl) + "data/v3/";
+    private string AuthUrl => EnsureTrailingSlash(_rootUrl) + "oauth/token";
+
+    private AssessmentProgress? _currentProgress;
+    private DataSourceAssessment? _assessmentResult;
+    private string? _error;
+    private CancellationTokenSource? _cts;
+    private Timer? _renderTimer;
+    private volatile bool _pendingRender;
+
+    private bool CanStart => !string.IsNullOrWhiteSpace(_clientId)
+                          && !string.IsNullOrWhiteSpace(_clientSecret)
+                          && !string.IsNullOrWhiteSpace(_rootUrl);
+
+    private void UseDemoCredentials()
+    {
+        var demo = DemoApiOptions.Value;
+        _rootUrl = demo.BaseUrl ?? "";
+        _clientId = demo.ClientId ?? "";
+        _clientSecret = demo.ClientSecret ?? "";
+        _usingDemo = true;
+    }
+
+    private async Task StartProfiling()
+    {
+        _error = null;
+        _authAttempt = 0;
+
+        if (!Uri.TryCreate(DataApiUrl, UriKind.Absolute, out var baseUri))
+        {
+            _error = "Invalid API URL.";
+            return;
+        }
+
+        _isRunning = true;
+        _isAuthenticating = true;
+        _cts = new CancellationTokenSource();
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var httpClient = new HttpClient { BaseAddress = baseUri };
+            var token = await GetAccessTokenWithRetryAsync(AuthUrl, _clientId, _clientSecret, _cts.Token);
+
+            _isAuthenticating = false;
+            await InvokeAsync(StateHasChanged);
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var progress = new Progress<AssessmentProgress>(OnProgressUpdate);
+
+            _assessmentResult = await Orchestrator.RunAssessmentsAsync(
+                httpClient,
+                DataSource,
+                $"Automated Scan {DateTimeOffset.Now:yyyy-MM-dd HH:mm}",
+                progress,
+                true,
+                _cts.Token
+            );
+
+            httpClient.Dispose();
+        }
+        catch (OperationCanceledException)
+        {
+            _error = "Scan was cancelled.";
+        }
+        catch (Exception ex)
+        {
+            _error = $"Scan failed: {ex.Message}";
+        }
+        finally
+        {
+            _isAuthenticating = false;
+            _isRunning = false;
+            _cts?.Dispose();
+            _cts = null;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task<string> GetAccessTokenWithRetryAsync(string authUrl, string clientId, string clientSecret, CancellationToken ct)
+    {
+        var maxAttempts = _usingDemo ? MaxAuthRetries : 1;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            ct.ThrowIfCancellationRequested();
+            _authAttempt = attempt;
+            await InvokeAsync(StateHasChanged);
+
+            try
+            {
+                return await GetAccessTokenAsync(authUrl, clientId, clientSecret);
+            }
+            catch (Exception) when (_usingDemo && attempt < maxAttempts)
+            {
+                await Task.Delay(AuthRetryDelay, ct);
+            }
+        }
+
+        throw new InvalidOperationException("Could not connect to the demo API after several attempts. It may be unavailable — try again in a moment.");
+    }
+
+    private async Task<string> GetAccessTokenAsync(string authUrl, string clientId, string clientSecret)
+    {
+        using var authClient = new HttpClient();
+        var tokenRequest = new HttpRequestMessage(HttpMethod.Post, authUrl);
+        tokenRequest.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret
+        });
+
+        var response = await authClient.SendAsync(tokenRequest);
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"OAuth failed ({response.StatusCode}): {err}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var token = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+
+        if (token?.TryGetValue("access_token", out var accessToken) == true)
+            return accessToken.GetString() ?? throw new InvalidOperationException("Access token was null.");
+
+        throw new InvalidOperationException("No access_token in response.");
+    }
+
+    private void OnProgressUpdate(AssessmentProgress p)
+    {
+        _currentProgress = p;
+        _pendingRender = true;
+
+        _renderTimer ??= new Timer(_ =>
+        {
+            if (_pendingRender)
+            {
+                _pendingRender = false;
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 0, 500);
+    }
+
+    private async Task CancelProfiling()
+    {
+        _cts?.Cancel();
+        await Close();
+    }
+
+    private async Task SaveResults()
+    {
+        if (_assessmentResult != null)
+            await OnAssessmentComplete.InvokeAsync(_assessmentResult);
+        await Close();
+    }
+
+    private async Task ConfirmDiscard()
+    {
+        _showDiscard = false;
+        ResetState();
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private void ResetState()
+    {
+        _currentProgress = null;
+        _assessmentResult = null;
+        _error = null;
+        _isRunning = false;
+        _isAuthenticating = false;
+        _usingDemo = false;
+        _authAttempt = 0;
+        _renderTimer?.Dispose();
+        _renderTimer = null;
+    }
+
+    private static string EnsureTrailingSlash(string url) =>
+        string.IsNullOrWhiteSpace(url) ? url : url.EndsWith("/") ? url : url + "/";
+
+    private string GetStatusBadgeClass(AssessorStatus status) => status switch
+    {
+        AssessorStatus.Pending => "badge-ghost",
+        AssessorStatus.Running => "badge-warning",
+        AssessorStatus.Completed => "badge-success",
+        AssessorStatus.Failed => "badge-error",
+        _ => "badge-ghost"
+    };
+
+    private Card.AccentColor? GetAssessorAccent(AssessorStatus status) => status switch
+    {
+        AssessorStatus.Running => Card.AccentColor.Yellow,
+        AssessorStatus.Completed => Card.AccentColor.Green,
+        AssessorStatus.Failed => Card.AccentColor.Red,
+        _ => Card.AccentColor.Gray
+    };
+}

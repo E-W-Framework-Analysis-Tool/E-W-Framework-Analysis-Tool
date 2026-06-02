@@ -1,16 +1,30 @@
-@* LightboxImage.razor
-   Usage:
-     <LightboxImage Src="/images/foo.jpg" Alt="Description" Lightbox="_lightbox" />
+@*
+    LightboxImage.razor
+    Picks up the nearest <Lightbox> via cascade — no need to pass it explicitly.
+
+    Usage:
+      Somewhere in a parent (e.g. MainLayout or the page):
+        <Lightbox />
+
+      Then anywhere in the tree:
+        <LightboxImage Src="/images/foo.jpg" Alt="Description" />
 *@
 
 <img src="@Src"
      alt="@Alt"
      class="rounded-lg border border-gray-200 shadow max-w-xl mx-auto block cursor-zoom-in hover:opacity-90 transition-opacity @AdditionalClasses"
-     @onclick="() => Lightbox.Open(Src, Alt)" />
+     @onclick="HandleClick" />
 
 @code {
+    [CascadingParameter] private Lightbox? Lightbox { get; set; }
+
     [Parameter, EditorRequired] public string Src { get; set; } = default!;
     [Parameter, EditorRequired] public string Alt { get; set; } = default!;
-    [Parameter, EditorRequired] public Lightbox Lightbox { get; set; } = default!;
     [Parameter] public string AdditionalClasses { get; set; } = "";
+
+    private async Task HandleClick()
+    {
+        if (Lightbox is not null)
+            await Lightbox.Open(Src, Alt);
+    }
 }
