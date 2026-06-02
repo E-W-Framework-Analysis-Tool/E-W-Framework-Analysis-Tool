@@ -29,7 +29,6 @@ public class FrameworkCoverageService
             QuestionScores = questionScores,
             BySourceType = new SourceTypeCoverageBreakdown
             {
-                Combined = AverageCoverage(questionScores),
                 Automated = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType is DataSourceType.EdFiApi or DataSourceType.CedsDw)])),
                 Manual = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType == DataSourceType.Custom)])),
                 Ecs = AverageCoverage(ScoreQuestions([.. assessmentList.Where(a => a.DataSourceType == DataSourceType.EcsState)])),
