@@ -23,7 +23,13 @@ public class TeacherEffectivenessStudentSurveysK12EdFiAssessor : IEdFiAssessor
         "MET Project",
         "Measures of Effective Teaching",
         "student voice",
-        "instructional practice"
+        "instructional practice",
+
+        "Panorama Student Survey",
+        "Panorama",
+        "Pedagogical Effectiveness",
+        "5Essentials",
+        "Five Essentials"
     ];
 
     public string DataElementName => "Teacher effectiveness student surveys (K-12)";

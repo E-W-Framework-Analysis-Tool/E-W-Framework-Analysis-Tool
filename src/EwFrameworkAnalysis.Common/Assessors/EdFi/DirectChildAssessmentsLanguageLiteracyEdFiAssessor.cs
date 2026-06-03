@@ -22,7 +22,14 @@ public class DirectChildAssessmentsLanguageLiteracyEdFiAssessor : IEdFiAssessor
         "PALS-PreK",
         "PALS PreK",
         "WJ Language",
-        "Woodcock-Johnson Language"
+        "Woodcock-Johnson Language",
+
+        "ECAD",
+        "Woodcock-Johnson IV Tests of ECAD",
+        "Letter-Word",
+        "Writing subtest",
+        "IGDIs Early Literacy",
+        "IGDI"
     ];
 
     public string DataElementName => "Direct child assessments (language and literacy)";

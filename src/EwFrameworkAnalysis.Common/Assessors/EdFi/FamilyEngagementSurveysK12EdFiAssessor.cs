@@ -21,7 +21,13 @@ public class FamilyEngagementSurveysK12EdFiAssessor : IEdFiAssessor
         "caregiver survey",
         "family survey",
         "parent survey",
-        "parent satisfaction"
+        "parent satisfaction",
+
+        "Panorama Family-School Relationships",
+        "Family-School Relationships",
+        "CORE Districts",
+        "School Culture & Climate",
+        "School Culture and Climate"
     ];
 
     public string DataElementName => "Family engagement surveys (K-12)";

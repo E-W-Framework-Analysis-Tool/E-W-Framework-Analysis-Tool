@@ -21,7 +21,15 @@ public class DirectChildAssessmentsCognitionEdFiAssessor : IEdFiAssessor
         "Mullen Scales",
         "Mullen",
         "WPPSI",
-        "Wechsler Preschool"
+        "Wechsler Preschool",
+
+        "ECAD",
+        "Woodcock-Johnson IV Tests of ECAD",
+        "Number Sense",
+        "IGDIs Early Numeracy",
+        "IGDI",
+        "Research Based Early Mathematics Assessment",
+        "REMA"
     ];
 
     public string DataElementName => "Direct child assessments (cognition)";
