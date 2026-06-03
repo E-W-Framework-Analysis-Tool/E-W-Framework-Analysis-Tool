@@ -61,9 +61,6 @@
     [Parameter]
     public EventCallback<bool> IsExpandedChanged { get; set; }
 
-    /// <summary>Overrides container classes entirely when provided.</summary>
-    [Parameter] public string? SectionClasses { get; set; }
-
     /// <summary>Overrides title classes entirely when provided.</summary>
     [Parameter] public string? TitleClasses { get; set; }
 
@@ -81,7 +78,7 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string ContainerClass => SectionClasses ?? Variant switch
+    private string ContainerClass => Variant switch
     {
         SectionVariant.Divider => "collapse collapse-arrow border-b border-gray-200 rounded-none",
         _ => "collapse collapse-arrow bg-white border border-gray-200 rounded"

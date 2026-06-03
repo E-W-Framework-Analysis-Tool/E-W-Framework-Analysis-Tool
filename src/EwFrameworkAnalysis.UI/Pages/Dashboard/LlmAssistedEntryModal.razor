@@ -1,4 +1,3 @@
-@using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Services
 @using EwFrameworkAnalysis.UI.Components
 @inject IJSRuntime JS
@@ -8,6 +7,7 @@
        Icon="fa-robot"
        Title="LLM-Assisted Entry"
        Subtitle="Use an AI assistant to pre-fill a data source profile from your schema or data dictionary."
+       Wide
        CloseRequested="ResetState">
     <Body>
         <div class="space-y-4">
@@ -20,13 +20,13 @@
                     <li>Paste it into your LLM of choice (ChatGPT, Claude, Gemini, etc.).</li>
                     <li>Append your schema or data dictionary at the bottom where indicated.</li>
                     <li>Save the response as a <code class="bg-blue/10 px-1 rounded">.json</code> file.</li>
-                    <li>Return here and use <span class="font-medium text-blue">Import</span> to load it as a new data source.</li>
+                    <li>Return to the Dashboard and use <span class="font-medium text-blue">File > Import Data Source</span> to load it as a new data source.</li>
                 </ol>
             </div>
 
             <!-- Expandable tips -->
-            <CollapsibleSection SectionClasses="border border-gray-200 rounded-xl bg-gray-50/60"
-                                TitleClasses="text-sm font-medium text-gray-700">
+            <CollapsibleSection TitleClasses="text-sm font-medium text-gray-700"
+                                Variant="CollapsibleSection.SectionVariant.Block">
                 <TitleContent>
                     <span class="flex items-center gap-2">
                         <i class="fas fa-lightbulb text-yellow-400 text-xs"></i>
