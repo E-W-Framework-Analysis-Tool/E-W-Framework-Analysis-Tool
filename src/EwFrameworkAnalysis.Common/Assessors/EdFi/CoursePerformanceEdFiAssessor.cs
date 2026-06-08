@@ -65,13 +65,13 @@ public class CoursePerformanceEdFiAssessor : IEdFiAssessor
 
         // Count transcripts per course straight from the API's totalCount header.
         var totalRecords = 0;
-        
+
         var subjectDistribution = new Dictionary<string, int>
         {
             [EdFiDescriptorHelper.ParseDescriptorValue(ENGLISH_SUBJECT_DESCRIPTOR)] = 0,
             [EdFiDescriptorHelper.ParseDescriptorValue(MATH_SUBJECT_DESCRIPTOR)] = 0
         };
-        
+
         var resultDistribution = _resultDescriptors.ToDictionary(
             EdFiDescriptorHelper.ParseDescriptorValue, _ => 0);
         var resultBucketTotal = 0;
