@@ -1755,7 +1755,7 @@
     "sector": "WF",
     "indicator": "School and workplace racial and ethnic diversity",
     "elementName": "Race and ethnicity (individual)",
-    "reported": "Available"
+    "reported": "PartiallyAvailable"
   },
   {
     "sector": "PK",
@@ -1779,7 +1779,7 @@
     "sector": "WF",
     "indicator": "School and workplace socioeconomic diversity",
     "elementName": "Income level (individual/family)",
-    "reported": "Available"
+    "reported": "PartiallyAvailable"
   },
   {
     "sector": "PK",
