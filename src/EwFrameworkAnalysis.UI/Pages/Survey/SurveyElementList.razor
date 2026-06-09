@@ -59,6 +59,27 @@
         {
             <div class="flex flex-wrap gap-4 items-start pt-2 pb-1 px-1 border-t border-gray-200">
                 <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Availability</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
+                        {
+                            var isSelected = _selectedAvailabilities.Contains(avail);
+                            <input class="btn btn-xs @(isSelected ? GetAvailabilityBtnClass(avail) : "")" type="checkbox"
+                                   checked="@isSelected" @onchange="() => ToggleAvailability(avail)"
+                                   aria-label="@avail.GetDisplayName()" />
+                        }
+                        @if (_selectedAvailabilities.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedAvailabilities.Clear()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="w-px self-stretch bg-gray-200"></div>
+
+                <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Interest Level</span>
                     <div class="flex flex-wrap gap-1">
                         @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
@@ -71,27 +92,6 @@
                         @if (_selectedInterests.Any())
                         {
                             <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedInterests.Clear()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
-
-                <div class="w-px self-stretch bg-gray-200"></div>
-
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Availability</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
-                        {
-                            var isSelected = _selectedAvailabilities.Contains(avail);
-                            <input class="btn btn-xs @(isSelected? GetAvailabilityBtnClass(avail) : "")" type="checkbox"
-                                   checked="@isSelected" @onchange="() => ToggleAvailability(avail)"
-                                   aria-label="@avail.GetDisplayName()" />
-                        }
-                        @if (_selectedAvailabilities.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost" @onclick="() => _selectedAvailabilities.Clear()">
                                 <i class="fas fa-times"></i>
                             </button>
                         }
@@ -123,27 +123,6 @@
                     <div class="flex-1"></div>
                     <div class="flex items-center gap-3 ml-auto flex-shrink-0">
 
-                        <!-- Interest label + spacer -->
-                        <div class="flex flex-col items-center gap-0.5">
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Interest</span>
-                                <div class="relative group cursor-help">
-                                    <i class="fas fa-question-circle text-[10px] text-gray-400"></i>
-                                    <div class="absolute right-0 top-4 z-30 hidden group-hover:block w-52 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl leading-snug">
-                                        How important is this data element? High = actively seeking, Low = useful but not critical, None = not relevant.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-1 opacity-0 pointer-events-none select-none" aria-hidden="true">
-                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
-                                {
-                                    <div class="btn btn-xs btn-ghost gap-1">@GetInterestIcon(level) <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span></div>
-                                }
-                            </div>
-                        </div>
-
-                        <div class="w-px self-stretch bg-gray-200"></div>
-
                         <!-- Availability label + spacer -->
                         <div class="flex flex-col items-center gap-0.5">
                             <div class="flex items-center gap-1">
@@ -159,6 +138,27 @@
                                 @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
                                 {
                                     <div class="btn btn-xs btn-ghost gap-1">@GetAvailabilityIcon(avail) <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span></div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="w-px self-stretch bg-gray-200"></div>
+
+                        <!-- Interest label + spacer -->
+                        <div class="flex flex-col items-center gap-0.5">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Interest</span>
+                                <div class="relative group cursor-help">
+                                    <i class="fas fa-question-circle text-[10px] text-gray-400"></i>
+                                    <div class="absolute right-0 top-4 z-30 hidden group-hover:block w-52 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl leading-snug">
+                                        How important is this data element? High = actively seeking, Low = useful but not critical, None = not relevant.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-1 opacity-0 pointer-events-none select-none" aria-hidden="true">
+                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
+                                {
+                                    <div class="btn btn-xs btn-ghost gap-1">@GetInterestIcon(level) <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span></div>
                                 }
                             </div>
                         </div>
@@ -204,18 +204,6 @@
 
                         <div class="flex items-center gap-3 ml-auto flex-shrink-0" @onclick:stopPropagation="true">
                             <div class="flex gap-1">
-                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
-                                {
-                                    <button class="btn btn-xs @GetCategoryInterestBtnClass(category, level) gap-1"
-                                            @onclick="() => SetCategoryInterest(category, level)"
-                                            title="Set all: @level.GetDisplayName()">
-                                        @GetInterestIcon(level)
-                                        <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
-                                    </button>
-                                }
-                            </div>
-                            <div class="w-px self-stretch bg-gray-300"></div>
-                            <div class="flex gap-1">
                                 @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
                                 {
                                     <button class="btn btn-xs @GetCategoryAvailabilityBtnClass(category, avail) gap-1"
@@ -223,6 +211,18 @@
                                             title="Set all: @avail.GetDisplayName()">
                                         @GetAvailabilityIcon(avail)
                                         <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
+                                    </button>
+                                }
+                            </div>
+                            <div class="w-px self-stretch bg-gray-300"></div>
+                            <div class="flex gap-1">
+                                @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
+                                {
+                                    <button class="btn btn-xs @GetCategoryInterestBtnClass(category, level) gap-1"
+                                            @onclick="() => SetCategoryInterest(category, level)"
+                                            title="Set all: @level.GetDisplayName()">
+                                        @GetInterestIcon(level)
+                                        <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
                                     </button>
                                 }
                             </div>
@@ -261,6 +261,20 @@
                                     </div>
 
                                     <div class="flex items-center gap-3 ml-auto flex-shrink-0">
+                                        <div class="flex gap-1">
+                                            @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
+                                            {
+                                                var isActive = response?.Availability == avail;
+                                                <button class="btn btn-xs @(isActive? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline") gap-1"
+                                                        @onclick="() => SetAvailability(element.Name, avail)"
+                                                        title="@avail.GetDisplayName()">
+                                                    @GetAvailabilityIcon(avail)
+                                                    <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
+                                                </button>
+                                            }
+                                        </div>
+
+                                        <div class="w-px self-stretch bg-gray-400"></div>
 
                                         <div class="flex gap-1">
                                             @foreach (var level in Enum.GetValues<InterestLevel>().Reverse())
@@ -271,21 +285,6 @@
                                                         title="@level.GetDisplayName()">
                                                     @GetInterestIcon(level)
                                                     <span class="hidden sm:inline text-[10px]">@level.GetShortName()</span>
-                                                </button>
-                                            }
-                                        </div>
-
-                                        <div class="w-px self-stretch bg-gray-400"></div>
-
-                                        <div class="flex gap-1">
-                                            @foreach (var avail in Enum.GetValues<SurveyAvailability>().Reverse())
-                                            {
-                                                var isActive = response?.Availability == avail;
-                                                <button class="btn btn-xs @(isActive? GetAvailabilityBtnClass(avail) : "btn-ghost btn-outline") gap-1"
-                                                        @onclick="() => SetAvailability(element.Name, avail)"
-                                                        title="@avail.GetDisplayName()">
-                                                    @GetAvailabilityIcon(avail)
-                                                    <span class="hidden sm:inline text-[10px]">@avail.GetShortName()</span>
                                                 </button>
                                             }
                                         </div>
