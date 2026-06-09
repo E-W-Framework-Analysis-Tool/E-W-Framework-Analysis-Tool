@@ -95,7 +95,7 @@ public class EdFiAssessmentOrchestratorTests
         var orchestrator = new EdFiAssessmentOrchestrator(assessors, maxDegreeOfParallelism: 1);
 
         var progressReports = new ConcurrentBag<AssessmentProgress>();
-        var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
+        var progress = new SynchronousProgress<AssessmentProgress>(p => progressReports.Add(p));
 
         // Act
         await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, ct: TestContext.Current.CancellationToken);
@@ -121,7 +121,7 @@ public class EdFiAssessmentOrchestratorTests
             A<HttpClient>._,
             A<DataSource>._,
             A<AssessorContext>._))
-            .Invokes((HttpClient client, DataSource ds, AssessorContext context) =>
+            .Invokes((HttpClient _, DataSource _, AssessorContext context) =>
             {
                 // Simulate assessor reporting progress
                 context.ReportProgress(50, "Halfway there");
@@ -135,8 +135,8 @@ public class EdFiAssessmentOrchestratorTests
 
         var orchestrator = new EdFiAssessmentOrchestrator(new[] { fakeAssessor }, maxDegreeOfParallelism: 1);
 
-        var progressReports = new List<AssessmentProgress>();
-        var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
+        var progressReports = new ConcurrentBag<AssessmentProgress>();
+        var progress = new SynchronousProgress<AssessmentProgress>(p => progressReports.Add(p));
 
         // Act
         await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, ct: TestContext.Current.CancellationToken);
@@ -175,15 +175,18 @@ public class EdFiAssessmentOrchestratorTests
         var assessors = new List<IEdFiAssessor> { fakeAssessor1, fakeAssessor2, fakeAssessor3 };
         var orchestrator = new EdFiAssessmentOrchestrator(assessors, maxDegreeOfParallelism: 1);
 
-        var progressReports = new List<AssessmentProgress>();
-        var progress = new Progress<AssessmentProgress>(p => progressReports.Add(p));
+        var progressReports = new ConcurrentBag<AssessmentProgress>();
+        var progress = new SynchronousProgress<AssessmentProgress>(p => progressReports.Add(p));
 
-        // Act
-        var result = await orchestrator.RunAssessmentsAsync(_httpClient, _testDataSource, progress: progress, continueOnError: true, ct: TestContext.Current.CancellationToken);
+        var result = await orchestrator.RunAssessmentsAsync(
+            _httpClient, _testDataSource,
+            progress: progress,
+            continueOnError: true,
+            ct: TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(2, result.DataElementAssessments.Count); // Only successful ones
+        Assert.Equal(2, result.DataElementAssessments.Count);
 
         var finalReport = progressReports.Last();
         Assert.Equal(3, finalReport.CompletedAssessors);
@@ -282,6 +285,14 @@ public class EdFiAssessmentOrchestratorTests
         // Assert
         Assert.NotNull(result);
         Assert.Single(result.DataElementAssessments);
+    }
+
+    // Invokes the callback inline on the calling thread, unlike Progress<T> which
+    // posts to the captured sync context. This prevents callbacks from arriving
+    // after the awaited task completes when the thread pool is under load.
+    private sealed class SynchronousProgress<T>(Action<T> handler) : IProgress<T>
+    {
+        public void Report(T value) => handler(value);
     }
 
     private IEdFiAssessor CreateFakeAssessor(string name, int recordCount)

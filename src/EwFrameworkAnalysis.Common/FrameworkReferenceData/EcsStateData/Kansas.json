@@ -627,19 +627,19 @@
     "sector": "PS",
     "indicator": "Postsecondary certificate or degree completion",
     "elementName": "Postsecondary degree program length",
-    "reported": "PartiallyAvailable"
+    "reported": "Available"
   },
   {
     "sector": "PS",
     "indicator": "Postsecondary certificate or degree completion",
     "elementName": "Postsecondary enrollment date",
-    "reported": "PartiallyAvailable"
+    "reported": "Available"
   },
   {
     "sector": "PS",
     "indicator": "Postsecondary certificate or degree completion",
     "elementName": "Postsecondary credential award date",
-    "reported": "PartiallyAvailable"
+    "reported": "Available"
   },
   {
     "sector": "PS",

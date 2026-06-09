@@ -193,24 +193,93 @@ var options = new JsonSerializerOptions { WriteIndented = true };
 
 foreach (var (state, recordMap) in stateRecords.OrderBy(kvp => kvp.Key))
 {
-    var records = recordMap.Values.Select(r =>
+    var records = recordMap.Values.Select(r => new Dictionary<string, string?>
     {
-        var output = new Dictionary<string, string?>
-        {
-            ["sector"] = r["sector"],
-            ["indicator"] = r["indicator"],
-            ["elementName"] = r["elementName"],
-            // ["srcElementName"] = r["rawElementName"],
-            ["reported"] = MapStatus(r["reported"])
-        };
-        if (includeCollected)
-            output["collected"] = MapStatus(r["collected"]);
-        return output;
+        ["sector"]      = r["sector"],
+        ["indicator"]   = r["indicator"],
+        ["elementName"] = r["elementName"],
+        ["reported"]    = MapStatus(r["reported"])
     }).ToList();
+
     var fileName = Path.Combine(outputDir, state + ".json");
-    var json = JsonSerializer.Serialize(records, options);
-    File.WriteAllText(fileName, json);
+    File.WriteAllText(fileName, JsonSerializer.Serialize(records, options));
     Console.WriteLine($"  {state}: {records.Count} records -> {Path.GetFileName(fileName)}");
+
+    if (includeCollected)
+    {
+        var now = DateTimeOffset.Now;
+        var assessmentId = Guid.NewGuid().ToString();
+        var dataSourceId = Guid.NewGuid().ToString();
+
+        int? MapAvailabilityValue(string status) => status.Trim().ToLowerInvariant() switch
+        {
+            "found"     => 0, // Available
+            "partial"   => 1, // PartiallyAvailable
+            "not found" => 2, // NotAvailable
+            _           => null
+        };
+
+        var dataElementAssessments = recordMap.Values
+            .Where(r => MapAvailabilityValue(r["collected"]) is not null)
+            .Select(r => new
+            {
+                id           = Guid.NewGuid().ToString(),
+                dataElementName = r["elementName"],
+                assessedAt   = now,
+                characteristics = new[]
+                {
+                    new Dictionary<string, object?>
+                    {
+                        ["$type"]     = "ReportedAvailability",
+                        ["value"]     = MapAvailabilityValue(r["collected"])!.Value,
+                        ["id"]        = Guid.NewGuid().ToString(),
+                        ["remarks"]   = null,
+                        ["measuredAt"] = now
+                    }
+                },
+                remarks                  = (string?)null,
+                availabilityUserOverride = (string?)null
+            }).ToList();
+
+        var project = new
+        {
+            id             = Guid.NewGuid().ToString(),
+            schemaVersion  = 2,
+            title          = $"ECS Collected Data — {state}",
+            createdAt      = now,
+            lastModifiedAt = now,
+            dataSources    = new[]
+            {
+                new
+                {
+                    id          = dataSourceId,
+                    name        = $"ECS - {state} Collected Data",
+                    description = $"Collected data indicators for {state} as surveyed by the Education Commission of the States (ECS). " +
+                                  "These elements were noted as collected by the state but may be in varying states of readiness for use. " +
+                                  "Data collected does not necessarily imply it is reportable as-is or publicly available. " +
+                                  "This profile is intended for authorized internal reference only.",
+                    enabled     = true,
+                    type        = 3,
+                    assessments = new[]
+                    {
+                        new
+                        {
+                            id         = assessmentId,
+                            name       = $"{state} - Collected",
+                            conductedAt = now,
+                            notes      = (string?)null,
+                            active     = true,
+                            dataElementAssessments
+                        }
+                    }
+                }
+            }
+        };
+
+        var collectedFileName = Path.Combine(outputDir, state + ".collected.json");
+        File.WriteAllText(collectedFileName, JsonSerializer.Serialize(project, options));
+        Console.WriteLine($"  {state}: {dataElementAssessments.Count} collected elements -> {Path.GetFileName(collectedFileName)}");
+    }
 }
 
 Console.WriteLine($"Total: {stateRecords.Count} state(s) exported.");

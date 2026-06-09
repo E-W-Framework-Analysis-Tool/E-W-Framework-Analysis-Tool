@@ -35,15 +35,7 @@ public class FrameworkCoverage
             .OrderBy(r => r.Sector)
             .ToList();
 
-    public IReadOnlyList<DataElementScore> DisaggregateScores =>
-        EwFrameworkDisaggregates.Disaggregates
-            .SelectMany(d => d.DataElementNames.Count > 0
-                ? d.DataElementNames.Select(name =>
-                    DataElementScores.FirstOrDefault(s =>
-                        s.DataElementName.Equals(name, StringComparison.OrdinalIgnoreCase))
-                    ?? new DataElementScore { DataElementName = name })
-                : [new DataElementScore { DataElementName = d.Name }])
-            .ToList();
+    public List<DisaggregateCoverageScore> DisaggregateScores { get; init; } = [];
 
     public SourceTypeCoverageBreakdown BySourceType { get; init; } = new();
 }
@@ -100,13 +92,22 @@ public class DataElementSourceScore
     public string Notes { get; set; } = string.Empty;
 }
 
+public class DisaggregateCoverageScore
+{
+    public string Name { get; init; } = string.Empty;
+    public List<DataElementScore> DataElementScores { get; init; } = [];
+
+    public decimal CoverageScore => DataElementScores.Count == 0
+        ? 0
+        : Math.Round(DataElementScores.Average(s => s.QualityScore), 2);
+}
+
 /// <summary>
 /// Pre-computed per-source-type coverage breakdowns.
 /// Each slice requires a separate scoring pass so computed by the service, not derived.
 /// </summary>
 public class SourceTypeCoverageBreakdown
 {
-    public decimal Combined { get; init; }   // Total combined
     public decimal Automated { get; init; }  // EdFi + CEDS
     public decimal Manual { get; init; }      // Custom
     public decimal Ecs { get; init; }         // EcsState
