@@ -1,4 +1,3 @@
-using EdFi.OdsApi.Sdk.Models.Ed_Fi;
 using EwFrameworkAnalysis.Common.Models.Project;
 using EwFrameworkAnalysis.Common.Services;
 
@@ -6,6 +5,17 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class CourseOutcomeEdFiAssessor : IEdFiAssessor
 {
+    // Course attempt results, counted via the API's totalCount header.
+    private static readonly string[] _resultDescriptors =
+    [
+        "uri://ed-fi.org/CourseAttemptResultDescriptor#Pass",
+        "uri://ed-fi.org/CourseAttemptResultDescriptor#Fail",
+        "uri://ed-fi.org/CourseAttemptResultDescriptor#Incomplete",
+        "uri://ed-fi.org/CourseAttemptResultDescriptor#Withdrawn"
+    ];
+
+    private const string NOT_SPECIFIED_LABEL = "Not Specified";
+
     public string DataElementName => "Course outcome";
 
     public string AssessmentDescription =>
@@ -16,25 +26,33 @@ public class CourseOutcomeEdFiAssessor : IEdFiAssessor
     {
         context.ReportProgress(0, "Querying API...");
 
-        var distribution = new Dictionary<string, int>();
-        var totalRecords = 0;
+        // Total transcripts 
+        var totalRecords = await EdFiApiPatterns.CountFromHeaderAsync(
+            httpClient, "ed-fi/courseTranscripts");
 
-        await EdFiApiPatterns.PageAndProcessAsync<EdFiCourseTranscript>(
-            httpClient,
-            "ed-fi/courseTranscripts",
-            transcript =>
-            {
-                totalRecords++;
+        var distribution = _resultDescriptors.ToDictionary(
+            EdFiDescriptorHelper.ParseDescriptorValue, _ => 0);
+        var bucketTotal = 0;
 
-                var result = transcript.CourseAttemptResultDescriptor;
-                var label = !string.IsNullOrWhiteSpace(result)
-                    ? EdFiDescriptorHelper.ParseDescriptorValue(result)
-                    : "Not Specified";
+        var processed = 0;
+        foreach (var descriptor in _resultDescriptors)
+        {
+            var count = await EdFiApiPatterns.CountFromHeaderAsync(
+                httpClient,
+                "ed-fi/courseTranscripts",
+                new Dictionary<string, string> { ["courseAttemptResultDescriptor"] = descriptor });
 
-                distribution[label] = distribution.GetValueOrDefault(label) + 1;
-            },
-            context
-        );
+            distribution[EdFiDescriptorHelper.ParseDescriptorValue(descriptor)] = count;
+            bucketTotal += count;
+
+            processed++;
+            context.ReportProgress(processed * 100 / _resultDescriptors.Length, "Counting outcomes...");
+        }
+
+        // Transcripts whose result is absent or outside the known set.
+        var notSpecified = totalRecords - bucketTotal;
+        if (notSpecified > 0)
+            distribution[NOT_SPECIFIED_LABEL] = notSpecified;
 
         context.Log($"Found {totalRecords:N0} course transcripts across {distribution.Count} outcome types");
         context.ReportProgress(100, "Complete");
