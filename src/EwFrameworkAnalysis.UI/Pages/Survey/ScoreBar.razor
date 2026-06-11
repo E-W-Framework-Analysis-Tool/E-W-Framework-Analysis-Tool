@@ -1,0 +1,57 @@
+@namespace EwFrameworkAnalysis.UI.Pages.Survey
+
+<div class="flex flex-col gap-0.5 flex-1">
+    @if (!Compact)
+    {
+        <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">@Label</span>
+    }
+    <div class="relative flex items-center gap-1.5">
+        <!-- Bar -->
+        <div class="relative w-full bg-gray-100 rounded-full h-2">
+            <div class="@BarColor h-2 rounded-full transition-all duration-300"
+                 style="width:@AvgPct%"></div>
+            <!-- Per-respondent dots -->
+            @if (PerRespondent is { Length: > 1 })
+            {
+                @for (var i = 0; i < PerRespondent.Length; i++)
+                {
+                    var pct = (int)Math.Round(PerRespondent[i] * 100);
+                    var color = i < RespondentColors.Length ? RespondentColors[i] : "#9ca3af";
+                    <div class="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border border-white"
+                         style="left:calc(@pct% - 3px); background:@color;"
+                         title="@color: @pct%">
+                    </div>
+                }
+            }
+        </div>
+        <span class="text-xs font-bold @TextColor w-8 text-right">@AvgPct%</span>
+    </div>
+    @if (Compact)
+    {
+        <span class="text-[9px] text-gray-400">@Label</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public double Score { get; set; }
+    [Parameter] public double[]? PerRespondent { get; set; }
+    [Parameter] public string[] RespondentColors { get; set; } = [];
+    [Parameter] public bool Compact { get; set; } = false;
+
+    private int AvgPct => (int)Math.Round(Score * 100);
+
+    private string BarColor => AvgPct switch
+    {
+        >= 70 => "bg-success",
+        >= 40 => "bg-warning",
+        _     => "bg-error"
+    };
+
+    private string TextColor => AvgPct switch
+    {
+        >= 70 => "text-success",
+        >= 40 => "text-warning",
+        _     => "text-error"
+    };
+}

@@ -6,6 +6,7 @@ using EwFrameworkAnalysis.Common.Scoring;
 using EwFrameworkAnalysis.Common.Services;
 using EwFrameworkAnalysis.UI;
 using EwFrameworkAnalysis.UI.Options;
+using EwFrameworkAnalysis.UI.Pages.Survey;
 using EwFrameworkAnalysis.UI.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -50,6 +51,8 @@ builder.Services.AddSingleton<AssessorMappingService>();
 builder.Services.AddSingleton<WalkthroughService>();
 builder.Services.AddScoped<ScrollService>();
 builder.Services.AddSingleton<BusyService>();
+
+builder.Services.AddSingleton<SurveyBreakdownService>();
 
 // Use HttpClient in scoped situations, use IHttpClientFactory pattern for Singletons
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

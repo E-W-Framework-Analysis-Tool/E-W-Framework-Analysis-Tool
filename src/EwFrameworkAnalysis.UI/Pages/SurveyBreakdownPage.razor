@@ -1,0 +1,573 @@
+@page "/survey/breakdown"
+@using EwFrameworkAnalysis.Common.FrameworkReferenceData
+@using EwFrameworkAnalysis.Common.Models.Framework
+@using EwFrameworkAnalysis.UI.Pages.Survey
+@inject SurveyBreakdownService BreakdownSvc
+@inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Survey Breakdown</PageTitle>
+
+<div class="flex h-screen bg-base-200 overflow-hidden">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+    <aside class="w-56 flex-shrink-0 bg-base-100 border-r border-gray-200 flex flex-col">
+
+        <!-- Sidebar header -->
+        <div class="flex-shrink-0 px-4 py-4 border-b border-gray-200">
+            <button class="btn btn-sm btn-ghost gap-1 -ml-2 mb-2" @onclick="@(() => Nav.NavigateTo("/survey"))">
+                <i class="fas fa-arrow-left text-xs"></i> Back
+            </button>
+            <h2 class="font-bold text-sm">Respondents</h2>
+            <p class="text-xs text-gray-400 mt-0.5">@ActiveRespondentCount of @BreakdownSvc.Respondents.Count active</p>
+        </div>
+
+        <!-- Scrollable respondent list -->
+        <div class="flex-1 overflow-y-auto py-2 min-h-0">
+            @foreach (var (name, i) in BreakdownSvc.Respondents.Keys.Select((n, i) => (n, i)))
+            {
+                var isHidden = _hiddenRespondents.Contains(name);
+                var isSoloed = _soloedRespondent == name;
+                var color = RespondentColors[i % RespondentColors.Length];
+
+                <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 group">
+                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0 cursor-pointer"
+                         style="background:@(isHidden ? "#d1d5db" : color)"
+                         title="@(isSoloed ? "Click to unsolo" : "Click to solo")"
+                         @onclick="() => ToggleSolo(name)">
+                    </div>
+                    <span class="flex-1 text-xs truncate @(isHidden ? "text-gray-300 line-through" : "text-gray-700")"
+                          title="@name">
+                        @name
+                    </span>
+                    <input type="checkbox"
+                           class="checkbox checkbox-xs"
+                           checked="@(!isHidden)"
+                           @onchange="() => ToggleRespondent(name)" />
+                    <button class="opacity-0 group-hover:opacity-100 btn btn-xs btn-ghost btn-square text-gray-400 hover:text-error"
+                            title="Remove respondent"
+                            @onclick="() => RemoveRespondent(name)">
+                        <i class="fas fa-times text-[10px]"></i>
+                    </button>
+                </div>
+
+                @if (isSoloed)
+                {
+                    <div class="mx-3 mb-1 text-[10px] font-semibold text-primary uppercase tracking-wide">
+                        Soloed
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Always-visible sidebar footer -->
+        <div class="flex-shrink-0 px-3 py-3 border-t border-gray-200 space-y-2">
+            <button class="btn btn-sm btn-outline w-full gap-1" @onclick="TriggerLoadMore">
+                <i class="fas fa-plus text-xs"></i> Add Files
+            </button>
+            @if (BreakdownSvc.Respondents.Any())
+            {
+                <button class="btn btn-sm btn-ghost w-full gap-1 text-error hover:bg-red-50"
+                        @onclick="@(() => { BreakdownSvc.Clear(); Nav.NavigateTo("/survey"); })">
+                    <i class="fas fa-trash text-xs"></i> Clear All
+                </button>
+            }
+        </div>
+    </aside>
+
+    <!-- ── Main ────────────────────────────────────────────────────────── -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- Toolbar -->
+        <div class="bg-base-100 border-b border-gray-200 px-6 py-3 flex items-center gap-4 flex-wrap flex-shrink-0">
+            <div>
+                <h1 class="text-lg font-bold">Framework Breakdown</h1>
+                <p class="text-xs text-gray-400">
+                    Scores averaged across @ActiveRespondentCount active respondent(s).
+                    @if (_soloedRespondent != null)
+                    {
+                        <span class="text-primary font-semibold">Viewing solo: @_soloedRespondent</span>
+                    }
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2 ml-auto flex-wrap">
+                <!-- View toggle -->
+                <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                    <button class="btn btn-sm rounded-none border-none @(_view == BreakdownView.EssentialQuestions ? "btn-primary" : "btn-ghost")"
+                            @onclick="() => _view = BreakdownView.EssentialQuestions">
+                        <i class="fas fa-question-circle text-xs mr-1"></i> Essential Questions
+                    </button>
+                    <button class="btn btn-sm rounded-none border-none @(_view == BreakdownView.Sectors ? "btn-primary" : "btn-ghost")"
+                            @onclick="() => _view = BreakdownView.Sectors">
+                        <i class="fas fa-layer-group text-xs mr-1"></i> Sectors
+                    </button>
+                </div>
+
+                <!-- Sort -->
+                <div class="flex items-center gap-1">
+                    <span class="text-xs text-gray-400">Sort</span>
+                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                        <button class="btn btn-xs rounded-none border-none @(_sort == BreakdownSort.Availability ? "btn-primary" : "btn-ghost")"
+                                @onclick="() => _sort = BreakdownSort.Availability">
+                            Availability
+                        </button>
+                        <button class="btn btn-xs rounded-none border-none @(_sort == BreakdownSort.Interest ? "btn-primary" : "btn-ghost")"
+                                @onclick="() => _sort = BreakdownSort.Interest">
+                            Interest
+                        </button>
+                        <button class="btn btn-xs rounded-none border-none @(_sort == BreakdownSort.CanShare ? "btn-primary" : "btn-ghost")"
+                                @onclick="() => _sort = BreakdownSort.CanShare">
+                            Can Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="bg-base-200 flex-1 overflow-y-auto px-6 py-5">
+
+            @if (!BreakdownSvc.Respondents.Any())
+            {
+                <!-- Empty state — prominent upload CTA -->
+                <div class="flex flex-col items-center justify-center h-full gap-4 text-center">
+                    <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center">
+                        <i class="fas fa-file-csv text-3xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700">No respondents loaded yet</p>
+                        <p class="text-sm text-gray-400 mt-1">Load one or more survey CSV files to see the breakdown.</p>
+                    </div>
+                    <button class="btn btn-primary gap-2" @onclick="TriggerLoadMore">
+                        <i class="fas fa-folder-open"></i> Load CSV Files
+                    </button>
+                </div>
+            }
+            else if (_view == BreakdownView.EssentialQuestions)
+            {
+                <div class="space-y-2">
+                    @foreach (var row in GetEqRows())
+                    {
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+                            <div class="flex items-center gap-4 px-5 py-3 cursor-pointer hover:bg-gray-50"
+                                 @onclick="@(() => ToggleExpanded($"eq-{row.Number}"))">
+                                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-blue/10 flex items-center justify-center">
+                                    <span class="text-xs font-bold text-blue">@row.Number</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold text-sm text-gray-800">@row.Summary</div>
+                                    <div class="flex gap-1 mt-0.5">
+                                        @foreach (var s in row.Sectors)
+                                        {
+                                            <span class="badge badge-xs badge-ghost">@s</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-5 flex-shrink-0 w-3/5 justify-end">
+                                    <ScoreBar Label="Availability" Score="row.AvailabilityScore"
+                                              PerRespondent="row.AvailabilityPerRespondent"
+                                              RespondentColors="GetActiveColors()" />
+                                    <ScoreBar Label="Interest" Score="row.InterestScore"
+                                              PerRespondent="row.InterestPerRespondent"
+                                              RespondentColors="GetActiveColors()" />
+                                    <ScoreBar Label="Can Share" Score="row.CanShareScore"
+                                              PerRespondent="row.CanSharePerRespondent"
+                                              RespondentColors="GetActiveColors()" />
+                                    <i class="fas @(IsExpanded($"eq-{row.Number}") ? "fa-chevron-up" : "fa-chevron-down") text-xs text-gray-400 ml-1"></i>
+                                </div>
+                            </div>
+
+                            @if (IsExpanded($"eq-{row.Number}"))
+                            {
+                                <div class="border-t border-gray-100 divide-y divide-gray-100">
+                                    @foreach (var ind in row.Indicators)
+                                    {
+                                        <div class="flex items-center gap-4 px-5 py-2.5 pl-16 bg-gray-50">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm text-gray-700">@ind.Name</div>
+                                                <div class="text-xs text-gray-400">@ind.DataElementCount element(s)</div>
+                                            </div>
+                                            <div class="flex items-center gap-4 w-3/5">
+                                                <div class="flex-1 min-w-0">
+                                                    <ScoreBar Label="Availability" Score="ind.AvailabilityScore"
+                                                              PerRespondent="ind.AvailabilityPerRespondent"
+                                                              RespondentColors="GetActiveColors()" Compact="true" />
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <ScoreBar Label="Interest" Score="ind.InterestScore"
+                                                              PerRespondent="ind.InterestPerRespondent"
+                                                              RespondentColors="GetActiveColors()" Compact="true" />
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <ScoreBar Label="Can Share" Score="ind.CanShareScore"
+                                                              PerRespondent="ind.CanSharePerRespondent"
+                                                              RespondentColors="GetActiveColors()" Compact="true" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @foreach (var row in GetSectorRows())
+                    {
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+                            <div class="font-bold text-blue text-base">@row.Name</div>
+                            <div class="text-xs text-gray-400">@row.DataElementCount data elements</div>
+                            <div class="space-y-2.5">
+                                <ScoreBar Label="Availability" Score="row.AvailabilityScore"
+                                          PerRespondent="row.AvailabilityPerRespondent"
+                                          RespondentColors="GetActiveColors()" />
+                                <ScoreBar Label="Interest" Score="row.InterestScore"
+                                          PerRespondent="row.InterestPerRespondent"
+                                          RespondentColors="GetActiveColors()" />
+                                <ScoreBar Label="Can Share" Score="row.CanShareScore"
+                                          PerRespondent="row.CanSharePerRespondent"
+                                          RespondentColors="GetActiveColors()" />
+                            </div>
+                            <div class="pt-2 border-t border-gray-100">
+                                <div class="text-xs font-semibold text-gray-500 mb-1.5">Top EQs</div>
+                                @foreach (var eq in GetTopEqsForSector(row.Sector).Take(3))
+                                {
+                                    <div class="flex items-center gap-2 text-xs mb-1">
+                                        <span class="w-5 text-center font-bold text-blue flex-shrink-0">@eq.Number</span>
+                                        <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                                            <div class="bg-primary h-1.5 rounded-full"
+                                                 style="width:@((eq.AvailabilityScore * 100).ToString("F0"))%"></div>
+                                        </div>
+                                        <span class="text-gray-400 w-8 text-right">@((eq.AvailabilityScore * 100).ToString("F0"))%</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" accept=".csv" multiple
+       @ref="_fileInput"
+       @onchange="OnFilesSelected"
+       style="display:none;" />
+
+@code {
+    private enum BreakdownView { EssentialQuestions, Sectors }
+    private enum BreakdownSort { Availability, Interest, CanShare }
+
+    private BreakdownView _view = BreakdownView.EssentialQuestions;
+    private BreakdownSort _sort = BreakdownSort.Availability;
+    private HashSet<string> _expanded = new();
+    private HashSet<string> _hiddenRespondents = new();
+    private string? _soloedRespondent;
+    private ElementReference _fileInput;
+
+    private static readonly string[] RespondentColors =
+    [
+        "#3b82f6", "#10b981", "#f59e0b", "#ef4444",
+        "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"
+    ];
+
+    private int ActiveRespondentCount => ActiveRespondents.Count();
+
+    private IEnumerable<KeyValuePair<string, Dictionary<string, SurveyResponse>>> ActiveRespondents =>
+        _soloedRespondent != null
+            ? BreakdownSvc.Respondents.Where(r => r.Key == _soloedRespondent)
+            : BreakdownSvc.Respondents.Where(r => !_hiddenRespondents.Contains(r.Key));
+
+    private string[] GetActiveColors()
+    {
+        var keys = (_soloedRespondent != null
+            ? BreakdownSvc.Respondents.Keys.Where(k => k == _soloedRespondent)
+            : BreakdownSvc.Respondents.Keys.Where(k => !_hiddenRespondents.Contains(k)))
+            .ToList();
+
+        return keys.Select(k =>
+        {
+            var idx = BreakdownSvc.Respondents.Keys.ToList().IndexOf(k);
+            return RespondentColors[idx % RespondentColors.Length];
+        }).ToArray();
+    }
+
+    private void ToggleExpanded(string key)
+    {
+        if (_expanded.Contains(key)) _expanded.Remove(key);
+        else _expanded.Add(key);
+    }
+
+    private bool IsExpanded(string key) => _expanded.Contains(key);
+
+    private void ToggleRespondent(string name)
+    {
+        if (_soloedRespondent == name) _soloedRespondent = null;
+        if (_hiddenRespondents.Contains(name)) _hiddenRespondents.Remove(name);
+        else _hiddenRespondents.Add(name);
+    }
+
+    private void ToggleSolo(string name)
+    {
+        _soloedRespondent = _soloedRespondent == name ? null : name;
+    }
+
+    private void RemoveRespondent(string name)
+    {
+        BreakdownSvc.Remove(name);
+        _hiddenRespondents.Remove(name);
+        if (_soloedRespondent == name) _soloedRespondent = null;
+    }
+
+    private async Task TriggerLoadMore()
+    {
+        await JSRuntime.InvokeVoidAsync("BlazorHelpers.clickElement", _fileInput);
+    }
+
+    private async Task OnFilesSelected(ChangeEventArgs _)
+    {
+        try
+        {
+            var files = await JSRuntime.InvokeAsync<string[]>("SurveyHelpers.readMultipleFilesAsText", _fileInput);
+            var names = await JSRuntime.InvokeAsync<string[]>("SurveyHelpers.getFileNames", _fileInput);
+            for (var i = 0; i < files.Length; i++)
+            {
+                var name = i < names.Length
+                    ? System.IO.Path.GetFileNameWithoutExtension(names[i])
+                    : $"Respondent {i + 1}";
+                BreakdownSvc.AddOrUpdateRespondent(name, ParseCsv(files[i]));
+            }
+            await JSRuntime.InvokeVoidAsync("BlazorHelpers.clearFileInput", _fileInput);
+            StateHasChanged();
+        }
+        catch { }
+    }
+
+    private static Dictionary<string, SurveyResponse> ParseCsv(string csv)
+    {
+        var result = new Dictionary<string, SurveyResponse>();
+        try
+        {
+            using var reader = new System.IO.StringReader(csv);
+            using var cr = new CsvHelper.CsvReader(reader, System.Globalization.CultureInfo.InvariantCulture);
+            foreach (var row in cr.GetRecords<dynamic>())
+            {
+                var d = (IDictionary<string, object>)row;
+                string Get(string k) => d.TryGetValue(k, out var v) ? v?.ToString() ?? "" : "";
+                var name = Get("Data Element");
+                if (string.IsNullOrWhiteSpace(name)) continue;
+                result[name] = new SurveyResponse
+                {
+                    Availability = Get("Availability") switch
+                    {
+                        "Available" => SurveyAvailability.Available,
+                        "Partially Available" => SurveyAvailability.PartiallyAvailable,
+                        "Not Available" => SurveyAvailability.NotAvailable,
+                        _ => null
+                    },
+                    Interest = Get("Interest Level") switch
+                    {
+                        "High Priority" => InterestLevel.HighPriority,
+                        "Low Priority" => InterestLevel.LowPriority,
+                        "No Interest" => InterestLevel.NoInterest,
+                        _ => null
+                    },
+                    CanQueryAndShare = Get("Can Query and Share") switch
+                    {
+                        "Yes" => true,
+                        "No" => false,
+                        _ => null
+                    }
+                };
+            }
+        }
+        catch { }
+        return result;
+    }
+
+    // ── Scoring ───────────────────────────────────────────────────────────
+
+    private double[] AvailabilityPerElement(string elementName)
+        => ActiveRespondents.Select(r =>
+        {
+            r.Value.TryGetValue(elementName, out var resp);
+            return resp?.Availability switch
+            {
+                SurveyAvailability.Available => 1.0,
+                SurveyAvailability.PartiallyAvailable => 0.5,
+                _ => 0.0
+            };
+        }).ToArray();
+
+    private double[] InterestPerElement(string elementName)
+        => ActiveRespondents.Select(r =>
+        {
+            r.Value.TryGetValue(elementName, out var resp);
+            return resp?.Interest switch
+            {
+                InterestLevel.HighPriority => 1.0,
+                InterestLevel.LowPriority => 0.5,
+                _ => 0.0
+            };
+        }).ToArray();
+
+    private double[] AggregatePerRespondent(IList<string> elements, Func<string, double[]> scorer)
+    {
+        if (!elements.Any()) return Array.Empty<double>();
+        var respondentCount = ActiveRespondentCount;
+        var totals = new double[respondentCount];
+        foreach (var el in elements)
+        {
+            var scores = scorer(el);
+            for (var i = 0; i < scores.Length && i < respondentCount; i++)
+                totals[i] += scores[i];
+        }
+        return totals.Select(t => t / elements.Count).ToArray();
+    }
+
+    private double[] CanSharePerElement(string elementName)
+        => ActiveRespondents.Select(r =>
+        {
+            r.Value.TryGetValue(elementName, out var resp);
+            return resp?.CanQueryAndShare switch
+            {
+                true => 1.0,
+                false => 0.0,
+                _ => double.NaN
+            };
+        }).ToArray();
+
+    private (double Score, double[] PerRespondent) CanShareAggregate(IList<string> elements)
+    {
+        if (!elements.Any()) return (0, Array.Empty<double>());
+        var respondentCount = ActiveRespondentCount;
+        var totals = new double[respondentCount];
+        var counts = new int[respondentCount];
+
+        foreach (var el in elements)
+        {
+            var scores = CanSharePerElement(el);
+            for (var i = 0; i < scores.Length && i < respondentCount; i++)
+            {
+                if (!double.IsNaN(scores[i]))
+                {
+                    totals[i] += scores[i];
+                    counts[i]++;
+                }
+            }
+        }
+
+        var perRespondent = totals
+            .Select((t, i) => counts[i] > 0 ? t / counts[i] : 0.0)
+            .ToArray();
+
+        var avg = perRespondent.Length > 0 ? perRespondent.Average() : 0;
+        return (avg, perRespondent);
+    }
+
+    // ── Row builders ──────────────────────────────────────────────────────
+
+    private record EqRow(
+        int Number, string Summary, List<string> Sectors,
+        double AvailabilityScore, double[] AvailabilityPerRespondent,
+        double InterestScore, double[] InterestPerRespondent,
+        double CanShareScore, double[] CanSharePerRespondent,
+        List<IndicatorRow> Indicators);
+
+    private record IndicatorRow(
+        string Name, int DataElementCount,
+        double AvailabilityScore, double[] AvailabilityPerRespondent,
+        double InterestScore, double[] InterestPerRespondent,
+        double CanShareScore, double[] CanSharePerRespondent);
+
+    private record SectorRow(
+        string Name, Sector Sector, int DataElementCount,
+        double AvailabilityScore, double[] AvailabilityPerRespondent,
+        double InterestScore, double[] InterestPerRespondent,
+        double CanShareScore, double[] CanSharePerRespondent);
+
+    private List<EqRow> GetEqRows()
+    {
+        var rows = EwFrameworkEssentialQuestions.Questions.Select(q =>
+        {
+            var allElements = q.RelatedIndicatorNames
+                .SelectMany(n => EwFrameworkIndicators.Indicators.TryGetValue(n, out var ind) ? ind.DataElementNames : [])
+                .Distinct().ToList();
+
+            var availPR = AggregatePerRespondent(allElements, AvailabilityPerElement);
+            var intPR = AggregatePerRespondent(allElements, InterestPerElement);
+            var (eqCanShareScore, eqCanSharePR) = CanShareAggregate(allElements);
+
+            var indicators = q.RelatedIndicatorNames
+                .Where(n => EwFrameworkIndicators.Indicators.ContainsKey(n))
+                .Select(n =>
+                {
+                    var ind = EwFrameworkIndicators.Indicators[n];
+                    var els = ind.DataElementNames;
+                    var iAvailPR = AggregatePerRespondent(els, AvailabilityPerElement);
+                    var iIntPR = AggregatePerRespondent(els, InterestPerElement);
+                    var (iCanShareScore, iCanSharePR) = CanShareAggregate(els);
+                    return new IndicatorRow(n, els.Count,
+                        iAvailPR.Length > 0 ? iAvailPR.Average() : 0, iAvailPR,
+                        iIntPR.Length > 0 ? iIntPR.Average() : 0, iIntPR,
+                        iCanShareScore, iCanSharePR);
+                }).ToList();
+
+            return new EqRow(
+                q.QuestionNumber, q.QuestionSummary,
+                q.ApplicableSectors.Select(s => s.ToString()).ToList(),
+                availPR.Length > 0 ? availPR.Average() : 0, availPR,
+                intPR.Length > 0 ? intPR.Average() : 0, intPR,
+                eqCanShareScore, eqCanSharePR,
+                indicators);
+        }).ToList();
+
+        return _sort switch
+        {
+            BreakdownSort.Interest => rows.OrderByDescending(r => r.InterestScore).ToList(),
+            BreakdownSort.CanShare => rows.OrderByDescending(r => r.CanShareScore).ToList(),
+            _ => rows.OrderByDescending(r => r.AvailabilityScore).ToList()
+        };
+    }
+
+    private List<SectorRow> GetSectorRows()
+    {
+        var rows = Enum.GetValues<Sector>().Select(s =>
+        {
+            var elements = EwFrameworkDataElements.Elements.Values
+                .Where(e => e.RelatedSectors.Contains(s))
+                .Select(e => e.Name).ToList();
+
+            var availPR = AggregatePerRespondent(elements, AvailabilityPerElement);
+            var intPR = AggregatePerRespondent(elements, InterestPerElement);
+            var (canShareScore, canSharePR) = CanShareAggregate(elements);
+
+            return new SectorRow(s.ToString(), s, elements.Count,
+                availPR.Length > 0 ? availPR.Average() : 0, availPR,
+                intPR.Length > 0 ? intPR.Average() : 0, intPR,
+                canShareScore, canSharePR);
+        }).ToList();
+
+        return _sort switch
+        {
+            BreakdownSort.Interest => rows.OrderByDescending(r => r.InterestScore).ToList(),
+            BreakdownSort.CanShare => rows.OrderByDescending(r => r.CanShareScore).ToList(),
+            _ => rows.OrderByDescending(r => r.AvailabilityScore).ToList()
+        };
+    }
+
+    private List<EqRow> GetTopEqsForSector(Sector sector) =>
+        GetEqRows()
+            .Where(r => EwFrameworkEssentialQuestions.Questions
+                .First(q => q.QuestionNumber == r.Number)
+                .ApplicableSectors.Contains(sector))
+            .OrderByDescending(r => r.AvailabilityScore)
+            .ToList();
+}
