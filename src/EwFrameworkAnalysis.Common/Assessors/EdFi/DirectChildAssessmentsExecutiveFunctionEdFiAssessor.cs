@@ -35,7 +35,7 @@ public class DirectChildAssessmentsExecutiveFunctionEdFiAssessor : IEdFiAssessor
         "BRIEF-P"                            // Behavior Rating Inventory of Executive Function - Preschool
     ];
 
-    public string DataElementName => "Direct child assessments of executive function";
+    public string DataElementName => "Direct child assessments (executive function)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to direct child assessments of executive function (e.g., " +

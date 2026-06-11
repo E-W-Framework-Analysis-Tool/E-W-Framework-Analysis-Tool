@@ -52,7 +52,7 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         "Early Learning Scale"
     ];
 
-    public string DataElementName => "Reported kindergarten readiness (social-emotional skills)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (social-emotional skills)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to teacher- or parent-observed developmental assessments " +

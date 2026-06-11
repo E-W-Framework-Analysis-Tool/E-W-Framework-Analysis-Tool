@@ -25,7 +25,7 @@ public class KindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
         "Boehm Test of Basic Concepts"
     ];
 
-    public string DataElementName => "Kindergarten readiness assessments (cognition)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (cognition)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to kindergarten readiness cognitive instruments " +

@@ -54,7 +54,7 @@ public class ReportedKindergartenReadinessPhysicalEdFiAssessor : IEdFiAssessor
         "Early Learning Scale"
     ];
 
-    public string DataElementName => "Reported kindergarten readiness (physical development)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (physical development)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to teacher- or parent-observed developmental assessments " +

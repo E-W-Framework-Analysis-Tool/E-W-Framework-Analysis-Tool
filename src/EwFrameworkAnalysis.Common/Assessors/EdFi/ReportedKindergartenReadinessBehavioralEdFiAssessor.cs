@@ -51,7 +51,7 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         "Early Learning Scale"
     ];
 
-    public string DataElementName => "Reported kindergarten readiness (behavioral skills)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (behavioral skills)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to teacher- or parent-observed developmental assessments " +
