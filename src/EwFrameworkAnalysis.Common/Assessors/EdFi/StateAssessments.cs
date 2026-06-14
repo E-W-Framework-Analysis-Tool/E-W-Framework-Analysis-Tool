@@ -133,7 +133,7 @@ public class Grade3MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternate assessment/ELL"
     ];
 
-    public string DataElementName => "State Assessments - Grade 3 Mathematics";
+    public string DataElementName => "State standardized test (Grade 3 Math proficiency)";
 
     public string AssessmentDescription =>
         "Count of grade 3 students with state standardized test results in mathematics";
@@ -263,7 +263,7 @@ public class Grade3ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AcademicSubjectDescriptor#English Language Arts"
     ];
 
-    public string DataElementName => "State Assessments - Grade 3 ELA/Reading";
+    public string DataElementName => "State standardized test (Grade 3 Reading proficiency)";
 
     public string AssessmentDescription =>
         "Count of grade 3 students with state standardized test results in English Language Arts or Reading";
@@ -387,7 +387,7 @@ public class Grade8MathStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AssessmentCategoryDescriptor#State alternate assessment/ELL"
     ];
 
-    public string DataElementName => "State Assessments - Grade 8 Mathematics";
+    public string DataElementName => "State standardized test (Grade 8 Math proficiency)";
 
     public string AssessmentDescription =>
         "Count of grade 8 students with state standardized test results in mathematics";
@@ -517,7 +517,7 @@ public class Grade8ELAStateAssessmentsEdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AcademicSubjectDescriptor#English Language Arts"
     ];
 
-    public string DataElementName => "State Assessments - Grade 8 ELA/Reading";
+    public string DataElementName => "State standardized test (Grade 8 Reading proficiency)";
 
     public string AssessmentDescription =>
         "Count of grade 8 students with state standardized test results in English Language Arts or Reading";

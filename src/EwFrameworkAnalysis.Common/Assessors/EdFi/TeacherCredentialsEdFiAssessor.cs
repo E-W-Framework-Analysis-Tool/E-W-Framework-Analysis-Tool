@@ -6,7 +6,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class TeacherCredentialsEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Teacher credentials";
+    public string DataElementName => "Highest level of education completed (staff/educator)";
 
     public string AssessmentDescription =>
         "Measures the percentage of teacher records that are certified ";

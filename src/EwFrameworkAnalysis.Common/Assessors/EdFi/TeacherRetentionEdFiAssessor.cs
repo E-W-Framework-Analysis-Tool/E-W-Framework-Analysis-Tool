@@ -6,7 +6,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
 public class TeacherRetentionEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Teacher employment dates";
+    public string DataElementName => "Employment date";
 
     public string AssessmentDescription =>
         "Count of staff where endDate is defined";
