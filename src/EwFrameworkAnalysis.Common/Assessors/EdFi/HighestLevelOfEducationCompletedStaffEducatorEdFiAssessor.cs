@@ -9,7 +9,9 @@ public class HighestLevelOfEducationCompletedStaffEducatorEdFiAssessor : IEdFiAs
     public string DataElementName => "Highest level of education completed (staff/educator)";
 
     public string AssessmentDescription =>
-        "Measures the percentage of teacher records that are certified ";
+        "Distribution of staff/educators by highest level of education completed " +
+        "(Bachelor's, Master's, or Doctorate), based on the " +
+        "HighestCompletedLevelOfEducationDescriptor on ed-fi/staffs records.";
 
     private static readonly HashSet<string> _levelOfEducation =
     [
