@@ -5,7 +5,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class GraduationPlansEdFiAssessor : IEdFiAssessor
+public class HighSchoolGraduationIndicatorEdFiAssessor : IEdFiAssessor
 {
     public string DataElementName => "High school graduation indicator";
 

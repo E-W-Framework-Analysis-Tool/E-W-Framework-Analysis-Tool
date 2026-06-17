@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class TeacherCredentialsEdFiAssessor : IEdFiAssessor
+public class HighestLevelOfEducationCompletedStaffEducatorEdFiAssessor : IEdFiAssessor
 {
     public string DataElementName => "Highest level of education completed (staff/educator)";
 

@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
+public class StudentAttendanceRateK12EdFiAssessor : IEdFiAssessor
 {
     private static readonly HashSet<string> _presentDescriptors =
     [

@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
+public class TeacherReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
 {
     private static readonly string[] _assessmentCategoryDescriptors =
     [

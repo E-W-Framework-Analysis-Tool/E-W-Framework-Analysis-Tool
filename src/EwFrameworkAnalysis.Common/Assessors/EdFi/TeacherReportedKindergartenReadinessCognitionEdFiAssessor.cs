@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class KindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
+public class TeacherReportedKindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
 {
     private static readonly string[] _assessmentKeywords =
     [
