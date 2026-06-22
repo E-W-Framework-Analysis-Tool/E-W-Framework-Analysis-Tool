@@ -1,4 +1,5 @@
 globs:
   - "**/*.md"
   - "!node_modules/**"
+  - "!.github/**"
 config: .markdownlint.yaml
