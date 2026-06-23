@@ -1120,8 +1120,6 @@ public static class EwFrameworkIndicators
                 [
                     "State standardized test (Math proficiency)",
                     "State standardized test (Reading proficiency)",
-                    "State standardized test (Grade 3 Math proficiency)",
-                    "State standardized test (Grade 3 Reading proficiency)",
                     "Student grade level (K-12)",
                 ]
             },
@@ -1139,8 +1137,6 @@ public static class EwFrameworkIndicators
                 [
                     "State standardized test (Math proficiency)",
                     "State standardized test (Reading proficiency)",
-                    "State standardized test (Grade 8 Math proficiency)",
-                    "State standardized test (Grade 8 Reading proficiency)",
                     "Student grade level (K-12)",
                 ]
             },
