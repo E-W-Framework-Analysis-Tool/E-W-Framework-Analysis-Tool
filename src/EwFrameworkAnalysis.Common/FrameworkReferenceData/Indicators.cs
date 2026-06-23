@@ -145,7 +145,7 @@ public static class EwFrameworkIndicators
                 [
                     "AP, IB, or Dual Credit course designation",
                     "Course subject area",
-                    "Student course enrollment record",
+                    "Student course enrollment record (K-12)",
                     "End-of-course exam participation",
                 ]
             },
@@ -464,7 +464,7 @@ public static class EwFrameworkIndicators
                 [
                     "Course subject area",
                     "CTE pathway or career cluster associated with CTE course",
-                    "Student course enrollment record",
+                    "Student course enrollment record (K-12)",
                     "Student grade level (K-12)",
                     "Number of credits earned",
                     "CTE program",
@@ -531,7 +531,7 @@ public static class EwFrameworkIndicators
                 Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
-                    "Student course enrollment record",
+                    "Student course enrollment record (K-12)",
                     "AP, IB, or Dual Credit course designation",
                     "Course outcome",
                     "End-of-course exam participation",
@@ -721,7 +721,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Gifted and talented participation",
-                    "Student course enrollment record",
+                    "Student course enrollment record (K-12)",
                     "Course subject area",
                     "AP, IB, or Dual Credit course designation",
                 ]
@@ -1002,7 +1002,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Industry-recognized credential indicator",
-                    "Student course enrollment record",
+                    "Student course enrollment record (K-12)",
                     "Workforce development program participation",
                     "Student grade level (K-12)",
                     "CTE program",

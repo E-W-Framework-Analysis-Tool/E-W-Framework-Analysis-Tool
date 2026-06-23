@@ -1788,6 +1788,15 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "A record of all courses a student is or was enrolled in, serving as the core transcript element underlying multiple indicators including CTE pathway concentration, early college access, equitable placement in rigorous coursework, and work-based learning participation. Record structure and source systems typically differ between K12 and PS contexts; confirm availability and format in each."
             },
+        ["Student course enrollment record (K-12)"] =
+            new DataElement
+            {
+                Name = "Student course enrollment record (K-12)",
+                ClusterOnlyCategory = "Postsecondary Transitions",
+                DataElementCategory = "Academic Coursework",
+                RelatedSectors = [Sector.K12],
+                AdditionalNotes = "A K-12 record of all courses a student is or was enrolled in, serving as the core transcript element underlying multiple indicators including CTE pathway concentration, early college access, equitable placement in rigorous coursework, and work-based learning participation."
+            },
         ["Student from migrant family household"] =
             new DataElement
             {

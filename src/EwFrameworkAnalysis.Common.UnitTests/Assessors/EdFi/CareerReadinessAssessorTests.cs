@@ -150,27 +150,13 @@ public class CareerReadinessAssessorTests
     [Fact]
     public async Task Should_ExcludeHomerooms_When_StudentCourseEnrollmentAssessed()
     {
-        var testData = new List<EdFiStudentSectionAssociation>
-        {
-            new(beginDate: new DateOnly(2024, 1, 1),
-                sectionReference: new EdFiSectionReference("CS101", 1, 2024, "S1", "Fall"),
-                studentReference: new EdFiStudentReference("student1"),
-                homeroomIndicator: false),
-            new(beginDate: new DateOnly(2024, 1, 1),
-                sectionReference: new EdFiSectionReference("HR", 1, 2024, "S2", "Fall"),
-                studentReference: new EdFiStudentReference("student1"),
-                homeroomIndicator: true),
-            new(beginDate: new DateOnly(2024, 1, 1),
-                sectionReference: new EdFiSectionReference("ENG101", 1, 2024, "S3", "Fall"),
-                studentReference: new EdFiStudentReference("student2"))
-        };
-
-        using var httpClient = CreateHttpClientWithJsonResponse(testData);
-        var assessor = new StudentCourseEnrollmentEdFiAssessor();
+        // 3 total section associations, 1 of which is a homeroom (excluded as non-homeroom).
+        using var httpClient = CreateStudentSectionAssociationHttpClient(totalCount: 3, homeroomCount: 1);
+        var assessor = new StudentCourseEnrollmentRecordK12EdFiAssessor();
 
         var result = await assessor.AssessAsync(httpClient, _dataSource, _context);
 
-        result.DataElementName.Should().Be("Student course enrollment record");
+        result.DataElementName.Should().Be("Student course enrollment record (K-12)");
         result.Characteristics.OfType<RecordCount>().First().Value.Should().Be(3);
 
         var completeness = result.Characteristics.OfType<Completeness>().First();
@@ -377,7 +363,7 @@ public class CareerReadinessAssessorTests
         var emptyCourseProvider = CreateCourseProviderWithData([]);
         var assessors = new IEdFiAssessor[]
         {
-            new StudentCourseEnrollmentEdFiAssessor(),
+            new StudentCourseEnrollmentRecordK12EdFiAssessor(),
             new CourseSubjectAreaEdFiAssessor(emptyCourseProvider),
             new CTEPathwayEdFiAssessor(emptyCteProvider),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
@@ -402,7 +388,7 @@ public class CareerReadinessAssessorTests
         var emptyCourseProvider = CreateCourseProviderWithData([]);
         var assessors = new IEdFiAssessor[]
         {
-            new StudentCourseEnrollmentEdFiAssessor(),
+            new StudentCourseEnrollmentRecordK12EdFiAssessor(),
             new CourseSubjectAreaEdFiAssessor(emptyCourseProvider),
             new CTEPathwayEdFiAssessor(emptyCteProvider),
             new WorkBasedLearningEdFiAssessor(emptyCteProvider),
@@ -472,6 +458,26 @@ public class CareerReadinessAssessorTests
             {
                 Content = new StringContent("[]", Encoding.UTF8, "application/json")
             };
+        });
+
+        return new HttpClient(handler) { BaseAddress = new Uri("https://api.test.com/") };
+    }
+
+    private static HttpClient CreateStudentSectionAssociationHttpClient(int totalCount, int homeroomCount)
+    {
+        // The assessor counts via the total-count header: one unfiltered request for the total
+        // and one filtered by homeroomIndicator=true. Return the matching count per request.
+        var handler = new FakeHttpMessageHandler(request =>
+        {
+            var count = request.RequestUri!.Query.Contains("homeroomIndicator=true")
+                ? homeroomCount
+                : totalCount;
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("[]", Encoding.UTF8, "application/json")
+            };
+            response.Headers.Add("total-count", count.ToString());
+            return response;
         });
 
         return new HttpClient(handler) { BaseAddress = new Uri("https://api.test.com/") };
