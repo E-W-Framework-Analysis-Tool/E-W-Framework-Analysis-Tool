@@ -11,7 +11,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// </summary>
 public class HighestLevelOfEducationCompletedCedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Highest level of education completed";
+    public string DataElementName => "Highest level of education completed (staff/educator)";
 
     public string Query => $@"
 WITH EducationLevelBase AS (

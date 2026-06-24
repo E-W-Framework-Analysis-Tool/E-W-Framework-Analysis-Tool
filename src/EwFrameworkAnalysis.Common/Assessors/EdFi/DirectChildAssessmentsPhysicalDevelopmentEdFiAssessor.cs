@@ -37,7 +37,7 @@ public class DirectChildAssessmentsPhysicalDevelopmentEdFiAssessor : IEdFiAssess
         "Alberta Infant Motor"
     ];
 
-    public string DataElementName => "Direct child assessments of physical development";
+    public string DataElementName => "Direct child assessments (physical development)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to direct child assessments of physical development / " +

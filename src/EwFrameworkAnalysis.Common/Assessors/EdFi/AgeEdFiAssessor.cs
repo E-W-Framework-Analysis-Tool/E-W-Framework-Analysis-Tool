@@ -4,9 +4,9 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentAgeEdFiAssessor : IEdFiAssessor
+public class AgeEdFiAssessor : IEdFiAssessor
 {
-    public string DataElementName => "Student Age";
+    public string DataElementName => "Age";
 
     public string AssessmentDescription =>
         "Finds the minimum and maximum age of all students based on birth date";

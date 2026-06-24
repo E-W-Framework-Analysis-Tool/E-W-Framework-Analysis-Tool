@@ -9,7 +9,7 @@ namespace EwFrameworkAnalysis.Common.Assessors.Ceds;
 /// </summary>
 public class YearsOfTeachingExperienceK12CedsDWAssessor : ICedsDWAssessor
 {
-    public string DataElementName => "Years of teaching experience (K-12)";
+    public string DataElementName => "Years of teaching experience";
 
     public string Query => $@"
 WITH TeachingExp AS (

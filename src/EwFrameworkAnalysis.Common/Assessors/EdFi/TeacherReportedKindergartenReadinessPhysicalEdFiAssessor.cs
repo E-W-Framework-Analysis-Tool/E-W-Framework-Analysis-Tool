@@ -4,12 +4,12 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAssessor
+public class TeacherReportedKindergartenReadinessPhysicalEdFiAssessor : IEdFiAssessor
 {
     private static readonly string[] _assessmentCategoryDescriptors =
     [
         "Developmental observation",
-        "Early Learning - Social and emotional development",
+        "Early Learning - Physical well-being and motor dev",
         "Prekindergarten Readiness",
         "Kindergarten Readiness"
     ];
@@ -20,11 +20,13 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         "kindergarten readiness",
         "kindergarten ready",
         "K readiness",
-        "social-emotional",
-        "social emotional",
-        "social development",
-        "emotional development",
-        "social foundations",
+        "physical development",
+        "physical well-being",
+        "physical well being",
+        "motor development",
+        "gross motor",
+        "fine motor",
+        "physical readiness",
         "developmental assessment",
         "developmental observation",
 
@@ -40,7 +42,7 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         "Teaching Strategies",
         "GOLD",
 
-        // Other widely used Pre-K/K social-emotional readiness instruments
+        // Other widely used Pre-K/K physical development readiness instruments
         "KRA",                               // Kindergarten Readiness Assessment
         "Kindergarten Readiness Assessment",
         "Work Sampling",                     // Work Sampling System
@@ -52,25 +54,25 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         "Early Learning Scale"
     ];
 
-    public string DataElementName => "Reported kindergarten readiness (social-emotional skills)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (physical development)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to teacher- or parent-observed developmental assessments " +
-        "of kindergarten readiness in social-emotional skills (e.g., Desired Results Developmental " +
-        "Profile (DRDP) Social and Emotional Development domain, Ready 4 Kindergarten (R4K) ELA " +
-        "Social Foundations domain, and Teaching Strategies (TS) GOLD Social-Emotional subscale named " +
-        "in the E-W Framework, plus KRA, Work Sampling System, HighScope COR Advantage, Brigance) by " +
-        "matching assessmentCategoryDescriptor values, well-known instrument names, and kindergarten " +
-        "readiness keywords in the Ed-Fi assessments catalog. Ed-Fi has no standard descriptor for " +
-        "kindergarten readiness social-emotional assessments, so title-based and category-based " +
-        "matching is used as a proxy.";
+        "of kindergarten readiness in physical development / motor skills (e.g., Desired Results " +
+        "Developmental Profile (DRDP) Physical Development – Health domain, Ready 4 Kindergarten " +
+        "Early Learning Assessment (R4K ELA) Physical Well-Being and Motor Development domain, and " +
+        "Teaching Strategies (TS) GOLD Physical subscale named in the E-W Framework, plus KRA, Work " +
+        "Sampling System, HighScope COR Advantage, Brigance) by matching assessmentCategoryDescriptor " +
+        "values, well-known instrument names, and kindergarten readiness keywords in the Ed-Fi " +
+        "assessments catalog. Ed-Fi has no standard descriptor for kindergarten readiness physical " +
+        "development assessments, so title-based and category-based matching is used as a proxy.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Searching assessment catalog for kindergarten readiness social-emotional assessments...");
+        context.ReportProgress(0, "Searching assessment catalog for kindergarten readiness physical development assessments...");
 
         var matchingAssessments = new List<(string Identifier, string Namespace)>();
 
@@ -79,27 +81,27 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
             "ed-fi/assessments",
             assessment =>
             {
-                if (IsKindergartenReadinessSocialEmotionalAssessment(assessment))
+                if (IsKindergartenReadinessPhysicalAssessment(assessment))
                     matchingAssessments.Add((assessment.AssessmentIdentifier, assessment.Namespace));
             },
             context);
 
-        context.Log($"Found {matchingAssessments.Count} kindergarten readiness social-emotional assessment(s) in catalog");
+        context.Log($"Found {matchingAssessments.Count} kindergarten readiness physical development assessment(s) in catalog");
 
         if (matchingAssessments.Count == 0)
         {
-            context.ReportProgress(100, "Complete — no kindergarten readiness social-emotional assessments found");
+            context.ReportProgress(100, "Complete — no kindergarten readiness physical development assessments found");
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
                 Characteristics = [new RecordCount(0)],
                 Remarks = AssessmentDescription +
-                    " No assessments matching recognized kindergarten readiness social-emotional instruments " +
+                    " No assessments matching recognized kindergarten readiness physical development instruments " +
                     "were found in the assessment catalog."
             };
         }
 
-        context.ReportProgress(50, "Counting student assessment records for kindergarten readiness social-emotional instruments...");
+        context.ReportProgress(50, "Counting student assessment records for kindergarten readiness physical development instruments...");
 
         var totalCount = 0;
         var instrumentDistribution = new Dictionary<string, int>();
@@ -120,7 +122,7 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
                 instrumentDistribution[identifier] = count;
         }
 
-        context.Log($"Found {totalCount:N0} kindergarten readiness social-emotional assessment records");
+        context.Log($"Found {totalCount:N0} kindergarten readiness physical development assessment records");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -135,7 +137,7 @@ public class ReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAss
         };
     }
 
-    private static bool IsKindergartenReadinessSocialEmotionalAssessment(EdFiAssessment assessment)
+    private static bool IsKindergartenReadinessPhysicalAssessment(EdFiAssessment assessment)
     {
         if (!string.IsNullOrWhiteSpace(assessment.AssessmentCategoryDescriptor))
         {

@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class KindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
+public class TeacherReportedKindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
 {
     private static readonly string[] _assessmentKeywords =
     [
@@ -25,7 +25,7 @@ public class KindergartenReadinessCognitionEdFiAssessor : IEdFiAssessor
         "Boehm Test of Basic Concepts"
     ];
 
-    public string DataElementName => "Kindergarten readiness assessments (cognition)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (cognition)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to kindergarten readiness cognitive instruments " +

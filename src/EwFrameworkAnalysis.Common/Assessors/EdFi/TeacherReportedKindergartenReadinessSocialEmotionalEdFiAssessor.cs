@@ -4,12 +4,12 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
+public class TeacherReportedKindergartenReadinessSocialEmotionalEdFiAssessor : IEdFiAssessor
 {
     private static readonly string[] _assessmentCategoryDescriptors =
     [
         "Developmental observation",
-        "Early Learning - Approaches toward learning",
+        "Early Learning - Social and emotional development",
         "Prekindergarten Readiness",
         "Kindergarten Readiness"
     ];
@@ -20,11 +20,11 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         "kindergarten readiness",
         "kindergarten ready",
         "K readiness",
-        "approaches to learning",
-        "self-regulation",
-        "self regulation",
-        "behavioral skills",
-        "behavioral readiness",
+        "social-emotional",
+        "social emotional",
+        "social development",
+        "emotional development",
+        "social foundations",
         "developmental assessment",
         "developmental observation",
 
@@ -32,13 +32,15 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         "DRDP",                              // Desired Results Developmental Profile
         "Desired Results Developmental",
         "Desired Results Developmental Profile",
+        "R4K",                               // Ready 4 Kindergarten Early Learning Assessment
+        "R4K ELA",
+        "Ready 4 Kindergarten",
         "TS GOLD",                           // Teaching Strategies GOLD
         "Teaching Strategies GOLD",
         "Teaching Strategies",
         "GOLD",
 
-        // Other widely used Pre-K/K behavioral readiness instruments
-        "KREADY",
+        // Other widely used Pre-K/K social-emotional readiness instruments
         "KRA",                               // Kindergarten Readiness Assessment
         "Kindergarten Readiness Assessment",
         "Work Sampling",                     // Work Sampling System
@@ -47,28 +49,28 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         "COR",
         "HighScope",
         "Brigance",                          // Brigance Early Childhood Screens
-        "DIAL",                              // Developmental Indicators for the Assessment of Learning
         "Early Learning Scale"
     ];
 
-    public string DataElementName => "Reported kindergarten readiness (behavioral skills)";
+    public string DataElementName => "Teacher-reported kindergarten readiness (social-emotional skills)";
 
     public string AssessmentDescription =>
         "Identifies student assessments linked to teacher- or parent-observed developmental assessments " +
-        "of kindergarten readiness in behavioral skills / approaches to learning (e.g., Desired Results " +
-        "Developmental Profile (DRDP) Approaches to Learning – Self-Regulation domain and Teaching " +
-        "Strategies (TS) GOLD Cognitive subscale named in the E-W Framework, plus KRA, Work Sampling " +
-        "System, HighScope COR Advantage, Brigance) by matching assessmentCategoryDescriptor values, " +
-        "well-known instrument names, and kindergarten readiness keywords in the Ed-Fi assessments " +
-        "catalog. Ed-Fi has no standard descriptor for kindergarten readiness behavioral assessments, " +
-        "so title-based and category-based matching is used as a proxy.";
+        "of kindergarten readiness in social-emotional skills (e.g., Desired Results Developmental " +
+        "Profile (DRDP) Social and Emotional Development domain, Ready 4 Kindergarten (R4K) ELA " +
+        "Social Foundations domain, and Teaching Strategies (TS) GOLD Social-Emotional subscale named " +
+        "in the E-W Framework, plus KRA, Work Sampling System, HighScope COR Advantage, Brigance) by " +
+        "matching assessmentCategoryDescriptor values, well-known instrument names, and kindergarten " +
+        "readiness keywords in the Ed-Fi assessments catalog. Ed-Fi has no standard descriptor for " +
+        "kindergarten readiness social-emotional assessments, so title-based and category-based " +
+        "matching is used as a proxy.";
 
     public async Task<DataElementAssessment> AssessAsync(
         HttpClient httpClient,
         DataSource dataSource,
         AssessorContext context)
     {
-        context.ReportProgress(0, "Searching assessment catalog for kindergarten readiness behavioral assessments...");
+        context.ReportProgress(0, "Searching assessment catalog for kindergarten readiness social-emotional assessments...");
 
         var matchingAssessments = new List<(string Identifier, string Namespace)>();
 
@@ -77,27 +79,27 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
             "ed-fi/assessments",
             assessment =>
             {
-                if (IsKindergartenReadinessBehavioralAssessment(assessment))
+                if (IsKindergartenReadinessSocialEmotionalAssessment(assessment))
                     matchingAssessments.Add((assessment.AssessmentIdentifier, assessment.Namespace));
             },
             context);
 
-        context.Log($"Found {matchingAssessments.Count} kindergarten readiness behavioral assessment(s) in catalog");
+        context.Log($"Found {matchingAssessments.Count} kindergarten readiness social-emotional assessment(s) in catalog");
 
         if (matchingAssessments.Count == 0)
         {
-            context.ReportProgress(100, "Complete — no kindergarten readiness behavioral assessments found");
+            context.ReportProgress(100, "Complete — no kindergarten readiness social-emotional assessments found");
             return new DataElementAssessment
             {
                 DataElementName = DataElementName,
                 Characteristics = [new RecordCount(0)],
                 Remarks = AssessmentDescription +
-                    " No assessments matching recognized kindergarten readiness behavioral instruments were found " +
-                    "in the assessment catalog."
+                    " No assessments matching recognized kindergarten readiness social-emotional instruments " +
+                    "were found in the assessment catalog."
             };
         }
 
-        context.ReportProgress(50, "Counting student assessment records for kindergarten readiness behavioral instruments...");
+        context.ReportProgress(50, "Counting student assessment records for kindergarten readiness social-emotional instruments...");
 
         var totalCount = 0;
         var instrumentDistribution = new Dictionary<string, int>();
@@ -118,7 +120,7 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
                 instrumentDistribution[identifier] = count;
         }
 
-        context.Log($"Found {totalCount:N0} kindergarten readiness behavioral assessment records");
+        context.Log($"Found {totalCount:N0} kindergarten readiness social-emotional assessment records");
         context.ReportProgress(100, "Complete");
 
         return new DataElementAssessment
@@ -133,7 +135,7 @@ public class ReportedKindergartenReadinessBehavioralEdFiAssessor : IEdFiAssessor
         };
     }
 
-    private static bool IsKindergartenReadinessBehavioralAssessment(EdFiAssessment assessment)
+    private static bool IsKindergartenReadinessSocialEmotionalAssessment(EdFiAssessment assessment)
     {
         if (!string.IsNullOrWhiteSpace(assessment.AssessmentCategoryDescriptor))
         {

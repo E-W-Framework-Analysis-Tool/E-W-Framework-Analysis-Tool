@@ -4,7 +4,7 @@ using EwFrameworkAnalysis.Common.Services;
 
 namespace EwFrameworkAnalysis.Common.Assessors.EdFi;
 
-public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
+public class StudentAttendanceRateK12EdFiAssessor : IEdFiAssessor
 {
     private static readonly HashSet<string> _presentDescriptors =
     [
@@ -18,7 +18,7 @@ public class StudentAttendanceK12EdFiAssessor : IEdFiAssessor
         "uri://ed-fi.org/AttendanceEventCategoryDescriptor#Unexcused Absence"
     ];
 
-    public string DataElementName => "Student Attendance (K-12)";
+    public string DataElementName => "Student attendance rate (K-12)";
 
     public string AssessmentDescription =>
         "Analysis of student attendance events including category distribution and student coverage";
