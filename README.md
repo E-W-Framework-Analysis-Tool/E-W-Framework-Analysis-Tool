@@ -1,5 +1,10 @@
 # E-W Framework Analysis Tool
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![CI](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml/badge.svg)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml)
+[![GitHub Issues](https://img.shields.io/github/issues/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/issues)
+[![GitHub Release](https://img.shields.io/github/v/release/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/releases)
+
 The **E-W Framework Analysis Tool** is an open-source application designed to help education agencies, districts, and
 their partners evaluate their data readiness to answer key questions from the
 [Education-to-Workforce Indicator Framework (E-W Framework)](https://educationtoworkforce.org). It supports states and
@@ -140,12 +145,12 @@ cd ..
 
 Technical and development-focused documentation can be found in this repository under [/docs/](./docs/).
 
-| Document                                                        | Description                                                                                                                    |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [Architecture and Security Brief](./docs/technical-overview.md) | Technical overview of the application architecture, data flows, and security considerations — intended for IT security review. |
-| [Code Standards](./docs/code-standards.md)                      | Coding conventions and standards for contributors.                                                                             |
-| [Data Assessor Design](./docs/data-assessor-design.md)          | Design and implementation patterns for data assessors.                                                                         |
-| [Deployment and CI/CD](./docs/deployment.md)                    | CI/CD pipeline and deployment configuration.                                                                                   |
+| Document                                               | Description                                                                                                                    |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| [Technical Overview](./docs/technical-overview.md)     | Technical overview of the application architecture, data flows, and security considerations — intended for IT security review. |
+| [Code Standards](./docs/code-standards.md)             | Coding conventions and standards for contributors.                                                                             |
+| [Data Assessor Design](./docs/data-assessor-design.md) | Design and implementation patterns for data assessors.                                                                         |
+| [Deployment and CI/CD](./docs/deployment.md)           | CI/CD pipeline and deployment configuration.                                                                                   |
 
 ## UI Utilities
 
@@ -168,10 +173,14 @@ is handled natively through the main application's Import function.
 
 ## Contributing
 
-We welcome contributions! Please review our [CONTRIBUTING.md](./CONTRIBUTING.md) guide for our workflow, branch naming,
-and pull request practices.
+We welcome contributions! Whether you've found a bug, have a feature idea, or want to improve the code or documentation,
+we'd love to hear from you.
+
+- **Bug reports and feature requests**:
+  [Open an issue](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/issues)
+- **Code and documentation contributions**: Please review our [CONTRIBUTING.md](./CONTRIBUTING.md) guide for our
+  workflow, branch naming, and pull request practices.
 
 ## License
 
-This project will be released under an open-source license (to be finalized). All contributions are expected to follow
-the applicable licensing terms once published.
+This project is licensed under the [Apache License 2.0](LICENSE).
