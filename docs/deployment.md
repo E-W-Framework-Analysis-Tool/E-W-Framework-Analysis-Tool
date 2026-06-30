@@ -32,21 +32,20 @@ other hosts, consult your server's documentation for configuring a single-page a
 The application reads optional deployment metadata from `appsettings.json` at startup. These values are informational
 and displayed in the application's about/version panel. They are not required for the application to function.
 
-| Field                              | Description                         |
-| ---------------------------------- | ----------------------------------- |
-| `DeploymentInfo.Version`           | Build version string                |
-| `DeploymentInfo.DeployDateTime`    | Deployment timestamp                |
-| `DeploymentInfo.EnvironmentLabel`  | e.g. `DEV`, `TEST`, or `PROD`       |
-| `DeploymentInfo.ShowDetails`       | `true` or `false`                   |
-| `DeploymentInfo.GitCommit`         | Full commit SHA                     |
-| `DeploymentInfo.BuildNumber`       | CI run number                       |
+| Field                             | Description                   |
+| --------------------------------- | ----------------------------- |
+| `DeploymentInfo.Version`          | Build version string          |
+| `DeploymentInfo.DeployDateTime`   | Deployment timestamp          |
+| `DeploymentInfo.EnvironmentLabel` | e.g. `DEV`, `TEST`, or `PROD` |
+| `DeploymentInfo.ShowDetails`      | `true` or `false`             |
+| `DeploymentInfo.GitCommit`        | Full commit SHA               |
+| `DeploymentInfo.BuildNumber`      | CI run number                 |
 
 ---
 
 ## CI Pipeline
 
-The project uses GitHub Actions for continuous integration. The workflow file is at
-`.github/workflows/dotnet-ci.yml`.
+The project uses GitHub Actions for continuous integration. The workflow file is at `.github/workflows/dotnet-ci.yml`.
 
 ### Pipeline Steps
 
@@ -67,7 +66,7 @@ downloaded and deployed to any static host without rebuilding from source.
 | Version tag (e.g. `v1.2.3`) | `1.2.3`                                  |
 | Push to `main`              | `main-{short SHA}` (e.g. `main-abc1234`) |
 
-### Deployment
+### Maintainer-Hosted Deployment
 
 Deployment of the maintainer-hosted instance is managed separately and is not part of this repository. Build artifacts
 produced by this pipeline are consumed by the deployment pipeline after CI passes.
@@ -76,5 +75,5 @@ produced by this pipeline are consumed by the deployment pipeline after CI passe
 
 ### Rollback
 
-Redeploy any previous build artifact or re-run the pipeline against a prior tag. Because the application is stateless
-on the server side, rollback has no database or migration concerns.
+Redeploy any previous build artifact or re-run the pipeline against a prior tag. Because the application is stateless on
+the server side, rollback has no database or migration concerns.
