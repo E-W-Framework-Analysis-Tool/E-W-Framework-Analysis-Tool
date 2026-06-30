@@ -15,7 +15,7 @@
                 <span class="label">@FilteredDisaggregates.Count() of @EwFrameworkDisaggregates.Disaggregates.Count</span>
             </label>
 
-            <select class="select w-52" @bind="_selectedSector">
+            <select class="select w-52" @bind="_selectedSector" aria-label="Filter by sector">
                 <option value="">All Sectors</option>
                 @foreach (var sector in Enum.GetValues<Sector>())
                 {
@@ -58,7 +58,7 @@
                     var scores = row.Score.DataElementScores;
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                        <input type="checkbox" name="disaggregate-check-@index" />
+                        <input type="checkbox" name="disaggregate-check-@index" aria-label="Toggle details for @row.Disaggregate.Name" />
 
                         @* Name & Score *@
                         <!-- Desktop -->
