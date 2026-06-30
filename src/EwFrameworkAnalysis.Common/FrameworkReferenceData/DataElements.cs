@@ -1752,42 +1752,6 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Student score or proficiency level on the state's standardized reading/ELA assessment. Used across grade-band proficiency indicators (grade 3, grade 8, high school). Distinct from Reading proficiency (Grades 1 and 2), which uses different early-grade assessment instruments."
             },
-        ["State standardized test (Grade 3 Math proficiency)"] =
-            new DataElement
-            {
-                Name = "State standardized test (Grade 3 Math proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Assessments",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade 3 student score or proficiency level on the state's standardized math assessment, used in the Math and reading proficiency in grade 3 indicator. Grade-specific variant of State standardized test (Math proficiency)."
-            },
-        ["State standardized test (Grade 3 Reading proficiency)"] =
-            new DataElement
-            {
-                Name = "State standardized test (Grade 3 Reading proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Assessments",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade 3 student score or proficiency level on the state's standardized reading/ELA assessment, used in the Math and reading proficiency in grade 3 indicator. Grade-specific variant of State standardized test (Reading proficiency)."
-            },
-        ["State standardized test (Grade 8 Math proficiency)"] =
-            new DataElement
-            {
-                Name = "State standardized test (Grade 8 Math proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Assessments",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade 8 student score or proficiency level on the state's standardized math assessment, used in the Math and reading proficiency in grade 8 indicator. Grade-specific variant of State standardized test (Math proficiency)."
-            },
-        ["State standardized test (Grade 8 Reading proficiency)"] =
-            new DataElement
-            {
-                Name = "State standardized test (Grade 8 Reading proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
-                DataElementCategory = "Assessments",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade 8 student score or proficiency level on the state's standardized reading/ELA assessment, used in the Math and reading proficiency in grade 8 indicator. Grade-specific variant of State standardized test (Reading proficiency)."
-            },
         ["Student attendance rate (K-12)"] =
             new DataElement
             {
