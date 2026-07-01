@@ -14,7 +14,7 @@
                 <span class="label">@FilteredQuestions.Count() of @_allQuestions.Count()</span>
             </label>
 
-            <select class="select w-52" @bind="_selectedSector">
+            <select class="select w-52" @bind="_selectedSector" aria-label="Filter by sector">
                 <option value="">All Sectors</option>
                 @foreach (var sector in Enum.GetValues<Sector>())
                 {
@@ -57,7 +57,7 @@
                     var qs = GetQuestionScoreByNumber(q.QuestionNumber) ?? new QuestionCoverageScore();
 
                     <div class="collapse collapse-arrow join-item border-b border-gray-300">
-                        <input type="checkbox" name="question-check-@q.QuestionNumber" />
+                        <input type="checkbox" name="question-check-@q.QuestionNumber" aria-label="Toggle details for @q.Question" />
 
                         <!-- Desktop row -->
                         <div class="collapse-title font-semibold hidden sm:block">
