@@ -27,37 +27,37 @@ does not correspond to a static file. This is required for Blazor's client-side 
 page refreshes will return 404. The published output includes a `web.config` with the necessary IIS rewrite rules; for
 other hosts, consult your server's documentation for configuring a single-page application fallback.
 
+### Injecting Deployment Metadata (Optional)
+
+The application reads optional deployment metadata from `appsettings.json` at startup. These values are informational
+and displayed in the application's about/version panel. They are not required for the application to function.
+
+| Field                             | Description                   |
+| --------------------------------- | ----------------------------- |
+| `DeploymentInfo.Version`          | Build version string          |
+| `DeploymentInfo.DeployDateTime`   | Deployment timestamp          |
+| `DeploymentInfo.EnvironmentLabel` | e.g. `DEV`, `TEST`, or `PROD` |
+| `DeploymentInfo.ShowDetails`      | `true` or `false`             |
+| `DeploymentInfo.GitCommit`        | Full commit SHA               |
+| `DeploymentInfo.BuildNumber`      | CI run number                 |
+
 ---
 
-## CI/CD Pipeline
+## CI Pipeline
 
-The project uses GitHub Actions for continuous integration and deployment. The workflow file is at
-`.github/workflows/dotnet-cicd.yml`.
+The project uses GitHub Actions for continuous integration. The workflow file is at `.github/workflows/dotnet-ci.yml`.
 
 ### Pipeline Steps
 
 Every push and pull request runs the full quality gate:
 
-1. **Format & lint** — enforces code style via `.editorconfig`
-2. **Build** — compiles the solution (`./eng/build-solution.ps1`)
-3. **Test** — runs unit tests with the `-Check` flag
-4. **Publish** — produces the static Blazor output as a build artifact
+1. **Build & Unit Tests** — compiles the solution and runs unit tests (`./eng/build-solution.ps1`)
+2. **E2E & Accessibility Tests** — runs Playwright tests against the built app (`./eng/run-e2e.ps1`)
+3. **Integration Tests** — runs live API integration tests against a test Ed-Fi endpoint
+4. **Prepare Deployment** — produces a versioned build artifact retained for 30 days
 
-Build artifacts are retained for 30 days and named `blazor-app-{version}` (e.g., `blazor-app-1.2.3` or
-`blazor-app-main-abc1234`). These artifacts can be downloaded and deployed to any static host without rebuilding from
-source.
-
-### Deployment Targets
-
-The pipeline supports three environments, each gated by trigger type:
-
-| Environment | Trigger                           | Status             |
-| ----------- | --------------------------------- | ------------------ |
-| Development | Push to `main` or any version tag | Active             |
-| Test        | Version tags (`vX.X.X`) only      | Currently disabled |
-| Production  | Version tags, after test succeeds | Currently disabled |
-
-Test and production deployments will be re-enabled with required reviewer gates once the repository is public.
+Build artifacts are named `blazor-app-{version}` (e.g., `blazor-app-1.2.3` or `blazor-app-main-abc1234`) and can be
+downloaded and deployed to any static host without rebuilding from source.
 
 ### Versioning
 
@@ -66,29 +66,12 @@ Test and production deployments will be re-enabled with required reviewer gates 
 | Version tag (e.g. `v1.2.3`) | `1.2.3`                                  |
 | Push to `main`              | `main-{short SHA}` (e.g. `main-abc1234`) |
 
-### Deploying to Azure Static Web Apps
+### Maintainer-Hosted Deployment
 
-The project maintainers use Azure Static Web Apps for their hosted instance. If you want to use the same pipeline for
-your own Azure deployment:
+Deployment of the maintainer-hosted instance is managed separately and is not part of this repository. Build artifacts
+produced by this pipeline are consumed by the deployment pipeline after CI passes.
 
-1. Create an Azure Static Web App and copy the deployment token
-2. Add the token as a repository secret named `AZURE_SWA_DEPLOY_TOKEN`
-3. The deployment script (`./eng/deploy-to-azure-swa.ps1`) will be invoked automatically by the workflow
-
-The following environment-specific values are injected into `appsettings.json` at deploy time via environment variable
-substitution:
-
-| Variable                           | Description                         |
-| ---------------------------------- | ----------------------------------- |
-| `DeploymentInfo__Version`          | Build version string                |
-| `DeploymentInfo__DeployDateTime`   | Deployment timestamp                |
-| `DeploymentInfo__EnvironmentLabel` | `DEV`, `TEST`, or `PROD`            |
-| `DeploymentInfo__ShowDetails`      | `true` in dev/test; `false` in prod |
-| `DeploymentInfo__GitCommit`        | Full commit SHA                     |
-| `DeploymentInfo__BuildNumber`      | GitHub Actions run number           |
-
-These values are informational and displayed in the application's about/version panel. They are not required for
-self-hosted deployments.
+---
 
 ### Rollback
 
