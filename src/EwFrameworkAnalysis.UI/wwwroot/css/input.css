@@ -130,6 +130,29 @@
         }
 }
 
+/* Ed-Fi profiler list — slide + fade-in for an element as it becomes the running/top item */
+@keyframes edfi-slide-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.75rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.edfi-item-enter {
+    animation: edfi-slide-fade-in 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .edfi-item-enter {
+        animation: none;
+    }
+}
+
 .ew-navbar-wordmark {
     font-family: 'Zilla Slab', serif;
     font-size: 1.25rem;
