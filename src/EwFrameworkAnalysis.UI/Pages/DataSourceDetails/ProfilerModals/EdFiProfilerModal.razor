@@ -78,50 +78,52 @@
             @* ── Progress ── *@
             @if (_currentProgress != null)
             {
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card AdditionalClasses="p-4">
-                        <h3 class="text-sm text-gray mb-2">Overall Progress</h3>
-                        <div class="text-3xl font-bold text-blue">@_currentProgress.PercentComplete%</div>
-                        <progress class="progress progress-primary w-full h-2 mt-3"
-                                  value="@_currentProgress.PercentComplete" max="100"></progress>
-                    </Card>
-                    <Card AdditionalClasses="p-4">
-                        <h3 class="text-sm text-gray mb-2">Profilers Complete</h3>
-                        <div class="text-3xl font-bold text-blue">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
-                    </Card>
-                    <Card AdditionalClasses="p-4">
-                        <h3 class="text-sm text-gray mb-2">Status</h3>
-                        <div class="space-y-1 text-sm">
-                            <div class="flex justify-between">
+                @* Condensed summary cards, pinned to the top of the single body scroller *@
+                <div class="sticky -top-5 z-20 bg-white -mx-6 px-6 -mt-4 pt-4 pb-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <Card NoPadding AdditionalClasses="p-3">
+                            <h3 class="text-xs text-gray mb-1">Overall Progress</h3>
+                            <div class="flex items-center gap-3">
+                                <div class="text-2xl font-bold text-blue leading-none">@_currentProgress.PercentComplete%</div>
+                                <progress class="progress progress-primary flex-1 h-2"
+                                          value="@_currentProgress.PercentComplete" max="100"></progress>
+                            </div>
+                        </Card>
+                        <Card NoPadding AdditionalClasses="p-3">
+                            <h3 class="text-xs text-gray mb-1">Profilers Complete</h3>
+                            <div class="text-2xl font-bold text-blue leading-none">@_currentProgress.CompletedAssessors / @_currentProgress.TotalAssessors</div>
+                        </Card>
+                        <Card NoPadding AdditionalClasses="p-3">
+                            <h3 class="text-xs text-gray mb-1">Status</h3>
+                            <div class="flex items-center gap-4 text-xs">
                                 <span class="flex items-center gap-1">
                                     <span class="w-2 h-2 rounded-full bg-yellow-500"></span>Running
+                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
                                 </span>
-                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Running)</span>
-                            </div>
-                            <div class="flex justify-between">
                                 <span class="flex items-center gap-1">
                                     <span class="w-2 h-2 rounded-full bg-success"></span>Completed
+                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
                                 </span>
-                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Completed)</span>
-                            </div>
-                            <div class="flex justify-between">
                                 <span class="flex items-center gap-1">
                                     <span class="w-2 h-2 rounded-full bg-red-500"></span>Failed
+                                    <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
                                 </span>
-                                <span class="font-bold">@_currentProgress.AssessorProgresses.Count(a => a.Status == AssessorStatus.Failed)</span>
                             </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
 
                 <Card NoPadding>
                     <div class="px-4 py-3 border-b border-gray-200">
                         <h3 class="font-semibold text-blue">Profiler Progress</h3>
                     </div>
-                    <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
-                        @foreach (var assessor in _currentProgress.AssessorProgresses)
+                    <div class="p-4 space-y-2">
+                        @foreach (var assessor in OrderedAssessors)
                         {
-                            <Card Accent="@GetAssessorAccent(assessor.Status)" Raise="Card.RaiseLevel.Subtle">
+                            <Card @key="assessor.DataElementName"
+                                  Accent="@GetAssessorAccent(assessor.Status)"
+                                  Raise="Card.RaiseLevel.Subtle"
+                                  AdditionalClasses="@GetItemAnimationClass(assessor.Status)">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
@@ -437,6 +439,27 @@
 
     private static string EnsureTrailingSlash(string url) =>
         string.IsNullOrWhiteSpace(url) ? url : url.EndsWith("/") ? url : url + "/";
+
+    // Surface active work: running assessors float to the top, pending sit in the middle,
+    // and completed/failed sink to the bottom. Stable tie-break on original index avoids jitter.
+    private IEnumerable<AssessorProgress> OrderedAssessors =>
+        _currentProgress!.AssessorProgresses
+            .Select((a, i) => (a, i))
+            .OrderBy(x => StatusRank(x.a.Status))
+            .ThenBy(x => x.i)
+            .Select(x => x.a);
+
+    private static int StatusRank(AssessorStatus status) => status switch
+    {
+        AssessorStatus.Running => 0,
+        AssessorStatus.Pending => 1,
+        AssessorStatus.Completed => 2,
+        AssessorStatus.Failed => 3,
+        _ => 4
+    };
+
+    private static string GetItemAnimationClass(AssessorStatus status) =>
+        status == AssessorStatus.Running ? "edfi-item-enter" : string.Empty;
 
     private string GetStatusBadgeClass(AssessorStatus status) => status switch
     {
