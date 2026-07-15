@@ -1,7 +1,7 @@
 # E-W Framework Analysis Tool
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![CI](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml/badge.svg)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-cicd.yml)
+[![CI](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-ci.yml/badge.svg)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/actions/workflows/dotnet-ci.yml)
 [![GitHub Issues](https://img.shields.io/github/issues/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/issues)
 [![GitHub Release](https://img.shields.io/github/v/release/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool)](https://github.com/E-W-Framework-Analysis-Tool/E-W-Framework-Analysis-Tool/releases)
 
