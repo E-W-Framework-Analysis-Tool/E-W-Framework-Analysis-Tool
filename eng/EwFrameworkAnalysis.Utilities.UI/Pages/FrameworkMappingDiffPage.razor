@@ -554,7 +554,6 @@
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px;margin-bottom:8px;">
             <div style="font-weight:600;font-size:0.85rem;color:#16a34a;margin-bottom:6px;">+ @key <span style="font-weight:400;font-size:0.75rem;">(new)</span></div>
             @ElPropRow("Category", null, el.DataElementCategory)
-            @ElPropRow("Cluster", null, el.ClusterOnlyCategory)
             @ElPropRow("Sectors", null, string.Join(", ", el.RelatedSectors))
             @if (el.AdditionalNotes != null)
             {
@@ -570,7 +569,6 @@
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:12px;margin-bottom:8px;">
             <div style="font-weight:600;font-size:0.85rem;color:#dc2626;margin-bottom:6px;">− @key <span style="font-weight:400;font-size:0.75rem;">(removed)</span></div>
             @ElPropRow("Category", el.DataElementCategory, null)
-            @ElPropRow("Cluster", el.ClusterOnlyCategory, null)
             @ElPropRow("Sectors", string.Join(", ", el.RelatedSectors), null)
             @if (el.AdditionalNotes != null)
             {
@@ -592,7 +590,6 @@
     var hasChange = !isSimple1to1
     || g.BeforeKeys.First() != g.AfterKeys.First()
     || b1?.DataElementCategory != a1?.DataElementCategory
-    || b1?.ClusterOnlyCategory != a1?.ClusterOnlyCategory
     || (b1 != null && a1 != null && !b1.RelatedSectors.SequenceEqual(a1.RelatedSectors))
     || b1?.AdditionalNotes != a1?.AdditionalNotes
     || b1?.ScoringRuleName != a1?.ScoringRuleName;
@@ -609,7 +606,6 @@
                 @if (isSimple1to1 && b1 != null && a1 != null)
                 {
                     @ElPropRow("Category", b1.DataElementCategory, a1.DataElementCategory)
-                    @ElPropRow("Cluster", b1.ClusterOnlyCategory, a1.ClusterOnlyCategory)
                     @ElPropRow("Sectors", string.Join(", ", b1.RelatedSectors), string.Join(", ", a1.RelatedSectors))
                     @ElPropRow("Notes", b1.AdditionalNotes, a1.AdditionalNotes)
                     @ElPropRow("Scoring", b1.ScoringRuleName, a1.ScoringRuleName)

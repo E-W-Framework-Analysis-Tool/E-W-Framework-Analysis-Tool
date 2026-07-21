@@ -374,24 +374,16 @@
 
     private readonly Dictionary<string, string> _categoryIcons = new()
     {
-        ["Academic Assessment and Performance"] = "fa-chart-line",
-        ["Attendance and Engagement"] = "fa-calendar-check",
-        ["Behavior and Discipline"] = "fa-gavel",
-        ["Community and Environmental Conditions"] = "fa-city",
-        ["Course and Curriculum"] = "fa-book",
-        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
-        ["Educator Qualifications and Credentials"] = "fa-certificate",
-        ["Financial Support and Resources"] = "fa-dollar-sign",
-        ["Health and Well-being"] = "fa-heart",
-        ["Instructional Quality and Practice"] = "fa-chalkboard",
-        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
-        ["Program Eligibility and Enrollment"] = "fa-school",
-        ["Program Quality and Standards"] = "fa-award",
-        ["School Climate and Engagement"] = "fa-users",
-        ["Student Demographics"] = "fa-user",
-        ["Student Support Services"] = "fa-hands-helping",
-        ["System Economic Conditions"] = "fa-coins",
-        ["Workforce and Career Outcomes"] = "fa-briefcase",
+        // E-W Framework Clusters (transitive from Indicator.Cluster)
+        ["Kindergarten Readiness"] = "fa-seedling",
+        ["Postsecondary Success"] = "fa-graduation-cap",
+        ["Postsecondary Transitions"] = "fa-route",
+        ["School Climate"] = "fa-school",
+        ["Social-Emotional Learning"] = "fa-smile",
+        ["Teaching Effectiveness"] = "fa-chalkboard-teacher",
+        ["Workforce Success"] = "fa-briefcase",
+        ["Workforce Transitions"] = "fa-exchange-alt",
+        ["Unclustered"] = "fa-question-circle",
         ["Academic Coursework"] = "fa-book",
         ["Academic Performance"] = "fa-chart-line",
         ["Assessments"] = "fa-clipboard-check",
@@ -412,19 +404,25 @@
         ["Transportation"] = "fa-bus",
     };
 
+    private const string UnclusteredLabel = "Unclustered";
+
     private void BuildCategories()
     {
-        Func<DataElement, string> selector = _categoryMode == CategoryMode.EWFramework
-            ? e => e.ClusterOnlyCategory
-            : e => e.DataElementCategory;
+        // Cluster mode is a many-to-many fan-out: an element with no clustered indicators
+        // yet lands in "Unclustered"; an element spanning clusters appears under each one.
+        IEnumerable<(string Name, DataElement Element)> pairs = _categoryMode == CategoryMode.EWFramework
+            ? EwFrameworkDataElements.Elements.Values.SelectMany(e => e.RelatedIndicatorClusters.Count > 0
+                ? e.RelatedIndicatorClusters.Select(c => (c.GetDisplayName(), e))
+                : [(UnclusteredLabel, e)])
+            : EwFrameworkDataElements.Elements.Values.Select(e => (e.DataElementCategory, e));
 
-        _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(selector)
+        _categories = pairs
+            .GroupBy(p => p.Name)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
                 Icon = _categoryIcons.GetValueOrDefault(g.Key, "fa-folder"),
-                Elements = g.ToList()
+                Elements = g.Select(p => p.Element).ToList()
             })
             .OrderBy(c => c.Name)
             .ToList();

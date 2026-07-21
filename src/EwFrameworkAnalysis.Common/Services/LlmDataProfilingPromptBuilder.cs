@@ -212,8 +212,8 @@ public static class LlmDataProfilingPromptBuilder
             sb.AppendLine();
             sb.AppendLine($"### {el.Name}");
             sb.AppendLine($"- **Category:** {el.DataElementCategory}");
-            if (!string.IsNullOrWhiteSpace(el.ClusterOnlyCategory))
-                sb.AppendLine($"- **Cluster:** {el.ClusterOnlyCategory}");
+            if (el.RelatedIndicatorClusters.Count > 0)
+                sb.AppendLine($"- **Cluster:** {string.Join(", ", el.RelatedIndicatorClusters)}");
             if (el.RelatedSectors?.Count > 0)
                 sb.AppendLine($"- **Sectors:** {string.Join(", ", el.RelatedSectors)}");
             if (!string.IsNullOrWhiteSpace(el.AdditionalNotes))

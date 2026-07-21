@@ -159,33 +159,34 @@
                                    value="@_elEditName"
                                    @oninput="@(e => { _elEditName = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
                         </div>
-                        <div class="grid grid-cols-2 gap-2 mb-3">
-                            <div>
-                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Cluster Category</span></label>
-                                <input class="input input-sm input-bordered w-full" type="text"
-                                       list="cluster-cat-list"
-                                       value="@_elEditCluster"
-                                       @oninput="@(e => { _elEditCluster = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
-                                <datalist id="cluster-cat-list">
-                                    @foreach (var c in AllClusterCategories)
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Data Element Category</span></label>
+                            <input class="input input-sm input-bordered w-full" type="text"
+                                   list="de-cat-list"
+                                   placeholder="Select or type new…"
+                                   value="@_elEditCategory"
+                                   @oninput="@(e => { _elEditCategory = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
+                            <datalist id="de-cat-list">
+                                @foreach (var c in AllElementCategories)
+                                {
+                                    <option value="@c" />
+                                }
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">E-W Cluster(s) — transitive from indicators, read-only</span></label>
+                            <div class="flex flex-wrap gap-1">
+                                @if (_elements.TryGetValue(_selectedElementKey, out var _elForClusters) && _elForClusters.RelatedIndicatorClusters.Count > 0)
+                                {
+                                    @foreach (var c in _elForClusters.RelatedIndicatorClusters)
                                     {
-                                        <option value="@c" />
+                                        <span class="badge badge-info badge-sm">@c</span>
                                     }
-                                </datalist>
-                            </div>
-                            <div>
-                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Data Element Category</span></label>
-                                <input class="input input-sm input-bordered w-full" type="text"
-                                       list="de-cat-list"
-                                       placeholder="Select or type new…"
-                                       value="@_elEditCategory"
-                                       @oninput="@(e => { _elEditCategory = e.Value?.ToString() ?? ""; MarkElDirty(); })" />
-                                <datalist id="de-cat-list">
-                                    @foreach (var c in AllElementCategories)
-                                    {
-                                        <option value="@c" />
-                                    }
-                                </datalist>
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-base-content/40">Unclustered — no indicator referencing this element has a Cluster assigned yet</span>
+                                }
                             </div>
                         </div>
                         <div class="mb-3">
@@ -319,6 +320,23 @@
                             <div>
                                 <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Domain</span></label>
                                 <div class="bg-base-200 rounded px-2 py-1 text-xs">@selInd.Domain</div>
+                            </div>
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Cluster</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">@(selInd.Cluster.Count > 0 ? string.Join(", ", selInd.Cluster) : "—")</div>
+                            </div>
+                            <div>
+                                <label class="label pb-0.5"><span class="label-text text-xs font-semibold uppercase text-base-content/60">Readiness by Sector</span></label>
+                                <div class="bg-base-200 rounded px-2 py-1 text-xs">
+                                    @if (selInd.SectorReadiness.Count > 0)
+                                    {
+                                        @string.Join(", ", selInd.SectorReadiness.Select(sr => $"{sr.Sector}: {sr.Readiness}"))
+                                    }
+                                    else
+                                    {
+                                        @:—
+                                    }
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -740,7 +758,7 @@
     string _elSearch = "", _elSectorFilter = "", _elCategoryFilter = "",
            _elStatusFilter = "", _elReviewFilter = "";
     string _selectedElementKey = "", _addElementName = "";
-    string _elEditName = "", _elEditCluster = "", _elEditCategory = "",
+    string _elEditName = "", _elEditCategory = "",
            _elEditNotes = "", _elEditScoring = "";
     List<Sector> _elEditSectors = new();
     string _elNewSector = "";
@@ -785,7 +803,6 @@
     class DataElementDto
     {
         public string Name { get; set; } = "";
-        public string ClusterOnlyCategory { get; set; } = "";
         public string DataElementCategory { get; set; } = "";
         public List<string> RelatedSectors { get; set; } = new();
         public string? AdditionalNotes { get; set; }
@@ -866,7 +883,6 @@
                 var el = new DataElement
                 {
                     Name = dto.Name,
-                    ClusterOnlyCategory = dto.ClusterOnlyCategory,
                     DataElementCategory = dto.DataElementCategory,
                     RelatedSectors = dto.RelatedSectors
                                             .Select(s => Enum.TryParse<Sector>(s, out var sv) ? sv : (Sector?)null)
@@ -911,7 +927,6 @@
                 kv => new DataElementDto
                 {
                     Name = kv.Value.Name,
-                    ClusterOnlyCategory = kv.Value.ClusterOnlyCategory,
                     DataElementCategory = kv.Value.DataElementCategory,
                     RelatedSectors = kv.Value.RelatedSectors.Select(s => s.ToString()).ToList(),
                     AdditionalNotes = kv.Value.AdditionalNotes,
@@ -1029,10 +1044,6 @@
         _elements.Values.Select(e => e.DataElementCategory)
             .Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
 
-    List<string> AllClusterCategories =>
-        _elements.Values.Select(e => e.ClusterOnlyCategory)
-            .Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c).ToList();
-
     IEnumerable<KeyValuePair<string, DataElement>> FilteredElements()
     {
         var used = _indicators.Values.SelectMany(i => i.DataElementNames)
@@ -1086,7 +1097,6 @@
         _elHasChanges = false;
         if (!_elements.TryGetValue(key, out var e)) return;
         _elEditName = e.Name;
-        _elEditCluster = e.ClusterOnlyCategory;
         _elEditCategory = e.DataElementCategory;
         _elEditNotes = e.AdditionalNotes ?? "";
         _elEditScoring = e.ScoringRuleName ?? "";
@@ -1111,7 +1121,6 @@
         var updated = new DataElement
         {
             Name = newKey,
-            ClusterOnlyCategory = _elEditCluster,
             DataElementCategory = _elEditCategory,
             RelatedSectors = _elEditSectors.ToList(),
             AdditionalNotes = string.IsNullOrWhiteSpace(_elEditNotes) ? null : _elEditNotes,
@@ -1163,7 +1172,7 @@
     {
         var n = _addElementName.Trim();
         if (string.IsNullOrEmpty(n) || _elements.ContainsKey(n)) return;
-        _elements[n] = new DataElement { Name = n, ClusterOnlyCategory = "", DataElementCategory = "", RelatedSectors = new(), AdditionalNotes = null };
+        _elements[n] = new DataElement { Name = n, DataElementCategory = "", RelatedSectors = new(), AdditionalNotes = null };
         _addElementName = "";
         _ = PersistWorkingStateAsync();
         TrySelectElement(n);
@@ -1292,7 +1301,6 @@
             sb.AppendLine($"        [\"{Esc(kv.Key)}\"] =");
             sb.AppendLine("            new DataElement"); sb.AppendLine("            {");
             sb.AppendLine($"                Name = \"{Esc(e.Name)}\",");
-            sb.AppendLine($"                ClusterOnlyCategory = \"{Esc(e.ClusterOnlyCategory)}\",");
             sb.AppendLine($"                DataElementCategory = \"{Esc(e.DataElementCategory)}\",");
             sb.AppendLine($"                RelatedSectors = [{string.Join(", ", e.RelatedSectors.Select(s => $"Sector.{s}"))}],");
             sb.AppendLine(e.AdditionalNotes != null ? $"                AdditionalNotes = \"{Esc(e.AdditionalNotes)}\"" : "                AdditionalNotes = null");
@@ -1321,10 +1329,18 @@
             sb.AppendLine($"                Name = \"{Esc(i.Name)}\",");
             sb.AppendLine($"                Type = IndicatorType.{i.Type},");
             sb.AppendLine($"                Domain = IndicatorDomain.{i.Domain},");
+            if (i.Cluster.Count > 0) sb.AppendLine($"                Cluster = [{string.Join(", ", i.Cluster.Select(c => $"IndicatorCluster.{c}"))}],");
+            if (i.SectorReadiness.Count > 0)
+            {
+                sb.AppendLine("                SectorReadiness =");
+                sb.AppendLine("                [");
+                foreach (var sr in i.SectorReadiness)
+                    sb.AppendLine($"                    new() {{ Sector = Sector.{sr.Sector}, Readiness = IndicatorReadiness.{sr.Readiness} }},");
+                sb.AppendLine("                ],");
+            }
             sb.AppendLine($"                Definition = \"{Esc(i.Definition)}\",");
             sb.AppendLine($"                RecommendedMetrics = \"{Esc(i.RecommendedMetrics)}\",");
             sb.AppendLine($"                DataNeeded = [{string.Join(", ", i.DataNeeded.Select(d => $"DataCategory.{d}"))}],");
-            sb.AppendLine($"                Sectors = [{string.Join(", ", i.Sectors.Select(s => $"Sector.{s}"))}],");
             sb.AppendLine("                DataElementNames ="); sb.AppendLine("                [");
             foreach (var el in i.DataElementNames) sb.AppendLine($"                    \"{Esc(el)}\",");
             sb.AppendLine("                ]"); sb.AppendLine("            },");
@@ -1433,8 +1449,12 @@
         var sb = new StringBuilder();
         sb.AppendLine($"**Data Element:** {_selectedElementKey}");
         sb.AppendLine($"**Category:** {el.DataElementCategory}");
-        if (!string.IsNullOrEmpty(el.ClusterOnlyCategory))
-            sb.AppendLine($"**Cluster Category:** {el.ClusterOnlyCategory}");
+        if (el.RelatedIndicatorClusters.Count > 0)
+            sb.AppendLine($"**Cluster(s):** {string.Join(", ", el.RelatedIndicatorClusters)}");
+        if (el.RelatedIndicatorTypes.Count > 0)
+            sb.AppendLine($"**Related Indicator Type(s):** {string.Join(", ", el.RelatedIndicatorTypes)}");
+        if (el.RelatedIndicatorDomains.Count > 0)
+            sb.AppendLine($"**Related Indicator Domain(s):** {string.Join(", ", el.RelatedIndicatorDomains)}");
         sb.AppendLine($"**Sectors:** {string.Join(", ", el.RelatedSectors)}");
         if (!string.IsNullOrEmpty(el.AdditionalNotes))
             sb.AppendLine($"**Notes:** {el.AdditionalNotes}");
@@ -1464,7 +1484,11 @@
         if (!_indicators.TryGetValue(_selectedIndicatorKey, out var ind)) return;
         var sb = new StringBuilder();
         sb.AppendLine($"**Indicator:** {_selectedIndicatorKey}");
-        sb.AppendLine($"**Type:** {ind.Type} | **Domain:** {ind.Domain}");
+        var readinessText = ind.SectorReadiness.Count > 0
+            ? string.Join(", ", ind.SectorReadiness.Select(sr => $"{sr.Sector}: {sr.Readiness}"))
+            : "—";
+        var clusterText = ind.Cluster.Count > 0 ? string.Join(", ", ind.Cluster) : "—";
+        sb.AppendLine($"**Type:** {ind.Type} | **Domain:** {ind.Domain} | **Cluster:** {clusterText} | **Readiness:** {readinessText}");
         sb.AppendLine($"**Sectors:** {string.Join(", ", ind.Sectors)}");
         sb.AppendLine($"**Definition:** {ind.Definition}");
         sb.AppendLine($"**Recommended Metrics:** {ind.RecommendedMetrics}");
@@ -1489,7 +1513,7 @@
     // ── Clone helpers ─────────────────────────────────────────────────────
 
     static Disaggregate CloneDisaggregate(Disaggregate d) => new() { Name = d.Name, Description = d.Description, Sectors = d.Sectors.ToList(), DataElementNames = d.DataElementNames.ToList() };
-    static DataElement CloneElement(DataElement e) => new() { Name = e.Name, ClusterOnlyCategory = e.ClusterOnlyCategory, DataElementCategory = e.DataElementCategory, RelatedSectors = e.RelatedSectors.ToList(), AdditionalNotes = e.AdditionalNotes, ScoringRuleName = e.ScoringRuleName };
-    static Indicator CloneIndicator(Indicator i) => new() { Name = i.Name, Type = i.Type, Domain = i.Domain, Definition = i.Definition, RecommendedMetrics = i.RecommendedMetrics, DataNeeded = i.DataNeeded.ToList(), Sectors = i.Sectors.ToList(), DataElementNames = i.DataElementNames.ToList() };
+    static DataElement CloneElement(DataElement e) => new() { Name = e.Name, DataElementCategory = e.DataElementCategory, RelatedSectors = e.RelatedSectors.ToList(), AdditionalNotes = e.AdditionalNotes, ScoringRuleName = e.ScoringRuleName };
+    static Indicator CloneIndicator(Indicator i) => new() { Name = i.Name, Type = i.Type, Domain = i.Domain, Cluster = i.Cluster.ToList(), SectorReadiness = i.SectorReadiness.ToList(), Definition = i.Definition, RecommendedMetrics = i.RecommendedMetrics, DataNeeded = i.DataNeeded.ToList(), DataElementNames = i.DataElementNames.ToList() };
     static EssentialQuestion CloneQuestion(EssentialQuestion q) => new() { QuestionNumber = q.QuestionNumber, Question = q.Question, QuestionSummary = q.QuestionSummary, ApplicableSectors = q.ApplicableSectors.ToList(), RelatedIndicatorNames = q.RelatedIndicatorNames.ToList() };
 }

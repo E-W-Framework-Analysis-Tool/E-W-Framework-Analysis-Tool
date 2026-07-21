@@ -84,6 +84,81 @@
                     </div>
                 </div>
 
+                <!-- Related Indicator Cluster Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Indicator Cluster</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var cluster in Enum.GetValues<IndicatorCluster>())
+                        {
+                            <input class="btn btn-xs @(_selectedClusters.Contains(cluster) ? "btn-primary" : "")"
+                                   type="checkbox"
+                                   checked="@_selectedClusters.Contains(cluster)"
+                                   @onchange="() => ToggleCluster(cluster)"
+                                   aria-label="@cluster.GetDisplayName()" />
+                        }
+                        @if (_selectedClusters.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost"
+                                    type="button"
+                                    @onclick="ClearClusterFilter"
+                                    title="Clear"
+                                    aria-label="Clear indicator cluster filter">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Related Indicator Domain Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Indicator Domain</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var domain in Enum.GetValues<IndicatorDomain>())
+                        {
+                            <input class="btn btn-xs @(_selectedDomains.Contains(domain) ? "btn-primary" : "")"
+                                   type="checkbox"
+                                   checked="@_selectedDomains.Contains(domain)"
+                                   @onchange="() => ToggleDomain(domain)"
+                                   aria-label="@domain.GetDisplayName()" />
+                        }
+                        @if (_selectedDomains.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost"
+                                    type="button"
+                                    @onclick="ClearDomainFilter"
+                                    title="Clear"
+                                    aria-label="Clear indicator domain filter">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Related Indicator Type Filter -->
+                <div class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold text-gray-600">Indicator Type</span>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var type in Enum.GetValues<IndicatorType>())
+                        {
+                            <input class="btn btn-xs @(_selectedTypes.Contains(type) ? "btn-primary" : "")"
+                                   type="checkbox"
+                                   checked="@_selectedTypes.Contains(type)"
+                                   @onchange="() => ToggleType(type)"
+                                   aria-label="@type.GetDisplayName()" />
+                        }
+                        @if (_selectedTypes.Any())
+                        {
+                            <button class="btn btn-xs btn-square btn-ghost"
+                                    type="button"
+                                    @onclick="ClearTypeFilter"
+                                    title="Clear"
+                                    aria-label="Clear indicator type filter">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+
                 <!-- Status Filter -->
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Status</span>
@@ -170,6 +245,12 @@
                                             {
                                                 <i class="fas fa-info-circle text-xs text-gray-400 ml-1"></i>
                                             }
+                                            @{ var usedByIndicators = IndicatorsUsingElement(element.Name); }
+                                            @if (usedByIndicators.Count > 0)
+                                            {
+                                                <i class="fas fa-diagram-project text-xs text-gray-400 ml-1 cursor-help"
+                                                   title="@("Used by " + usedByIndicators.Count + " indicator(s): " + string.Join(", ", usedByIndicators))"></i>
+                                            }
                                         </div>
                                     </div>
 
@@ -226,6 +307,9 @@
     private string _searchQuery = string.Empty;
     private HashSet<string> _expandedCategories = new();
     private HashSet<Sector> _selectedSectors = new();
+    private HashSet<IndicatorCluster> _selectedClusters = new();
+    private HashSet<IndicatorDomain> _selectedDomains = new();
+    private HashSet<IndicatorType> _selectedTypes = new();
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
@@ -278,25 +362,16 @@
 
     private readonly Dictionary<string, string> _categoryIcons = new()
     {
-        // E-W Framework Clusters
-        ["Academic Assessment and Performance"] = "fa-chart-line",
-        ["Attendance and Engagement"] = "fa-calendar-check",
-        ["Behavior and Discipline"] = "fa-gavel",
-        ["Community and Environmental Conditions"] = "fa-city",
-        ["Course and Curriculum"] = "fa-book",
-        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
-        ["Educator Qualifications and Credentials"] = "fa-certificate",
-        ["Financial Support and Resources"] = "fa-dollar-sign",
-        ["Health and Well-being"] = "fa-heart",
-        ["Instructional Quality and Practice"] = "fa-chalkboard",
-        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
-        ["Program Eligibility and Enrollment"] = "fa-school",
-        ["Program Quality and Standards"] = "fa-award",
-        ["School Climate and Engagement"] = "fa-users",
-        ["Student Demographics"] = "fa-user",
-        ["Student Support Services"] = "fa-hands-helping",
-        ["System Economic Conditions"] = "fa-coins",
-        ["Workforce and Career Outcomes"] = "fa-briefcase",
+        // E-W Framework Clusters (transitive from Indicator.Cluster)
+        ["Kindergarten Readiness"] = "fa-seedling",
+        ["Postsecondary Success"] = "fa-graduation-cap",
+        ["Postsecondary Transitions"] = "fa-route",
+        ["School Climate"] = "fa-school",
+        ["Social-Emotional Learning"] = "fa-smile",
+        ["Teaching Effectiveness"] = "fa-chalkboard-teacher",
+        ["Workforce Success"] = "fa-briefcase",
+        ["Workforce Transitions"] = "fa-exchange-alt",
+        ["Unclustered"] = "fa-question-circle",
         // Data Element Categories
         ["Academic Coursework"] = "fa-book",
         ["Academic Performance"] = "fa-chart-line",
@@ -320,19 +395,25 @@
 
     private List<DataElementCategory> _categories = new();
 
+    private const string UnclusteredLabel = "Unclustered";
+
     private void BuildCategories()
     {
-        var groupingSelector = _categoryMode == CategoryMode.EWFramework
-            ? (Func<DataElement, string>)(e => e.ClusterOnlyCategory)
-            : (e => e.DataElementCategory);
+        // Cluster mode is a many-to-many fan-out: an element with no clustered indicators
+        // yet lands in "Unclustered"; an element spanning clusters appears under each one.
+        IEnumerable<(string Name, DataElement Element)> pairs = _categoryMode == CategoryMode.EWFramework
+            ? EwFrameworkDataElements.Elements.Values.SelectMany(e => e.RelatedIndicatorClusters.Count > 0
+                ? e.RelatedIndicatorClusters.Select(c => (c.GetDisplayName(), e))
+                : [(UnclusteredLabel, e)])
+            : EwFrameworkDataElements.Elements.Values.Select(e => (e.DataElementCategory, e));
 
-        _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(groupingSelector)
+        _categories = pairs
+            .GroupBy(p => p.Name)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
                 Icon = _categoryIcons.GetValueOrDefault(g.Key, "fa-folder"),
-                Elements = g.ToList()
+                Elements = g.Select(p => p.Element).ToList()
             })
             .OrderBy(c => c.Name)
             .ToList();
@@ -345,6 +426,37 @@
     }
 
     private void ClearSectorFilter() => _selectedSectors.Clear();
+
+    private void ToggleCluster(IndicatorCluster cluster)
+    {
+        if (_selectedClusters.Contains(cluster)) _selectedClusters.Remove(cluster);
+        else _selectedClusters.Add(cluster);
+    }
+
+    private void ClearClusterFilter() => _selectedClusters.Clear();
+
+    private void ToggleDomain(IndicatorDomain domain)
+    {
+        if (_selectedDomains.Contains(domain)) _selectedDomains.Remove(domain);
+        else _selectedDomains.Add(domain);
+    }
+
+    private void ClearDomainFilter() => _selectedDomains.Clear();
+
+    private void ToggleType(IndicatorType type)
+    {
+        if (_selectedTypes.Contains(type)) _selectedTypes.Remove(type);
+        else _selectedTypes.Add(type);
+    }
+
+    private void ClearTypeFilter() => _selectedTypes.Clear();
+
+    private List<string> IndicatorsUsingElement(string elementName) =>
+        EwFrameworkIndicators.Indicators.Values
+            .Where(i => i.DataElementNames.Contains(elementName))
+            .Select(i => i.Name)
+            .OrderBy(n => n)
+            .ToList();
 
     private void ToggleAvailability(AvailabilityJudgment availability)
     {
@@ -360,9 +472,12 @@
 
     private bool HasAvailabilityFilters() => _selectedAvailabilities.Any() || _showUnreported;
 
-    private bool HasAnyFilters() => _selectedSectors.Any() || HasAvailabilityFilters();
+    private bool HasAnyFilters() =>
+        _selectedSectors.Any() || _selectedClusters.Any() || _selectedDomains.Any() || _selectedTypes.Any() || HasAvailabilityFilters();
 
-    private int GetActiveFilterCount() => _selectedSectors.Count + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
+    private int GetActiveFilterCount() =>
+        _selectedSectors.Count + _selectedClusters.Count + _selectedDomains.Count + _selectedTypes.Count
+        + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
 
     private List<DataElementCategory> GetFilteredCategories()
     {
@@ -393,6 +508,48 @@
                     Icon = c.Icon,
                     Elements = c.Elements
                         .Where(e => e.RelatedSectors.Any(s => _selectedSectors.Contains(s)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedClusters.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorClusters.Any(x => _selectedClusters.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedDomains.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorDomains.Any(x => _selectedDomains.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedTypes.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorTypes.Any(x => _selectedTypes.Contains(x)))
                         .ToList()
                 })
                 .Where(c => c.Elements.Any());

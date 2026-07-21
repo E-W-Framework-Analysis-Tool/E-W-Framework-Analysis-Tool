@@ -133,7 +133,7 @@
                 {
                     DataElement = e.Name,
                     Category = e.DataElementCategory,
-                    EwCluster = e.ClusterOnlyCategory,
+                    EwCluster = string.Join("; ", e.RelatedIndicatorClusters.Select(c => c.GetDisplayName())),
                     Availability = r?.Availability.HasValue == true ? r.Availability.Value.GetDisplayName() : "",
                     InterestLevel = r?.Interest.HasValue == true ? r.Interest.Value.GetDisplayName() : "",
                     CanQueryAndShare = r?.CanQueryAndShare.HasValue == true ? (r.CanQueryAndShare.Value ? "Yes" : "No") : ""

@@ -93,22 +93,26 @@ public class AssessorMappingService
                 return new DataElementMappingRow
                 {
                     DataElementName = de.Name,
-                    ClusterCategory = de.ClusterOnlyCategory,
+                    RelatedIndicatorClusters = de.RelatedIndicatorClusters,
                     DataElementCategory = de.DataElementCategory,
                     EdFiMapping = edFiMapping,
                     CedsMapping = cedsMapping
                 };
             })
-            .OrderBy(r => r.ClusterCategory)
-            .ThenBy(r => r.DataElementName)
+            .OrderBy(r => r.DataElementName)
             .ToList();
 
-        // Per-cluster breakdown
+        // Per-cluster breakdown. An element with no clustered indicators yet falls into
+        // "Unclustered"; an element spanning clusters counts toward each one.
+        const string unclustered = "Unclustered";
         var clusterBreakdown = rows
-            .GroupBy(r => r.ClusterCategory)
+            .SelectMany(r => r.RelatedIndicatorClusters.Count > 0
+                ? r.RelatedIndicatorClusters.Select(c => (Cluster: c.ToString(), Row: r))
+                : [(Cluster: unclustered, Row: r)])
+            .GroupBy(x => x.Cluster)
             .ToDictionary(
                 g => g.Key,
-                g => (Total: g.Count(), EdFi: g.Count(r => r.IsMappedToEdFi), Ceds: g.Count(r => r.IsMappedToCeds)));
+                g => (Total: g.Count(), EdFi: g.Count(x => x.Row.IsMappedToEdFi), Ceds: g.Count(x => x.Row.IsMappedToCeds)));
 
         return new AssessorMappingReport
         {

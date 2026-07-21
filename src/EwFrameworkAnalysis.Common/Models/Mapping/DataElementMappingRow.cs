@@ -1,3 +1,4 @@
+using EwFrameworkAnalysis.Common.FrameworkReferenceData;
 using EwFrameworkAnalysis.Common.Mapping;
 using EwFrameworkAnalysis.Common.Models.Project;
 
@@ -9,7 +10,7 @@ namespace EwFrameworkAnalysis.Common.Models.Mapping;
 public class DataElementMappingRow
 {
     public string DataElementName { get; init; } = string.Empty;
-    public string ClusterCategory { get; init; } = string.Empty;
+    public IReadOnlyList<IndicatorCluster> RelatedIndicatorClusters { get; init; } = [];
     public string DataElementCategory { get; init; } = string.Empty;
 
     public DataElementMappingInfo? EdFiMapping { get; init; }
