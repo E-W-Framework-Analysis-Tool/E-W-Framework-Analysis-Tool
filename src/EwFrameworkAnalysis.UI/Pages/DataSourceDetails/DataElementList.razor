@@ -19,7 +19,7 @@
                        @bind:event="oninput" />
             </label>
 
-            <button class="btn btn-sm btn-ghost gap-1 @(_showOptions ? "btn-active" : "") @(HasAnyFilters() ? "text-primary" : "")"
+            <button class="btn btn-sm btn-ghost gap-1 @(_showOptions ? "btn-active" : "")"
                     @onclick="() => _showOptions = !_showOptions"
                     aria-expanded="@_showOptions"
                     aria-label="Toggle options">
@@ -36,7 +36,10 @@
         </div>
 
         <!-- Row 2: Sliding options panel -->
-        <div class="overflow-hidden transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2" : "max-h-0 opacity-0")">
+        @* overflow-hidden is only needed to hide/animate the collapsed (max-h-0) state; once
+           expanded it must switch to visible or the FilterDropdown popups get clipped at this
+           box's bottom edge instead of floating over the element list below. *@
+        <div class="transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2 overflow-visible" : "max-h-0 opacity-0 overflow-hidden")">
             <div class="flex flex-wrap gap-x-6 gap-y-3 pt-2 pb-1 border-t border-gray-200">
 
                 <!-- Group By -->
@@ -59,135 +62,44 @@
                     </div>
                 </div>
 
-                <!-- Sector Filter -->
+                <!-- Sector / Cluster / Domain / Type / Availability filters -->
                 <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Sector</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var sector in Enum.GetValues<Sector>())
-                        {
-                            <input class="btn btn-xs @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
-                                   type="checkbox"
-                                   checked="@_selectedSectors.Contains(sector)"
-                                   @onchange="() => ToggleSector(sector)"
-                                   aria-label="@sector.ToString()" />
-                        }
-                        @if (_selectedSectors.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearSectorFilter"
-                                    title="Clear"
-                                    aria-label="Clear sector filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
+                    <span class="text-xs font-semibold text-gray-600">Filter By</span>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <FilterDropdown TValue="Sector" Label="Sector" Options="Enum.GetValues<Sector>()"
+                                        SelectedValues="_selectedSectors" OnChanged="StateHasChanged"
+                                        Description="The sector(s) this element itself is tagged with." />
+                        <FilterDropdown TValue="IndicatorCluster" Label="Cluster" Options="Enum.GetValues<IndicatorCluster>()"
+                                        SelectedValues="_selectedClusters" OnChanged="StateHasChanged"
+                                        Description="Clusters of the indicators that use this element — a property of those indicators, not the element itself." />
+                        <FilterDropdown TValue="IndicatorDomain" Label="Domain" Options="Enum.GetValues<IndicatorDomain>()"
+                                        SelectedValues="_selectedDomains" OnChanged="StateHasChanged"
+                                        Description="Domains of the indicators that use this element — a property of those indicators, not the element itself." />
+                        <FilterDropdown TValue="IndicatorType" Label="Type" Options="Enum.GetValues<IndicatorType>()"
+                                        SelectedValues="_selectedTypes" OnChanged="StateHasChanged"
+                                        Description="Types of the indicators that use this element — a property of those indicators, not the element itself." />
+                        <FilterDropdown TValue="AvailabilityJudgment" Label="Availability Status" Options="_availabilityOptions"
+                                        SelectedValues="_selectedAvailabilities" OnChanged="StateHasChanged"
+                                        ExtraCount="@(_showUnreported ? 1 : 0)" OnClearExtra="@(() => _showUnreported = false)"
+                                        Description="The availability judgment recorded for this element in this data source, if any.">
+                            <ExtraContent>
+                                @if (!HideUnreported)
+                                {
+                                    <label class="flex items-center gap-2 py-1 px-1 rounded hover:bg-base-200 cursor-pointer w-full">
+                                        <input type="checkbox" class="checkbox checkbox-xs shrink-0"
+                                               checked="@_showUnreported"
+                                               @onchange="() => _showUnreported = !_showUnreported" />
+                                        <span class="text-sm whitespace-normal break-words">Not Yet Reported</span>
+                                    </label>
+                                }
+                            </ExtraContent>
+                        </FilterDropdown>
 
-                <!-- Related Indicator Cluster Filter -->
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Indicator Cluster</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var cluster in Enum.GetValues<IndicatorCluster>())
+                        @if (HasAnyFilters())
                         {
-                            <input class="btn btn-xs @(_selectedClusters.Contains(cluster) ? "btn-primary" : "")"
-                                   type="checkbox"
-                                   checked="@_selectedClusters.Contains(cluster)"
-                                   @onchange="() => ToggleCluster(cluster)"
-                                   aria-label="@cluster.GetDisplayName()" />
-                        }
-                        @if (_selectedClusters.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearClusterFilter"
-                                    title="Clear"
-                                    aria-label="Clear indicator cluster filter">
+                            <button class="btn btn-xs btn-ghost gap-1" type="button" @onclick="ResetAllFilters">
                                 <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
-
-                <!-- Related Indicator Domain Filter -->
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Indicator Domain</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var domain in Enum.GetValues<IndicatorDomain>())
-                        {
-                            <input class="btn btn-xs @(_selectedDomains.Contains(domain) ? "btn-primary" : "")"
-                                   type="checkbox"
-                                   checked="@_selectedDomains.Contains(domain)"
-                                   @onchange="() => ToggleDomain(domain)"
-                                   aria-label="@domain.GetDisplayName()" />
-                        }
-                        @if (_selectedDomains.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearDomainFilter"
-                                    title="Clear"
-                                    aria-label="Clear indicator domain filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
-
-                <!-- Related Indicator Type Filter -->
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Indicator Type</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var type in Enum.GetValues<IndicatorType>())
-                        {
-                            <input class="btn btn-xs @(_selectedTypes.Contains(type) ? "btn-primary" : "")"
-                                   type="checkbox"
-                                   checked="@_selectedTypes.Contains(type)"
-                                   @onchange="() => ToggleType(type)"
-                                   aria-label="@type.GetDisplayName()" />
-                        }
-                        @if (_selectedTypes.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearTypeFilter"
-                                    title="Clear"
-                                    aria-label="Clear indicator type filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
-
-                <!-- Status Filter -->
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Status</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var judgment in _availabilityOptions)
-                        {
-                            var isSelected = _selectedAvailabilities.Contains(judgment);
-                            <input class="btn btn-xs @(isSelected ? GetAvailabilityActiveClass(judgment) : "")"
-                                   type="checkbox"
-                                   checked="@isSelected"
-                                   @onchange="() => ToggleAvailability(judgment)"
-                                   aria-label="@judgment.GetDisplayName()" />
-                        }
-                        @if (!HideUnreported)
-                        {
-                            <input class="btn btn-xs @(_showUnreported ? "btn-neutral" : "")"
-                                   type="checkbox"
-                                   checked="@_showUnreported"
-                                   @onchange="() => _showUnreported = !_showUnreported"
-                                   aria-label="Not Yet Reported" />
-                        }
-                        @if (HasAvailabilityFilters())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearAvailabilityFilter"
-                                    title="Clear"
-                                    aria-label="Clear status filter">
-                                <i class="fas fa-times"></i>
+                                Reset all filters
                             </button>
                         }
                     </div>
@@ -479,6 +391,16 @@
         _selectedSectors.Count + _selectedClusters.Count + _selectedDomains.Count + _selectedTypes.Count
         + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
 
+    private void ResetAllFilters()
+    {
+        _selectedSectors.Clear();
+        _selectedClusters.Clear();
+        _selectedDomains.Clear();
+        _selectedTypes.Clear();
+        _selectedAvailabilities.Clear();
+        _showUnreported = false;
+    }
+
     private List<DataElementCategory> GetFilteredCategories()
     {
         var categories = _categories.AsEnumerable();
@@ -646,14 +568,6 @@
             _ => "btn-ghost"
         };
     }
-
-    private string GetAvailabilityActiveClass(AvailabilityJudgment judgment) => judgment switch
-    {
-        AvailabilityJudgment.Available => "btn-success",
-        AvailabilityJudgment.PartiallyAvailable => "btn-warning",
-        AvailabilityJudgment.NotAvailable => "btn-error",
-        _ => "btn-neutral"
-    };
 
     private string GetAvailabilityBadgeClass(AvailabilityJudgment judgment) => judgment switch
     {
