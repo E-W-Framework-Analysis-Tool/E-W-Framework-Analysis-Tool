@@ -1,3 +1,4 @@
+@using System.ComponentModel.DataAnnotations
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Project
@@ -42,7 +43,8 @@
         <div class="transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2 overflow-visible" : "max-h-0 opacity-0 overflow-hidden")">
             <div class="flex flex-wrap gap-x-6 gap-y-3 pt-2 pb-1 border-t border-gray-200">
 
-                <!-- Group By -->
+                @* Group By is temporarily locked to "Data Categories" — toggle hidden, not removed.
+                   Re-enable by uncommenting this block and the OnInitializedAsync restore logic below.
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Group By</span>
                     <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
@@ -61,24 +63,28 @@
                                @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
                     </div>
                 </div>
+                *@
 
-                <!-- Sector / Cluster / Domain / Type / Availability filters -->
+                <!-- Sector / Cluster / Domain / Type / Used For / Availability filters -->
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Filter By</span>
                     <div class="flex flex-wrap items-center gap-1">
                         <FilterDropdown TValue="Sector" Label="Sector" Options="Enum.GetValues<Sector>()"
                                         SelectedValues="_selectedSectors" OnChanged="StateHasChanged"
                                         Description="The sector(s) this element itself is tagged with." />
-                        <FilterDropdown TValue="IndicatorCluster" Label="Cluster" Options="Enum.GetValues<IndicatorCluster>()"
+                        <FilterDropdown TValue="IndicatorCluster" Label="E-W Cluster" Options="Enum.GetValues<IndicatorCluster>()"
                                         SelectedValues="_selectedClusters" OnChanged="StateHasChanged"
-                                        Description="Clusters of the indicators that use this element — a property of those indicators, not the element itself." />
-                        <FilterDropdown TValue="IndicatorDomain" Label="Domain" Options="Enum.GetValues<IndicatorDomain>()"
+                                        Description="Clusters are groups of indicators that share a common theme or purpose, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="IndicatorDomain" Label="Indicator Domain" Options="Enum.GetValues<IndicatorDomain>()"
                                         SelectedValues="_selectedDomains" OnChanged="StateHasChanged"
-                                        Description="Domains of the indicators that use this element — a property of those indicators, not the element itself." />
-                        <FilterDropdown TValue="IndicatorType" Label="Type" Options="Enum.GetValues<IndicatorType>()"
+                                        Description="Domains are interrelated areas that affect individuals' journeys toward economic mobility and security, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="IndicatorType" Label="Indicator Type" Options="Enum.GetValues<IndicatorType>()"
                                         SelectedValues="_selectedTypes" OnChanged="StateHasChanged"
-                                        Description="Types of the indicators that use this element — a property of those indicators, not the element itself." />
-                        <FilterDropdown TValue="AvailabilityJudgment" Label="Availability Status" Options="_availabilityOptions"
+                                        Description="Indicator types refer to whether an indicator captures an individual outcome or milestone versus a system condition, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="UsedForKind" Label="Used For" Options="Enum.GetValues<UsedForKind>()"
+                                        SelectedValues="_selectedUsedFor" OnChanged="StateHasChanged"
+                                        Description="Whether this element is used by at least one Indicator, Disaggregate, or both." />
+                        <FilterDropdown TValue="AvailabilityJudgment" Label="Avail. Status" Options="_availabilityOptions"
                                         SelectedValues="_selectedAvailabilities" OnChanged="StateHasChanged"
                                         ExtraCount="@(_showUnreported ? 1 : 0)" OnClearExtra="@(() => _showUnreported = false)"
                                         Description="The availability judgment recorded for this element in this data source, if any.">
@@ -160,8 +166,14 @@
                                             @{ var usedByIndicators = IndicatorsUsingElement(element.Name); }
                                             @if (usedByIndicators.Count > 0)
                                             {
-                                                <i class="fas fa-diagram-project text-xs text-gray-400 ml-1 cursor-help"
+                                                <i class="fas fa-diagram-project text-xs text-green/70 ml-1 cursor-help"
                                                    title="@("Used by " + usedByIndicators.Count + " indicator(s): " + string.Join(", ", usedByIndicators))"></i>
+                                            }
+                                            @{ var usedByDisaggregates = DisaggregatesUsingElement(element.Name); }
+                                            @if (usedByDisaggregates.Count > 0)
+                                            {
+                                                <i class="fas fa-chart-pie text-xs text-blue/70 ml-1 cursor-help"
+                                                   title="@("Used by " + usedByDisaggregates.Count + " disaggregate(s): " + string.Join(", ", usedByDisaggregates))"></i>
                                             }
                                         </div>
                                     </div>
@@ -223,23 +235,34 @@
     private HashSet<IndicatorDomain> _selectedDomains = new();
     private HashSet<IndicatorType> _selectedTypes = new();
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
+    private HashSet<UsedForKind> _selectedUsedFor = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
     private bool _showOptions = false;
-    private CategoryMode _categoryMode = CategoryMode.EWFramework;
+    // Locked to DataElement (Data Categories) while Group By is hidden — see markup above.
+    private CategoryMode _categoryMode = CategoryMode.DataElement;
     private const string CATEGORY_MODE_STORAGE_KEY = "ewframework_analysis_category_preference";
 
-    protected override async Task OnInitializedAsync()
+    private enum UsedForKind
     {
-        try
-        {
-            var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
-            if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
-                _categoryMode = mode;
-        }
-        catch { }
+        [Display(Name = "Indicators")] Indicator,
+        [Display(Name = "Disaggregates")] Disaggregate
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        // Group By is temporarily locked to Data Categories — restoring a saved
+        // preference is disabled for now. Re-enable alongside the Group By UI toggle above.
+        // try
+        // {
+        //     var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
+        //     if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
+        //         _categoryMode = mode;
+        // }
+        // catch { }
 
         BuildCategories();
+        return Task.CompletedTask;
     }
 
     private enum CategoryMode
@@ -331,38 +354,6 @@
             .ToList();
     }
 
-    private void ToggleSector(Sector sector)
-    {
-        if (_selectedSectors.Contains(sector)) _selectedSectors.Remove(sector);
-        else _selectedSectors.Add(sector);
-    }
-
-    private void ClearSectorFilter() => _selectedSectors.Clear();
-
-    private void ToggleCluster(IndicatorCluster cluster)
-    {
-        if (_selectedClusters.Contains(cluster)) _selectedClusters.Remove(cluster);
-        else _selectedClusters.Add(cluster);
-    }
-
-    private void ClearClusterFilter() => _selectedClusters.Clear();
-
-    private void ToggleDomain(IndicatorDomain domain)
-    {
-        if (_selectedDomains.Contains(domain)) _selectedDomains.Remove(domain);
-        else _selectedDomains.Add(domain);
-    }
-
-    private void ClearDomainFilter() => _selectedDomains.Clear();
-
-    private void ToggleType(IndicatorType type)
-    {
-        if (_selectedTypes.Contains(type)) _selectedTypes.Remove(type);
-        else _selectedTypes.Add(type);
-    }
-
-    private void ClearTypeFilter() => _selectedTypes.Clear();
-
     private List<string> IndicatorsUsingElement(string elementName) =>
         EwFrameworkIndicators.Indicators.Values
             .Where(i => i.DataElementNames.Contains(elementName))
@@ -370,26 +361,22 @@
             .OrderBy(n => n)
             .ToList();
 
-    private void ToggleAvailability(AvailabilityJudgment availability)
-    {
-        if (_selectedAvailabilities.Contains(availability)) _selectedAvailabilities.Remove(availability);
-        else _selectedAvailabilities.Add(availability);
-    }
-
-    private void ClearAvailabilityFilter()
-    {
-        _selectedAvailabilities.Clear();
-        _showUnreported = false;
-    }
+    private List<string> DisaggregatesUsingElement(string elementName) =>
+        EwFrameworkDisaggregates.Disaggregates
+            .Where(d => d.DataElementNames.Contains(elementName))
+            .Select(d => d.Name)
+            .OrderBy(n => n)
+            .ToList();
 
     private bool HasAvailabilityFilters() => _selectedAvailabilities.Any() || _showUnreported;
 
     private bool HasAnyFilters() =>
-        _selectedSectors.Any() || _selectedClusters.Any() || _selectedDomains.Any() || _selectedTypes.Any() || HasAvailabilityFilters();
+        _selectedSectors.Any() || _selectedClusters.Any() || _selectedDomains.Any() || _selectedTypes.Any()
+        || _selectedUsedFor.Any() || HasAvailabilityFilters();
 
     private int GetActiveFilterCount() =>
         _selectedSectors.Count + _selectedClusters.Count + _selectedDomains.Count + _selectedTypes.Count
-        + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
+        + _selectedUsedFor.Count + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
 
     private void ResetAllFilters()
     {
@@ -397,6 +384,7 @@
         _selectedClusters.Clear();
         _selectedDomains.Clear();
         _selectedTypes.Clear();
+        _selectedUsedFor.Clear();
         _selectedAvailabilities.Clear();
         _showUnreported = false;
     }
@@ -472,6 +460,22 @@
                     Icon = c.Icon,
                     Elements = c.Elements
                         .Where(e => e.RelatedIndicatorTypes.Any(x => _selectedTypes.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedUsedFor.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e =>
+                            (_selectedUsedFor.Contains(UsedForKind.Indicator) && IndicatorsUsingElement(e.Name).Count > 0) ||
+                            (_selectedUsedFor.Contains(UsedForKind.Disaggregate) && DisaggregatesUsingElement(e.Name).Count > 0))
                         .ToList()
                 })
                 .Where(c => c.Elements.Any());

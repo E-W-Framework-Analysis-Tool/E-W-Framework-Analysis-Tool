@@ -1,43 +1,52 @@
 @* Dropdown checklist filter for an enum: labeled trigger button showing a count
-   badge when active, a checkbox list inside, and a Clear control. *@
+   badge when active, a checkbox list inside, and a Clear control.
+
+   Uses the native Popover API (popovertarget + popover) with CSS anchor positioning
+   (anchor-name/position-anchor), daisyUI 5's supported pattern for dropdowns that must
+   escape a clipping ancestor (e.g. a Modal's overflow-y-auto body). This renders the
+   popup in the browser's top layer, so it is immune to ancestor overflow/z-index
+   entirely — no JS positioning needed, and native light-dismiss (outside click / Escape)
+   handles open/close for free. Each instance needs a unique anchor id, generated once
+   per component instance below. *@
 @typeparam TValue where TValue : struct, Enum
 
-<div class="dropdown">
-    @* The badge is always rendered (just hidden via `invisible` at zero) so this button's
-       width never changes when toggled — a growing button would reflow neighboring filters. *@
-    <label tabindex="0" role="button" class="btn btn-xs gap-1 @(TotalCount > 0 ? "btn-primary" : "btn-outline")">
-        @Label
-        <span class="badge badge-sm badge-neutral @(TotalCount == 0 ? "invisible" : "")">@TotalCount</span>
-        <i class="fas fa-chevron-down text-xs"></i>
-    </label>
-    @* Plain div, not daisyUI's `menu` — menu's CSS assumes <li> children and fights
-       arbitrary <label> rows (no reliable one-per-row stacking, no text wrapping). *@
-    <div tabindex="0" class="dropdown-content z-10 w-64 p-2 shadow-lg bg-base-100 rounded-box border border-gray-200">
-        <div class="flex items-center justify-between px-1 pb-1 mb-1 border-b border-gray-200">
-            <span class="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1">
-                @Label
-                @if (!string.IsNullOrWhiteSpace(Description))
-                {
-                    <i class="fas fa-info-circle text-gray-400 normal-case font-normal cursor-help" title="@Description"></i>
-                }
-            </span>
-            @if (TotalCount > 0)
+<button type="button" popovertarget="@_id" style="anchor-name:@_anchorVar"
+        class="btn btn-xs gap-1 @(TotalCount > 0 ? "btn-primary" : "btn-outline")">
+    @Label
+    @* Badge is always rendered (hidden via `invisible` at zero) so this button's width
+       never changes when toggled — a growing button would reflow neighboring filters. *@
+    <span class="badge badge-sm badge-neutral @(TotalCount == 0 ? "invisible" : "")">@TotalCount</span>
+    <i class="fas fa-chevron-down text-xs"></i>
+</button>
+
+@* No `menu` class — daisyUI's menu CSS assumes <li> children and fights arbitrary
+   <label> rows (no reliable one-per-row stacking, no text wrapping). *@
+<div popover id="@_id" style="position-anchor:@_anchorVar"
+     class="dropdown w-64 p-2 shadow-lg bg-base-100 rounded-box border border-gray-200">
+    <div class="flex items-center justify-between px-1 pb-1 mb-1 border-b border-gray-200">
+        <span class="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1">
+            @Label
+            @if (!string.IsNullOrWhiteSpace(Description))
             {
-                <button type="button" class="text-xs text-primary hover:underline" @onclick="Clear">Clear</button>
+                <i class="fas fa-info-circle text-gray-400 normal-case font-normal cursor-help" title="@Description"></i>
             }
-        </div>
-        <div class="flex flex-col gap-0.5 max-h-64 overflow-y-auto">
-            @foreach (var option in Options)
-            {
-                <label class="flex items-center gap-2 py-1 px-1 rounded hover:bg-base-200 cursor-pointer w-full">
-                    <input type="checkbox" class="checkbox checkbox-xs shrink-0"
-                           checked="@SelectedValues.Contains(option)"
-                           @onchange="() => Toggle(option)" />
-                    <span class="text-sm whitespace-normal break-words">@option.GetDisplayName()</span>
-                </label>
-            }
-            @ExtraContent
-        </div>
+        </span>
+        @if (TotalCount > 0)
+        {
+            <button type="button" class="text-xs text-primary hover:underline" @onclick="Clear">Clear</button>
+        }
+    </div>
+    <div class="flex flex-col gap-0.5 max-h-64 overflow-y-auto">
+        @foreach (var option in Options)
+        {
+            <label class="flex items-center gap-2 py-1 px-1 rounded hover:bg-base-200 cursor-pointer w-full">
+                <input type="checkbox" class="checkbox checkbox-xs shrink-0"
+                       checked="@SelectedValues.Contains(option)"
+                       @onchange="() => Toggle(option)" />
+                <span class="text-sm whitespace-normal break-words">@option.GetDisplayName()</span>
+            </label>
+        }
+        @ExtraContent
     </div>
 </div>
 
@@ -55,6 +64,9 @@
     [Parameter] public int ExtraCount { get; set; }
     /// <summary>Invoked when Clear is pressed, so the caller can reset whatever ExtraContent represents.</summary>
     [Parameter] public EventCallback OnClearExtra { get; set; }
+
+    private readonly string _id = $"filter-dd-{Guid.NewGuid():N}";
+    private string _anchorVar => $"--{_id}";
 
     private int TotalCount => SelectedValues.Count + ExtraCount;
 
