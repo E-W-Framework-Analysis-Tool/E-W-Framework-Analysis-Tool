@@ -26,7 +26,7 @@ public class Indicator
     public List<DataCategory> DataNeeded { get; set; } = [];
 
     /// <summary>The sectors this indicator applies to — transitive from SectorReadiness rather than hand-authored, since the two must always agree.</summary>
-    public List<Sector> Sectors => SectorReadiness.Select(sr => sr.Sector).Distinct().OrderBy(s => s).ToList();
+    public List<Sector> Sectors => [.. SectorReadiness.Select(sr => sr.Sector).Distinct().OrderBy(s => s)];
 
     public List<string> DataElementNames { get; set; } = [];
 }
