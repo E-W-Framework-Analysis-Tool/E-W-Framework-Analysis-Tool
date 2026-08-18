@@ -16,7 +16,6 @@ public static class PreviousDataForComparison
                     "Eligible children are enrolled in a publicly funded pre-K program, which can be administered through mixed delivery systems that include Head Start, pre-K classrooms in public schools, and licensed family-based child care programs and community-based organizations.",
                 RecommendedMetrics = "Percentage of eligible 3- and 4-year-olds enrolled in public pre-K",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     "Date of services provided",
@@ -45,7 +44,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children meeting benchmarks on a teacher-reported kindergarten readiness assessment, such as: - Desired Results Developmental Profile (DRDP) Language and Literacy Development domain - Ready 4 Kindergarten Early Learning Assessment (R4K ELA) Language and Literacy domain - Teaching Strategies GOLD (TS GOLD) Language and Literacy subscales Or, percentage of children meeting benchmarks on direct child assessments administered by trained assessors, such as: - Woodcock-Johnson IV Tests of Early Cognition and Academic Development (ECAD) Letter-Word and Writing subtests - Individual Growth and Development Indicators (IGDIs) Early Literacy assessment",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     // "Developmental assessments"
@@ -64,7 +62,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children meeting benchmarks on teacher-reported kindergarten readiness assessment, such as: - DRDP Cognition domain - R4K ELA Mathematics and Science domains - TS GOLD Cognitive and Mathematics subscales Or, percentage of children meeting benchmarks on direct child assessments, such as: - Woodcock-Johnson IV Tests of ECAD Number Sense subtest - IGDIs Early Numeracy assessment - Research Based Early Mathematics Assessment (REMA)",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     // "Developmental assessments"
@@ -83,7 +80,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grades 1 and 2 meeting grade-level math and reading benchmarks, with an attendance rate of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
                 DataNeeded = [DataCategory.Assessments, DataCategory.AdministrativeData],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     "Kindergarten program days per week",
@@ -106,7 +102,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students who are present for more than 90 percent of their enrolled days, excluding students enrolled for fewer than 90 days",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     "Student attendance rate (K-12)",
@@ -125,7 +120,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Pre-K, K-12: Percentage of children who do not experience any of the following: in-school suspensions, out-of-school suspensions, disciplinary use of restraint and seclusion, or expulsions",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -143,7 +137,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grade 3 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests.",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -162,7 +155,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grade 6 with passing grades in English language arts and math, attendance of 90 percent or higher, and no in- or out-of-school suspensions or expulsions",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -182,7 +174,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grade 8 with a GPA of 2.5 or higher, no Ds or Fs in English language arts or math, attendance of 96 percent or higher, and no in- or out-of-school suspensions or expulsions.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -204,7 +195,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grade 8 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -223,7 +213,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of first-time grade 9 students who complete Algebra I or an equivalent course by the end of their 9th-grade year",
                 DataNeeded = [DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     "Student grade level",
@@ -245,7 +234,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grade 9 with a GPA of 3.0 or higher, no Ds or Fs in English language arts or math, attendance of 96 percent or higher, and no in- or out-of-school suspensions or expulsions.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -265,7 +253,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in grades 6-8 with a GPA of 3.0 or higher Percentage of students in grades 9-12 with a GPA of 3.0 or higher Percent of college students with a GPA of 3.0 or higher",
                 DataNeeded = [DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     "Grade point average (K-12)",
@@ -285,7 +272,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of tested students who meet grade-level standards in reading/English language arts and math as measured by state standardized tests",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -304,7 +290,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school graduates who successfully complete the coursework required for admission at a four-year college or university, which includes: - Four years of English classes - Four years of math classes (including at least four of the following: pre-algebra, algebra, geometry, Algebra II or trigonometry, precalculus, calculus, statistics, quantitative reasoning, and data science) - Three years of laboratory science (including biology, chemistry, and physics) - Two years of social sciences - Two years of foreign language - One year of visual or performing arts",
                 DataNeeded = [DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -324,7 +309,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school students who enroll in and pass at least one early college course (AP, IB, or dual credit) Percentage of students enrolled in early college coursework who earn credit-bearing scores on end-of-course tests (for example, a score of 3 or higher on AP tests or 5 or higher on IB tests) or earn postsecondary credit within their dual enrollment courses",
                 DataNeeded = [DataCategory.StudentTranscripts, DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     // "College credits earned"
@@ -344,7 +328,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of grade 11-12 students who take the SAT/ACT Percentage of grade 11-12 students who earn a \"college-ready\" score, based on the benchmarks set by the SAT and ACT",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -365,7 +348,6 @@ public static class PreviousDataForComparison
                     "Grade 12 students eligible for federal financial aid complete the Free Application for Federal Student Aid (FAFSA) by June 30.",
                 RecommendedMetrics = "Percentage of grade 12 students who complete the FAFSA by June 30",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -382,7 +364,6 @@ public static class PreviousDataForComparison
                 Definition = "Grade 12 students submit a well-balanced portfolio of at least three college applications.",
                 RecommendedMetrics = "Percentage of grade 12 students who submitted at least three college applications",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -401,7 +382,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Adjusted cohort graduation rate (the percentage of first-time 9th graders who graduate with a regular diploma within four, five, and six years of entering high school, regardless of whether they transferred schools)",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -423,7 +403,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school seniors who select a college within 10 percentage points of the best matched postsecondary institution to which they were admitted, based on the institution's graduation rate for similar students by race, ethnicity, or income status (as measured by Pell Grant receipt).",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -444,7 +423,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school graduates reporting intentions to enroll in postsecondary education in the fall who successfully enroll in a postsecondary institution by October 31 following their high school graduation",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -464,7 +442,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school graduates who enroll in a postsecondary institution by October 31 following their high school graduation",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -483,7 +460,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students attempting and completing sufficient credits toward on-time completion in their first year: 30 credits for full-time and 15 credits for part-time students",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -504,7 +480,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students completing at least nine credits (or three courses) within a meta-major during their first year in postsecondary education",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -524,7 +499,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of first-year college students who complete college-level introductory math and English courses within their first year of college",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -543,7 +517,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in a cohort who continue enrolling in college (including transfers to other colleges) or complete a credential the following year, captured for up to 150 percent of program length. Other time frames, such as 100 and 200 percent of program length, should also be reported for this measure.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -563,7 +536,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students in a certificate or associate's degree program who transfer to a longer degree program within 150 percent of the original program's intended length. Other time frames, such as 100 percent and 200 percent of program length, are also useful to track.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -584,7 +556,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students completing a certificate, associate's, or bachelor's degree within 150 percent of the program's intended length. Other time frames, such as 100 percent and 200 percent of program length, should also be reported for this measure.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -605,7 +576,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of bachelor's degree recipients enrolling in post-baccalaureate or graduate programs within one to five years of completion. Other time frames, such as within 10 years of completion, should also be reported for this measure.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -625,7 +595,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of graduate students completing a graduate degree within 150 percent of their current program's length. Other time frames, such as 100 percent and 200 percent of program length, should also be reported for this measure.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     "Postsecondary enrollment date",
@@ -645,7 +614,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Social and Emotional Development domain, R4K ELA Social Foundations domain, TS GOLD Social-Emotional subscale, or percentage of students meeting benchmarks on teacher reports, such as the Child Behavior Rating Scale (CBRS) and Devereaux Early Childhood Assessment Preschool Program (DECA-P2)",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     // "Developmental assessments"
@@ -665,7 +633,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Approaches to Learning - Self-Regulation domain and TS GOLD Cognitive subscale, or percentage of students meeting benchmarks on teacher reports of children's executive function, such as the CBRS, or percentage of students meeting benchmarks on a direct child assessment, such as the Heads Toes Knees Shoulders (HTKS) task administered by teachers and the Minnesota Executive Function Scale (MEFS), self-administered on a tablet",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     // "Developmental assessments"
@@ -686,7 +653,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children meeting benchmarks on teacher-reported kindergarten readiness assessment, such as the DRDP Physical Development - Health domain, R4K ELA Physical Well-Being and Motor Development domain, TS GOLD Physical subscale, or percentage of students meeting benchmarks on direct child assessment administered by teachers, healthcare professionals, or other qualified adults, such as the Peabody Developmental Motor Scale",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.PK],
                 DataElementNames = [
                     /* ECS data elements */
                     "Direct child assessments of physical development",
@@ -704,7 +670,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting a high level of self-management on surveys such as the CORE Districts SEL Survey self-management scale (grades 5-12) or Shift and Persist scale for children, Percentage of individuals reporting a high level of self-management on surveys such as the Shift and Persist scale for teens and adults",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -723,7 +688,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting a high level of growth mindset on surveys such as the CORE Districts SEL Survey Growth Mindset Scale (grades 5-12) or the Growth Mindset Scale developed by Carol Dweck, Percentage of students reporting a high level of growth mindset on surveys such as the Growth Mindset Scale developed by Carol Dweck",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -742,7 +706,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting a high level of self-efficacy on surveys such as the CORE Districts SEL Survey self-efficacy scale, Percentage of individuals reporting a high level of self-efficacy on surveys such as the New General Self-Efficacy Scale or Ascend survey's Self-Efficacy Scale",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -762,7 +725,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting a high level of social awareness on surveys such as the CORE Districts SEL Survey social awareness scale, or percentage of students meeting benchmarks on teacher ratings of social skills drawn from Elliott and Gresham's Social Skills Rating Scale, Percentage of individuals demonstrating social proficiency on a performance assessment, such as the National Work Readiness Credential Essential Soft Skills assessment",
                 DataNeeded = [DataCategory.Surveys, DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -783,7 +745,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students demonstrating proficiency on an assessment of cultural competency, such as the HEIghten Outcomes Assessment for Intercultural Competency & Diversity or The Intercultural Development Inventory®, Percentage of individuals demonstrating proficiency on an assessment of cultural competency, such as The Intercultural Development Inventory®",
                 DataNeeded = [DataCategory.Surveys, DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -803,7 +764,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting a high level of civic engagement on surveys such as the Youth Civic and Character Measures Toolkit Survey and Youth Civic Engagement Indicators Project Survey, Percentage of individuals reporting a high level of civic engagement on surveys such as the Index of Civic and Political Engagement",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -823,7 +783,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students or individuals reporting a high level of social capital on surveys such as the Social Capital Assessment + Learning for Equity (SCALE) Social Capital, Network Diversity, and Network Strength scales; Percentage of individuals reporting a high level of social capital on surveys such as the Social Capital Community Benchmark Survey",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -842,7 +801,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children with identified health or developmental concerns as identified by a developmental screening tool. For a list of screening tools that may be appropriate for children younger than age 5, see the following guide from the Head Start Early Childhood Learning and Knowledge Center: \"Birth to 5: Watch Me Thrive! A Compendium of Screening Measures for Young Children.\"; Percentage of youth with mental or emotional health needs as identified by a universal screening tool. For a list of mental health screening tools that may be appropriate for school-based use, see the following guide from the National Center on Safe Supportive Learning Environments: \"Mental Health Screening Tools for Grades K-12.\"; Psychological well-being scale.",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -862,7 +820,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Pre-K: See kindergarten readiness: perceptual, motor, and physical development indicator; K-12: Percentage of students meeting benchmarks on self-rated surveys of physical health, such as the California Healthy Kids Survey Physical Health & Nutrition module; Postsecondary and workforce: Percentage of adults who rate their own health as good, very good, or excellent on the Self-Rated Health scale, or percentage of individuals meeting benchmarks on the Health-Related Quality of Life Scale",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -883,7 +840,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of high school graduates enlisted in the military, enrolled in an apprenticeship program, enrolled in noncredit career and technical education (CTE) courses, or employed and earning at least the median annual full-time earnings for high school graduates ($35,000 year) before October 31 following graduation.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -905,7 +861,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of 12th-grade students enrolled in CTE who complete three or more CTE courses in a single pathway; Percentage of CTE students who earn at least 12 credits within a CTE program or complete such a program if it encompasses fewer than 12 credits in total",
                 DataNeeded = [DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -927,7 +882,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of 12th-grade students enrolled in CTE who earn at least one industry-recognized credential; Percentage of students enrolled in a CTE program who earn at least one industry-recognized credential; Percentage of program participants who have completed at least one industry-recognized credential",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -949,7 +903,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of students who participate in a work-based learning opportunity before graduation; Percentage of workforce training program participants who participate in a work-based learning opportunity before program completion",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -970,7 +923,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals demonstrating proficiency on a performance assessment that measures digital skills required for workforce success, such as the Problem Solving in Technology-Rich Environments assessment within the Education & Skills Online assessment suite, which can be used by researchers and institutions to gather individual-level results based on Organisation for Economic Co-operation and Development (OECD) Survey of Adult Skills (Programme for the International Assessment of Adult Competencies [PIAAC]) domains",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -990,7 +942,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students demonstrating proficiency on assessments such as the College and Career Readiness Assessment (CCRA+), an assessment for grades 6-12 that measures critical thinking, problem solving, and written communications; Percentage of students demonstrating proficiency on assessments such as the Collegiate Learning Assessment (CLA+) or Success Skills Assessment (SSA+) for postsecondary students that measure critical thinking, problem solving, and written communications, or the HEIghten Outcomes Assessment for Written Communication; Percentage of individuals demonstrating proficiency on a performance assessment, such as the National Work Readiness Credential Essential Soft Skills assessment",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1010,7 +961,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students demonstrating proficiency on assessments such as the College and Career Readiness Assessment (CLA+), an assessment for grades 6-12 that measures critical thinking, problem solving, and written communications; Percentage of students demonstrating proficiency on assessments such as the CLA+ or Success Skills Assessment (SSA+), assessments for postsecondary students that measure critical thinking, problem solving, and written communications, or the HEIghten Outcomes Assessment for Critical Thinking; Percentage of individuals demonstrating proficiency on assessments such as the Watson Glaser Critical Thinking Appraisal, a scenario-based assessment used by employers to evaluate candidates or identify areas of opportunity for growth",
                 DataNeeded = [DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1029,7 +979,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals that earn at least as much as the median high school graduate in their state plus enough to recoup their total net price plus interest within 10 years of completing their highest degree or leaving education (high school or postsecondary)",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1049,7 +998,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of student borrowers in the following repayment categories, as defined on the College Scorecard—making progress, paid in full, and deferment—1, 2, 3, 5, and 10 years into the repayment phase of the loans. \"Making progress\" is defined as making regular payments such that the total of outstanding loan balances is less than the total of the original loan balances. \"Paid in full\" is defined as the outstanding loan balance being $0 and the loan not having been discharged through bankruptcy or other means. \"Deferment\" is defined as a postponement of the loan obligations, which is common for students re-enrolling in school. Borrowers who do not meet these milestones may fall in other categories, such as delinquency, default, and not making progress, that indicate they are unable to make timely progress toward their student debt.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1068,7 +1016,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals employed in a quality job, as defined by scores on an indexed measure, such as the Good Jobs Scorecard, which assesses pay and benefits, scheduling, potential career paths, safety, and security",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     "Job quality index",
@@ -1087,7 +1034,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals who reach the level of earnings needed to enter the fourth (60th to 80th percentile) income quintile in their state or above 1, 3, 5, 10, and 15 years after completing their highest degree or leaving education (high school or postsecondary)",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "Earnings",
@@ -1105,7 +1051,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals who reach median levels of wealth 10, 15, 20, and 30 years after completing their highest degree or leaving education (high school or postsecondary)",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1124,7 +1069,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of public pre-K programs that meet Quality Rating and Improvement Systems (QRIS) state benchmarks of quality",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.ClassroomObservations],
-                Sectors = [Sector.PK],
                 DataElementNames = [
                     /* ECS data elements */
                     "Pre-K program QRIS rating"
@@ -1139,7 +1083,6 @@ public static class PreviousDataForComparison
                 Definition = "Children have access to full-day, publicly funded pre-K programs.",
                 RecommendedMetrics = "Percentage of public pre-K programs that are six hours per day for five days per week",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     "Kindergarten enrollment date",
@@ -1158,7 +1101,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of eligible families receiving assistance to pay for child care through subsidies",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1177,7 +1119,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of families and percentage of teachers or caregivers reporting positive relationship quality with one another, using a tool such as the Family and Provider/Teacher Relationship Quality (FPTRQ) parent survey; Mean scores on family surveys, such as the Panorama Family-School Relationships Survey or CORE Districts School Culture & Climate Survey parent assessment of school-community engagement",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1195,7 +1136,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Differences in the rates at which students from key demographic subgroups ever experience different forms of school discipline (office referrals, suspensions, expulsions, restraint, and exclusion) relative to those students' representation in their school population as a whole; Disproportionalities along the lines of key demographic characteristics in the level of school discipline experienced (for example, number of days suspended).",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
                     "Number of days suspended (PK)",
@@ -1218,7 +1158,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of schools and districts offering kindergarten programs that are six hours per day for five days per week",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1237,7 +1176,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of English learner students who are reclassified in five years or less, based on local reclassification criteria",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1256,7 +1194,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Pre-K: Percentage of lead teachers with at least a bachelor's degree • Pre-K: Percentage of lead teachers with specialized training in pre-K • K-12: Percentage of courses taught by full-time equivalent (FTE) teachers (that is, teachers other than substitutes or those with emergency or provisional licenses) • K-12: Percentage of courses taught by teachers certified to teach the given subject or grade level",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
                     "Credential or certification type",
@@ -1279,7 +1216,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Pre-K: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience • K-12: Percentage of teachers with < 1 year, 1-5 years, and 5+ years of experience",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames =
                 [
                     "Years of teaching experience"
@@ -1295,7 +1231,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Teacher retention: Percentage of teachers who return to teaching in the same school from year to year • School leader tenure: Percentage of school leaders who have served in their current positions for < 2 years, 2-3 years, and 4+ years",
                 DataNeeded = [DataCategory.EducatorAdministrativeData],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames = ["Years in current position"]
             },
         ["Classroom observations of instructional practice"] =
@@ -1308,7 +1243,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Pre-K: Scores on measures of teacher-child interactions, such as CLASS, the Early Childhood Environment Rating Scale (ECERS) Interactions subscale, or the Assessing Classroom Sociocultural Equity Scale (ACSES) (which assesses equitable classroom interactions) • K-12: Teachers' overall and subscale scores on an observation rubric associated with an educator observation system; examples of common frameworks include the Danielson's Framework for Teaching and the Marzano Causal Teacher Evaluation Model • Postsecondary: There are currently no widely used standardized rubrics for peer observations of college teaching, though multiple researchers and universities have produced guidance surrounding the peer observation process",
                 DataNeeded = [DataCategory.ClassroomObservations],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     "Teacher-child interaction measure (PK)",
@@ -1330,7 +1264,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• K-12: Students' perceptions of their teacher's effectiveness, using a survey instrument such as the Pedagogical Effectiveness subscale of the Panorama Student Survey, the Tripod Student Survey, or the Ambitious Instruction and Supportive Environment domains of the 5Essentials Survey • Postsecondary: Students' perceptions of whether college instructors implement effective teaching practices, using a survey instrument such as the National Survey of Student Engagement",
                 DataNeeded = [DataCategory.ClassroomObservations, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1348,7 +1281,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• K-12 and postsecondary: Percentage of instructors demonstrating above average contributions to student learning, as measured by student growth on state standardized tests or other outcomes (for example, using value-added models or student growth percentiles)",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Assessments],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1367,7 +1299,6 @@ public static class PreviousDataForComparison
                     "• Percentage of school leaders rated as effective, using an evaluation system that includes multiple measures, such as the Administrator Evaluation component of the Tennessee Educator Acceleration Model (TEAM)",
                 DataNeeded =
                     [DataCategory.Assessments, DataCategory.Surveys, DataCategory.ClassroomObservations, DataCategory.Rubrics],
-                Sectors = [Sector.PK, Sector.K12],
                 DataElementNames = [
                     /* ECS data elements */
                     "Leader effectiveness assessments"
@@ -1387,7 +1318,6 @@ public static class PreviousDataForComparison
                     DataCategory.AdministrativeData, DataCategory.Assessments, DataCategory.StudentTranscripts,
                     DataCategory.Surveys
                 ],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1406,7 +1336,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Percentage of high schools offering each of the following sets of college preparatory courses: - Four years of English - Four years of math (including at least four of the following: pre-algebra, algebra, geometry, Algebra II or trigonometry, precalculus, calculus, statistics, quantitative reasoning, and data science) - Three years of laboratory science (including biology, chemistry, physics) - Two years of social science - Two years of foreign language - One year of visual or performing arts  • Percentage of middle schools offering Algebra I",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1425,7 +1354,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "• Number of AP, IB, and dual enrollment courses offered, overall and by subject • Percentage of students in an early college course who take the relevant end-of-course test needed to earn credit (for example, AP or IB test), overall and by subject",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1448,7 +1376,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Differences in the participation rates for students from key demographic subgroups in rigorous courses and programs relative to those students' representation in their school population as a whole, including opportunities, such as the following: • Gifted and talented programs • Algebra I in middle school • Higher-level math courses in high school (that is, Algebra II, calculus) • Early college courses (AP, IB, and dual enrollment)",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.StudentTranscripts],
-                Sectors = [Sector.K12],
                 DataElementNames = [
                     /* ECS data elements */
                     "Gifted and talented participation",
@@ -1465,7 +1392,6 @@ public static class PreviousDataForComparison
                     "Schools and instructors use a standards-aligned core course curriculum that meets quality standards (as defined by EdReports) and is culturally relevant, centering the lived experiences and heritage of students' ethnic or racial backgrounds.",
                 RecommendedMetrics = "No specific measures or tools identified",
                 DataNeeded = [DataCategory.CurriculumMaterials],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames = [
                     "Percentage of teachers regularly using standards-aligned; culturally responsive curricula",
                     /* ECS data elements */
@@ -1485,7 +1411,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Pre-K: State expenditures per child enrolled - K-12: Per pupil expenditures - K-12: Equity Factor, a measure that indicates variance in per-pupil funding within a state (see this brief by New America for more information) - Postsecondary: Total instruction and student service expenditures per FTE student based on 12-month enrollment",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1506,7 +1431,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children with identified concerns who are connected to services; Percentage of children needing selected special education services in kindergarten who were not identified and connected to services before kindergarten",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.PK],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1528,7 +1452,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of students reporting high levels of physical, mental, and emotional safety in school climate surveys, such as the U.S. Department of Education ED School Climate Surveys (EDSCLS), the Sense of Safety subscale within the CORE Districts school culture and climate survey, or the School Safety subscale within the Panorama Student Survey. Percentage of students reporting physical safety and freedom from harassment and discrimination in campus surveys, such as the National Survey of Student Engagement.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1547,7 +1470,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of children reporting positive feelings toward their school, as measured by questionnaires such as the Collaborative for Academic, Social, and Emotional Learning's (CASEL) How I Feel About My School questionnaire, or percentage of classrooms demonstrating equitable sociocultural interactions, as measured by observational assessments, such as ACSES. Percentage of students reporting belonging in school, as measured by surveys such as the Sense of Belonging subscale of the CORE Districts school culture and climate survey or the Classroom Belonging subscale of the Panorama Student Survey. Percentage of students reporting belonging on campus, as measured by surveys such as the Higher Education Research Institute (HERI) Diverse Learning Environments Survey or the National Institute for Transformation and Equity (NITE) Culturally Engaging Campus Environments Survey. Percentage of employees reporting belonging at work, as measured by surveys such as the Association of American Medical Colleges (AAMC) Diversity Engagement Survey.",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1568,7 +1490,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Pre-K: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%) - K-12: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%) - Postsecondary: Educational staff composition by race and ethnicity (%) compared to student composition by race and ethnicity (%) - Additional possible measure: Same-race student-teacher ratio by race and ethnicity",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS],
                 DataElementNames = [
                     /* ECS data elements */
                     "Staff race/ethnicity",
@@ -1586,7 +1507,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Student body composition by race and ethnicity (%); Employee composition by race and ethnicity (%).",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "Employee race/ethnicity",
@@ -1603,7 +1523,6 @@ public static class PreviousDataForComparison
                     "Individuals are exposed to socioeconomic diversity within their schools, postsecondary institutions, and workplaces.",
                 RecommendedMetrics = "Student body composition by income; Employee composition by income.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1623,7 +1542,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of programs offering health, mental health, and social services, or staff or consultants providing infant and early childhood mental health consultation (IECMHC) services; Ratio of number of students to number of health, mental health, and social services FTE staff (for example, school nurses, psychologists, and social workers); Percentage of employers offering an employee assistance program or mental health access through health care plans or other services, as measured by employer surveys.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1646,7 +1564,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Ratio of number of students to number of FTE counselors; Percentage of students using academic advising and career counseling services.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.K12, Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1665,7 +1582,6 @@ public static class PreviousDataForComparison
                     "CTE pathway offerings are aligned to in-demand occupations, as defined by regional labor market data.",
                 RecommendedMetrics = "Number and percentage of CTE program offerings considered \"in demand.\"",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1683,7 +1599,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Average net price (cost of attendance minus grants, scholarships, or tuition waivers from all sources) minus average expected family contribution (EFC), as calculated by FAFSA.",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1701,7 +1616,6 @@ public static class PreviousDataForComparison
                 Definition = "The total amount of student loans individuals take out while enrolled in college.",
                 RecommendedMetrics = "Median student debt",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "Median student debt"
@@ -1718,7 +1632,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "The amount of funding dedicated to workforce development programs as a percentage of total educational funding in a state",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1736,7 +1649,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of jobs in a county or metropolitan statistical area (MSA) for which the ratio of average pay to the location-adjusted cost of living is greater than one",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1755,7 +1667,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of employees who have access to on-the-job training or a professional learning and development plan directly from their employer",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1772,7 +1683,6 @@ public static class PreviousDataForComparison
                 Definition = "Individuals have not experienced repeated traumatic events within home environments.",
                 RecommendedMetrics = "Percentage of individuals with fewer than three ACEs",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "Number of ACEs"
@@ -1788,7 +1698,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Percentage of individuals with health insurance - Percentage of eligible individuals (children or adults) enrolled in Medicaid or CHIP",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1809,7 +1718,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Percentage of individuals with high or marginal food security, as measured by the U.S. Department of Agriculture's (USDA) Food Security Survey Module - Percentage of eligible individuals participating in SNAP - Percentage of individuals living in a census tract with low access to healthy food, as defined by the USDA's Food Access Research Atlas",
                 DataNeeded = [DataCategory.Surveys, DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "SNAP eligibility",
@@ -1829,7 +1737,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Ratio of (1) the number of affordable housing units to (2) the number of households with low and very low incomes in an area (city or county). Housing units are defined as affordable if the monthly costs do not exceed 30 percent of a household's income. Households with low incomes are defined as those earning below 80 percent of area median income (AMI), and very low-income households are defined as those earning below 50 percent of AMI - Percentage of eligible households receiving federal rental assistance",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1851,7 +1758,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of individuals who have both (1) access to at least one desktop or laptop computer owned by someone in the home and (2) reliable broadband Internet",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1869,7 +1775,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "- Average commute time to work, school, or college - The Low Transportation Cost Index, from the U.S. Department of Housing and Urban Development",
                 DataNeeded = [DataCategory.Surveys, DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     "Low Transportation Cost Index",
@@ -1887,7 +1792,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Rate of violent felonies and property felonies by city or county (number of incidents per 100,000 residents)",
                 DataNeeded = [DataCategory.AdministrativeData],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1906,7 +1810,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of city or county residents experiencing poverty who live in a high-poverty neighborhood (defined as a neighborhood in which more than 40 percent of residents experience poverty)",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames =
                 [
                     /* ECS data elements */
@@ -1924,7 +1827,6 @@ public static class PreviousDataForComparison
                 RecommendedMetrics =
                     "Percentage of an individual's neighbors who are members of other racial or ethnic groups, calculated as a Neighborhood Exposure Index",
                 DataNeeded = [DataCategory.Surveys],
-                Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 DataElementNames = [
                     /* ECS data elements */
                     "Geographical indicator",
@@ -1939,7 +1841,6 @@ public static class PreviousDataForComparison
             Definition = "The rate of juveniles arrested in a city or county.",
             RecommendedMetrics = "Rate of juvenile arrests by city or county (number of arrests per 100,000 residents)",
             DataNeeded = [DataCategory.AdministrativeData],
-            Sectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
             DataElementNames =
             [
                 /* ECS data elements */
@@ -1955,7 +1856,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "ACT completion",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -1964,7 +1864,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "ACT score",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -1973,7 +1872,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Advising and counseling service utilization",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -1982,7 +1880,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Age",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Numerical age as of point in time, or birth date"
@@ -1991,7 +1888,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "AP course designation",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2000,7 +1896,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "AP, IB, or Dual Credit course credits",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2009,7 +1904,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Apprenticeship program enrollment date",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2018,7 +1912,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Average cost of attendance",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2027,7 +1920,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Average expected family contribution (EFC)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2036,7 +1928,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Average financial aid amount (including grants, scholarships, and tuition waivers)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2045,7 +1936,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Average pay in county or MSA",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2054,7 +1944,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Bachelor's degree completion date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2063,7 +1952,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Basic skills level",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2072,7 +1960,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Benefits availability",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2081,7 +1968,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Campus climate surveys (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "School Climate",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2090,7 +1976,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Campus climate surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "School Climate",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2099,7 +1984,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CHIP eligibility status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2108,7 +1992,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CHIP enrollment",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2117,7 +2000,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "City or county population",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2126,7 +2008,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Civic engagement surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2135,7 +2016,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Civic engagement surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2144,7 +2024,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Civic engagement surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2153,7 +2032,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Cohort graduation year",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2162,7 +2040,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Cohort year",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2171,7 +2048,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "College selectivity level",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2180,7 +2056,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "College value-added",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2189,7 +2064,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Communication skills performance assessments (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2198,7 +2072,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Communication skills performance assessments (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2207,7 +2080,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Communication skills performance assessments (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2216,7 +2088,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Commute time",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Transportation",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2225,7 +2096,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Course department",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2234,7 +2104,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Course identifier or title",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2243,7 +2112,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Course offering by grade level",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2252,7 +2120,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Course outcome",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "For example, completion, failure, passage"
@@ -2261,7 +2128,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Course performance (English and Math)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2270,7 +2136,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Credential or certification type",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2279,7 +2144,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Credential-seeking status",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2288,7 +2152,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Credits earned in first year",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2297,7 +2160,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CTE course completion",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2306,7 +2168,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CTE course ID or course title",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2315,7 +2176,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CTE pathway or career cluster associated with CTE course",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2324,7 +2184,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "CTE program",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2333,7 +2192,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Cultural competency assessments (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2342,7 +2200,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Cultural competency assessments (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2351,7 +2208,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Cultural competency assessments (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2360,7 +2216,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Date of services provided",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2369,7 +2224,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Developmental screening results",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2378,7 +2232,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Digital skills assessments (K-12)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2387,7 +2240,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Digital skills assessments (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2396,7 +2248,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Digital skills assessments (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2405,7 +2256,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Diploma or credential award date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2414,7 +2264,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Direct child assessments (cognition)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2423,7 +2272,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Direct child assessments (language and literacy)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2432,7 +2280,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Direct child assessments of executive function",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2441,7 +2288,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Direct child assessments of physical development",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2450,7 +2296,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Disability status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2459,7 +2304,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Dislocated worker status",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2468,7 +2312,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Dual credit course designation",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2477,7 +2320,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "EAP or mental health services provided",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2486,7 +2328,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Early intervention screening results",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2495,7 +2336,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Early intervention screening services referral status",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2504,7 +2344,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Earnings",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2513,7 +2352,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Eligibility for federal rental assistance",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2522,7 +2360,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Employee income level",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2531,7 +2368,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Employee race/ethnicity",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2540,7 +2376,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Employment date",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2549,7 +2384,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Employment status",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2558,7 +2392,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "English learner classification date",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2567,7 +2400,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "English learner status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2576,7 +2408,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enlistment in the military",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2585,7 +2416,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enrollment date",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2594,7 +2424,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enrollment in noncredit CTE date",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2603,7 +2432,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enrollment in public pre-K",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2612,7 +2440,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enrollment in workforce training program",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2621,7 +2448,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Enrollment status (current and prior years)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2630,7 +2456,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Expenditures per student (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2639,7 +2464,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Expenditures per student (PK)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2648,7 +2472,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Expenditures per student (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2657,7 +2480,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "FAFSA completion date",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2666,7 +2488,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Family eligibility for child care subsidies",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2675,7 +2496,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Family engagement surveys (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "School Climate",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2684,7 +2504,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Family engagement surveys (PK)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "School Climate",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2693,7 +2512,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "First-generation college student",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2702,7 +2520,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "First-time 9th grade student status",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2711,7 +2528,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Funding dedicated to workforce development programs",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2720,7 +2536,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Gateway course completion",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2729,7 +2544,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Gender",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2738,7 +2552,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Geographical indicator",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "For example, census tract, city, or county"
@@ -2747,7 +2560,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Gifted and talented participation",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2756,7 +2568,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Grade point average (K-12)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2765,7 +2576,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Grade point average (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2774,7 +2584,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Graduate credential attainment date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2783,7 +2592,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Graduate program enrollment date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2792,7 +2600,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Growth mindset surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2801,7 +2608,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Growth mindset surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2810,7 +2616,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Growth mindset surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2819,7 +2624,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Health services offered",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2828,7 +2632,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Health-Related Quality of Life Scale scores",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2837,7 +2640,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "High school diploma type",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2846,7 +2648,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "High school graduation date",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2855,7 +2656,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "High school graduation indicator",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2864,7 +2664,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Higher-order thinking skills performance assessments (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2873,7 +2672,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Higher-order thinking skills performance assessments (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -2882,7 +2680,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Higher-order thinking skills performance assessments (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2891,7 +2688,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Highest level of education completed",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2900,7 +2696,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Home language",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2909,7 +2704,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "IB course designation",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -2918,7 +2712,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "IECMHC services offered",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -2927,7 +2720,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "In-demand status",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -2936,7 +2728,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Income level",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2945,7 +2736,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Indicator of access to desktop or laptop at home",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2954,7 +2744,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Indicator of access to reliable broadband internet",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2963,7 +2752,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Indicator of whether services were provided",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -2972,7 +2760,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Individual or family military status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2981,7 +2768,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Individual with current or past child welfare involvement",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -2990,7 +2776,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Individuals experiencing homelessness",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -2999,7 +2784,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Industry-recognized credential attainment",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3008,7 +2792,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Institution graduation rate",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3017,7 +2800,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Institutional expenditure per student",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3026,7 +2808,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Instructor observations",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3035,7 +2816,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Insured status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3044,7 +2824,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Job quality index",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3053,7 +2832,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Job title or position type",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3062,7 +2840,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Justice involvement",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3071,7 +2848,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "K-12 school type",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3080,7 +2856,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Kindergarten enrollment date",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3089,7 +2864,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Kindergarten program days per week",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3098,7 +2872,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Kindergarten program hours per day",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3107,7 +2880,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Kindergarten readiness assessments (cognition)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3116,7 +2888,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Leader effectiveness assessments",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3125,7 +2896,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Learning and development plan offered",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3134,7 +2904,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "LGBT status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3143,7 +2912,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Location-adjusted cost of living in county or MSA",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3152,7 +2920,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Low Transportation Cost Index",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3161,7 +2928,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Math proficiency (Grades 1 and 2)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3170,7 +2936,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Median student debt",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3179,7 +2944,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Medicaid eligibility status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3188,7 +2952,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Medicaid enrollment",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3197,7 +2960,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Mental and emotional well-being assessments",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3206,7 +2968,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Mental health services offered",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3215,7 +2976,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Net worth",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3224,7 +2984,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of ACEs",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "ACE is an abbreviation for \"adverse childhood experiences\""
@@ -3233,7 +2992,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of affordable housing units in city or county",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3242,7 +3000,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of city or county residents experiencing poverty",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3251,7 +3008,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of city or county residents living in a high poverty neighborhood",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3260,7 +3016,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of credits attempted",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3269,7 +3024,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of credits earned",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3278,7 +3032,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of days suspended (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3287,7 +3040,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of days suspended (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3296,7 +3048,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of households with low income in city or county",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3305,7 +3056,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of households with very low income in city or county",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3314,7 +3064,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of juvenile arrests in city or county",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3323,7 +3072,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of property felonies in city or county",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3332,7 +3080,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Number of violent felonies in city or county",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3341,7 +3088,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Occupation category",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3350,7 +3096,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Office referrals (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3359,7 +3104,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Office referrals (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3368,7 +3112,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "On-the-job training offered",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Employment & Earnings",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3377,7 +3120,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Overall teacher observation score",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3386,7 +3128,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Parental education level",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3395,7 +3136,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Participation in work-based learning",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3404,7 +3144,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Pell grant receipt",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3413,7 +3152,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Percentage of teachers regularly using standards-aligned; culturally responsive curricula",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3422,7 +3160,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Physical health surveys (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3431,7 +3168,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Physical health surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3440,7 +3176,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Physical health surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3449,7 +3184,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Post-baccalaureate program enrollment date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3458,7 +3192,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary applications submitted",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3467,7 +3200,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary credential attainment date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3476,7 +3208,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary credential earned",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3485,7 +3216,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary degree program length",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3494,7 +3224,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary enrollment date",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3503,7 +3232,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary enrollment status (Full time/part time)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3512,7 +3240,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary institution classification",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3521,7 +3248,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary Institution ID",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3530,7 +3256,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary institution ID (current and prior years)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3539,7 +3264,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Postsecondary major",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3548,7 +3272,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Pre-K eligibility status",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3557,7 +3280,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Pre-K program days per week",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3566,7 +3288,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Pre-K program hours per day",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3575,7 +3296,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Pre-K program QRIS rating",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3584,7 +3304,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reading proficiency (Grades 1 and 2)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3593,7 +3312,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Receipt of child care subsidies",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3602,7 +3320,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Receipt of federal rental assistance",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3611,7 +3328,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Repayment phase start date",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3620,7 +3336,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Repayment status",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3629,7 +3344,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reported intent to enroll in postsecondary education",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3638,7 +3352,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reported kindergarten readiness (behavioral skills)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes =
@@ -3648,7 +3361,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reported kindergarten readiness (language and literacy)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Teacher-reported kindergarten readiness assessments (language and literacy)"
@@ -3657,7 +3369,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reported kindergarten readiness (physical development)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Teacher-reported kindergarten readiness assessments (physical development)"
@@ -3666,7 +3377,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Reported kindergarten readiness (social-emotional skills)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Teacher-reported kindergarten readiness assessments (social-emotional development)"
@@ -3675,7 +3385,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Restraint and seclusion for discipline (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3684,7 +3393,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Restraint and seclusion for discipline (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3693,7 +3401,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Restraint and seclusion for safety (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3702,7 +3409,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Restraint and seclusion for safety (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3711,7 +3417,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "SAT completion",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3720,7 +3425,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "SAT score",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3729,7 +3433,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "School assignment (prior and current year)",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3738,7 +3441,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "School value-added",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Academic Performance",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3747,7 +3449,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-efficacy surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3756,7 +3457,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-efficacy surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3765,7 +3465,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-efficacy surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3774,7 +3473,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-management surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3783,7 +3481,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-management surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3792,7 +3489,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Self-management surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3801,7 +3497,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Sense of belonging surveys",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3810,7 +3505,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Sense of belonging surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3819,7 +3513,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Sense of belonging surveys (PK)",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3828,7 +3521,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Sense of belonging surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3837,7 +3529,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "SGP for standardized assessments",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = "Student growth percentile, subject specific for reading/literacy, math, and science"
@@ -3846,7 +3537,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "SNAP eligibility",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3855,7 +3545,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "SNAP participation",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3864,7 +3553,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social awareness teacher ratings",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -3873,7 +3561,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social capital surveys (K-12)",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3882,7 +3569,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social capital surveys (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3891,7 +3577,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social capital surveys (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3900,7 +3585,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social proficiency performance assessments (Postsecondary)",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -3909,7 +3593,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social proficiency performance assessments (Workforce)",
-                ClusterOnlyCategory = "Workforce Success",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -3918,7 +3601,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Social services offered",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Student Support Services",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3927,7 +3609,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Sociocultural observational assessments",
-                ClusterOnlyCategory = "Social-Emotional Learning",
                 DataElementCategory = "Social-Emotional Learning (SEL)",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -3936,7 +3617,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Staff FTE status",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3945,7 +3625,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Staff race/ethnicity",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3954,7 +3633,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "State standardized test (Math proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3963,7 +3641,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "State standardized test (Reading proficiency)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Assessments",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3972,7 +3649,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student attendance rate (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -3981,7 +3657,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student attendance rate (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -3990,7 +3665,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student course enrollment record",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -3999,7 +3673,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student from migrant family household",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -4008,7 +3681,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student FTE status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -4017,7 +3689,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student grade level",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4026,7 +3697,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student grade level (K-12)",
-                ClusterOnlyCategory = "Postsecondary Transitions",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4035,7 +3705,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student grade level (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Attendance & Enrollment",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -4044,7 +3713,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student or family socioeconomic status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -4053,7 +3721,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student parenting status",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -4062,7 +3729,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student race/ethnicity",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -4071,7 +3737,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Student socioeconomic status", // seems to overlap with "Student or family" version above...
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS], // this is listed as PS metric only
                 AdditionalNotes = null
@@ -4080,7 +3745,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Subscale observation scores",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -4089,7 +3753,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Suspensions and expulsions (K-12)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4098,7 +3761,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Suspensions and expulsions (PK)",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Discipline & Behavior",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -4107,7 +3769,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher effectiveness student surveys (K-12)",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4116,7 +3777,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher effectiveness student surveys (Postsecondary)",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -4125,7 +3785,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher qualification or certification type",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -4134,7 +3793,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher reports of executive function",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -4143,7 +3801,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher reports of social-emotional development",
-                ClusterOnlyCategory = "Kindergarten Readiness",
                 DataElementCategory = "Early Learning",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -4152,7 +3809,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher-child interaction measure (K-12)",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4161,7 +3817,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teacher-child interaction measure (PK)",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK],
                 AdditionalNotes = null
@@ -4170,7 +3825,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Teaching assignment",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -4179,7 +3833,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Total educational funding",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Finance & Resources",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = null
@@ -4188,7 +3841,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Total net price of education plus interest",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Financial Aid & Affordability",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -4197,7 +3849,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Transfer enrollment status",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -4206,7 +3857,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Transfer indicator or transfer student status",
-                ClusterOnlyCategory = "Postsecondary Success",
                 DataElementCategory = "Postsecondary Outcomes",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = null
@@ -4215,7 +3865,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Universal screening results",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -4224,7 +3873,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Urbanicity",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -4233,7 +3881,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "USDA Food Access Research Atlas Access Level Flag",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Community Context",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -4242,7 +3889,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "USDA Food Security Survey ratings",
-                ClusterOnlyCategory = "School Climate",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = null
@@ -4251,7 +3897,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "VAM for subject specific assessment",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.K12],
                 AdditionalNotes = null
@@ -4260,7 +3905,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Workforce development program participation",
-                ClusterOnlyCategory = "Workforce Transitions",
                 DataElementCategory = "Career & Technical Education (CTE)",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = null
@@ -4269,7 +3913,6 @@ public static class PreviousDataForComparison
             new DataElement
             {
                 Name = "Years in current position",
-                ClusterOnlyCategory = "Teaching Effectiveness",
                 DataElementCategory = "Staff & Educators",
                 RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = null
@@ -4277,7 +3920,6 @@ public static class PreviousDataForComparison
         ["Years of teaching experience"] = new DataElement
         {
             Name = "Years of teaching experience",
-            ClusterOnlyCategory = "Teaching Effectiveness",
             DataElementCategory = "Staff & Educators",
             RelatedSectors = [Sector.K12],
             AdditionalNotes = null

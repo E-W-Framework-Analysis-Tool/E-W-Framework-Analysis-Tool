@@ -1,3 +1,4 @@
+@using System.ComponentModel.DataAnnotations
 @using EwFrameworkAnalysis.Common.FrameworkReferenceData
 @using EwFrameworkAnalysis.Common.Models.Framework
 @using EwFrameworkAnalysis.Common.Models.Project
@@ -19,7 +20,7 @@
                        @bind:event="oninput" />
             </label>
 
-            <button class="btn btn-sm btn-ghost gap-1 @(_showOptions ? "btn-active" : "") @(HasAnyFilters() ? "text-primary" : "")"
+            <button class="btn btn-sm btn-ghost gap-1 @(_showOptions ? "btn-active" : "")"
                     @onclick="() => _showOptions = !_showOptions"
                     aria-expanded="@_showOptions"
                     aria-label="Toggle options">
@@ -36,10 +37,14 @@
         </div>
 
         <!-- Row 2: Sliding options panel -->
-        <div class="overflow-hidden transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2" : "max-h-0 opacity-0")">
+        @* overflow-hidden is only needed to hide/animate the collapsed (max-h-0) state; once
+           expanded it must switch to visible or the FilterDropdown popups get clipped at this
+           box's bottom edge instead of floating over the element list below. *@
+        <div class="transition-all duration-200 ease-in-out @(_showOptions ? "max-h-64 opacity-100 mt-2 overflow-visible" : "max-h-0 opacity-0 overflow-hidden")">
             <div class="flex flex-wrap gap-x-6 gap-y-3 pt-2 pb-1 border-t border-gray-200">
 
-                <!-- Group By -->
+                @* Group By is temporarily locked to "Data Categories" — toggle hidden, not removed.
+                   Re-enable by uncommenting this block and the OnInitializedAsync restore logic below.
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-gray-600">Group By</span>
                     <div class="flex items-center gap-1 border border-gray-200 rounded-lg px-2 py-1 bg-base-100">
@@ -58,61 +63,49 @@
                                @onchange="async () => await SetCategoryMode(CategoryMode.DataElement)" />
                     </div>
                 </div>
+                *@
 
-                <!-- Sector Filter -->
+                <!-- Sector / Cluster / Domain / Type / Used For / Availability filters -->
                 <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Sector</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var sector in Enum.GetValues<Sector>())
-                        {
-                            <input class="btn btn-xs @(_selectedSectors.Contains(sector) ? "btn-primary" : "")"
-                                   type="checkbox"
-                                   checked="@_selectedSectors.Contains(sector)"
-                                   @onchange="() => ToggleSector(sector)"
-                                   aria-label="@sector.ToString()" />
-                        }
-                        @if (_selectedSectors.Any())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearSectorFilter"
-                                    title="Clear"
-                                    aria-label="Clear sector filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        }
-                    </div>
-                </div>
+                    <span class="text-xs font-semibold text-gray-600">Filter By</span>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <FilterDropdown TValue="Sector" Label="Sector" Options="Enum.GetValues<Sector>()"
+                                        SelectedValues="_selectedSectors" OnChanged="StateHasChanged"
+                                        Description="The sector(s) this element itself is tagged with." />
+                        <FilterDropdown TValue="IndicatorCluster" Label="E-W Cluster" Options="Enum.GetValues<IndicatorCluster>()"
+                                        SelectedValues="_selectedClusters" OnChanged="StateHasChanged"
+                                        Description="Clusters are groups of indicators that share a common theme or purpose, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="IndicatorDomain" Label="Indicator Domain" Options="Enum.GetValues<IndicatorDomain>()"
+                                        SelectedValues="_selectedDomains" OnChanged="StateHasChanged"
+                                        Description="Domains are interrelated areas that affect individuals' journeys toward economic mobility and security, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="IndicatorType" Label="Indicator Type" Options="Enum.GetValues<IndicatorType>()"
+                                        SelectedValues="_selectedTypes" OnChanged="StateHasChanged"
+                                        Description="Indicator types refer to whether an indicator captures an individual outcome or milestone versus a system condition, a property of the indicators this element is used by, not the element itself." />
+                        <FilterDropdown TValue="UsedForKind" Label="Used For" Options="Enum.GetValues<UsedForKind>()"
+                                        SelectedValues="_selectedUsedFor" OnChanged="StateHasChanged"
+                                        Description="Whether this element is used by at least one Indicator, Disaggregate, or both." />
+                        <FilterDropdown TValue="AvailabilityJudgment" Label="Avail. Status" Options="_availabilityOptions"
+                                        SelectedValues="_selectedAvailabilities" OnChanged="StateHasChanged"
+                                        ExtraCount="@(_showUnreported ? 1 : 0)" OnClearExtra="@(() => _showUnreported = false)"
+                                        Description="The availability judgment recorded for this element in this data source, if any.">
+                            <ExtraContent>
+                                @if (!HideUnreported)
+                                {
+                                    <label class="flex items-center gap-2 py-1 px-1 rounded hover:bg-base-200 cursor-pointer w-full">
+                                        <input type="checkbox" class="checkbox checkbox-xs shrink-0"
+                                               checked="@_showUnreported"
+                                               @onchange="() => _showUnreported = !_showUnreported" />
+                                        <span class="text-sm whitespace-normal break-words">Not Yet Reported</span>
+                                    </label>
+                                }
+                            </ExtraContent>
+                        </FilterDropdown>
 
-                <!-- Status Filter -->
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-gray-600">Status</span>
-                    <div class="flex flex-wrap gap-1">
-                        @foreach (var judgment in _availabilityOptions)
+                        @if (HasAnyFilters())
                         {
-                            var isSelected = _selectedAvailabilities.Contains(judgment);
-                            <input class="btn btn-xs @(isSelected ? GetAvailabilityActiveClass(judgment) : "")"
-                                   type="checkbox"
-                                   checked="@isSelected"
-                                   @onchange="() => ToggleAvailability(judgment)"
-                                   aria-label="@judgment.GetDisplayName()" />
-                        }
-                        @if (!HideUnreported)
-                        {
-                            <input class="btn btn-xs @(_showUnreported ? "btn-neutral" : "")"
-                                   type="checkbox"
-                                   checked="@_showUnreported"
-                                   @onchange="() => _showUnreported = !_showUnreported"
-                                   aria-label="Not Yet Reported" />
-                        }
-                        @if (HasAvailabilityFilters())
-                        {
-                            <button class="btn btn-xs btn-square btn-ghost"
-                                    type="button"
-                                    @onclick="ClearAvailabilityFilter"
-                                    title="Clear"
-                                    aria-label="Clear status filter">
+                            <button class="btn btn-xs btn-ghost gap-1" type="button" @onclick="ResetAllFilters">
                                 <i class="fas fa-times"></i>
+                                Reset all filters
                             </button>
                         }
                     </div>
@@ -170,6 +163,18 @@
                                             {
                                                 <i class="fas fa-info-circle text-xs text-gray-400 ml-1"></i>
                                             }
+                                            @{ var usedByIndicators = IndicatorsUsingElement(element.Name); }
+                                            @if (usedByIndicators.Count > 0)
+                                            {
+                                                <i class="fas fa-diagram-project text-xs text-green/70 ml-1 cursor-help"
+                                                   title="@("Used by " + usedByIndicators.Count + " indicator(s): " + string.Join(", ", usedByIndicators))"></i>
+                                            }
+                                            @{ var usedByDisaggregates = DisaggregatesUsingElement(element.Name); }
+                                            @if (usedByDisaggregates.Count > 0)
+                                            {
+                                                <i class="fas fa-chart-pie text-xs text-blue/70 ml-1 cursor-help"
+                                                   title="@("Used by " + usedByDisaggregates.Count + " disaggregate(s): " + string.Join(", ", usedByDisaggregates))"></i>
+                                            }
                                         </div>
                                     </div>
 
@@ -226,24 +231,38 @@
     private string _searchQuery = string.Empty;
     private HashSet<string> _expandedCategories = new();
     private HashSet<Sector> _selectedSectors = new();
+    private HashSet<IndicatorCluster> _selectedClusters = new();
+    private HashSet<IndicatorDomain> _selectedDomains = new();
+    private HashSet<IndicatorType> _selectedTypes = new();
     private HashSet<AvailabilityJudgment> _selectedAvailabilities = new();
+    private HashSet<UsedForKind> _selectedUsedFor = new();
     private bool _showUnreported = false;
     private bool _allExpanded = false;
     private bool _showOptions = false;
-    private CategoryMode _categoryMode = CategoryMode.EWFramework;
+    // Locked to DataElement (Data Categories) while Group By is hidden — see markup above.
+    private CategoryMode _categoryMode = CategoryMode.DataElement;
     private const string CATEGORY_MODE_STORAGE_KEY = "ewframework_analysis_category_preference";
 
-    protected override async Task OnInitializedAsync()
+    private enum UsedForKind
     {
-        try
-        {
-            var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
-            if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
-                _categoryMode = mode;
-        }
-        catch { }
+        [Display(Name = "Indicators")] Indicator,
+        [Display(Name = "Disaggregates")] Disaggregate
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        // Group By is temporarily locked to Data Categories — restoring a saved
+        // preference is disabled for now. Re-enable alongside the Group By UI toggle above.
+        // try
+        // {
+        //     var savedMode = await JSRuntime.InvokeAsync<string>("localStorage.getItem", CATEGORY_MODE_STORAGE_KEY);
+        //     if (!string.IsNullOrEmpty(savedMode) && Enum.TryParse<CategoryMode>(savedMode, out var mode))
+        //         _categoryMode = mode;
+        // }
+        // catch { }
 
         BuildCategories();
+        return Task.CompletedTask;
     }
 
     private enum CategoryMode
@@ -278,25 +297,16 @@
 
     private readonly Dictionary<string, string> _categoryIcons = new()
     {
-        // E-W Framework Clusters
-        ["Academic Assessment and Performance"] = "fa-chart-line",
-        ["Attendance and Engagement"] = "fa-calendar-check",
-        ["Behavior and Discipline"] = "fa-gavel",
-        ["Community and Environmental Conditions"] = "fa-city",
-        ["Course and Curriculum"] = "fa-book",
-        ["Educator Employment and Retention"] = "fa-chalkboard-teacher",
-        ["Educator Qualifications and Credentials"] = "fa-certificate",
-        ["Financial Support and Resources"] = "fa-dollar-sign",
-        ["Health and Well-being"] = "fa-heart",
-        ["Instructional Quality and Practice"] = "fa-chalkboard",
-        ["Postsecondary Transition and Success"] = "fa-graduation-cap",
-        ["Program Eligibility and Enrollment"] = "fa-school",
-        ["Program Quality and Standards"] = "fa-award",
-        ["School Climate and Engagement"] = "fa-users",
-        ["Student Demographics"] = "fa-user",
-        ["Student Support Services"] = "fa-hands-helping",
-        ["System Economic Conditions"] = "fa-coins",
-        ["Workforce and Career Outcomes"] = "fa-briefcase",
+        // E-W Framework Clusters (transitive from Indicator.Cluster)
+        ["Kindergarten Readiness"] = "fa-seedling",
+        ["Postsecondary Success"] = "fa-graduation-cap",
+        ["Postsecondary Transitions"] = "fa-route",
+        ["School Climate"] = "fa-school",
+        ["Social-Emotional Learning"] = "fa-smile",
+        ["Teaching Effectiveness"] = "fa-chalkboard-teacher",
+        ["Workforce Success"] = "fa-briefcase",
+        ["Workforce Transitions"] = "fa-exchange-alt",
+        ["Unclustered"] = "fa-question-circle",
         // Data Element Categories
         ["Academic Coursework"] = "fa-book",
         ["Academic Performance"] = "fa-chart-line",
@@ -320,49 +330,64 @@
 
     private List<DataElementCategory> _categories = new();
 
+    private const string UnclusteredLabel = "Unclustered";
+
     private void BuildCategories()
     {
-        var groupingSelector = _categoryMode == CategoryMode.EWFramework
-            ? (Func<DataElement, string>)(e => e.ClusterOnlyCategory)
-            : (e => e.DataElementCategory);
+        // Cluster mode is a many-to-many fan-out: an element with no clustered indicators
+        // yet lands in "Unclustered"; an element spanning clusters appears under each one.
+        IEnumerable<(string Name, DataElement Element)> pairs = _categoryMode == CategoryMode.EWFramework
+            ? EwFrameworkDataElements.Elements.Values.SelectMany(e => e.RelatedIndicatorClusters.Count > 0
+                ? e.RelatedIndicatorClusters.Select(c => (c.GetDisplayName(), e))
+                : [(UnclusteredLabel, e)])
+            : EwFrameworkDataElements.Elements.Values.Select(e => (e.DataElementCategory, e));
 
-        _categories = EwFrameworkDataElements.Elements.Values
-            .GroupBy(groupingSelector)
+        _categories = pairs
+            .GroupBy(p => p.Name)
             .Select(g => new DataElementCategory
             {
                 Name = g.Key,
                 Icon = _categoryIcons.GetValueOrDefault(g.Key, "fa-folder"),
-                Elements = g.ToList()
+                Elements = g.Select(p => p.Element).ToList()
             })
             .OrderBy(c => c.Name)
             .ToList();
     }
 
-    private void ToggleSector(Sector sector)
-    {
-        if (_selectedSectors.Contains(sector)) _selectedSectors.Remove(sector);
-        else _selectedSectors.Add(sector);
-    }
+    private List<string> IndicatorsUsingElement(string elementName) =>
+        EwFrameworkIndicators.Indicators.Values
+            .Where(i => i.DataElementNames.Contains(elementName))
+            .Select(i => i.Name)
+            .OrderBy(n => n)
+            .ToList();
 
-    private void ClearSectorFilter() => _selectedSectors.Clear();
-
-    private void ToggleAvailability(AvailabilityJudgment availability)
-    {
-        if (_selectedAvailabilities.Contains(availability)) _selectedAvailabilities.Remove(availability);
-        else _selectedAvailabilities.Add(availability);
-    }
-
-    private void ClearAvailabilityFilter()
-    {
-        _selectedAvailabilities.Clear();
-        _showUnreported = false;
-    }
+    private List<string> DisaggregatesUsingElement(string elementName) =>
+        EwFrameworkDisaggregates.Disaggregates
+            .Where(d => d.DataElementNames.Contains(elementName))
+            .Select(d => d.Name)
+            .OrderBy(n => n)
+            .ToList();
 
     private bool HasAvailabilityFilters() => _selectedAvailabilities.Any() || _showUnreported;
 
-    private bool HasAnyFilters() => _selectedSectors.Any() || HasAvailabilityFilters();
+    private bool HasAnyFilters() =>
+        _selectedSectors.Any() || _selectedClusters.Any() || _selectedDomains.Any() || _selectedTypes.Any()
+        || _selectedUsedFor.Any() || HasAvailabilityFilters();
 
-    private int GetActiveFilterCount() => _selectedSectors.Count + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
+    private int GetActiveFilterCount() =>
+        _selectedSectors.Count + _selectedClusters.Count + _selectedDomains.Count + _selectedTypes.Count
+        + _selectedUsedFor.Count + _selectedAvailabilities.Count + (_showUnreported ? 1 : 0);
+
+    private void ResetAllFilters()
+    {
+        _selectedSectors.Clear();
+        _selectedClusters.Clear();
+        _selectedDomains.Clear();
+        _selectedTypes.Clear();
+        _selectedUsedFor.Clear();
+        _selectedAvailabilities.Clear();
+        _showUnreported = false;
+    }
 
     private List<DataElementCategory> GetFilteredCategories()
     {
@@ -393,6 +418,64 @@
                     Icon = c.Icon,
                     Elements = c.Elements
                         .Where(e => e.RelatedSectors.Any(s => _selectedSectors.Contains(s)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedClusters.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorClusters.Any(x => _selectedClusters.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedDomains.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorDomains.Any(x => _selectedDomains.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedTypes.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e => e.RelatedIndicatorTypes.Any(x => _selectedTypes.Contains(x)))
+                        .ToList()
+                })
+                .Where(c => c.Elements.Any());
+        }
+
+        if (_selectedUsedFor.Any())
+        {
+            categories = categories
+                .Select(c => new DataElementCategory
+                {
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    Elements = c.Elements
+                        .Where(e =>
+                            (_selectedUsedFor.Contains(UsedForKind.Indicator) && IndicatorsUsingElement(e.Name).Count > 0) ||
+                            (_selectedUsedFor.Contains(UsedForKind.Disaggregate) && DisaggregatesUsingElement(e.Name).Count > 0))
                         .ToList()
                 })
                 .Where(c => c.Elements.Any());
@@ -489,14 +572,6 @@
             _ => "btn-ghost"
         };
     }
-
-    private string GetAvailabilityActiveClass(AvailabilityJudgment judgment) => judgment switch
-    {
-        AvailabilityJudgment.Available => "btn-success",
-        AvailabilityJudgment.PartiallyAvailable => "btn-warning",
-        AvailabilityJudgment.NotAvailable => "btn-error",
-        _ => "btn-neutral"
-    };
 
     private string GetAvailabilityBadgeClass(AvailabilityJudgment judgment) => judgment switch
     {

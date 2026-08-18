@@ -390,6 +390,8 @@
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", query);
     }
 
+    private const string UnclusteredLabel = "Unclustered";
+
     private IEnumerable<KeyValuePair<string, List<DataElementMappingRow>>> FilteredCategories
     {
         get
@@ -409,8 +411,16 @@
                 _ => rows
             };
 
-            return rows
-                .GroupBy(r => _groupByCluster ? r.ClusterCategory : r.DataElementCategory)
+            // Cluster mode is a many-to-many fan-out: a row with no clustered indicators
+            // yet lands in "Unclustered"; a row spanning clusters appears under each one.
+            IEnumerable<(string Name, DataElementMappingRow Row)> pairs = _groupByCluster
+                ? rows.SelectMany(r => r.RelatedIndicatorClusters.Count > 0
+                    ? r.RelatedIndicatorClusters.Select(c => (c.GetDisplayName(), r))
+                    : [(UnclusteredLabel, r)])
+                : rows.Select(r => (r.DataElementCategory, r));
+
+            return pairs
+                .GroupBy(p => p.Name, p => p.Row)
                 .OrderBy(g => g.Key)
                 .Select(g => KeyValuePair.Create(g.Key, g.ToList()));
         }
