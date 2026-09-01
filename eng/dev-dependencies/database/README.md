@@ -10,8 +10,22 @@ For typical development tasks, see the [parent README](../README.md) which cover
 - Creating scenarios
 - Updating images
 
+## Package Versions
+
+The Ed-Fi NuGet package versions in `Dockerfile` are pinned. Ed-Fi republishes new builds under the same package ids, so
+an unpinned restore makes the image non-reproducible and can pull in a build targeting a newer .NET runtime than the
+base image provides. Bump them deliberately:
+
+| Package                                             | Version     |
+| --------------------------------------------------- | ----------- |
+| `EdFi.Database.Admin.Standard.5.2.0`                | `7.3.20021` |
+| `EdFi.Database.Security.Standard.5.2.0`             | `7.3.20023` |
+| `EdFi.Suite3.Ods.Populated.Template.Standard.5.2.0` | `7.3.20054` |
+| `EdFi.Suite3.Ods.Minimal.Template.Standard.5.2.0`   | `7.3.20051` |
+
 ## Versions
 
+- **SQL Server:** 2022 (`mcr.microsoft.com/mssql/server:2022-latest`, linux/amd64 only)
 - **Ed-Fi Data Standard:** v5.2
 - **CEDS Data Warehouse:** v11.0.0.0
   - Source:

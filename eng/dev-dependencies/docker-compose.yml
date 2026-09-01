@@ -1,26 +1,50 @@
+# Local Ed-Fi ODS API + SQL Server for E-W Framework Analysis Tool development.
+#
+# Images resolve from ${REGISTRY}, which bootstrap.ps1 sets:
+#   REGISTRY=local            -> images are built from the Dockerfiles in this directory
+#   REGISTRY=ewftool.azurecr.io -> images are pulled from the team's registry
+#
+# Run `./bootstrap.ps1` rather than `docker compose up` directly on a first-time setup:
+# compose alone does not create the scenario databases.
 services:
   sqlserver:
-    image: ewftool.azurecr.io/ewftool-dev-sqlserver:latest
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    image: ${REGISTRY:-local}/ewftool-dev-sqlserver:${VERSION:-latest}
+    # SQL Server is published for linux/amd64 only; pin it so Apple Silicon uses
+    # Rosetta emulation explicitly instead of failing to find an arm64 manifest.
+    platform: linux/amd64
     container_name: ewftool-dev-sqlserver
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=P@ssw0rd123
       - MSSQL_PID=Developer
+      # Rewrites the registered OdsInstance connection strings on startup. Use the
+      # compose service name locally; Azure Container Apps sets this to localhost.
+      - EDFI_DB_SERVER=sqlserver
+      # Existing databases are left alone on startup so restarts do not discard
+      # registered scenarios. Set to true to restore over them from the image backups.
+      - FORCE_RESTORE=${FORCE_RESTORE:-false}
     ports:
-      - "14333:1433"
+      - "${SQL_PORT:-14333}:1433"
     volumes:
       - ewftool_sqlserver_data:/var/opt/mssql
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "P@ssw0rd123" -C -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 3s
-      retries: 10
-      start_period: 10s
+      retries: 30
+      # Restoring the Ed-Fi templates on first run takes a while, more so under emulation.
+      start_period: 120s
     networks:
       - ewftool_dev
 
   webapi:
-    image: ewftool.azurecr.io/ewftool-dev-edfi-api:latest
+    build:
+      context: ./edfi-api
+      dockerfile: Dockerfile
+    image: ${REGISTRY:-local}/ewftool-dev-edfi-api:${VERSION:-latest}
     container_name: ewftool-dev-edfi-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -28,6 +52,7 @@ services:
       - InstallType=SingleTenant
       - ApiSettings__OdsConnectionStringEncryptionKey=eSWfXBkHlWV0QzmIy//G9EiiDQlYSYUNvI2uXLwEXXY=
       - ApiSettings__Engine=SqlServer
+      # Scenario name becomes the first URL segment: /{Scenario}/data/v3/...
       - ApiSettings__OdsContextRouteTemplate={Scenario}
       - ConnectionStrings__EdFi_Admin=Server=sqlserver;Database=EdFi_Admin;Integrated Security=false;User ID=sa;Password=P@ssw0rd123;TrustServerCertificate=true;
       - ConnectionStrings__EdFi_Security=Server=sqlserver;Database=EdFi_Security;Integrated Security=false;User ID=sa;Password=P@ssw0rd123;TrustServerCertificate=true;
@@ -35,7 +60,10 @@ services:
       - Logging__LogLevel__Default=Debug
       - Logging__LogLevel__Microsoft=Warning
     ports:
-      - "5000:80"
+      - "${EDFI_API_PORT:-5000}:80"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
     networks:
       - ewftool_dev
     restart: unless-stopped
