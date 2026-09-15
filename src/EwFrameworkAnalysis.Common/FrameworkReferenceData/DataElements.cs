@@ -502,14 +502,6 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = "Current classification of a student as an English learner or reclassified fluent English proficient (RFEP). Used alongside English learner classification date to compute reclassification rates and as a demographic disaggregate across indicators."
             },
-        ["Military enlistment date"] =
-            new DataElement
-            {
-                Name = "Military enlistment date",
-                DataElementCategory = "Employment & Earnings",
-                RelatedSectors = [Sector.WF],
-                AdditionalNotes = "The date that a high school graduate enlisted in the military. One of several acceptable post-graduation pathways counted in the Successful Career Transition After High School indicator (alongside employment, apprenticeship, and noncredit CTE enrollment), with the relevant window being before October 31 following graduation."
-            },
         ["Enrollment in noncredit CTE date"] =
             new DataElement
             {
@@ -925,6 +917,14 @@ public static class EwFrameworkDataElements
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "A mapping of courses or programs of study to broad interdisciplinary groupings used to determine whether a student's first-year course-taking is concentrated within a single area of study. Meta-major definitions are institution-defined and derived from course data and degree requirements rather than stored as a native administrative field; this element functions as a reference crosswalk joined to course enrollment records at the time of metric calculation. Institutions may reference the Nguyen et al. methodology or the National Student Clearinghouse Postsecondary Data Partnership for consistent classification guidance. Many institutions will need to define and maintain this mapping before this metric can be calculated."
+            },
+        ["Military enlistment date"] =
+            new DataElement
+            {
+                Name = "Military enlistment date",
+                DataElementCategory = "Employment & Earnings",
+                RelatedSectors = [Sector.WF],
+                AdditionalNotes = "The date that a high school graduate enlisted in the military. One of several acceptable post-graduation pathways counted in the Successful Career Transition After High School indicator (alongside employment, apprenticeship, and noncredit CTE enrollment), with the relevant window being before October 31 following graduation."
             },
         ["Military status (individual/family)"] =
             new DataElement
