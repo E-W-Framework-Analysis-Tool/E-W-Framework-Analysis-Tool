@@ -2,7 +2,9 @@ namespace EwFrameworkAnalysis.UI.Services;
 
 public sealed class BusyService
 {
-    private readonly Dictionary<Guid, string> _tokens = [];
+    // A List (not a Dictionary) so insertion order is preserved — CurrentReason
+    // reports the most recently begun (or updated) operation.
+    private readonly List<(Guid Id, string Reason)> _tokens = [];
     private readonly Lock _lock = new();
 
     public event Action? Changed;
@@ -12,15 +14,21 @@ public sealed class BusyService
         get { lock (_lock) return _tokens.Count > 0; }
     }
 
-    private IDisposable Begin(string reason = "Loading…")
+    /// <summary>The reason text for the most recently begun (or updated) busy token, if any.</summary>
+    public string? CurrentReason
+    {
+        get { lock (_lock) return _tokens.Count > 0 ? _tokens[^1].Reason : null; }
+    }
+
+    private BusyToken Begin(string reason = "Loading…")
     {
         var id = Guid.NewGuid();
-        lock (_lock) _tokens[id] = reason;
+        lock (_lock) _tokens.Add((id, reason));
         NotifyChanged();
         return new BusyToken(id, this);
     }
 
-    public async Task<IDisposable> BeginAsync(string reason = "Loading…")
+    public async Task<BusyToken> BeginAsync(string reason = "Loading…")
     {
         var token = Begin(reason);
         await Task.Yield();
@@ -45,9 +53,19 @@ public sealed class BusyService
         return await work();
     }
 
-    internal void Release(Guid id)
+    private void UpdateReason(Guid id, string reason)
     {
-        lock (_lock) _tokens.Remove(id);
+        lock (_lock)
+        {
+            var idx = _tokens.FindIndex(t => t.Id == id);
+            if (idx >= 0) _tokens[idx] = (id, reason);
+        }
+        NotifyChanged();
+    }
+
+    private void Release(Guid id)
+    {
+        lock (_lock) _tokens.RemoveAll(t => t.Id == id);
         NotifyChanged();
     }
 
@@ -55,13 +73,16 @@ public sealed class BusyService
 
     // --- Token ---
 
-    private sealed class BusyToken : IDisposable
+    public sealed class BusyToken : IDisposable
     {
         private readonly Guid _id;
         private readonly BusyService _svc;
         private bool _disposed;
 
-        public BusyToken(Guid id, BusyService svc) { _id = id; _svc = svc; }
+        internal BusyToken(Guid id, BusyService svc) { _id = id; _svc = svc; }
+
+        /// <summary>Updates the reason text shown for this operation while it is still in progress.</summary>
+        public void UpdateReason(string reason) => _svc.UpdateReason(_id, reason);
 
         public void Dispose()
         {

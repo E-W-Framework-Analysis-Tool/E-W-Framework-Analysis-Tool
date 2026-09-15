@@ -74,6 +74,8 @@
     </Footer>
 </Modal>
 
+<MigrationNotesModal IsOpen="@MigrationNotesModalIsOpen" Notes="@_migrationNotes" CloseRequested="HandleMigrationNotesClosed" />
+
 <ImportDataSourcesModal IsOpen="@ImportSourcesModalIsOpen"
                         IsOpenChanged="@((v) => ImportSourcesModalIsOpen = v)"
                         OnImportComplete="@HandleImportComplete" />
@@ -93,22 +95,40 @@
     private bool NewProjectModalIsOpen { get; set; }
     private bool LoadProjectModalIsOpen { get; set; }
     private bool ImportSourcesModalIsOpen { get; set; }
+    private bool MigrationNotesModalIsOpen { get; set; }
 
     private ElementReference _fileInput;
     private string? _importError;
+    private IReadOnlyList<string> _migrationNotes = [];
 
     private async Task OnFileSelected(ChangeEventArgs e)
     {
         _importError = null;
-        using var _ = await BusySvc.BeginAsync("Loading project…");
+        using var busy = await BusySvc.BeginAsync("Loading project…");
         var file = await JSRuntime.InvokeAsync<string>("ProjectHeaderHelpers.readFileAsText", _fileInput);
         if (!string.IsNullOrWhiteSpace(file))
         {
-            var result = await ProjectSvc.ImportProjectAsync(file);
+            var result = await ProjectSvc.ImportProjectAsync(file, async (step, total, description) =>
+            {
+                busy.UpdateReason(total > 1
+                    ? $"Migrating project… (step {step} of {total}: {description})"
+                    : $"Migrating project… ({description})");
+                await Task.Yield(); // let the renderer paint this step before applying it
+            });
+
             if (!result.Success)
+            {
                 _importError = result.ErrorMessage;
+            }
+            else if (result.MigrationNotes.Count > 0)
+            {
+                _migrationNotes = result.MigrationNotes;
+                MigrationNotesModalIsOpen = true;
+            }
         }
     }
+
+    private void HandleMigrationNotesClosed() => MigrationNotesModalIsOpen = false;
 
     private async Task HandleTitleSave(string? title)
     {
