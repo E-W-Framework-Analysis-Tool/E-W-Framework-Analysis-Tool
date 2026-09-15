@@ -36,9 +36,14 @@ public class PlaywrightTestFixture : IAsyncLifetime, IDisposable
         {
             RootPath = Path.Combine(publishRoot, "wwwroot");
 
+            // Serve over plain HTTP. Over HTTPS the host negotiates HTTP/2, and Firefox aborts
+            // part of the ~100 parallel _framework asset requests the Blazor runtime issues at
+            // boot ("Error in mono_download_assets: AbortError"), leaving the app stuck on the
+            // loading splash. localhost is still a secure browser context without TLS.
             Builder = PlaywrightTestBuilder.Create()
                 .WithLocalHost(lb =>
                     lb.UsePortRange(new PortRange(5000, 6000))
+                      .UseHttps(false)
                       .UseWebHostWithWwwRoot(RootPath, "index.html"))
                 .WithPlaywrightOptions(ConfigurePlaywright);
 
