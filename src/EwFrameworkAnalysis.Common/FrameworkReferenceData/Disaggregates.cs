@@ -25,6 +25,7 @@ public static class EwFrameworkDisaggregates
             [
                 "Student attendance rate (K-12)",
                 "Student attendance rate (PK)",
+                "Postsecondary enrollment status (Full time/part time)",
             ]
         },
         new Disaggregate

@@ -1,0 +1,36 @@
+@*
+    MigrationNotesModal.razor
+
+    Shown after a project file is auto-migrated to the current schema, to warn the user
+    about any notable/destructive changes (e.g. a renamed or split data element) rather than
+    silently altering data they entered. Used by both the Load Project flow and the startup
+    auto-load-from-browser-storage flow (see ProjectHeader.razor and MainLayout.razor).
+*@
+
+<Modal Title="Project Updated" Icon="fa-triangle-exclamation" IsOpen="@IsOpen" CloseRequested="OnCloseRequested">
+    <Body>
+        <div class="space-y-2 text-sm text-gray-600">
+            <p>This project file was created with an older version of the tool and has been automatically updated. This included the following changes:</p>
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach (var note in Notes)
+                {
+                    <li>@note</li>
+                }
+            </ul>
+            <p>Review the affected data before continuing.</p>
+        </div>
+    </Body>
+    <Footer>
+        <div class="modal-action">
+            <button class="btn btn-primary" @onclick="OnCloseRequested">OK</button>
+        </div>
+    </Footer>
+</Modal>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public IReadOnlyList<string> Notes { get; set; } = [];
+    [Parameter] public EventCallback CloseRequested { get; set; }
+
+    private Task OnCloseRequested() => CloseRequested.InvokeAsync();
+}

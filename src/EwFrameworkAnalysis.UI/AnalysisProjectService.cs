@@ -21,6 +21,13 @@ public class AnalysisProjectService
     public bool IsDemoActive { get; private set; }
     private bool _initialized = false;
 
+    /// <summary>
+    /// Migration notes from the project that was silently auto-loaded from browser storage on
+    /// startup (before the UI could show progress). The app shell should show these to the user
+    /// once, then clear this so it doesn't reappear on navigation.
+    /// </summary>
+    public IReadOnlyList<string> StartupMigrationNotes { get; set; } = [];
+
     public event Action? Changed;
 
     public AnalysisProjectService(IJSRuntime jsRuntime)
@@ -28,9 +35,18 @@ public class AnalysisProjectService
         _jsRuntime = jsRuntime;
     }
 
-    public AnalysisProject? DeserializeProject(string json)
+    public AnalysisProject? DeserializeProject(string json) => DeserializeProject(json, out _);
+
+    /// <summary>
+    /// Deserializes a project, migrating it to the current schema if needed.
+    /// <paramref name="migrationNotes"/> carries human-readable descriptions of any notable
+    /// (e.g. destructive) changes made during migration, such as renamed/split data elements —
+    /// callers that show the result directly to the user (e.g. Load Project) should surface these.
+    /// </summary>
+    public AnalysisProject? DeserializeProject(string json, out IReadOnlyList<string> migrationNotes)
     {
         var migration = AnalysisProjectMigrator.MigrateIfNeeded(json);
+        migrationNotes = migration.Notes;
         if (!migration.Success)
         {
             Console.WriteLine($"Migration failed: {migration.ErrorMessage}");
@@ -41,6 +57,29 @@ public class AnalysisProjectService
             Console.WriteLine($"Applied {migration.MigrationsApplied} migration(s) before deserializing.");
 
         return JsonSerializer.Deserialize<AnalysisProject>(migration.Json!, GetJsonOptions());
+    }
+
+    /// <summary>
+    /// Deserializes a project, migrating it to the current schema if needed, reporting progress
+    /// via <paramref name="onMigrationStep"/> as each migration step is applied. Use this over
+    /// <see cref="DeserializeProject(string, out IReadOnlyList{string})"/> when the caller can
+    /// show that progress to the user (e.g. a busy overlay), such as Load Project.
+    /// </summary>
+    public async Task<(AnalysisProject? Project, IReadOnlyList<string> MigrationNotes)> DeserializeProjectAsync(
+        string json, Func<int, int, string, Task>? onMigrationStep = null)
+    {
+        var migration = await AnalysisProjectMigrator.MigrateIfNeededAsync(json, onMigrationStep);
+        if (!migration.Success)
+        {
+            Console.WriteLine($"Migration failed: {migration.ErrorMessage}");
+            return (null, migration.Notes);
+        }
+
+        if (migration.MigrationsApplied > 0)
+            Console.WriteLine($"Applied {migration.MigrationsApplied} migration(s) before deserializing.");
+
+        var project = JsonSerializer.Deserialize<AnalysisProject>(migration.Json!, GetJsonOptions());
+        return (project, migration.Notes);
     }
 
     /// <summary>
@@ -65,8 +104,11 @@ public class AnalysisProjectService
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", STORAGE_KEY);
             if (!string.IsNullOrEmpty(json))
             {
-                var project = DeserializeProject(json);
+                var project = DeserializeProject(json, out var migrationNotes);
                 Project = project ?? new AnalysisProject();
+                // This ran before the app rendered, so the user never saw it happen —
+                // surface the notes once the UI is up (see MainLayout).
+                StartupMigrationNotes = migrationNotes;
             }
             else
             {
@@ -381,20 +423,21 @@ public class AnalysisProjectService
     }
 
     /// <summary>
-    /// Import a project from JSON string
+    /// Import a project from JSON string. <paramref name="onMigrationStep"/>, if provided, is
+    /// invoked as each migration step is applied so the caller can show progress.
     /// </summary>
-    public async Task<ImportProjectResult> ImportProjectAsync(string json)
+    public async Task<ImportProjectResult> ImportProjectAsync(string json, Func<int, int, string, Task>? onMigrationStep = null)
     {
         try
         {
-            var project = DeserializeProject(json);
+            var (project, migrationNotes) = await DeserializeProjectAsync(json, onMigrationStep);
             if (project is null)
                 return ImportProjectResult.Fail("The file could not be read as a project.");
 
             Project = project;
             await SaveAsync();
             Notify();
-            return ImportProjectResult.Ok();
+            return ImportProjectResult.Ok(migrationNotes);
         }
         catch (Exception ex)
         {
@@ -458,12 +501,16 @@ public class ImportProjectResult
     public bool Success { get; }
     public string? ErrorMessage { get; }
 
-    private ImportProjectResult(bool success, string? errorMessage)
+    /// <summary>Human-readable descriptions of notable changes made while migrating the loaded file.</summary>
+    public IReadOnlyList<string> MigrationNotes { get; }
+
+    private ImportProjectResult(bool success, string? errorMessage, IReadOnlyList<string> migrationNotes)
     {
         Success = success;
         ErrorMessage = errorMessage;
+        MigrationNotes = migrationNotes;
     }
 
-    public static ImportProjectResult Ok() => new(true, null);
-    public static ImportProjectResult Fail(string errorMessage) => new(false, errorMessage);
+    public static ImportProjectResult Ok(IReadOnlyList<string>? migrationNotes = null) => new(true, null, migrationNotes ?? []);
+    public static ImportProjectResult Fail(string errorMessage) => new(false, errorMessage, []);
 }

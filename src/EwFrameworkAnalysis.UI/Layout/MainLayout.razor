@@ -6,6 +6,7 @@
 @inherits LayoutComponentBase
 @inject BusyService BusySvc
 @inject WalkthroughService Walkthrough
+@inject AnalysisProjectService ProjectSvc
 @inject IOptions<DeploymentInfoOptions> DeploymentInfoOptions
 @inject IOptions<ContactInfoOptions> ContactInfoOptions
 @inject IJSRuntime JS
@@ -122,7 +123,7 @@
         <!-- Main Content -->
         <main class="flex-1 bg-tan relative">
             @Body
-            <EwLoadingOverlay IsLoading="@BusySvc.IsBusy" />
+            <EwLoadingOverlay IsLoading="@BusySvc.IsBusy" Message="@BusySvc.CurrentReason" />
         </main>
 
         <!-- Deploy info bar (lower environments only) -->
@@ -189,14 +190,29 @@
     <Lightbox @ref="_lightbox" />
 </CascadingValue>
 
+<MigrationNotesModal IsOpen="@_startupMigrationNotesModalIsOpen" Notes="@_startupMigrationNotes" CloseRequested="HandleStartupMigrationNotesClosed" />
+
 @code {
     private bool _mobileMenuOpen = false;
     private Lightbox _lightbox = default!;
+
+    private bool _startupMigrationNotesModalIsOpen;
+    private IReadOnlyList<string> _startupMigrationNotes = [];
 
     protected override void OnInitialized()
     {
         BusySvc.Changed += OnBusyChanged;
         Nav.LocationChanged += OnLocationChanged;
+
+        // The project (if any) was already loaded from browser storage before this layout
+        // rendered — surface any migration notes from that now, then clear so it doesn't
+        // reappear on later navigations within the same session.
+        if (ProjectSvc.StartupMigrationNotes.Count > 0)
+        {
+            _startupMigrationNotes = ProjectSvc.StartupMigrationNotes;
+            _startupMigrationNotesModalIsOpen = true;
+            ProjectSvc.StartupMigrationNotes = [];
+        }
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -211,6 +227,8 @@
     }
 
     private void OnBusyChanged() => InvokeAsync(StateHasChanged);
+
+    private void HandleStartupMigrationNotesClosed() => _startupMigrationNotesModalIsOpen = false;
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
     {

@@ -15,12 +15,21 @@
 {
     <div class="ew-overlay @(_isAnimatingOut ? "ew-overlay--out" : "")"
          role="status" aria-label="Loading">
-        <EwLoadingIndicator Scale="1.2" />
+        <div class="ew-overlay-content">
+            <EwLoadingIndicator Scale="1.2" />
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <p class="ew-overlay-message">@Message</p>
+            }
+        </div>
     </div>
 }
 
 @code {
     [Parameter] public bool IsLoading { get; set; }
+
+    /// <summary>Optional status text shown below the spinner (e.g. current migration step).</summary>
+    [Parameter] public string? Message { get; set; }
 
     private bool _isVisible;
     private bool _isAnimatingOut;

@@ -393,4 +393,167 @@ public class AnalysisProjectMigratorTests
         (customVersion is null || customVersion.GetValueKind() == JsonValueKind.Null)
             .Should().BeTrue();
     }
+
+    // -------------------------------------------------------------------------
+    // V4 → V5: Data element renames/splits
+    // -------------------------------------------------------------------------
+
+    private static string MakeV4ProjectWithDataElements(params (string id, string dataElementName)[] elements)
+    {
+        var elementsJson = string.Join(",", elements.Select(e => $$"""
+            { "id": "{{e.id}}", "dataElementName": "{{e.dataElementName}}", "remarks": "kept-{{e.id}}" }
+            """));
+
+        return $$"""
+            {
+              "schemaVersion": 4,
+              "id": "test-id",
+              "title": "Test",
+              "dataSources": [
+                {
+                  "id": "ds-1",
+                  "name": "Test Source",
+                  "type": {{CustomTypeValue}},
+                  "assessments": [
+                    { "id": "as-1", "dataElementAssessments": [ {{elementsJson}} ] }
+                  ]
+                }
+              ],
+              "actionItems": []
+            }
+            """;
+    }
+
+    private static JsonArray GetDataElementAssessments(JsonObject project) =>
+        project["dataSources"]![0]!["assessments"]![0]!["dataElementAssessments"]!.AsArray();
+
+    [Fact]
+    public void MigrateV4ToV5_RenamesEapDataElement()
+    {
+        var json = MakeV4ProjectWithDataElements(("de-1", "EAP or mental health services provided"));
+        var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
+        var elements = GetDataElementAssessments(resultNode);
+
+        elements.Should().ContainSingle();
+        elements[0]!["dataElementName"]!.GetValue<string>()
+            .Should().Be("EAP or mental health services provided (Workforce)");
+        elements[0]!["id"]!.GetValue<string>().Should().Be("de-1", because: "a plain rename should keep the original id");
+    }
+
+    [Fact]
+    public void MigrateV4ToV5_RenamesMilitaryEnlistmentDataElement()
+    {
+        var json = MakeV4ProjectWithDataElements(("de-1", "Enlistment in the military"));
+        var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
+        var elements = GetDataElementAssessments(resultNode);
+
+        elements.Should().ContainSingle();
+        elements[0]!["dataElementName"]!.GetValue<string>().Should().Be("Military enlistment date");
+        elements[0]!["id"]!.GetValue<string>().Should().Be("de-1", because: "a plain rename should keep the original id");
+    }
+
+    [Fact]
+    public void MigrateV4ToV5_SplitsCourseElement_CopyingDataToBothNewElements()
+    {
+        var json = MakeV4ProjectWithDataElements(("de-1", "Course performance (English and Math)"));
+        var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
+        var elements = GetDataElementAssessments(resultNode);
+
+        elements.Should().HaveCount(2);
+        var names = elements.Select(e => e!["dataElementName"]!.GetValue<string>()).ToList();
+        names.Should().BeEquivalentTo(["Course outcome", "Course subject area"]);
+
+        foreach (var element in elements)
+        {
+            element!["remarks"]!.GetValue<string>().Should().Be("kept-de-1",
+                because: "existing assessment data should carry over to both new elements");
+        }
+
+        var ids = elements.Select(e => e!["id"]!.GetValue<string>()).ToHashSet();
+        ids.Should().HaveCount(2, because: "each split element needs its own unique id");
+        ids.Should().NotContain("de-1", because: "the original id can no longer correctly identify either new element");
+    }
+
+    [Fact]
+    public void MigrateV4ToV5_LeavesUnrelatedDataElementsUntouched()
+    {
+        var json = MakeV4ProjectWithDataElements(("de-1", "ACT completion"));
+        var resultNode = ParseResult(AnalysisProjectMigrator.MigrateIfNeeded(json));
+        var elements = GetDataElementAssessments(resultNode);
+
+        elements.Should().ContainSingle();
+        elements[0]!["dataElementName"]!.GetValue<string>().Should().Be("ACT completion");
+        elements[0]!["id"]!.GetValue<string>().Should().Be("de-1");
+    }
+
+    [Fact]
+    public void MigrateIfNeeded_V4ToV5_ReportsNotesForRenamedAndSplitElements()
+    {
+        var json = MakeV4ProjectWithDataElements(
+            ("de-1", "EAP or mental health services provided"),
+            ("de-2", "Course performance (English and Math)"));
+
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
+
+        result.Notes.Should().Contain(n => n.Contains("EAP or mental health services provided") && n.Contains("Workforce"));
+        result.Notes.Should().Contain(n => n.Contains("Course outcome") && n.Contains("Course subject area"));
+    }
+
+    [Fact]
+    public void MigrateIfNeeded_AlreadyCurrentVersion_HasNoNotes()
+    {
+        var json = MakeMinimalProject(AnalysisProjectMigrator.CurrentSchemaVersion);
+        var result = AnalysisProjectMigrator.MigrateIfNeeded(json);
+
+        result.Notes.Should().BeEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // MigrateIfNeededAsync: step progress reporting
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task MigrateIfNeededAsync_ReportsEachStepInOrder()
+    {
+        var json = MakeMinimalProject(1);
+        var reported = new List<(int Step, int Total, string Description)>();
+
+        var result = await AnalysisProjectMigrator.MigrateIfNeededAsync(json, (step, total, description) =>
+        {
+            reported.Add((step, total, description));
+            return Task.CompletedTask;
+        });
+
+        result.Success.Should().BeTrue();
+        reported.Should().HaveCount(AnalysisProjectMigrator.CurrentSchemaVersion - 1);
+        reported.Select(r => r.Step).Should().BeInAscendingOrder();
+        reported.Should().OnlyContain(r => r.Total == AnalysisProjectMigrator.CurrentSchemaVersion - 1);
+        reported.Should().OnlyContain(r => !string.IsNullOrWhiteSpace(r.Description));
+    }
+
+    [Fact]
+    public async Task MigrateIfNeededAsync_AlreadyCurrentVersion_ReportsNoSteps()
+    {
+        var json = MakeMinimalProject(AnalysisProjectMigrator.CurrentSchemaVersion);
+        var reportCount = 0;
+
+        await AnalysisProjectMigrator.MigrateIfNeededAsync(json, (_, _, _) =>
+        {
+            reportCount++;
+            return Task.CompletedTask;
+        });
+
+        reportCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task MigrateIfNeededAsync_MatchesSyncResult()
+    {
+        var json = MakeMinimalProject(1);
+
+        var asyncResult = await AnalysisProjectMigrator.MigrateIfNeededAsync(json);
+        var syncResult = AnalysisProjectMigrator.MigrateIfNeeded(json);
+
+        JsonNode.Parse(asyncResult.Json!)!.ToJsonString().Should().Be(JsonNode.Parse(syncResult.Json!)!.ToJsonString());
+    }
 }

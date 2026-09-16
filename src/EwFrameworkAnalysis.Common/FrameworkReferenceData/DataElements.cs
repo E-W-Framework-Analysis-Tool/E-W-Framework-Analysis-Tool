@@ -238,14 +238,6 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "Result of a student's enrollment in a course: completion, failure, or passage. Used across on-track indicators (6th, 8th, 9th grade) and college prep coursework completion. A passing outcome is typically required to count a course toward graduation or admissions requirements. Distinct from the course grade (GPA element)."
             },
-        ["Course performance (English and Math)"] =
-            new DataElement
-            {
-                Name = "Course performance (English and Math)",
-                DataElementCategory = "Academic Performance",
-                RelatedSectors = [Sector.K12],
-                AdditionalNotes = "Grade or pass/fail result specifically in English language arts and math courses. Used in the 6th and 8th grade on-track indicators, which require no Ds or Fs in ELA or math as a criterion."
-            },
         ["Course subject area"] =
             new DataElement
             {
@@ -414,10 +406,10 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Indicator of whether a worker has been laid off or displaced from their job and is unlikely to return to their previous industry. Relevant for workforce training program eligibility under WIOA and other federal programs."
             },
-        ["EAP or mental health services provided"] =
+        ["EAP or mental health services provided (Workforce)"] =
             new DataElement
             {
-                Name = "EAP or mental health services provided",
+                Name = "EAP or mental health services provided (Workforce)",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.WF],
                 AdditionalNotes = "Indicator of whether an employer offers an Employee Assistance Program (EAP) or mental health access through health care plans or other services. Used in the Access to Health, Mental Health, and Social Supports indicator. This is an employer-level offering flag, not an individual utilization record."
@@ -509,14 +501,6 @@ public static class EwFrameworkDataElements
                 DataElementCategory = "Demographics",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = "Current classification of a student as an English learner or reclassified fluent English proficient (RFEP). Used alongside English learner classification date to compute reclassification rates and as a demographic disaggregate across indicators."
-            },
-        ["Enlistment in the military"] =
-            new DataElement
-            {
-                Name = "Enlistment in the military",
-                DataElementCategory = "Employment & Earnings",
-                RelatedSectors = [Sector.WF],
-                AdditionalNotes = "Indicator that a high school graduate enlisted in the military. One of several acceptable post-graduation pathways counted in the Successful Career Transition After High School indicator (alongside employment, apprenticeship, and noncredit CTE enrollment), with the relevant window being before October 31 following graduation."
             },
         ["Enrollment in noncredit CTE date"] =
             new DataElement
@@ -683,7 +667,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Health services offered",
                 DataElementCategory = "Health & Wellness",
-                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
+                RelatedSectors = [Sector.PK, Sector.K12, Sector.PS, Sector.WF],
                 AdditionalNotes = "Indicator of whether health services are offered by a program or institution. Part of the Access to Health, Mental Health, and Social Supports indicator, which measures the percentage of programs offering these services and the staff ratio. This is a program/institution-level offering flag."
             },
         ["Health-Related Quality of Life Scale scores"] =
@@ -851,7 +835,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Kindergarten enrollment date",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [Sector.K12],
+                RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Date a child first enrolled in kindergarten. Used as a reference point to determine whether a child attended a pre-K program before entering K (linked to Pre-K eligibility status and Enrollment in public pre-K elements) and for calculating whether early intervention services were connected before kindergarten entry."
             },
         ["Kindergarten program schedule"] =
@@ -918,10 +902,10 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS, Sector.WF],
                 AdditionalNotes = "Self-report survey measure of mental and emotional well-being among postsecondary and workforce populations. Used to calculate the percentage of individuals reporting a high level of mental and emotional well-being. Distinct from the screening-based approaches used in PK (developmental screening) and K-12 (universal mental health screening); survey instruments are voluntary and confidential. Specific instruments vary; selection should prioritize tools with an established evidence base."
             },
-        ["Mental health services offered"] =
+        ["Mental health services offered (PK, K-12, Postsecondary)"] =
             new DataElement
             {
-                Name = "Mental health services offered",
+                Name = "Mental health services offered (PK, K-12, Postsecondary)",
                 DataElementCategory = "Health & Wellness",
                 RelatedSectors = [Sector.PK, Sector.K12, Sector.PS],
                 AdditionalNotes = "Indicator of whether mental health services are available through a program or institution. Used in the Access to Health, Mental Health, and Social Supports indicator. This is a program/institution-level offering flag. The WF version of this concept is captured under EAP or mental health services provided."
@@ -933,6 +917,14 @@ public static class EwFrameworkDataElements
                 DataElementCategory = "Academic Coursework",
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "A mapping of courses or programs of study to broad interdisciplinary groupings used to determine whether a student's first-year course-taking is concentrated within a single area of study. Meta-major definitions are institution-defined and derived from course data and degree requirements rather than stored as a native administrative field; this element functions as a reference crosswalk joined to course enrollment records at the time of metric calculation. Institutions may reference the Nguyen et al. methodology or the National Student Clearinghouse Postsecondary Data Partnership for consistent classification guidance. Many institutions will need to define and maintain this mapping before this metric can be calculated."
+            },
+        ["Military enlistment date"] =
+            new DataElement
+            {
+                Name = "Military enlistment date",
+                DataElementCategory = "Employment & Earnings",
+                RelatedSectors = [Sector.WF],
+                AdditionalNotes = "The date that a high school graduate enlisted in the military. One of several acceptable post-graduation pathways counted in the Successful Career Transition After High School indicator (alongside employment, apprenticeship, and noncredit CTE enrollment), with the relevant window being before October 31 following graduation."
             },
         ["Military status (individual/family)"] =
             new DataElement
@@ -1003,7 +995,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Number of credits earned",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [Sector.PS],
+                RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "Total credits successfully completed by a student. Used in First-Year Credit Accumulation (30 credits for full-time / 15 credits for part-time students in year one), First-Year Program of Study Concentration (9+ credits within a meta-major), and Gateway Course Completion indicators. See also: Credits earned in first year, which may capture a time-bounded subset of this element depending on how source systems store credit history."
             },
         ["Number of days suspended (K-12)"] =
@@ -1139,7 +1131,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Postsecondary admissions decision",
                 DataElementCategory = "Attendance & Enrollment",
-                RelatedSectors = [],
+                RelatedSectors = [Sector.K12, Sector.PS],
                 AdditionalNotes = "Record of an institution's admissions decision for a prospective student (e.g., accepted, denied, waitlisted). Used in the Selection of a Well-Matched Postsecondary Institution indicator to establish the set of institutions to which a student was admitted, against which their eventual enrollment can be evaluated for match quality. Typically held by the receiving institution in admissions/CRM systems such as Slate. Note that cross-institutional admissions data is rarely centralized, making this a likely gap in most administrative data systems."
             },
         ["Postsecondary applications submitted"] =
@@ -1582,14 +1574,6 @@ public static class EwFrameworkDataElements
                 RelatedSectors = [Sector.PS],
                 AdditionalNotes = "The percentage of enrolled days or scheduled class sessions attended by a postsecondary student within a given term. Used to identify students present for more than 90 percent of enrolled time. Tracking methods vary by institution and program type; attendance data may be more consistently available in contexts where it is required for financial aid compliance or in structured programs such as clinical or vocational training."
             },
-        ["Student course enrollment record"] =
-            new DataElement
-            {
-                Name = "Student course enrollment record",
-                DataElementCategory = "Academic Coursework",
-                RelatedSectors = [Sector.K12, Sector.PS],
-                AdditionalNotes = "A record of all courses a student is or was enrolled in, serving as the core transcript element underlying multiple indicators including CTE pathway concentration, early college access, equitable placement in rigorous coursework, and work-based learning participation. Record structure and source systems typically differ between K12 and PS contexts; confirm availability and format in each."
-            },
         ["Student course enrollment record (K-12)"] =
             new DataElement
             {
@@ -1859,7 +1843,7 @@ public static class EwFrameworkDataElements
             {
                 Name = "Years of teaching experience",
                 DataElementCategory = "Staff & Educators",
-                RelatedSectors = [Sector.K12],
+                RelatedSectors = [Sector.PK, Sector.K12],
                 AdditionalNotes = "Total years of teaching experience, regardless of school. Used in the Teacher Experience indicator, which categorizes teachers as having fewer than 1 year, 1-5 years, or 5+ years of experience. Distinct from Years in current position, which tracks tenure at a specific school."
             },
     };

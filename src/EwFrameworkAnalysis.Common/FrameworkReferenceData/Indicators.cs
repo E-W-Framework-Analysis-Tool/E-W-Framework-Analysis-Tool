@@ -18,7 +18,8 @@ public static class EwFrameworkIndicators
                 SectorReadiness = [new() { Sector = Sector.K12, Readiness = IndicatorReadiness.WellEstablished }],
                 DataElementNames =
                 [
-                    "Course performance (English and Math)",
+                    "Course outcome",
+                    "Course subject area",
                     "Suspensions and expulsions (K-12)",
                     "Student attendance rate (K-12)",
                     "Student grade level (K-12)",
@@ -36,7 +37,8 @@ public static class EwFrameworkIndicators
                 SectorReadiness = [new() { Sector = Sector.K12, Readiness = IndicatorReadiness.WellEstablished }],
                 DataElementNames =
                 [
-                    "Course performance (English and Math)",
+                    "Course outcome",
+                    "Course subject area",
                     "Grade point average (K-12)",
                     "Suspensions and expulsions (K-12)",
                     "Student grade level (K-12)",
@@ -57,6 +59,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Course outcome",
+                    "Course subject area",
                     "Grade point average (K-12)",
                     "Suspensions and expulsions (K-12)",
                     "Student attendance rate (K-12)",
@@ -129,6 +132,7 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Student utilization of academic advising services (Postsecondary)",
+                    "Student utilization of career counseling services (Postsecondary)",
                     "Staff position type",
                     "Staff FTE status",
                     "Student grade level (K-12)",
@@ -170,7 +174,9 @@ public static class EwFrameworkIndicators
                 [
                     "AP, IB, or Dual Credit course designation",
                     "Course subject area",
+                    "Course offering by grade level",
                     "Student course enrollment record (K-12)",
+                    "Student grade level (K-12)",
                     "End-of-course exam participation",
                 ]
             },
@@ -244,11 +250,11 @@ public static class EwFrameworkIndicators
                 ],
                 DataElementNames =
                 [
-                    "EAP or mental health services provided",
+                    "EAP or mental health services provided (Workforce)",
                     "Health services offered",
                     "IECMHC services offered",
                     "Staff position type",
-                    "Mental health services offered",
+                    "Mental health services offered (PK, K-12, Postsecondary)",
                     "Social services offered",
                     "Staff FTE status",
                 ]
@@ -493,6 +499,8 @@ public static class EwFrameworkIndicators
                     "Course subject area",
                     "Course outcome",
                     "High school graduation indicator",
+                    "Student course enrollment record (K-12)",
+                    "Student grade level (K-12)",
                 ]
             },
         ["Communication skills"] =
@@ -649,8 +657,10 @@ public static class EwFrameworkIndicators
                 DataElementNames =
                 [
                     "Student course enrollment record (K-12)",
+                    "Student grade level (K-12)",
                     "AP, IB, or Dual Credit course designation",
                     "Course outcome",
+                    "Number of credits earned",
                     "End-of-course exam participation",
                 ]
             },
@@ -1928,8 +1938,10 @@ public static class EwFrameworkIndicators
                     "Apprenticeship program enrollment date",
                     "Earnings",
                     "Employment date",
-                    "Enlistment in the military",
+                    "Employment status",
+                    "Military enlistment date",
                     "Enrollment in noncredit CTE date",
+                    "High school graduation indicator",
                     "High school graduation date",
                 ]
             },
@@ -1948,6 +1960,7 @@ public static class EwFrameworkIndicators
                     "Course subject area",
                     "Course outcome",
                     "Student grade level (K-12)",
+                    "Student course enrollment record (K-12)",
                 ]
             },
         ["Teacher credentials"] =
