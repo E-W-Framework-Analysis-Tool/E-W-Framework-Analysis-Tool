@@ -193,9 +193,16 @@
 <MigrationNotesModal IsOpen="@_startupMigrationNotesModalIsOpen" Notes="@_startupMigrationNotes" CloseRequested="HandleStartupMigrationNotesClosed" />
 
 @code {
+    // Routes (relative, no leading slash) that depend on the loaded project. The project is
+    // only loaded from browser storage the first time the user lands on one of these — not on
+    // the marketing/reference pages (landing page, docs, FAQ, etc.) — so visiting those never
+    // triggers a load or the migration-notice modal below.
+    private static readonly string[] _appRoutePrefixes = ["dashboard", "analysis", "data-sources"];
+
     private bool _mobileMenuOpen = false;
     private Lightbox _lightbox = default!;
 
+    private bool _projectInitTriggered;
     private bool _startupMigrationNotesModalIsOpen;
     private IReadOnlyList<string> _startupMigrationNotes = [];
 
@@ -204,15 +211,37 @@
         BusySvc.Changed += OnBusyChanged;
         Nav.LocationChanged += OnLocationChanged;
 
-        // The project (if any) was already loaded from browser storage before this layout
-        // rendered — surface any migration notes from that now, then clear so it doesn't
-        // reappear on later navigations within the same session.
+        TriggerProjectLoadIfOnAppRoute(Nav.Uri);
+    }
+
+    private static bool IsAppRoute(string relativePath) =>
+        _appRoutePrefixes.Any(prefix =>
+            relativePath.Equals(prefix, StringComparison.OrdinalIgnoreCase) ||
+            relativePath.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase));
+
+    private void TriggerProjectLoadIfOnAppRoute(string uri)
+    {
+        if (_projectInitTriggered) return;
+        if (!IsAppRoute(Nav.ToBaseRelativePath(uri))) return;
+
+        _projectInitTriggered = true;
+        _ = LoadProjectAndShowMigrationNoticeAsync();
+    }
+
+    private async Task LoadProjectAndShowMigrationNoticeAsync()
+    {
+        await ProjectSvc.InitializeAsync();
+
+        // The user never saw this happen — surface any migration notes now, then clear so
+        // they don't reappear on later navigations within the same session.
         if (ProjectSvc.StartupMigrationNotes.Count > 0)
         {
             _startupMigrationNotes = ProjectSvc.StartupMigrationNotes;
             _startupMigrationNotesModalIsOpen = true;
             ProjectSvc.StartupMigrationNotes = [];
         }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -235,6 +264,8 @@
         // Close mobile menu on navigation
         _mobileMenuOpen = false;
         InvokeAsync(StateHasChanged);
+
+        TriggerProjectLoadIfOnAppRoute(e.Location);
     }
 
     public void Dispose()
