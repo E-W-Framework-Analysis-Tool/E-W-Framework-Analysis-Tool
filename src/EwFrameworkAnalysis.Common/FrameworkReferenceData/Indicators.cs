@@ -259,15 +259,15 @@ public static class EwFrameworkIndicators
                     "Staff FTE status",
                 ]
             },
-        ["Access to in-demand CTE pathways"] =
+        ["Access to in-demand CTE pathways and workforce programs"] =
             new()
             {
-                Name = "Access to in-demand CTE pathways",
+                Name = "Access to in-demand CTE pathways and workforce programs",
                 Cluster = [IndicatorCluster.PostsecondaryTransitions, IndicatorCluster.WorkforceTransitions],
                 Type = IndicatorType.EWSystemConditions,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
                 Definition = "CTE pathway offerings are aligned to in-demand occupations, as defined by regional labor market data.",
-                RecommendedMetrics = "Number and percentage of CTE program offerings considered \"in demand.\"",
+                RecommendedMetrics = "Number and percentage of CTE and workforce program offerings considered \"in demand\"",
                 DataNeeded = [DataCategory.AdministrativeData],
                 SectorReadiness =
                 [
@@ -556,8 +556,8 @@ public static class EwFrameworkIndicators
                 Cluster = [IndicatorCluster.PostsecondaryTransitions, IndicatorCluster.WorkforceTransitions],
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
-                Definition = "Students participating in CTE concentrate in a single chosen pathway or program of study.",
-                RecommendedMetrics = "Percentage of 12th-grade students enrolled in CTE who complete three or more CTE courses in a single pathway; Percentage of CTE students who earn at least 12 credits within a CTE program or complete such a program if it encompasses fewer than 12 credits in total",
+                Definition = "Students participating in career and technical education (CTE) concentrate in a single chosen pathway or program of study.",
+                RecommendedMetrics = "K–12: Percentage of 12th-grade students enrolled in CTE who complete two or more CTE courses in a single pathway; Postsecondary: Percentage of CTE students who earn at least 12 credits within a CTE program, or complete such a program if it encompasses fewer than 12 credits in total",
                 DataNeeded = [DataCategory.StudentTranscripts],
                 SectorReadiness =
                 [
@@ -624,7 +624,7 @@ public static class EwFrameworkIndicators
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
                 Definition = "Students and workers can use digital technology tools effectively to access, manage, evaluate, and communicate information.",
-                RecommendedMetrics = "Percentage of individuals demonstrating proficiency on a performance assessment that measures digital skills required for workforce success, such as the Problem Solving in Technology-Rich Environments assessment within the Education & Skills Online assessment suite, which can be used by researchers and institutions to gather individual-level results based on Organisation for Economic Co-operation and Development (OECD) Survey of Adult Skills (Programme for the International Assessment of Adult Competencies [PIAAC]) domains",
+                RecommendedMetrics = "K–12: Reflecting the lack of developed tools in the field, we are unable to recommend a specific measure for K–12 students. Two validated instruments discussed in previous literature—the Instant Digital Competence Assessment (iDCA), and the Student Tool for Technology Literacy (ST2L)—do not appear to be available at this time.; Postsecondary and workforce: Percentage of individuals demonstrating proficiency on a performance assessment that measures digital skills required for workforce success",
                 DataNeeded = [DataCategory.Assessments],
                 SectorReadiness =
                 [
@@ -690,8 +690,8 @@ public static class EwFrameworkIndicators
                 Cluster = [IndicatorCluster.WorkforceSuccess],
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
-                Definition = "Individuals reach the level of earnings needed to enter the fourth income quintile or above, regardless of field of study.",
-                RecommendedMetrics = "Percentage of individuals who reach the level of earnings needed to enter the fourth (60th to 80th percentile) income quintile in their state or above 1, 3, 5, 10, and 15 years after completing their highest degree or leaving education (high school or postsecondary)",
+                Definition = "Individuals reach the level of earnings needed to enter the fourth income quintile or above.",
+                RecommendedMetrics = "Percentage of individuals who reach the level of earnings needed to enter the fourth (60th to 80th percentile) income quintile in their state or above one, three, five, 10, and 15 years after completing their highest degree or leaving education (high school or postsecondary); Percentage of individuals who come from families in the bottom income quintile and reach the top quintile as adults",
                 DataNeeded = [DataCategory.AdministrativeData],
                 SectorReadiness = [new() { Sector = Sector.WF, Readiness = IndicatorReadiness.Evolving }],
                 DataElementNames =
@@ -1327,7 +1327,7 @@ public static class EwFrameworkIndicators
                 Name = "Math and reading proficiency in grade 3",
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.AcademicProgressCompletion,
-                Definition = "Students demonstrate proficiency in math and ELA according to high-quality state standards.",
+                Definition = "Students demonstrate proficiency in math and reading/English language arts according to high-quality state standards.",
                 RecommendedMetrics = "Percentage of students in grade 3 who meet grade-level standards in reading/English language arts and math as measured by state standardized tests.",
                 DataNeeded = [DataCategory.Assessments],
                 SectorReadiness = [new() { Sector = Sector.K12, Readiness = IndicatorReadiness.WellEstablished }],
@@ -1404,7 +1404,7 @@ public static class EwFrameworkIndicators
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
                 Definition = "Individuals earn enough after completing their education to recover the costs of their investment.",
-                RecommendedMetrics = "Percentage of individuals that earn at least as much as the median high school graduate in their state plus enough to recoup their total net price plus interest within 10 years of completing their highest degree or leaving education (high school or postsecondary)",
+                RecommendedMetrics = "Percentage of individuals that earn at least as much as the median high school graduate in their state plus enough to recoup their total net price plus interest within 10 years of completing their highest degree or leaving education (high school, postsecondary education, or workforce training)",
                 DataNeeded = [DataCategory.AdministrativeData],
                 SectorReadiness =
                 [
@@ -1930,7 +1930,7 @@ public static class EwFrameworkIndicators
                 Type = IndicatorType.OutcomesMilestones,
                 Domain = IndicatorDomain.CareerReadinessEconomicSuccess,
                 Definition = "High school graduates transition to training, military service, or employment in the fall after graduating high school (if they do not matriculate to postsecondary education).",
-                RecommendedMetrics = "Percentage of high school graduates enlisted in the military, enrolled in an apprenticeship program, enrolled in noncredit career and technical education (CTE) courses, or employed and earning at least the median annual full-time earnings for high school graduates ($35,000 year) before October 31 following graduation.",
+                RecommendedMetrics = "Percentage of high school graduates enlisted in the military, enrolled in an apprenticeship program, enrolled in noncredit career and technical education (CTE) courses, or employed in the year following graduation.",
                 DataNeeded = [DataCategory.AdministrativeData, DataCategory.Surveys],
                 SectorReadiness = [new() { Sector = Sector.K12, Readiness = IndicatorReadiness.Evolving }],
                 DataElementNames =

@@ -19,6 +19,7 @@ var stateRecords = new Dictionary<string, Dictionary<string, Dictionary<string, 
 var indicatorNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 {
     ["Access to full day pre-K"] = "Access to full-day pre-K",
+    ["Access to in-demand CTE pathways"] = "Access to in-demand CTE pathways and workforce programs",
     ["Grade point average (MS+HS)"] = "Grade point average",
     ["Postsecondary enrollment after high school graduation"] = "Postsecondary enrollment directly after high school graduation",
     ["Successful completion of Algebra 1 by 9th grade"] = "Successful completion of Algebra I by 9th grade"

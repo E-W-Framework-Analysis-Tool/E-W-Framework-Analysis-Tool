@@ -284,7 +284,7 @@ public static class EwFrameworkEssentialQuestions
                 "CTE pathway concentration",
                 "Participation in work-based learning",
                 "Access to college and career advising",
-                "Access to in-demand CTE pathways",
+                "Access to in-demand CTE pathways and workforce programs",
                 "Expenditures on workforce development programs",
                 "Access to jobs paying a living wage",
             ]
@@ -292,7 +292,7 @@ public static class EwFrameworkEssentialQuestions
         new()
         {
             QuestionNumber = 15,
-            Question = "Are there quality pathways for students who pursue career training that lead to employment in quality jobs?",
+            Question = "Are there quality pathways for students who engage in career-connected learning that leads to employment in quality jobs?",
             QuestionSummary = "Career training pathways",
             ApplicableSectors = [Sector.K12, Sector.PS, Sector.WF],
             RelatedIndicatorNames =
@@ -301,7 +301,7 @@ public static class EwFrameworkEssentialQuestions
                 "CTE pathway concentration",
                 "Participation in work-based learning",
                 "Employment in a quality job",
-                "Access to in-demand CTE pathways",
+                "Access to in-demand CTE pathways and workforce programs",
                 "Expenditures on workforce development programs",
                 "Access to ongoing career skills development",
             ]
@@ -360,7 +360,7 @@ public static class EwFrameworkEssentialQuestions
         new()
         {
             QuestionNumber = 19,
-            Question = "Are students completing credentials of value after high school that set them up for success in the workforce?",
+            Question = "Are individuals completing credentials of value that set them up for success?",
             QuestionSummary = "Credentials of value",
             ApplicableSectors = [Sector.PS, Sector.WF],
             RelatedIndicatorNames =
