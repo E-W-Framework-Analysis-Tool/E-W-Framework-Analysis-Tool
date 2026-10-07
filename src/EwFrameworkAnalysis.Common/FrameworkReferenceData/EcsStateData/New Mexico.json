@@ -1855,25 +1855,25 @@
   },
   {
     "sector": "K12",
-    "indicator": "Access to in-demand CTE pathways",
+    "indicator": "Access to in-demand CTE pathways and workforce programs",
     "elementName": "CTE program",
     "reported": "Available"
   },
   {
     "sector": "K12",
-    "indicator": "Access to in-demand CTE pathways",
+    "indicator": "Access to in-demand CTE pathways and workforce programs",
     "elementName": "Occupational demand by region",
     "reported": "Available"
   },
   {
     "sector": "PS",
-    "indicator": "Access to in-demand CTE pathways",
+    "indicator": "Access to in-demand CTE pathways and workforce programs",
     "elementName": "CTE program",
     "reported": "NotAvailable"
   },
   {
     "sector": "PS",
-    "indicator": "Access to in-demand CTE pathways",
+    "indicator": "Access to in-demand CTE pathways and workforce programs",
     "elementName": "Occupational demand by region",
     "reported": "NotAvailable"
   },
