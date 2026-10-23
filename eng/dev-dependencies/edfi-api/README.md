@@ -28,6 +28,12 @@ When creating a new scenario, the following records are added to `EdFi_Admin`:
 
 ## Build Information
 
+**Pinned version:** `EdFi.Suite3.Ods.WebApi.Standard.5.2.0` version `7.3.20297`, which targets **net10.0** and so runs
+on the `mcr.microsoft.com/dotnet/aspnet:10.0` base image. The version is pinned via the `EDFI_WEBAPI_VERSION` build arg
+in the Dockerfile — Ed-Fi republishes under the same package id, and an unpinned restore will eventually pull a build
+whose target framework no longer matches the runtime base. The Dockerfile asserts the target framework at build time so
+that mismatch fails the build rather than crash-looping the container.
+
 **NuGet Package Source:**
 
 [Official Ed-Fi Alliance OSS NuGet feed in Azure DevOps](https://pkgs.dev.azure.com/ed-fi-alliance/Ed-Fi-Alliance-OSS/_packaging/EdFi%40Release/nuget/v3/index.json)

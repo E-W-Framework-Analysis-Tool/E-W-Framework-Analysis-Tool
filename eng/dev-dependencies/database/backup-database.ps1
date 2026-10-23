@@ -8,7 +8,7 @@ param(
     [string]$BackupFileName,
     
     [Parameter(Mandatory=$false)]
-    [string]$OutputDirectory = "./backups",
+    [string]$OutputDirectory = "$PSScriptRoot/backups",
     
     [Parameter(Mandatory=$false)]
     [string]$Username = "sa",

@@ -67,6 +67,39 @@ Before committing, run the build and test scripts to catch formatting issues bef
 
 ---
 
+## Local Ed-Fi Dev Dependencies
+
+The Ed-Fi profiler and the integration tests need a live Ed-Fi ODS API. `eng/dev-dependencies/` stands one up locally in
+Docker, alongside SQL Server:
+
+```powershell
+cd eng/dev-dependencies
+./bootstrap.ps1
+```
+
+The script resolves images from the team's Azure Container Registry when it is reachable and builds them from the Ed-Fi
+NuGet packages when it is not, so it works without Azure access. It creates the `GrandBend` and `Empty` scenarios and
+verifies the API before reporting success. Re-running it is safe.
+
+Requires Docker Desktop and PowerShell 7+. On Apple Silicon, enable Rosetta emulation in Docker Desktop — SQL Server is
+published for `linux/amd64` only.
+
+Then run the integration tests against it:
+
+```powershell
+./eng/run-integration.ps1 `
+  -BaseUrl 'http://localhost:5000/GrandBend/data/v3' `
+  -AuthUrl 'http://localhost:5000/GrandBend/oauth/token' `
+  -ClientId 'RvcohKz9zHI4' `
+  -ClientSecret 'E1676E88-4D3B-4E4E-B7B7-7C3F8E5D2A9C'
+```
+
+`-AuthUrl` matters: without it the fixture derives the token endpoint from the host alone, dropping the scenario
+segment, and every test is skipped. `bootstrap.ps1` prints the full command when it finishes.
+
+See [eng/dev-dependencies/README.md](../eng/dev-dependencies/README.md) for scenarios, credentials, image publishing,
+and troubleshooting.
+
 ## Testing Strategy
 
 **Unit tests** run automatically during build:
@@ -183,3 +216,4 @@ Use uppercase ticket IDs consistently (e.g., `EW-123`).
 - [Data Assessor Design](data-assessor-design.md)
 - [Deployment and CI/CD](deployment.md)
 - [Architecture and Security Brief](technical-overview.md)
+- [Local Ed-Fi Dev Dependencies](../eng/dev-dependencies/README.md)

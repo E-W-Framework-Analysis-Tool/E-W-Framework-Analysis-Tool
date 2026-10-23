@@ -9,10 +9,29 @@ done
 
 echo "SQL Server is ready. Restoring databases..."
 
-# Find and restore all .bak files
+# Find and restore all .bak files.
+#
+# Databases that already exist are left alone. The data directory is a persistent
+# volume, so restoring unconditionally would reset EdFi_Admin to the image baseline on
+# every container start - silently discarding registered scenarios and API clients and
+# leaving the API unable to route to ODS databases that are still sitting in the volume.
+# Set FORCE_RESTORE=true to restore over existing databases (for example after baking
+# new backups into the image while keeping an old volume).
 for bakfile in /opt/backups/*.bak; do
   if [ -f "$bakfile" ]; then
     filename=$(basename "$bakfile" .bak)
+
+    if [ "${FORCE_RESTORE:-false}" != "true" ]; then
+      dbexists=$(/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -C \
+        -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.databases WHERE name = '$filename'" \
+        -h -1 2>/dev/null | tr -d '[:space:]')
+
+      if [ "$dbexists" = "1" ]; then
+        echo "Skipping $filename - already exists (set FORCE_RESTORE=true to overwrite)"
+        continue
+      fi
+    fi
+
     echo "Restoring $filename from $bakfile"
     
     # Get the logical file names - use a simpler approach

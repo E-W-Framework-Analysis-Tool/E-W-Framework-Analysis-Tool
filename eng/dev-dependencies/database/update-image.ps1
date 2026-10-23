@@ -1,103 +1,118 @@
 #!/usr/bin/env pwsh
-# Promote SQL Server image to ACR registry
+<#
+.SYNOPSIS
+    Capture current database state and build SQL Server image for local use or pushing to ACR
+
+.DESCRIPTION
+    This script captures the current state of databases in the running SQL Server container,
+    builds a new SQL Server image with those databases, and optionally tags it for pushing to ACR.
+    
+    IMPORTANT: This script only builds the image locally. Use push-images-to-azure-registry.ps1
+    to push the built images to Azure Container Registry.
+    
+    Prerequisites:
+    - Docker Desktop running
+    - SQL Server container running (docker compose up -d)
+    - Databases in desired state (scenarios created, data modified, etc.)
+
+.PARAMETER Tag
+    Image tag to use (default: "latest"). Also tagged as "local/ewftool-dev-sqlserver:{tag}"
+
+.PARAMETER SkipBackup
+    Skip backing up databases. Only use if backups are already up-to-date in ./backups/
+
+.EXAMPLE
+    # Backup all databases and build image
+    ./update-image.ps1
+
+.EXAMPLE
+    # Build image without backing up (use existing backups)
+    ./update-image.ps1 -SkipBackup
+
+.EXAMPLE
+    # Build with custom tag
+    ./update-image.ps1 -Tag "v1.0.0"
+#>
+
 param(
     [Parameter(Mandatory=$false)]
-    [string]$Version,
+    [string]$Tag = "latest",
     
     [Parameter(Mandatory=$false)]
-    [string]$Registry = "ewftool.azurecr.io",
-    
-    [Parameter(Mandatory=$false)]
-    [switch]$SkipBackup,
-    
-    [Parameter(Mandatory=$false)]
-    [switch]$SkipPush
+    [switch]$SkipBackup
 )
 
-# Generate version if not provided
-if (-not $Version) {
-    $Version = Get-Date -Format "yyyy.MM.dd.HHmm"
-}
-
-$imageName = "$Registry/ewftool-dev-sqlserver"
-
-Write-Host "=== Promoting SQL Server Image ===" -ForegroundColor Green
-Write-Host "Version: $Version"
-Write-Host "Registry: $Registry"
+Write-Host "=== Capturing Database State and Building Image ===" -ForegroundColor Green
+Write-Host "Tag: $Tag" -ForegroundColor Yellow
 Write-Host ""
 
-Write-Host "Step 1: Building SQL Server image..." -ForegroundColor Cyan
+# Check if in correct directory
+$currentDir = Get-Location
+if (-not (Test-Path "Dockerfile")) {
+    Write-Error "Dockerfile not found. Please run this script from eng/dev-dependencies/database/"
+    exit 1
+}
 
-docker build -f Dockerfile -t "ewftool-dev-sqlserver:$Version" -t "ewftool-dev-sqlserver:latest" .
+# Step 1: Backup databases (unless skipped)
+if (-not $SkipBackup) {
+    Write-Host "Step 1: Backing up all databases..." -ForegroundColor Cyan
+    Write-Host "This captures the current state of your databases (including any scenarios you created)" -ForegroundColor Yellow
+    Write-Host ""
+    
+    # Run backup script
+    & "$PSScriptRoot/backup-database.ps1"
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to backup databases"
+        exit 1
+    }
+    
+    Write-Host ""
+    Write-Host "✓ Database backups captured" -ForegroundColor Green
+} else {
+    Write-Host "Step 1: Skipping database backup (using existing backups)" -ForegroundColor Yellow
+}
+
+# Step 2: Build SQL Server image
+Write-Host ""
+Write-Host "Step 2: Building SQL Server image..." -ForegroundColor Cyan
+Write-Host "This creates a new image with all backed up databases" -ForegroundColor Yellow
+
+docker build -f Dockerfile -t "local/ewftool-dev-sqlserver:$Tag" -t "local/ewftool-dev-sqlserver:latest" .
 
 if ($LASTEXITCODE -ne 0) {
-    Pop-Location
     Write-Error "Failed to build SQL Server image"
     exit 1
 }
 
 Write-Host "✓ SQL Server image built successfully" -ForegroundColor Green
+
+# Summary
 Write-Host ""
-
-Write-Host "Step 2: Tagging image..." -ForegroundColor Cyan
-
-docker tag "ewftool-dev-sqlserver:$Version" "$imageName`:$Version"
-docker tag "ewftool-dev-sqlserver:latest" "$imageName`:latest"
-
-Write-Host "✓ Image tagged successfully" -ForegroundColor Green
+Write-Host "=== Image Build Complete! ===" -ForegroundColor Green
 Write-Host ""
-
-if (-not $SkipPush) {
-    Write-Host "Step 3: Pushing image to ACR..." -ForegroundColor Cyan
-    
-    # Check if logged into ACR
-    Write-Host "  Checking ACR login..." -ForegroundColor Yellow
-    
-    # First check if Azure CLI is available
-    $azCliCheck = Get-Command az -ErrorAction SilentlyContinue
-    if (-not $azCliCheck) {
-        Write-Warning "Azure CLI not found. Please install Azure CLI and login: az acr login --name ewftool"
-        Write-Host "Continuing without push..." -ForegroundColor Yellow
-        $acrLoginCheck = $false
-    } else {
-        # Try a quick token check with timeout
-        try {
-            $timeoutJob = Start-Job -ScriptBlock { 
-                az acr check-health --name ewftool --output json 2>$null 
-            }
-            $completed = Wait-Job $timeoutJob -Timeout 10
-            
-            if ($completed) {
-                $result = Receive-Job $timeoutJob
-                $acrLoginCheck = $result -and ($result | ConvertFrom-Json -ErrorAction SilentlyContinue)
-                Remove-Job $timeoutJob
-            } else {
-                Stop-Job $timeoutJob
-                Remove-Job $timeoutJob
-                Write-Warning "ACR health check timed out. Please ensure you're logged in: az acr login --name ewftool"
-                $acrLoginCheck = $false
-            }
-        } catch {
-            Write-Warning "Could not verify ACR login. Please ensure you're logged in: az acr login --name ewftool"
-            $acrLoginCheck = $false
-        }
+Write-Host "Local image created:" -ForegroundColor Cyan
+Write-Host "  • local/ewftool-dev-sqlserver:$Tag" -ForegroundColor Yellow
+Write-Host "  • local/ewftool-dev-sqlserver:latest" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "What was captured:" -ForegroundColor Cyan
+$backupFiles = Get-ChildItem -Path "backups/*.bak" | Select-Object -ExpandProperty Name
+if ($backupFiles) {
+    foreach ($file in $backupFiles) {
+        Write-Host "  • $($file -replace '\.bak$', '')" -ForegroundColor Yellow
     }
-    Write-Host "  Pushing SQL Server image..." -ForegroundColor Yellow
-    docker push "$imageName`:$Version"
-    docker push "$imageName`:latest"
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to push SQL Server image"
-        exit 1
-    }
-    
-    Write-Host "✓ Image pushed successfully" -ForegroundColor Green
 } else {
-    Write-Host "Step 3: Skipping image push" -ForegroundColor Yellow
+    Write-Host "  (no backup files found in ./backups/)" -ForegroundColor DarkGray
 }
-
 Write-Host ""
-Write-Host "=== SQL Server Promotion Complete! ===" -ForegroundColor Green
-Write-Host "✓ Version: $Version"
-Write-Host "✓ Image: $imageName`:$Version"
-Write-Host "✓ Latest tag updated"
+Write-Host "Next steps:" -ForegroundColor Cyan
+Write-Host "  1. Test locally:" -ForegroundColor Gray
+Write-Host "     cd ../.." -ForegroundColor Gray
+Write-Host "     docker compose down -v" -ForegroundColor Gray
+Write-Host "     docker compose up -d" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  2. Push to Azure Container Registry:" -ForegroundColor Gray
+Write-Host "     cd ../.." -ForegroundColor Gray
+Write-Host "     ./push-images-to-azure-registry.ps1 -RegistryName '<acr-name>'" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  (Get ACR name from infrastructure team or run prepare-to-push-images.ps1 in infra repo)" -ForegroundColor DarkGray
