@@ -92,7 +92,7 @@ foreach (var implementation in cedsImplementations)
 
 var host = builder.Build();
 
-// Initialize the project service after the app is built (JSRuntime is now available)
-var projectService = host.Services.GetRequiredService<AnalysisProjectService>();
-await projectService.InitializeAsync();
+// The project (if any) is loaded lazily from browser storage the first time the user
+// navigates to an actual app page, rather than unconditionally here — see MainLayout,
+// which triggers AnalysisProjectService.InitializeAsync() based on the current route.
 await host.RunAsync();
