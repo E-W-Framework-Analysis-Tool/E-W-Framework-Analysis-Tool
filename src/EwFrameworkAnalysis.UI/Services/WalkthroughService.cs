@@ -8,6 +8,15 @@ public class WalkthroughService
         IsActive && CurrentStepIndex < _steps.Count ? _steps[CurrentStepIndex] : null;
     public int TotalSteps => _steps.Count;
 
+    public const int DefaultStepDurationSeconds = 7;
+    public bool IsPlaying { get; private set; }
+    /// <summary>Bumps each time a countdown (re)starts; used to restart the CSS progress animation.</summary>
+    public int ReadyVersion { get; private set; }
+    public int CurrentStepDurationMs =>
+        (CurrentStep?.DurationSeconds ?? DefaultStepDurationSeconds) * 1000;
+
+    private CancellationTokenSource? _autoAdvanceCts;
+
     private readonly List<WalkthroughStepDefinition> _steps = [.. WalkthroughSteps.All];
     private readonly AnalysisProjectService _projectSvc;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -32,6 +41,7 @@ public class WalkthroughService
         var raw = await http.GetStringAsync("Walkthrough_Demo.json");
         await _projectSvc.ActivateDemoProjectAsync(raw);
         IsActive = true;
+        IsPlaying = false;
         CurrentStepIndex = 0;
         Changed?.Invoke();
     }
@@ -40,25 +50,83 @@ public class WalkthroughService
     {
         using var _ = await _busySvc.BeginAsync("Finishing tour…");
         IsActive = false;
+        IsPlaying = false;
+        CancelAutoAdvance();
         await _projectSvc.DeactivateDemoProjectAsync();
         Changed?.Invoke();
     }
 
     public async Task NextAsync()
     {
+        CancelAutoAdvance();
         if (CurrentStepIndex < _steps.Count - 1)
             CurrentStepIndex++;
+        else if (IsPlaying)
+            CurrentStepIndex = 0; // autoplay loops
         else
+        {
             await StopAsync();
+            return;
+        }
         Changed?.Invoke();
     }
 
     public Task PreviousAsync()
     {
+        CancelAutoAdvance();
         if (CurrentStepIndex > 0)
             CurrentStepIndex--;
+        else if (IsPlaying)
+            CurrentStepIndex = _steps.Count - 1;
         Changed?.Invoke();
         return Task.CompletedTask;
+    }
+
+    public void TogglePlay()
+    {
+        IsPlaying = !IsPlaying;
+        if (!IsPlaying)
+            CancelAutoAdvance();
+        // When starting, Changed makes the overlay re-settle the step and call
+        // NotifyStepReady, which starts the countdown.
+        Changed?.Invoke();
+    }
+
+    /// <summary>
+    /// Called by the overlay once a step has navigated, scrolled and positioned.
+    /// Autoplay's countdown starts here so slow loads don't eat into the slide time.
+    /// </summary>
+    public void NotifyStepReady(int stepIndex)
+    {
+        if (!IsActive || stepIndex != CurrentStepIndex) return; // stale call from a superseded step
+        if (IsPlaying)
+            StartAutoAdvance(stepIndex);
+    }
+
+    private void StartAutoAdvance(int stepIndex)
+    {
+        CancelAutoAdvance();
+        ReadyVersion++;
+        var cts = _autoAdvanceCts = new CancellationTokenSource();
+        _ = AdvanceAfterDelayAsync(stepIndex, cts.Token);
+    }
+
+    private async Task AdvanceAfterDelayAsync(int stepIndex, CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(CurrentStepDurationMs, token);
+            if (IsActive && IsPlaying && stepIndex == CurrentStepIndex)
+                await NextAsync();
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private void CancelAutoAdvance()
+    {
+        _autoAdvanceCts?.Cancel();
+        _autoAdvanceCts?.Dispose();
+        _autoAdvanceCts = null;
     }
 }
 
@@ -67,7 +135,8 @@ public record WalkthroughStepDefinition(
     string Title,
     string Body,
     string? RequiredRoute,   // navigate here if not already on it
-    TooltipPosition Position = TooltipPosition.Bottom
+    TooltipPosition Position = TooltipPosition.Bottom,
+    int? DurationSeconds = null  // autoplay slide time; null uses the default
 );
 
 public enum TooltipPosition { Top, Bottom, Left, Right }
@@ -88,7 +157,8 @@ public static class WalkthroughSteps
                   "Your progress is cached in the browser so you won't lose work if you navigate away, " +
                   "but you should save to file regularly.",
             RequiredRoute: "/dashboard",
-            Position: TooltipPosition.Bottom
+            Position: TooltipPosition.Bottom,
+            DurationSeconds: 11
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.DataSourcesList,
@@ -97,14 +167,16 @@ public static class WalkthroughSteps
                   "such as an Ed-Fi API or a CEDS data warehouse. " +
                   "Add one or more here, then run a scan or manual entry on each to discover what data elements are present.",
             RequiredRoute: "/dashboard",
-            Position: TooltipPosition.Right
+            Position: TooltipPosition.Right,
+            DurationSeconds: 9
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.DataSourceItem,
             Title: "View Data Source Details",
             Body: "Click a Data Source here to navigate to the Data Source details page.",
             RequiredRoute: "/dashboard",
-            Position: TooltipPosition.Right
+            Position: TooltipPosition.Right,
+            DurationSeconds: 5
         ),
         new WalkthroughStepDefinition(
             StepId: StepIds.RunAssessmentButton,
