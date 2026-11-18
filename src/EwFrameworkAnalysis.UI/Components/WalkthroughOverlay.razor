@@ -9,26 +9,40 @@
     <div class="walkthrough-backdrop" @onclick="Walkthrough.StopAsync">
         <div class="walkthrough-spotlight" style="@_spotlightStyle" @onclick:stopPropagation="true" />
     </div>
-    <div class="walkthrough-tooltip" style="@_tooltipStyle">
+    <div class="walkthrough-tooltip @FrontClass("tooltip")" style="@_tooltipStyle"
+         @onpointerenter="@(() => _front = "tooltip")" @onpointerdown="@(() => _front = "tooltip")">
         <div class="flex justify-between items-center mb-2">
             <span class="text-xs text-gray-400">@(Walkthrough.CurrentStepIndex + 1) of @Walkthrough.TotalSteps</span>
-            <button class="btn btn-xs btn-ghost" @onclick="Walkthrough.StopAsync">✕</button>
+            <button class="btn btn-xs btn-ghost" aria-label="Close tour" @onclick="Walkthrough.StopAsync">✕</button>
         </div>
         <h3 class="font-title font-bold text-blue text-lg mb-1">@step.Title</h3>
-        <p class="text-sm text-gray-600 mb-4">@step.Body</p>
-        <div class="flex justify-between">
-            @if (Walkthrough.CurrentStepIndex > 0)
-            {
-                <button class="btn btn-sm btn-ghost" @onclick="Walkthrough.PreviousAsync">Back</button>
-            }
-            else
-            {
-                <span />
-            }
-            <button class="btn btn-sm btn-primary" @onclick="Walkthrough.NextAsync">
-                @(Walkthrough.CurrentStepIndex == Walkthrough.TotalSteps - 1 ? "Finish" : "Next")
+        <p class="text-sm text-gray-600">@step.Body</p>
+    </div>
+    <div class="walkthrough-bar @FrontClass("bar")" role="toolbar" aria-label="Tour controls"
+         @onpointerenter="@(() => _front = "bar")" @onpointerdown="@(() => _front = "bar")">
+        <div class="flex items-center gap-2 text-lg">
+            <button class="btn btn-circle btn-ghost" aria-label="Previous step"
+                    disabled="@(!Walkthrough.IsPlaying && Walkthrough.CurrentStepIndex == 0)"
+                    @onclick="Walkthrough.PreviousAsync">
+                <i class="fa-solid fa-backward-step"></i>
+            </button>
+            <button class="btn btn-circle btn-primary"
+                    aria-label="@(Walkthrough.IsPlaying ? "Pause autoplay" : "Play tour automatically")"
+                    @onclick="Walkthrough.TogglePlay">
+                <i class="fa-solid @(Walkthrough.IsPlaying ? "fa-pause" : "fa-play")"></i>
+            </button>
+            <button class="btn btn-circle btn-ghost"
+                    aria-label="@(IsLastStep && !Walkthrough.IsPlaying ? "Finish tour" : "Next step")"
+                    @onclick="Walkthrough.NextAsync">
+                <i class="fa-solid @(IsLastStep && !Walkthrough.IsPlaying ? "fa-flag-checkered" : "fa-forward-step")"></i>
             </button>
         </div>
+        @if (Walkthrough.IsPlaying)
+        {
+            @* Re-keyed on ReadyVersion so the animation restarts for every slide *@
+            <div class="walkthrough-progress" @key="Walkthrough.ReadyVersion"
+                 style="animation-duration:@(Walkthrough.CurrentStepDurationMs)ms"></div>
+        }
     </div>
 }
 
@@ -38,6 +52,13 @@
     private const int Pad = 8;
     private const int TooltipWidth = 320;
     private const int TooltipOffset = 12;
+    private const int BarReserve = 88; // keep tooltips clear of the fixed control bar where possible
+
+    // Whichever of the tooltip / control bar the pointer last entered or touched is raised,
+    // so the user can always bring a partially covered one to the front.
+    private string _front = "bar";
+    private string FrontClass(string who) => _front == who ? "is-front" : "";
+    private bool IsLastStep => Walkthrough.CurrentStepIndex == Walkthrough.TotalSteps - 1;
 
     protected override void OnInitialized() => Walkthrough.Changed += OnChanged;
 
@@ -48,7 +69,11 @@
         else
             await JS.InvokeVoidAsync("Walkthrough.start");
 
+        var stepIndex = Walkthrough.CurrentStepIndex;
         await PositionOverlayAsync();
+
+        // Step is loaded, scrolled and positioned: autoplay's countdown starts now.
+        Walkthrough.NotifyStepReady(stepIndex);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -87,7 +112,7 @@
 
         bool fits(TooltipPosition p) => p switch
         {
-            TooltipPosition.Bottom => spaceBottom >= tooltipHeight + TooltipOffset,
+            TooltipPosition.Bottom => spaceBottom >= tooltipHeight + TooltipOffset + BarReserve,
             TooltipPosition.Top => spaceTop >= tooltipHeight + TooltipOffset,
             TooltipPosition.Right => spaceRight >= TooltipWidth + TooltipOffset,
             TooltipPosition.Left => spaceLeft >= TooltipWidth + TooltipOffset,
@@ -135,7 +160,7 @@
 
         // Clamp so tooltip never bleeds off screen
         left = Math.Clamp(left, margin, r.Vw - TooltipWidth - margin);
-        top = Math.Clamp(top, margin, r.Vh - tooltipHeight - margin);
+        top = Math.Clamp(top, margin, r.Vh - tooltipHeight - margin - BarReserve);
 
         return $"left:{left}px; top:{top}px; width:{TooltipWidth}px;";
     }

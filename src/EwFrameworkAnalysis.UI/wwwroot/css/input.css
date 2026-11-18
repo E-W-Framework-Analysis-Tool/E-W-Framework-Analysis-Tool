@@ -104,6 +104,49 @@
     transition: left 0.25s ease, top 0.25s ease, width 0.25s ease;
 }
 
+/* Fixed control bar. Tooltip and bar share a z-index tier; whichever has .is-front wins. */
+.walkthrough-bar {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: white;
+    border-radius: 9999px;
+    padding: 0.4rem 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    pointer-events: all;
+    overflow: hidden;
+}
+
+.walkthrough-tooltip.is-front,
+.walkthrough-bar.is-front {
+    z-index: 10000;
+}
+
+/* Slide-duration indicator along the bottom edge of the bar */
+.walkthrough-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--color-primary, #1f6fb2);
+    transform-origin: left center;
+    animation-name: walkthrough-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes walkthrough-progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .walkthrough-progress { animation-timing-function: steps(10, end); }
+}
+
 @layer base {
     button,
     [type='button'],
